@@ -1,0 +1,22 @@
+[project]
+name = "mock-ev-system"
+version = "0.1.0"
+description = "Mock toàn bộ API hệ thống công ty xe điện (kể cả stream số km realtime) để EV Care tích hợp và test đồng bộ"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "ev-contracts",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.7.0",
+    "sqlmodel>=0.0.47",
+    "python-dateutil>=2.9.0",
+]
+
+[tool.uv.sources]
+ev-contracts = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13"]
+build-backend = "uv_build"

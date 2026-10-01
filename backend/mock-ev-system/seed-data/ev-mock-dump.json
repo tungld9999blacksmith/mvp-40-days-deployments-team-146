@@ -1,0 +1,3085 @@
+{
+  "data": {
+    "vehicle_models": [
+      {
+        "model_name": "VF5",
+        "trim": "Plus",
+        "motor_power_kw": 134.0,
+        "model_id": "MDL-01",
+        "battery_capacity_kwh": 37.2,
+        "production_year": 2024
+      },
+      {
+        "model_name": "VF6",
+        "trim": "Eco",
+        "motor_power_kw": 150.0,
+        "model_id": "MDL-02",
+        "battery_capacity_kwh": 59.6,
+        "production_year": 2024
+      },
+      {
+        "model_name": "VF6",
+        "trim": "Plus",
+        "motor_power_kw": 150.0,
+        "model_id": "MDL-03",
+        "battery_capacity_kwh": 59.6,
+        "production_year": 2024
+      },
+      {
+        "model_name": "VF7",
+        "trim": "Eco",
+        "motor_power_kw": 174.0,
+        "model_id": "MDL-04",
+        "battery_capacity_kwh": 75.3,
+        "production_year": 2023
+      },
+      {
+        "model_name": "VF8",
+        "trim": "Eco",
+        "motor_power_kw": 300.0,
+        "model_id": "MDL-05",
+        "battery_capacity_kwh": 87.7,
+        "production_year": 2023
+      },
+      {
+        "model_name": "VF8",
+        "trim": "Plus",
+        "motor_power_kw": 300.0,
+        "model_id": "MDL-06",
+        "battery_capacity_kwh": 87.7,
+        "production_year": 2023
+      },
+      {
+        "model_name": "VF9",
+        "trim": "Plus",
+        "motor_power_kw": 300.0,
+        "model_id": "MDL-07",
+        "battery_capacity_kwh": 123.0,
+        "production_year": 2023
+      }
+    ],
+    "owners": [
+      {
+        "full_name": "Nguyễn Văn An",
+        "email": "an.nguyen@example.com",
+        "phone": "0901000001",
+        "owner_id": "OWN-001",
+        "national_id": "079200001001"
+      },
+      {
+        "full_name": "Trần Thị Bình",
+        "email": "binh.tran@example.com",
+        "phone": "0901000002",
+        "owner_id": "OWN-002",
+        "national_id": "079200001002"
+      },
+      {
+        "full_name": "Lê Hoàng Cường",
+        "email": "cuong.le@example.com",
+        "phone": "0901000003",
+        "owner_id": "OWN-003",
+        "national_id": "079200001003"
+      },
+      {
+        "full_name": "Phạm Minh Dũng",
+        "email": "dung.pham@example.com",
+        "phone": "0901000004",
+        "owner_id": "OWN-004",
+        "national_id": "079200001004"
+      },
+      {
+        "full_name": "Hoàng Thị Em",
+        "email": "em.hoang@example.com",
+        "phone": "0901000005",
+        "owner_id": "OWN-005",
+        "national_id": "079200001005"
+      },
+      {
+        "full_name": "Bùi Gia Nam",
+        "email": "nam.bui@example.com",
+        "phone": "0980668968",
+        "owner_id": "OWN-006",
+        "national_id": "001074938273"
+      },
+      {
+        "full_name": "Phạm Hoài Tâm",
+        "email": "tam.pham@example.com",
+        "phone": "0973233523",
+        "owner_id": "OWN-007",
+        "national_id": "001190749231"
+      },
+      {
+        "full_name": "Ngô Hữu Long",
+        "email": "long.ngo@example.com",
+        "phone": "0960563108",
+        "owner_id": "OWN-008",
+        "national_id": "001065000224"
+      },
+      {
+        "full_name": "Dương Bảo Hạnh",
+        "email": "hanh.duong@example.com",
+        "phone": "0904583896",
+        "owner_id": "OWN-009",
+        "national_id": "079095418546"
+      },
+      {
+        "full_name": "Huỳnh Thanh Hà",
+        "email": "ha.huynh@example.com",
+        "phone": "0955799328",
+        "owner_id": "OWN-010",
+        "national_id": "079189521773"
+      },
+      {
+        "full_name": "Đỗ Anh Tuấn",
+        "email": "tuan.do@example.com",
+        "phone": "0942084090",
+        "owner_id": "OWN-011",
+        "national_id": "001066531236"
+      },
+      {
+        "full_name": "Võ Ngọc Hoa",
+        "email": "hoa.vo@example.com",
+        "phone": "0995988852",
+        "owner_id": "OWN-012",
+        "national_id": "079163771109"
+      },
+      {
+        "full_name": "Vũ Hữu Hà",
+        "email": "ha.vu@example.com",
+        "phone": "0974477168",
+        "owner_id": "OWN-013",
+        "national_id": "031094716966"
+      },
+      {
+        "full_name": "Võ Thanh Yến",
+        "email": "yen.vo@example.com",
+        "phone": "0961641870",
+        "owner_id": "OWN-014",
+        "national_id": "049083376552"
+      },
+      {
+        "full_name": "Huỳnh Anh Nam",
+        "email": "nam.huynh@example.com",
+        "phone": "0972356296",
+        "owner_id": "OWN-015",
+        "national_id": "049071329957"
+      }
+    ],
+    "service_centers": [
+      {
+        "name": "VinFast Thăng Long",
+        "region": "Hà Nội",
+        "manager_email": "ha.tran.sc01@example.com",
+        "center_id": "SC-01",
+        "type": "dealer",
+        "manager_national_id": "001190000101"
+      },
+      {
+        "name": "VinFast Quận 7",
+        "region": "TP. Hồ Chí Minh",
+        "manager_email": "khoa.nguyen.sc02@example.com",
+        "center_id": "SC-02",
+        "type": "dealer",
+        "manager_national_id": "079190000202"
+      },
+      {
+        "name": "VinFast Đà Nẵng",
+        "region": "Đà Nẵng",
+        "manager_email": "lan.vo.sc03@example.com",
+        "center_id": "SC-03",
+        "type": "service_only",
+        "manager_national_id": "048190000303"
+      }
+    ],
+    "vehicles": [
+      {
+        "model_id": "MDL-01",
+        "color": "Xanh dương",
+        "license_plate": "30A-12345",
+        "vehicle_id": "VEH-001",
+        "vin": "VF5PLUS2024000001",
+        "current_owner_id": "OWN-001",
+        "manufacture_date": "2024-03-15"
+      },
+      {
+        "model_id": "MDL-05",
+        "color": "Đen",
+        "license_plate": "30A-67890",
+        "vehicle_id": "VEH-002",
+        "vin": "VF8ECO20230000001",
+        "current_owner_id": "OWN-001",
+        "manufacture_date": "2023-06-10"
+      },
+      {
+        "model_id": "MDL-02",
+        "color": "Trắng",
+        "license_plate": "51A-11111",
+        "vehicle_id": "VEH-003",
+        "vin": "VF6ECO20240000001",
+        "current_owner_id": "OWN-002",
+        "manufacture_date": "2024-01-20"
+      },
+      {
+        "model_id": "MDL-04",
+        "color": "Đỏ",
+        "license_plate": "43A-22222",
+        "vehicle_id": "VEH-004",
+        "vin": "VF7ECO20230000001",
+        "current_owner_id": "OWN-003",
+        "manufacture_date": "2023-09-05"
+      },
+      {
+        "model_id": "MDL-07",
+        "color": "Bạc",
+        "license_plate": "43A-33333",
+        "vehicle_id": "VEH-005",
+        "vin": "VF9PLUS2023000001",
+        "current_owner_id": "OWN-003",
+        "manufacture_date": "2023-11-01"
+      },
+      {
+        "model_id": "MDL-03",
+        "color": "Xám",
+        "license_plate": "29A-44444",
+        "vehicle_id": "VEH-006",
+        "vin": "VF6PLUS2024000001",
+        "current_owner_id": "OWN-004",
+        "manufacture_date": "2024-05-12"
+      },
+      {
+        "model_id": "MDL-06",
+        "color": "Trắng ngọc trai",
+        "license_plate": "51A-55555",
+        "vehicle_id": "VEH-007",
+        "vin": "VF8PLUS2023000001",
+        "current_owner_id": "OWN-005",
+        "manufacture_date": "2023-04-01"
+      },
+      {
+        "model_id": "MDL-05",
+        "color": "Vàng",
+        "license_plate": "30K-74343",
+        "vehicle_id": "VEH-008",
+        "vin": "VF8ECO20239606110",
+        "current_owner_id": "OWN-006",
+        "manufacture_date": "2023-08-04"
+      },
+      {
+        "model_id": "MDL-03",
+        "color": "Đỏ",
+        "license_plate": "30K-48288",
+        "vehicle_id": "VEH-009",
+        "vin": "VF6PLUS2024584529",
+        "current_owner_id": "OWN-006",
+        "manufacture_date": "2024-02-15"
+      },
+      {
+        "model_id": "MDL-05",
+        "color": "Đỏ",
+        "license_plate": "30G-78767",
+        "vehicle_id": "VEH-010",
+        "vin": "VF8ECO20238238128",
+        "current_owner_id": "OWN-006",
+        "manufacture_date": "2023-11-04"
+      },
+      {
+        "model_id": "MDL-05",
+        "color": "Trắng ngọc trai",
+        "license_plate": "29K-94785",
+        "vehicle_id": "VEH-011",
+        "vin": "VF8ECO20235161129",
+        "current_owner_id": "OWN-007",
+        "manufacture_date": "2023-07-25"
+      },
+      {
+        "model_id": "MDL-03",
+        "color": "Trắng ngọc trai",
+        "license_plate": "29B-67468",
+        "vehicle_id": "VEH-012",
+        "vin": "VF6PLUS2024961346",
+        "current_owner_id": "OWN-007",
+        "manufacture_date": "2024-08-22"
+      },
+      {
+        "model_id": "MDL-05",
+        "color": "Trắng",
+        "license_plate": "29D-25835",
+        "vehicle_id": "VEH-013",
+        "vin": "VF8ECO20233335171",
+        "current_owner_id": "OWN-008",
+        "manufacture_date": "2023-02-12"
+      },
+      {
+        "model_id": "MDL-03",
+        "color": "Trắng ngọc trai",
+        "license_plate": "29G-29468",
+        "vehicle_id": "VEH-014",
+        "vin": "VF6PLUS2024432054",
+        "current_owner_id": "OWN-008",
+        "manufacture_date": "2024-09-16"
+      },
+      {
+        "model_id": "MDL-01",
+        "color": "Đỏ",
+        "license_plate": "29F-99495",
+        "vehicle_id": "VEH-015",
+        "vin": "VF5PLUS2024499147",
+        "current_owner_id": "OWN-008",
+        "manufacture_date": "2024-09-18"
+      },
+      {
+        "model_id": "MDL-06",
+        "color": "Vàng",
+        "license_plate": "51K-16316",
+        "vehicle_id": "VEH-016",
+        "vin": "VF8PLUS2023047434",
+        "current_owner_id": "OWN-009",
+        "manufacture_date": "2023-03-30"
+      },
+      {
+        "model_id": "MDL-04",
+        "color": "Vàng",
+        "license_plate": "51K-73183",
+        "vehicle_id": "VEH-017",
+        "vin": "VF7ECO20235465836",
+        "current_owner_id": "OWN-010",
+        "manufacture_date": "2023-04-01"
+      },
+      {
+        "model_id": "MDL-06",
+        "color": "Đen",
+        "license_plate": "51K-38382",
+        "vehicle_id": "VEH-018",
+        "vin": "VF8PLUS2023830265",
+        "current_owner_id": "OWN-010",
+        "manufacture_date": "2023-10-21"
+      },
+      {
+        "model_id": "MDL-05",
+        "color": "Đỏ",
+        "license_plate": "30F-31153",
+        "vehicle_id": "VEH-019",
+        "vin": "VF8ECO20234882776",
+        "current_owner_id": "OWN-011",
+        "manufacture_date": "2023-02-02"
+      },
+      {
+        "model_id": "MDL-01",
+        "color": "Xanh dương",
+        "license_plate": "30K-85560",
+        "vehicle_id": "VEH-020",
+        "vin": "VF5PLUS2024719141",
+        "current_owner_id": "OWN-011",
+        "manufacture_date": "2024-02-18"
+      },
+      {
+        "model_id": "MDL-01",
+        "color": "Đen",
+        "license_plate": "51F-47952",
+        "vehicle_id": "VEH-021",
+        "vin": "VF5PLUS2024729075",
+        "current_owner_id": "OWN-012",
+        "manufacture_date": "2024-05-24"
+      },
+      {
+        "model_id": "MDL-01",
+        "color": "Trắng",
+        "license_plate": "51B-25503",
+        "vehicle_id": "VEH-022",
+        "vin": "VF5PLUS2024649037",
+        "current_owner_id": "OWN-012",
+        "manufacture_date": "2024-03-24"
+      },
+      {
+        "model_id": "MDL-03",
+        "color": "Đỏ",
+        "license_plate": "15A-12175",
+        "vehicle_id": "VEH-023",
+        "vin": "VF6PLUS2024239343",
+        "current_owner_id": "OWN-013",
+        "manufacture_date": "2024-03-16"
+      },
+      {
+        "model_id": "MDL-01",
+        "color": "Bạc",
+        "license_plate": "15A-92294",
+        "vehicle_id": "VEH-024",
+        "vin": "VF5PLUS2024881487",
+        "current_owner_id": "OWN-013",
+        "manufacture_date": "2024-12-02"
+      },
+      {
+        "model_id": "MDL-04",
+        "color": "Xám",
+        "license_plate": "92E-34628",
+        "vehicle_id": "VEH-025",
+        "vin": "VF7ECO20237953451",
+        "current_owner_id": "OWN-014",
+        "manufacture_date": "2023-10-08"
+      },
+      {
+        "model_id": "MDL-03",
+        "color": "Đen",
+        "license_plate": "92E-28082",
+        "vehicle_id": "VEH-026",
+        "vin": "VF6PLUS2024766517",
+        "current_owner_id": "OWN-014",
+        "manufacture_date": "2024-10-06"
+      },
+      {
+        "model_id": "MDL-06",
+        "color": "Xám",
+        "license_plate": "92B-21211",
+        "vehicle_id": "VEH-027",
+        "vin": "VF8PLUS2023533475",
+        "current_owner_id": "OWN-014",
+        "manufacture_date": "2023-03-22"
+      },
+      {
+        "model_id": "MDL-02",
+        "color": "Trắng",
+        "license_plate": "92K-97517",
+        "vehicle_id": "VEH-028",
+        "vin": "VF6ECO20241957858",
+        "current_owner_id": "OWN-015",
+        "manufacture_date": "2024-01-15"
+      }
+    ],
+    "vehicle_usage": [
+      {
+        "battery_soh": 96.2,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-001",
+        "current_km": 42510
+      },
+      {
+        "battery_soh": 93.1,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-002",
+        "current_km": 55810
+      },
+      {
+        "battery_soh": 97.5,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-003",
+        "current_km": 38210
+      },
+      {
+        "battery_soh": 94.8,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-004",
+        "current_km": 48010
+      },
+      {
+        "battery_soh": 95.3,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-005",
+        "current_km": 44610
+      },
+      {
+        "battery_soh": 98.0,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "manual",
+        "vehicle_id": "VEH-006",
+        "current_km": 30110
+      },
+      {
+        "battery_soh": 91.7,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-007",
+        "current_km": 58310
+      },
+      {
+        "battery_soh": 97.0,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-008",
+        "current_km": 50370
+      },
+      {
+        "battery_soh": 96.9,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-009",
+        "current_km": 51220
+      },
+      {
+        "battery_soh": 95.2,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "manual",
+        "vehicle_id": "VEH-010",
+        "current_km": 54935
+      },
+      {
+        "battery_soh": 93.7,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-011",
+        "current_km": 63291
+      },
+      {
+        "battery_soh": 96.8,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "manual",
+        "vehicle_id": "VEH-012",
+        "current_km": 34261
+      },
+      {
+        "battery_soh": 92.2,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-013",
+        "current_km": 76179
+      },
+      {
+        "battery_soh": 97.1,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "manual",
+        "vehicle_id": "VEH-014",
+        "current_km": 31071
+      },
+      {
+        "battery_soh": 97.2,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-015",
+        "current_km": 39442
+      },
+      {
+        "battery_soh": 94.6,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-016",
+        "current_km": 52954
+      },
+      {
+        "battery_soh": 94.5,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-017",
+        "current_km": 48943
+      },
+      {
+        "battery_soh": 95.2,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-018",
+        "current_km": 48923
+      },
+      {
+        "battery_soh": 96.2,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-019",
+        "current_km": 59328
+      },
+      {
+        "battery_soh": 95.0,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-020",
+        "current_km": 44947
+      },
+      {
+        "battery_soh": 95.5,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-021",
+        "current_km": 39738
+      },
+      {
+        "battery_soh": 96.0,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-022",
+        "current_km": 35476
+      },
+      {
+        "battery_soh": 96.0,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-023",
+        "current_km": 53110
+      },
+      {
+        "battery_soh": 98.0,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-024",
+        "current_km": 36072
+      },
+      {
+        "battery_soh": 96.5,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "manual",
+        "vehicle_id": "VEH-025",
+        "current_km": 55872
+      },
+      {
+        "battery_soh": 96.9,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-026",
+        "current_km": 24433
+      },
+      {
+        "battery_soh": 95.1,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-027",
+        "current_km": 64896
+      },
+      {
+        "battery_soh": 97.1,
+        "last_updated_at": "2026-10-01T05:35:11.021848",
+        "data_source": "telematics",
+        "vehicle_id": "VEH-028",
+        "current_km": 49192
+      }
+    ],
+    "warranty_policies": [
+      {
+        "model_id": "MDL-01",
+        "duration_months": 96,
+        "terms_description": "Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.",
+        "component": "battery",
+        "policy_id": "WP-001",
+        "km_limit": 160000
+      },
+      {
+        "model_id": "MDL-01",
+        "duration_months": 60,
+        "terms_description": "Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.",
+        "component": "motor",
+        "policy_id": "WP-002",
+        "km_limit": 120000
+      },
+      {
+        "model_id": "MDL-01",
+        "duration_months": 36,
+        "terms_description": "Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.",
+        "component": "chassis",
+        "policy_id": "WP-003",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-01",
+        "duration_months": 36,
+        "terms_description": "Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.",
+        "component": "electronics",
+        "policy_id": "WP-004",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-02",
+        "duration_months": 96,
+        "terms_description": "Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.",
+        "component": "battery",
+        "policy_id": "WP-005",
+        "km_limit": 160000
+      },
+      {
+        "model_id": "MDL-02",
+        "duration_months": 60,
+        "terms_description": "Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.",
+        "component": "motor",
+        "policy_id": "WP-006",
+        "km_limit": 120000
+      },
+      {
+        "model_id": "MDL-02",
+        "duration_months": 36,
+        "terms_description": "Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.",
+        "component": "chassis",
+        "policy_id": "WP-007",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-02",
+        "duration_months": 36,
+        "terms_description": "Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.",
+        "component": "electronics",
+        "policy_id": "WP-008",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-03",
+        "duration_months": 96,
+        "terms_description": "Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.",
+        "component": "battery",
+        "policy_id": "WP-009",
+        "km_limit": 160000
+      },
+      {
+        "model_id": "MDL-03",
+        "duration_months": 60,
+        "terms_description": "Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.",
+        "component": "motor",
+        "policy_id": "WP-010",
+        "km_limit": 120000
+      },
+      {
+        "model_id": "MDL-03",
+        "duration_months": 36,
+        "terms_description": "Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.",
+        "component": "chassis",
+        "policy_id": "WP-011",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-03",
+        "duration_months": 36,
+        "terms_description": "Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.",
+        "component": "electronics",
+        "policy_id": "WP-012",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-04",
+        "duration_months": 96,
+        "terms_description": "Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.",
+        "component": "battery",
+        "policy_id": "WP-013",
+        "km_limit": 160000
+      },
+      {
+        "model_id": "MDL-04",
+        "duration_months": 60,
+        "terms_description": "Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.",
+        "component": "motor",
+        "policy_id": "WP-014",
+        "km_limit": 120000
+      },
+      {
+        "model_id": "MDL-04",
+        "duration_months": 36,
+        "terms_description": "Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.",
+        "component": "chassis",
+        "policy_id": "WP-015",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-04",
+        "duration_months": 36,
+        "terms_description": "Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.",
+        "component": "electronics",
+        "policy_id": "WP-016",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-05",
+        "duration_months": 96,
+        "terms_description": "Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.",
+        "component": "battery",
+        "policy_id": "WP-017",
+        "km_limit": 160000
+      },
+      {
+        "model_id": "MDL-05",
+        "duration_months": 60,
+        "terms_description": "Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.",
+        "component": "motor",
+        "policy_id": "WP-018",
+        "km_limit": 120000
+      },
+      {
+        "model_id": "MDL-05",
+        "duration_months": 36,
+        "terms_description": "Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.",
+        "component": "chassis",
+        "policy_id": "WP-019",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-05",
+        "duration_months": 36,
+        "terms_description": "Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.",
+        "component": "electronics",
+        "policy_id": "WP-020",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-06",
+        "duration_months": 96,
+        "terms_description": "Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.",
+        "component": "battery",
+        "policy_id": "WP-021",
+        "km_limit": 160000
+      },
+      {
+        "model_id": "MDL-06",
+        "duration_months": 60,
+        "terms_description": "Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.",
+        "component": "motor",
+        "policy_id": "WP-022",
+        "km_limit": 120000
+      },
+      {
+        "model_id": "MDL-06",
+        "duration_months": 36,
+        "terms_description": "Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.",
+        "component": "chassis",
+        "policy_id": "WP-023",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-06",
+        "duration_months": 36,
+        "terms_description": "Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.",
+        "component": "electronics",
+        "policy_id": "WP-024",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-07",
+        "duration_months": 96,
+        "terms_description": "Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.",
+        "component": "battery",
+        "policy_id": "WP-025",
+        "km_limit": 160000
+      },
+      {
+        "model_id": "MDL-07",
+        "duration_months": 60,
+        "terms_description": "Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.",
+        "component": "motor",
+        "policy_id": "WP-026",
+        "km_limit": 120000
+      },
+      {
+        "model_id": "MDL-07",
+        "duration_months": 36,
+        "terms_description": "Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.",
+        "component": "chassis",
+        "policy_id": "WP-027",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-07",
+        "duration_months": 36,
+        "terms_description": "Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.",
+        "component": "electronics",
+        "policy_id": "WP-028",
+        "km_limit": 100000
+      }
+    ],
+    "warranties": [
+      {
+        "vehicle_id": "VEH-001",
+        "policy_id": "WP-001",
+        "end_date": "2032-03-15",
+        "status": "active",
+        "warranty_id": "WRT-001",
+        "start_date": "2024-03-15",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-001",
+        "policy_id": "WP-002",
+        "end_date": "2029-03-15",
+        "status": "active",
+        "warranty_id": "WRT-002",
+        "start_date": "2024-03-15",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-001",
+        "policy_id": "WP-003",
+        "end_date": "2027-03-15",
+        "status": "active",
+        "warranty_id": "WRT-003",
+        "start_date": "2024-03-15",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-001",
+        "policy_id": "WP-004",
+        "end_date": "2027-03-15",
+        "status": "active",
+        "warranty_id": "WRT-004",
+        "start_date": "2024-03-15",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-002",
+        "policy_id": "WP-017",
+        "end_date": "2031-06-10",
+        "status": "active",
+        "warranty_id": "WRT-005",
+        "start_date": "2023-06-10",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-002",
+        "policy_id": "WP-018",
+        "end_date": "2028-06-10",
+        "status": "active",
+        "warranty_id": "WRT-006",
+        "start_date": "2023-06-10",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-002",
+        "policy_id": "WP-019",
+        "end_date": "2026-06-10",
+        "status": "expired",
+        "warranty_id": "WRT-007",
+        "start_date": "2023-06-10",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-002",
+        "policy_id": "WP-020",
+        "end_date": "2026-06-10",
+        "status": "expired",
+        "warranty_id": "WRT-008",
+        "start_date": "2023-06-10",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-003",
+        "policy_id": "WP-005",
+        "end_date": "2032-01-20",
+        "status": "active",
+        "warranty_id": "WRT-009",
+        "start_date": "2024-01-20",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-003",
+        "policy_id": "WP-006",
+        "end_date": "2029-01-20",
+        "status": "active",
+        "warranty_id": "WRT-010",
+        "start_date": "2024-01-20",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-003",
+        "policy_id": "WP-007",
+        "end_date": "2027-01-20",
+        "status": "active",
+        "warranty_id": "WRT-011",
+        "start_date": "2024-01-20",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-003",
+        "policy_id": "WP-008",
+        "end_date": "2027-01-20",
+        "status": "active",
+        "warranty_id": "WRT-012",
+        "start_date": "2024-01-20",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-004",
+        "policy_id": "WP-013",
+        "end_date": "2031-09-05",
+        "status": "active",
+        "warranty_id": "WRT-013",
+        "start_date": "2023-09-05",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-004",
+        "policy_id": "WP-014",
+        "end_date": "2028-09-05",
+        "status": "active",
+        "warranty_id": "WRT-014",
+        "start_date": "2023-09-05",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-004",
+        "policy_id": "WP-015",
+        "end_date": "2026-09-05",
+        "status": "active",
+        "warranty_id": "WRT-015",
+        "start_date": "2023-09-05",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-004",
+        "policy_id": "WP-016",
+        "end_date": "2026-09-05",
+        "status": "active",
+        "warranty_id": "WRT-016",
+        "start_date": "2023-09-05",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-005",
+        "policy_id": "WP-025",
+        "end_date": "2031-11-01",
+        "status": "active",
+        "warranty_id": "WRT-017",
+        "start_date": "2023-11-01",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-005",
+        "policy_id": "WP-026",
+        "end_date": "2028-11-01",
+        "status": "active",
+        "warranty_id": "WRT-018",
+        "start_date": "2023-11-01",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-005",
+        "policy_id": "WP-027",
+        "end_date": "2026-11-01",
+        "status": "active",
+        "warranty_id": "WRT-019",
+        "start_date": "2023-11-01",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-005",
+        "policy_id": "WP-028",
+        "end_date": "2026-11-01",
+        "status": "active",
+        "warranty_id": "WRT-020",
+        "start_date": "2023-11-01",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-006",
+        "policy_id": "WP-009",
+        "end_date": "2032-05-12",
+        "status": "active",
+        "warranty_id": "WRT-021",
+        "start_date": "2024-05-12",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-006",
+        "policy_id": "WP-010",
+        "end_date": "2029-05-12",
+        "status": "active",
+        "warranty_id": "WRT-022",
+        "start_date": "2024-05-12",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-006",
+        "policy_id": "WP-011",
+        "end_date": "2027-05-12",
+        "status": "active",
+        "warranty_id": "WRT-023",
+        "start_date": "2024-05-12",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-006",
+        "policy_id": "WP-012",
+        "end_date": "2027-05-12",
+        "status": "active",
+        "warranty_id": "WRT-024",
+        "start_date": "2024-05-12",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-007",
+        "policy_id": "WP-021",
+        "end_date": "2031-04-01",
+        "status": "active",
+        "warranty_id": "WRT-025",
+        "start_date": "2023-04-01",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-007",
+        "policy_id": "WP-022",
+        "end_date": "2028-04-01",
+        "status": "active",
+        "warranty_id": "WRT-026",
+        "start_date": "2023-04-01",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-007",
+        "policy_id": "WP-023",
+        "end_date": "2026-04-01",
+        "status": "expired",
+        "warranty_id": "WRT-027",
+        "start_date": "2023-04-01",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-007",
+        "policy_id": "WP-024",
+        "end_date": "2026-04-01",
+        "status": "expired",
+        "warranty_id": "WRT-028",
+        "start_date": "2023-04-01",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-008",
+        "policy_id": "WP-017",
+        "end_date": "2031-08-04",
+        "status": "active",
+        "warranty_id": "WRT-029",
+        "start_date": "2023-08-04",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-008",
+        "policy_id": "WP-018",
+        "end_date": "2028-08-04",
+        "status": "active",
+        "warranty_id": "WRT-030",
+        "start_date": "2023-08-04",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-008",
+        "policy_id": "WP-019",
+        "end_date": "2026-08-04",
+        "status": "expired",
+        "warranty_id": "WRT-031",
+        "start_date": "2023-08-04",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-008",
+        "policy_id": "WP-020",
+        "end_date": "2026-08-04",
+        "status": "expired",
+        "warranty_id": "WRT-032",
+        "start_date": "2023-08-04",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-009",
+        "policy_id": "WP-009",
+        "end_date": "2032-02-15",
+        "status": "active",
+        "warranty_id": "WRT-033",
+        "start_date": "2024-02-15",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-009",
+        "policy_id": "WP-010",
+        "end_date": "2029-02-15",
+        "status": "active",
+        "warranty_id": "WRT-034",
+        "start_date": "2024-02-15",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-009",
+        "policy_id": "WP-011",
+        "end_date": "2027-02-15",
+        "status": "active",
+        "warranty_id": "WRT-035",
+        "start_date": "2024-02-15",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-009",
+        "policy_id": "WP-012",
+        "end_date": "2027-02-15",
+        "status": "active",
+        "warranty_id": "WRT-036",
+        "start_date": "2024-02-15",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-010",
+        "policy_id": "WP-017",
+        "end_date": "2031-11-04",
+        "status": "active",
+        "warranty_id": "WRT-037",
+        "start_date": "2023-11-04",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-010",
+        "policy_id": "WP-018",
+        "end_date": "2028-11-04",
+        "status": "active",
+        "warranty_id": "WRT-038",
+        "start_date": "2023-11-04",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-010",
+        "policy_id": "WP-019",
+        "end_date": "2026-11-04",
+        "status": "active",
+        "warranty_id": "WRT-039",
+        "start_date": "2023-11-04",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-010",
+        "policy_id": "WP-020",
+        "end_date": "2026-11-04",
+        "status": "active",
+        "warranty_id": "WRT-040",
+        "start_date": "2023-11-04",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-011",
+        "policy_id": "WP-017",
+        "end_date": "2031-07-25",
+        "status": "active",
+        "warranty_id": "WRT-041",
+        "start_date": "2023-07-25",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-011",
+        "policy_id": "WP-018",
+        "end_date": "2028-07-25",
+        "status": "active",
+        "warranty_id": "WRT-042",
+        "start_date": "2023-07-25",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-011",
+        "policy_id": "WP-019",
+        "end_date": "2026-07-25",
+        "status": "expired",
+        "warranty_id": "WRT-043",
+        "start_date": "2023-07-25",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-011",
+        "policy_id": "WP-020",
+        "end_date": "2026-07-25",
+        "status": "expired",
+        "warranty_id": "WRT-044",
+        "start_date": "2023-07-25",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-012",
+        "policy_id": "WP-009",
+        "end_date": "2032-08-22",
+        "status": "active",
+        "warranty_id": "WRT-045",
+        "start_date": "2024-08-22",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-012",
+        "policy_id": "WP-010",
+        "end_date": "2029-08-22",
+        "status": "active",
+        "warranty_id": "WRT-046",
+        "start_date": "2024-08-22",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-012",
+        "policy_id": "WP-011",
+        "end_date": "2027-08-22",
+        "status": "active",
+        "warranty_id": "WRT-047",
+        "start_date": "2024-08-22",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-012",
+        "policy_id": "WP-012",
+        "end_date": "2027-08-22",
+        "status": "active",
+        "warranty_id": "WRT-048",
+        "start_date": "2024-08-22",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-013",
+        "policy_id": "WP-017",
+        "end_date": "2031-02-12",
+        "status": "active",
+        "warranty_id": "WRT-049",
+        "start_date": "2023-02-12",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-013",
+        "policy_id": "WP-018",
+        "end_date": "2028-02-12",
+        "status": "active",
+        "warranty_id": "WRT-050",
+        "start_date": "2023-02-12",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-013",
+        "policy_id": "WP-019",
+        "end_date": "2026-02-12",
+        "status": "expired",
+        "warranty_id": "WRT-051",
+        "start_date": "2023-02-12",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-013",
+        "policy_id": "WP-020",
+        "end_date": "2026-02-12",
+        "status": "expired",
+        "warranty_id": "WRT-052",
+        "start_date": "2023-02-12",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-014",
+        "policy_id": "WP-009",
+        "end_date": "2032-09-16",
+        "status": "active",
+        "warranty_id": "WRT-053",
+        "start_date": "2024-09-16",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-014",
+        "policy_id": "WP-010",
+        "end_date": "2029-09-16",
+        "status": "active",
+        "warranty_id": "WRT-054",
+        "start_date": "2024-09-16",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-014",
+        "policy_id": "WP-011",
+        "end_date": "2027-09-16",
+        "status": "active",
+        "warranty_id": "WRT-055",
+        "start_date": "2024-09-16",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-014",
+        "policy_id": "WP-012",
+        "end_date": "2027-09-16",
+        "status": "active",
+        "warranty_id": "WRT-056",
+        "start_date": "2024-09-16",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-015",
+        "policy_id": "WP-001",
+        "end_date": "2032-09-18",
+        "status": "active",
+        "warranty_id": "WRT-057",
+        "start_date": "2024-09-18",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-015",
+        "policy_id": "WP-002",
+        "end_date": "2029-09-18",
+        "status": "active",
+        "warranty_id": "WRT-058",
+        "start_date": "2024-09-18",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-015",
+        "policy_id": "WP-003",
+        "end_date": "2027-09-18",
+        "status": "active",
+        "warranty_id": "WRT-059",
+        "start_date": "2024-09-18",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-015",
+        "policy_id": "WP-004",
+        "end_date": "2027-09-18",
+        "status": "active",
+        "warranty_id": "WRT-060",
+        "start_date": "2024-09-18",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-016",
+        "policy_id": "WP-021",
+        "end_date": "2031-03-30",
+        "status": "active",
+        "warranty_id": "WRT-061",
+        "start_date": "2023-03-30",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-016",
+        "policy_id": "WP-022",
+        "end_date": "2028-03-30",
+        "status": "active",
+        "warranty_id": "WRT-062",
+        "start_date": "2023-03-30",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-016",
+        "policy_id": "WP-023",
+        "end_date": "2026-03-30",
+        "status": "expired",
+        "warranty_id": "WRT-063",
+        "start_date": "2023-03-30",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-016",
+        "policy_id": "WP-024",
+        "end_date": "2026-03-30",
+        "status": "expired",
+        "warranty_id": "WRT-064",
+        "start_date": "2023-03-30",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-017",
+        "policy_id": "WP-013",
+        "end_date": "2031-04-01",
+        "status": "active",
+        "warranty_id": "WRT-065",
+        "start_date": "2023-04-01",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-017",
+        "policy_id": "WP-014",
+        "end_date": "2028-04-01",
+        "status": "active",
+        "warranty_id": "WRT-066",
+        "start_date": "2023-04-01",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-017",
+        "policy_id": "WP-015",
+        "end_date": "2026-04-01",
+        "status": "expired",
+        "warranty_id": "WRT-067",
+        "start_date": "2023-04-01",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-017",
+        "policy_id": "WP-016",
+        "end_date": "2026-04-01",
+        "status": "expired",
+        "warranty_id": "WRT-068",
+        "start_date": "2023-04-01",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-018",
+        "policy_id": "WP-021",
+        "end_date": "2031-10-21",
+        "status": "active",
+        "warranty_id": "WRT-069",
+        "start_date": "2023-10-21",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-018",
+        "policy_id": "WP-022",
+        "end_date": "2028-10-21",
+        "status": "active",
+        "warranty_id": "WRT-070",
+        "start_date": "2023-10-21",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-018",
+        "policy_id": "WP-023",
+        "end_date": "2026-10-21",
+        "status": "active",
+        "warranty_id": "WRT-071",
+        "start_date": "2023-10-21",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-018",
+        "policy_id": "WP-024",
+        "end_date": "2026-10-21",
+        "status": "active",
+        "warranty_id": "WRT-072",
+        "start_date": "2023-10-21",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-019",
+        "policy_id": "WP-017",
+        "end_date": "2031-02-02",
+        "status": "active",
+        "warranty_id": "WRT-073",
+        "start_date": "2023-02-02",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-019",
+        "policy_id": "WP-018",
+        "end_date": "2028-02-02",
+        "status": "active",
+        "warranty_id": "WRT-074",
+        "start_date": "2023-02-02",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-019",
+        "policy_id": "WP-019",
+        "end_date": "2026-02-02",
+        "status": "expired",
+        "warranty_id": "WRT-075",
+        "start_date": "2023-02-02",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-019",
+        "policy_id": "WP-020",
+        "end_date": "2026-02-02",
+        "status": "expired",
+        "warranty_id": "WRT-076",
+        "start_date": "2023-02-02",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-020",
+        "policy_id": "WP-001",
+        "end_date": "2032-02-18",
+        "status": "active",
+        "warranty_id": "WRT-077",
+        "start_date": "2024-02-18",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-020",
+        "policy_id": "WP-002",
+        "end_date": "2029-02-18",
+        "status": "active",
+        "warranty_id": "WRT-078",
+        "start_date": "2024-02-18",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-020",
+        "policy_id": "WP-003",
+        "end_date": "2027-02-18",
+        "status": "active",
+        "warranty_id": "WRT-079",
+        "start_date": "2024-02-18",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-020",
+        "policy_id": "WP-004",
+        "end_date": "2027-02-18",
+        "status": "active",
+        "warranty_id": "WRT-080",
+        "start_date": "2024-02-18",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-021",
+        "policy_id": "WP-001",
+        "end_date": "2032-05-24",
+        "status": "active",
+        "warranty_id": "WRT-081",
+        "start_date": "2024-05-24",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-021",
+        "policy_id": "WP-002",
+        "end_date": "2029-05-24",
+        "status": "active",
+        "warranty_id": "WRT-082",
+        "start_date": "2024-05-24",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-021",
+        "policy_id": "WP-003",
+        "end_date": "2027-05-24",
+        "status": "active",
+        "warranty_id": "WRT-083",
+        "start_date": "2024-05-24",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-021",
+        "policy_id": "WP-004",
+        "end_date": "2027-05-24",
+        "status": "active",
+        "warranty_id": "WRT-084",
+        "start_date": "2024-05-24",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-022",
+        "policy_id": "WP-001",
+        "end_date": "2032-03-24",
+        "status": "active",
+        "warranty_id": "WRT-085",
+        "start_date": "2024-03-24",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-022",
+        "policy_id": "WP-002",
+        "end_date": "2029-03-24",
+        "status": "active",
+        "warranty_id": "WRT-086",
+        "start_date": "2024-03-24",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-022",
+        "policy_id": "WP-003",
+        "end_date": "2027-03-24",
+        "status": "active",
+        "warranty_id": "WRT-087",
+        "start_date": "2024-03-24",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-022",
+        "policy_id": "WP-004",
+        "end_date": "2027-03-24",
+        "status": "active",
+        "warranty_id": "WRT-088",
+        "start_date": "2024-03-24",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-023",
+        "policy_id": "WP-009",
+        "end_date": "2032-03-16",
+        "status": "active",
+        "warranty_id": "WRT-089",
+        "start_date": "2024-03-16",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-023",
+        "policy_id": "WP-010",
+        "end_date": "2029-03-16",
+        "status": "active",
+        "warranty_id": "WRT-090",
+        "start_date": "2024-03-16",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-023",
+        "policy_id": "WP-011",
+        "end_date": "2027-03-16",
+        "status": "active",
+        "warranty_id": "WRT-091",
+        "start_date": "2024-03-16",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-023",
+        "policy_id": "WP-012",
+        "end_date": "2027-03-16",
+        "status": "active",
+        "warranty_id": "WRT-092",
+        "start_date": "2024-03-16",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-024",
+        "policy_id": "WP-001",
+        "end_date": "2032-12-02",
+        "status": "active",
+        "warranty_id": "WRT-093",
+        "start_date": "2024-12-02",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-024",
+        "policy_id": "WP-002",
+        "end_date": "2029-12-02",
+        "status": "active",
+        "warranty_id": "WRT-094",
+        "start_date": "2024-12-02",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-024",
+        "policy_id": "WP-003",
+        "end_date": "2027-12-02",
+        "status": "active",
+        "warranty_id": "WRT-095",
+        "start_date": "2024-12-02",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-024",
+        "policy_id": "WP-004",
+        "end_date": "2027-12-02",
+        "status": "active",
+        "warranty_id": "WRT-096",
+        "start_date": "2024-12-02",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-025",
+        "policy_id": "WP-013",
+        "end_date": "2031-10-08",
+        "status": "active",
+        "warranty_id": "WRT-097",
+        "start_date": "2023-10-08",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-025",
+        "policy_id": "WP-014",
+        "end_date": "2028-10-08",
+        "status": "active",
+        "warranty_id": "WRT-098",
+        "start_date": "2023-10-08",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-025",
+        "policy_id": "WP-015",
+        "end_date": "2026-10-08",
+        "status": "active",
+        "warranty_id": "WRT-099",
+        "start_date": "2023-10-08",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-025",
+        "policy_id": "WP-016",
+        "end_date": "2026-10-08",
+        "status": "active",
+        "warranty_id": "WRT-100",
+        "start_date": "2023-10-08",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-026",
+        "policy_id": "WP-009",
+        "end_date": "2032-10-06",
+        "status": "active",
+        "warranty_id": "WRT-101",
+        "start_date": "2024-10-06",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-026",
+        "policy_id": "WP-010",
+        "end_date": "2029-10-06",
+        "status": "active",
+        "warranty_id": "WRT-102",
+        "start_date": "2024-10-06",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-026",
+        "policy_id": "WP-011",
+        "end_date": "2027-10-06",
+        "status": "active",
+        "warranty_id": "WRT-103",
+        "start_date": "2024-10-06",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-026",
+        "policy_id": "WP-012",
+        "end_date": "2027-10-06",
+        "status": "active",
+        "warranty_id": "WRT-104",
+        "start_date": "2024-10-06",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-027",
+        "policy_id": "WP-021",
+        "end_date": "2031-03-22",
+        "status": "active",
+        "warranty_id": "WRT-105",
+        "start_date": "2023-03-22",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-027",
+        "policy_id": "WP-022",
+        "end_date": "2028-03-22",
+        "status": "active",
+        "warranty_id": "WRT-106",
+        "start_date": "2023-03-22",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-027",
+        "policy_id": "WP-023",
+        "end_date": "2026-03-22",
+        "status": "expired",
+        "warranty_id": "WRT-107",
+        "start_date": "2023-03-22",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-027",
+        "policy_id": "WP-024",
+        "end_date": "2026-03-22",
+        "status": "expired",
+        "warranty_id": "WRT-108",
+        "start_date": "2023-03-22",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-028",
+        "policy_id": "WP-005",
+        "end_date": "2032-01-15",
+        "status": "active",
+        "warranty_id": "WRT-109",
+        "start_date": "2024-01-15",
+        "km_limit": 160000
+      },
+      {
+        "vehicle_id": "VEH-028",
+        "policy_id": "WP-006",
+        "end_date": "2029-01-15",
+        "status": "active",
+        "warranty_id": "WRT-110",
+        "start_date": "2024-01-15",
+        "km_limit": 120000
+      },
+      {
+        "vehicle_id": "VEH-028",
+        "policy_id": "WP-007",
+        "end_date": "2027-01-15",
+        "status": "active",
+        "warranty_id": "WRT-111",
+        "start_date": "2024-01-15",
+        "km_limit": 100000
+      },
+      {
+        "vehicle_id": "VEH-028",
+        "policy_id": "WP-008",
+        "end_date": "2027-01-15",
+        "status": "active",
+        "warranty_id": "WRT-112",
+        "start_date": "2024-01-15",
+        "km_limit": 100000
+      }
+    ],
+    "warranty_claims": [
+      {
+        "vehicle_id": "VEH-002",
+        "claim_date": "2026-07-15",
+        "reject_reason": "Pin giảm dung lượng 6.9% — chưa đạt ngưỡng bảo hành (>30% trong 8 năm đầu). Mức giảm nằm trong phạm vi hao mòn tự nhiên.",
+        "claim_id": "CLM-001",
+        "warranty_id": "WRT-005",
+        "status": "rejected"
+      },
+      {
+        "vehicle_id": "VEH-007",
+        "claim_date": "2026-02-10",
+        "reject_reason": null,
+        "claim_id": "CLM-002",
+        "warranty_id": "WRT-027",
+        "status": "approved"
+      },
+      {
+        "vehicle_id": "VEH-004",
+        "claim_date": "2026-10-20",
+        "reject_reason": "Hợp đồng bảo hành hệ thống điện tử đã hết hạn ngày 2026-09-05 (3 năm kể từ ngày sản xuất). Yêu cầu ngoài thời hạn bảo hành.",
+        "claim_id": "CLM-003",
+        "warranty_id": "WRT-016",
+        "status": "rejected"
+      },
+      {
+        "vehicle_id": "VEH-001",
+        "claim_date": "2026-09-20",
+        "reject_reason": null,
+        "claim_id": "CLM-004",
+        "warranty_id": "WRT-002",
+        "status": "pending"
+      },
+      {
+        "vehicle_id": "VEH-008",
+        "claim_date": "2026-03-11",
+        "reject_reason": null,
+        "claim_id": "CLM-005",
+        "warranty_id": "WRT-029",
+        "status": "approved"
+      },
+      {
+        "vehicle_id": "VEH-011",
+        "claim_date": "2023-09-11",
+        "reject_reason": null,
+        "claim_id": "CLM-006",
+        "warranty_id": "WRT-043",
+        "status": "approved"
+      },
+      {
+        "vehicle_id": "VEH-016",
+        "claim_date": "2026-03-22",
+        "reject_reason": null,
+        "claim_id": "CLM-007",
+        "warranty_id": "WRT-062",
+        "status": "pending"
+      },
+      {
+        "vehicle_id": "VEH-017",
+        "claim_date": "2024-07-12",
+        "reject_reason": null,
+        "claim_id": "CLM-008",
+        "warranty_id": "WRT-065",
+        "status": "approved"
+      },
+      {
+        "vehicle_id": "VEH-018",
+        "claim_date": "2025-05-22",
+        "reject_reason": "Xe đã được can thiệp, sửa chữa tại cơ sở không chính hãng.",
+        "claim_id": "CLM-009",
+        "warranty_id": "WRT-071",
+        "status": "rejected"
+      },
+      {
+        "vehicle_id": "VEH-027",
+        "claim_date": "2024-03-18",
+        "reject_reason": null,
+        "claim_id": "CLM-010",
+        "warranty_id": "WRT-106",
+        "status": "pending"
+      }
+    ],
+    "maintenance_schedules": [
+      {
+        "model_id": "MDL-01",
+        "milestone_km": 10000,
+        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "schedule_id": "MS-001",
+        "milestone_months": 6
+      },
+      {
+        "model_id": "MDL-01",
+        "milestone_km": 20000,
+        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "schedule_id": "MS-002",
+        "milestone_months": 12
+      },
+      {
+        "model_id": "MDL-01",
+        "milestone_km": 40000,
+        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "schedule_id": "MS-003",
+        "milestone_months": 24
+      },
+      {
+        "model_id": "MDL-01",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "schedule_id": "MS-004",
+        "milestone_months": 36
+      },
+      {
+        "model_id": "MDL-01",
+        "milestone_km": 80000,
+        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
+        "schedule_id": "MS-005",
+        "milestone_months": 48
+      },
+      {
+        "model_id": "MDL-02",
+        "milestone_km": 10000,
+        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "schedule_id": "MS-006",
+        "milestone_months": 6
+      },
+      {
+        "model_id": "MDL-02",
+        "milestone_km": 20000,
+        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "schedule_id": "MS-007",
+        "milestone_months": 12
+      },
+      {
+        "model_id": "MDL-02",
+        "milestone_km": 40000,
+        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "schedule_id": "MS-008",
+        "milestone_months": 24
+      },
+      {
+        "model_id": "MDL-02",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "schedule_id": "MS-009",
+        "milestone_months": 36
+      },
+      {
+        "model_id": "MDL-02",
+        "milestone_km": 80000,
+        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
+        "schedule_id": "MS-010",
+        "milestone_months": 48
+      },
+      {
+        "model_id": "MDL-03",
+        "milestone_km": 10000,
+        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "schedule_id": "MS-011",
+        "milestone_months": 6
+      },
+      {
+        "model_id": "MDL-03",
+        "milestone_km": 20000,
+        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "schedule_id": "MS-012",
+        "milestone_months": 12
+      },
+      {
+        "model_id": "MDL-03",
+        "milestone_km": 40000,
+        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "schedule_id": "MS-013",
+        "milestone_months": 24
+      },
+      {
+        "model_id": "MDL-03",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "schedule_id": "MS-014",
+        "milestone_months": 36
+      },
+      {
+        "model_id": "MDL-03",
+        "milestone_km": 80000,
+        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
+        "schedule_id": "MS-015",
+        "milestone_months": 48
+      },
+      {
+        "model_id": "MDL-04",
+        "milestone_km": 10000,
+        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "schedule_id": "MS-016",
+        "milestone_months": 6
+      },
+      {
+        "model_id": "MDL-04",
+        "milestone_km": 20000,
+        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "schedule_id": "MS-017",
+        "milestone_months": 12
+      },
+      {
+        "model_id": "MDL-04",
+        "milestone_km": 40000,
+        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "schedule_id": "MS-018",
+        "milestone_months": 24
+      },
+      {
+        "model_id": "MDL-04",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "schedule_id": "MS-019",
+        "milestone_months": 36
+      },
+      {
+        "model_id": "MDL-04",
+        "milestone_km": 80000,
+        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
+        "schedule_id": "MS-020",
+        "milestone_months": 48
+      },
+      {
+        "model_id": "MDL-05",
+        "milestone_km": 10000,
+        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "schedule_id": "MS-021",
+        "milestone_months": 6
+      },
+      {
+        "model_id": "MDL-05",
+        "milestone_km": 20000,
+        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "schedule_id": "MS-022",
+        "milestone_months": 12
+      },
+      {
+        "model_id": "MDL-05",
+        "milestone_km": 40000,
+        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "schedule_id": "MS-023",
+        "milestone_months": 24
+      },
+      {
+        "model_id": "MDL-05",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "schedule_id": "MS-024",
+        "milestone_months": 36
+      },
+      {
+        "model_id": "MDL-05",
+        "milestone_km": 80000,
+        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
+        "schedule_id": "MS-025",
+        "milestone_months": 48
+      },
+      {
+        "model_id": "MDL-06",
+        "milestone_km": 10000,
+        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "schedule_id": "MS-026",
+        "milestone_months": 6
+      },
+      {
+        "model_id": "MDL-06",
+        "milestone_km": 20000,
+        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "schedule_id": "MS-027",
+        "milestone_months": 12
+      },
+      {
+        "model_id": "MDL-06",
+        "milestone_km": 40000,
+        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "schedule_id": "MS-028",
+        "milestone_months": 24
+      },
+      {
+        "model_id": "MDL-06",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "schedule_id": "MS-029",
+        "milestone_months": 36
+      },
+      {
+        "model_id": "MDL-06",
+        "milestone_km": 80000,
+        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
+        "schedule_id": "MS-030",
+        "milestone_months": 48
+      },
+      {
+        "model_id": "MDL-07",
+        "milestone_km": 10000,
+        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "schedule_id": "MS-031",
+        "milestone_months": 6
+      },
+      {
+        "model_id": "MDL-07",
+        "milestone_km": 20000,
+        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "schedule_id": "MS-032",
+        "milestone_months": 12
+      },
+      {
+        "model_id": "MDL-07",
+        "milestone_km": 40000,
+        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "schedule_id": "MS-033",
+        "milestone_months": 24
+      },
+      {
+        "model_id": "MDL-07",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "schedule_id": "MS-034",
+        "milestone_months": 36
+      },
+      {
+        "model_id": "MDL-07",
+        "milestone_km": 80000,
+        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
+        "schedule_id": "MS-035",
+        "milestone_months": 48
+      }
+    ],
+    "maintenance_items": [
+      {
+        "schedule_id": "MS-001",
+        "item_name": "Kiểm tra & bổ sung dung dịch làm mát",
+        "reference_price": "200000",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-001"
+      },
+      {
+        "schedule_id": "MS-001",
+        "item_name": "Kiểm tra hệ thống phanh",
+        "reference_price": "0",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-002"
+      },
+      {
+        "schedule_id": "MS-001",
+        "item_name": "Kiểm tra lốp & áp suất",
+        "reference_price": "150000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-003"
+      },
+      {
+        "schedule_id": "MS-001",
+        "item_name": "Kiểm tra hệ thống treo",
+        "reference_price": "0",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-004"
+      },
+      {
+        "schedule_id": "MS-002",
+        "item_name": "Thay lọc gió điều hòa",
+        "reference_price": "350000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-005"
+      },
+      {
+        "schedule_id": "MS-002",
+        "item_name": "Kiểm tra & bổ sung dung dịch làm mát",
+        "reference_price": "200000",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-006"
+      },
+      {
+        "schedule_id": "MS-002",
+        "item_name": "Kiểm tra hệ thống phanh",
+        "reference_price": "0",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-007"
+      },
+      {
+        "schedule_id": "MS-002",
+        "item_name": "Kiểm tra bình ắc-quy 12V",
+        "reference_price": "0",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-008"
+      },
+      {
+        "schedule_id": "MS-002",
+        "item_name": "Kiểm tra hệ thống sạc",
+        "reference_price": "0",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-009"
+      },
+      {
+        "schedule_id": "MS-003",
+        "item_name": "Thay lọc gió điều hòa",
+        "reference_price": "350000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-010"
+      },
+      {
+        "schedule_id": "MS-003",
+        "item_name": "Thay dung dịch làm mát",
+        "reference_price": "800000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-011"
+      },
+      {
+        "schedule_id": "MS-003",
+        "item_name": "Thay dung dịch phanh",
+        "reference_price": "450000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-012"
+      },
+      {
+        "schedule_id": "MS-003",
+        "item_name": "Kiểm tra má phanh",
+        "reference_price": "0",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-013"
+      },
+      {
+        "schedule_id": "MS-003",
+        "item_name": "Kiểm tra hệ thống treo & gầm",
+        "reference_price": "0",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-014"
+      },
+      {
+        "schedule_id": "MS-003",
+        "item_name": "Cân bằng & đảo lốp",
+        "reference_price": "300000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-015"
+      },
+      {
+        "schedule_id": "MS-004",
+        "item_name": "Thay lọc gió điều hòa",
+        "reference_price": "350000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-016"
+      },
+      {
+        "schedule_id": "MS-004",
+        "item_name": "Thay dung dịch phanh",
+        "reference_price": "450000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-017"
+      },
+      {
+        "schedule_id": "MS-004",
+        "item_name": "Thay má phanh trước",
+        "reference_price": "1500000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-018"
+      },
+      {
+        "schedule_id": "MS-004",
+        "item_name": "Kiểm tra pin cao áp & hệ thống BMS",
+        "reference_price": "0",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-019"
+      },
+      {
+        "schedule_id": "MS-004",
+        "item_name": "Kiểm tra motor & hộp giảm tốc",
+        "reference_price": "0",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-020"
+      },
+      {
+        "schedule_id": "MS-005",
+        "item_name": "Thay lọc gió điều hòa",
+        "reference_price": "350000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-021"
+      },
+      {
+        "schedule_id": "MS-005",
+        "item_name": "Thay dung dịch làm mát",
+        "reference_price": "800000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-022"
+      },
+      {
+        "schedule_id": "MS-005",
+        "item_name": "Thay dung dịch phanh",
+        "reference_price": "450000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-023"
+      },
+      {
+        "schedule_id": "MS-005",
+        "item_name": "Thay má phanh sau",
+        "reference_price": "1200000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-024"
+      },
+      {
+        "schedule_id": "MS-005",
+        "item_name": "Thay lốp (bộ 4)",
+        "reference_price": "12000000",
+        "is_covered_by_warranty": false,
+        "item_id": "MI-025"
+      },
+      {
+        "schedule_id": "MS-005",
+        "item_name": "Kiểm tra toàn diện hệ thống điện cao áp",
+        "reference_price": "0",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-026"
+      },
+      {
+        "schedule_id": "MS-005",
+        "item_name": "Cân chỉnh hệ thống ADAS",
+        "reference_price": "0",
+        "is_covered_by_warranty": true,
+        "item_id": "MI-027"
+      }
+    ],
+    "service_history": [
+      {
+        "vehicle_id": "VEH-001",
+        "service_date": "2024-09-20",
+        "items_done": "Kiểm tra dung dịch làm mát, kiểm tra phanh, kiểm tra lốp",
+        "total_cost": "150000",
+        "order_id": "SH-001",
+        "service_center_id": "SC-01",
+        "km_at_service": 10200,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-001",
+        "service_date": "2025-03-15",
+        "items_done": "Thay lọc gió điều hòa, kiểm tra phanh, kiểm tra ắc-quy 12V",
+        "total_cost": "350000",
+        "order_id": "SH-002",
+        "service_center_id": "SC-01",
+        "km_at_service": 20500,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-001",
+        "service_date": "2026-02-10",
+        "items_done": "Thay lọc gió, thay dung dịch làm mát, thay dung dịch phanh, đảo lốp",
+        "total_cost": "1900000",
+        "order_id": "SH-003",
+        "service_center_id": "SC-01",
+        "km_at_service": 38100,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-002",
+        "service_date": "2023-12-05",
+        "items_done": "Kiểm tra dung dịch làm mát, kiểm tra phanh",
+        "total_cost": "0",
+        "order_id": "SH-004",
+        "service_center_id": "SC-01",
+        "km_at_service": 9800,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-002",
+        "service_date": "2024-07-20",
+        "items_done": "Thay lọc gió điều hòa, kiểm tra ắc-quy",
+        "total_cost": "350000",
+        "order_id": "SH-005",
+        "service_center_id": "SC-02",
+        "km_at_service": 21000,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-002",
+        "service_date": "2025-06-10",
+        "items_done": "Thay dung dịch làm mát, thay dung dịch phanh, cân bằng lốp",
+        "total_cost": "1550000",
+        "order_id": "SH-006",
+        "service_center_id": "SC-01",
+        "km_at_service": 41500,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-003",
+        "service_date": "2024-08-01",
+        "items_done": "Kiểm tra phanh, kiểm tra lốp & áp suất",
+        "total_cost": "150000",
+        "order_id": "SH-007",
+        "service_center_id": "SC-02",
+        "km_at_service": 10500,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-003",
+        "service_date": "2025-03-20",
+        "items_done": "Thay lọc gió điều hòa, kiểm tra hệ thống sạc",
+        "total_cost": "350000",
+        "order_id": "SH-008",
+        "service_center_id": "SC-02",
+        "km_at_service": 22000,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-004",
+        "service_date": "2024-03-10",
+        "items_done": "Kiểm tra dung dịch, kiểm tra phanh",
+        "total_cost": "0",
+        "order_id": "SH-009",
+        "service_center_id": "SC-03",
+        "km_at_service": 10100,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-004",
+        "service_date": "2024-10-15",
+        "items_done": "Thay lọc gió điều hòa, kiểm tra ắc-quy, kiểm tra sạc",
+        "total_cost": "350000",
+        "order_id": "SH-010",
+        "service_center_id": "SC-03",
+        "km_at_service": 20800,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-004",
+        "service_date": "2025-12-01",
+        "items_done": "Thay dung dịch làm mát, thay dung dịch phanh, đảo lốp",
+        "total_cost": "1550000",
+        "order_id": "SH-011",
+        "service_center_id": "SC-03",
+        "km_at_service": 42000,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-005",
+        "service_date": "2024-05-20",
+        "items_done": "Kiểm tra phanh, kiểm tra hệ thống treo",
+        "total_cost": "0",
+        "order_id": "SH-012",
+        "service_center_id": "SC-01",
+        "km_at_service": 10300,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-005",
+        "service_date": "2025-01-10",
+        "items_done": "Thay lọc gió điều hòa",
+        "total_cost": "350000",
+        "order_id": "SH-013",
+        "service_center_id": "SC-01",
+        "km_at_service": 21200,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-005",
+        "service_date": "2026-01-20",
+        "items_done": "Thay dung dịch làm mát, thay dung dịch phanh, cân bằng đảo lốp",
+        "total_cost": "1900000",
+        "order_id": "SH-014",
+        "service_center_id": "SC-01",
+        "km_at_service": 40500,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-006",
+        "service_date": "2024-11-20",
+        "items_done": "Kiểm tra dung dịch, phanh, lốp",
+        "total_cost": "150000",
+        "order_id": "SH-015",
+        "service_center_id": "SC-01",
+        "km_at_service": 10000,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-006",
+        "service_date": "2025-07-05",
+        "items_done": "Thay lọc gió điều hòa, kiểm tra ắc-quy 12V",
+        "total_cost": "350000",
+        "order_id": "SH-016",
+        "service_center_id": "SC-02",
+        "km_at_service": 20200,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-007",
+        "service_date": "2023-10-15",
+        "items_done": "Kiểm tra dung dịch, phanh, lốp",
+        "total_cost": "0",
+        "order_id": "SH-017",
+        "service_center_id": "SC-02",
+        "km_at_service": 10400,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-007",
+        "service_date": "2024-05-10",
+        "items_done": "Thay lọc gió điều hòa, kiểm tra ắc-quy, kiểm tra sạc",
+        "total_cost": "350000",
+        "order_id": "SH-018",
+        "service_center_id": "SC-02",
+        "km_at_service": 20900,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-007",
+        "service_date": "2025-03-01",
+        "items_done": "Thay dung dịch làm mát, thay dung dịch phanh, đảo lốp, kiểm tra má phanh",
+        "total_cost": "1550000",
+        "order_id": "SH-019",
+        "service_center_id": "SC-02",
+        "km_at_service": 41800,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-008",
+        "service_date": "2024-03-24",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "150000",
+        "order_id": "SH-020",
+        "service_center_id": "SC-01",
+        "km_at_service": 10204,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-008",
+        "service_date": "2024-11-02",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "900000",
+        "order_id": "SH-021",
+        "service_center_id": "SC-01",
+        "km_at_service": 19912,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-008",
+        "service_date": "2026-02-11",
+        "items_done": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "total_cost": "2500000",
+        "order_id": "SH-022",
+        "service_center_id": "SC-01",
+        "km_at_service": 40251,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-009",
+        "service_date": "2024-09-06",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "350000",
+        "order_id": "SH-023",
+        "service_center_id": "SC-01",
+        "km_at_service": 10936,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-009",
+        "service_date": "2025-02-11",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "1900000",
+        "order_id": "SH-024",
+        "service_center_id": "SC-01",
+        "km_at_service": 19385,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-009",
+        "service_date": "2026-03-23",
+        "items_done": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "total_cost": "900000",
+        "order_id": "SH-025",
+        "service_center_id": "SC-01",
+        "km_at_service": 40976,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-010",
+        "service_date": "2024-05-22",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "150000",
+        "order_id": "SH-026",
+        "service_center_id": "SC-01",
+        "km_at_service": 10378,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-010",
+        "service_date": "2024-12-17",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "2500000",
+        "order_id": "SH-027",
+        "service_center_id": "SC-01",
+        "km_at_service": 21171,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-010",
+        "service_date": "2025-12-19",
+        "items_done": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "total_cost": "900000",
+        "order_id": "SH-028",
+        "service_center_id": "SC-01",
+        "km_at_service": 40162,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-011",
+        "service_date": "2024-02-01",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "1900000",
+        "order_id": "SH-029",
+        "service_center_id": "SC-01",
+        "km_at_service": 10423,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-011",
+        "service_date": "2024-07-25",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "350000",
+        "order_id": "SH-030",
+        "service_center_id": "SC-01",
+        "km_at_service": 19937,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-011",
+        "service_date": "2025-08-01",
+        "items_done": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "total_cost": "900000",
+        "order_id": "SH-031",
+        "service_center_id": "SC-01",
+        "km_at_service": 40155,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-011",
+        "service_date": "2026-08-20",
+        "items_done": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "total_cost": "350000",
+        "order_id": "SH-032",
+        "service_center_id": "SC-01",
+        "km_at_service": 61058,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-012",
+        "service_date": "2025-04-07",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "2500000",
+        "order_id": "SH-033",
+        "service_center_id": "SC-01",
+        "km_at_service": 10181,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-012",
+        "service_date": "2025-11-19",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "0",
+        "order_id": "SH-034",
+        "service_center_id": "SC-01",
+        "km_at_service": 20220,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-013",
+        "service_date": "2023-08-02",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "2500000",
+        "order_id": "SH-035",
+        "service_center_id": "SC-01",
+        "km_at_service": 9841,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-013",
+        "service_date": "2024-01-17",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "900000",
+        "order_id": "SH-036",
+        "service_center_id": "SC-01",
+        "km_at_service": 19476,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-013",
+        "service_date": "2025-01-29",
+        "items_done": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "total_cost": "0",
+        "order_id": "SH-037",
+        "service_center_id": "SC-01",
+        "km_at_service": 41162,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-013",
+        "service_date": "2025-12-14",
+        "items_done": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "total_cost": "1900000",
+        "order_id": "SH-038",
+        "service_center_id": "SC-01",
+        "km_at_service": 59527,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-014",
+        "service_date": "2026-01-21",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "0",
+        "order_id": "SH-039",
+        "service_center_id": "SC-01",
+        "km_at_service": 20523,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-015",
+        "service_date": "2025-04-10",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "150000",
+        "order_id": "SH-040",
+        "service_center_id": "SC-01",
+        "km_at_service": 10848,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-015",
+        "service_date": "2025-09-22",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "1900000",
+        "order_id": "SH-041",
+        "service_center_id": "SC-01",
+        "km_at_service": 19623,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-016",
+        "service_date": "2024-07-15",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "350000",
+        "order_id": "SH-042",
+        "service_center_id": "SC-02",
+        "km_at_service": 19580,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-016",
+        "service_date": "2025-11-22",
+        "items_done": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "total_cost": "900000",
+        "order_id": "SH-043",
+        "service_center_id": "SC-02",
+        "km_at_service": 40048,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-017",
+        "service_date": "2024-01-13",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "2500000",
+        "order_id": "SH-044",
+        "service_center_id": "SC-02",
+        "km_at_service": 10999,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-017",
+        "service_date": "2024-09-12",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "0",
+        "order_id": "SH-045",
+        "service_center_id": "SC-02",
+        "km_at_service": 20316,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-017",
+        "service_date": "2026-01-27",
+        "items_done": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "total_cost": "1900000",
+        "order_id": "SH-046",
+        "service_center_id": "SC-02",
+        "km_at_service": 39521,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-018",
+        "service_date": "2025-01-28",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "150000",
+        "order_id": "SH-047",
+        "service_center_id": "SC-02",
+        "km_at_service": 21155,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-019",
+        "service_date": "2023-09-16",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "0",
+        "order_id": "SH-048",
+        "service_center_id": "SC-01",
+        "km_at_service": 10048,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-020",
+        "service_date": "2024-10-10",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "350000",
+        "order_id": "SH-049",
+        "service_center_id": "SC-01",
+        "km_at_service": 11093,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-020",
+        "service_date": "2025-04-27",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "900000",
+        "order_id": "SH-050",
+        "service_center_id": "SC-01",
+        "km_at_service": 20416,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-020",
+        "service_date": "2026-07-09",
+        "items_done": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "total_cost": "2500000",
+        "order_id": "SH-051",
+        "service_center_id": "SC-01",
+        "km_at_service": 40998,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-021",
+        "service_date": "2024-12-24",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "1900000",
+        "order_id": "SH-052",
+        "service_center_id": "SC-02",
+        "km_at_service": 9901,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-022",
+        "service_date": "2024-12-10",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "350000",
+        "order_id": "SH-053",
+        "service_center_id": "SC-02",
+        "km_at_service": 10069,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-022",
+        "service_date": "2025-08-24",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "900000",
+        "order_id": "SH-054",
+        "service_center_id": "SC-02",
+        "km_at_service": 19972,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-023",
+        "service_date": "2024-09-14",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "150000",
+        "order_id": "SH-055",
+        "service_center_id": "SC-01",
+        "km_at_service": 10415,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-023",
+        "service_date": "2025-03-10",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "350000",
+        "order_id": "SH-056",
+        "service_center_id": "SC-03",
+        "km_at_service": 20531,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-023",
+        "service_date": "2026-02-18",
+        "items_done": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "total_cost": "350000",
+        "order_id": "SH-057",
+        "service_center_id": "SC-03",
+        "km_at_service": 40265,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-024",
+        "service_date": "2025-06-18",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "2500000",
+        "order_id": "SH-058",
+        "service_center_id": "SC-02",
+        "km_at_service": 10726,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-024",
+        "service_date": "2025-12-28",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "1900000",
+        "order_id": "SH-059",
+        "service_center_id": "SC-01",
+        "km_at_service": 21147,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-025",
+        "service_date": "2024-05-07",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "2500000",
+        "order_id": "SH-060",
+        "service_center_id": "SC-03",
+        "km_at_service": 10910,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-025",
+        "service_date": "2024-10-17",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "150000",
+        "order_id": "SH-061",
+        "service_center_id": "SC-03",
+        "km_at_service": 19276,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-026",
+        "service_date": "2025-07-08",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "900000",
+        "order_id": "SH-062",
+        "service_center_id": "SC-02",
+        "km_at_service": 9291,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-026",
+        "service_date": "2026-06-26",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "2500000",
+        "order_id": "SH-063",
+        "service_center_id": "SC-03",
+        "km_at_service": 21188,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-027",
+        "service_date": "2023-10-02",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "150000",
+        "order_id": "SH-064",
+        "service_center_id": "SC-02",
+        "km_at_service": 9784,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-027",
+        "service_date": "2024-04-14",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "2500000",
+        "order_id": "SH-065",
+        "service_center_id": "SC-03",
+        "km_at_service": 19586,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-027",
+        "service_date": "2026-06-29",
+        "items_done": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "total_cost": "350000",
+        "order_id": "SH-066",
+        "service_center_id": "SC-02",
+        "km_at_service": 60183,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-028",
+        "service_date": "2024-07-28",
+        "items_done": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "total_cost": "0",
+        "order_id": "SH-067",
+        "service_center_id": "SC-01",
+        "km_at_service": 9708,
+        "is_periodic": true
+      },
+      {
+        "vehicle_id": "VEH-028",
+        "service_date": "2025-02-24",
+        "items_done": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "total_cost": "2500000",
+        "order_id": "SH-068",
+        "service_center_id": "SC-01",
+        "km_at_service": 20192,
+        "is_periodic": true
+      }
+    ]
+  }
+}

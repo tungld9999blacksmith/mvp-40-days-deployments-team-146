@@ -1,0 +1,45 @@
+# Build-context excludes (context = backend/). Keeps images small and builds
+# fast. Do NOT exclude src/, mock-ev-system/, shared/, pyproject.toml or
+# uv.lock — those are needed by the Docker builds.
+
+# Virtual envs (the big one)
+.venv/
+**/.venv/
+venv/
+
+# Python caches / build artifacts
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+**/*.egg-info/
+build/
+dist/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.cache/
+
+# Local data / secrets / logs
+data/
+*.db
+*.sqlite3
+.env
+.env.*
+!.env.example
+assets/secrets/
+*.log
+
+# VCS & editor
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Docs / tests not needed at runtime
+tests/
+**/tests/
+deprecated/
+tools/

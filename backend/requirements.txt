@@ -1,0 +1,64 @@
+# Core
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+pydantic>=2.10.0
+pydantic-settings>=2.7.0
+python-dotenv>=1.0.0
+
+# AI / LangChain
+langchain>=0.3.0
+langchain-openai>=0.3.0
+langgraph>=0.2.0
+
+# LLM provider SDKs (infrastructure/llm — standardized multi-provider interface)
+# Grok (xAI) and DeepSeek reuse the `openai` client via base_url, no separate SDK.
+openai>=3.19.0
+anthropic>=1.8.0
+google-genai>=2.25.0
+
+# Database
+sqlalchemy>=2.0.0
+alembic>=1.14.0
+psycopg2-binary>=2.9.0
+sqlmodel>=0.0.47
+
+# Embedding engine (infrastructure/embedding — OpenAI/Gemini reuse the SDKs above)
+huggingface-hub>=0.27.0
+# Optional: only needed for the "local" embedding provider (on-device models).
+# sentence-transformers>=3.3.0
+
+# Vector Store
+chromadb>=1.5.0
+pgvector>=0.3.6
+qdrant-client>=1.12.0
+rank-bm25>=0.2.2
+flashrank>=0.2.9
+# RAG ingestion: HTML/PDF parsing
+html2text>=2025.4.15
+beautifulsoup4>=4.15.0
+pypdf>=6.19.0
+
+# File storage (infrastructure/storage — Supabase Storage)
+supabase>=2.31.0
+
+# Auth
+firebase-admin>=7.7.0
+
+# Booking ticket QR image (us-053 API-BT-02)
+segno>=1.6.0
+
+# Background jobs (Celery + Redis broker/backend)
+celery[redis]>=5.6.0
+
+# Redis toolkit (infrastructure/redis — cache, locks, pub/sub, queue, bloom, zset, geo)
+redis>=5.2.0
+
+# Structured logging (infrastructure/logging — JSON logs + contextvars trace binding)
+structlog>=26.1.0
+
+# Dev tools
+ruff>=0.8.0
+pytest>=8.0.0
+pytest-asyncio>=0.24.0
+fakeredis[lua]>=2.26.0
+httpx>=0.28.0

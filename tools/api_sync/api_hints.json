@@ -1,0 +1,10 @@
+{
+  "DependencyCheck": "Response data: dependency check, used by GET /api/v1/health/dependencies (Heartbeat Redis, ChromaDB and the database (Supabase))",
+  "DependencyCheck.detail": "Extra detail about the dependency check after 'Heartbeat Redis, ChromaDB and the database (Supabase)', e.g. the reason or what was checked",
+  "MessageResponse": "Generic message response for mutation operations.",
+  "MessageResponse.message": "Short message shown to the user after 'Delete a vehicle'; one or two sentences explaining the result and the next step",
+  "VehicleOwnerOnboardingVerificationResultOut": "Response data: vehicle owner onboarding verification result, used by POST /api/v1/onboarding/vehicle-verification (Submit vehicle info to the manufacturer for ownership verification)",
+  "VehicleOwnerOnboardingVerificationResultOut.message": "Short message shown to the user after 'Submit vehicle info to the manufacturer for ownership verification'; one or two sentences explaining the result and the next step",
+  "WarrantyOut": "Response data: warranty, used by GET /api/v1/onboarding (Get the current onboarding state and saved data), POST /api/v1/onboarding/vehicle-verification (Submit vehicle info to the manufacturer for ownership verification)",
+  "WarrantyOut.termsDescription": "Plain-language warranty terms: what is covered, conditions, exclusions and how to claim"
+}

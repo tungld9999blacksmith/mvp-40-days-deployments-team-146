@@ -1,0 +1,100 @@
+# =============================================================================
+# docker-compose.infra.yaml — CHỈ chạy hạ tầng phụ trợ bằng Docker.
+#
+# Dùng khi bạn muốn chạy backend FastAPI trực tiếp bằng terminal (uvicorn/uv,
+# gắn debugger, hot-reload native) trên máy host, KHÔNG đóng container cho
+# backend. 2 service dưới đây expose cổng ra localhost để backend chạy ngoài
+# container gọi vào bình thường qua `localhost:<port>`.
+#
+# Vector store dùng Qdrant Cloud theo .env, không cần container riêng.
+# Gồm:
+#   - mock-ev-system  → http://localhost:8100
+#   - redis           → localhost:6379
+#
+# Chạy:      docker compose -f docker-compose.infra.yaml up -d
+# Dừng:      docker compose -f docker-compose.infra.yaml down
+#
+# Sau khi hạ tầng lên, chạy backend bằng terminal (KHÔNG dùng docker):
+#   cd backend
+#   uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+#   # hoặc: uvicorn src.main:app --reload --host 0.0.0.0 --port 8000  (venv/pip)
+#
+# Backend đọc .env.local.infra (hoặc .env đã trỏ về localhost) — xem
+# docs/RUN_LOCAL_BACKEND.md phần "Debug backend bằng terminal".
+# =============================================================================
+
+name: p146-infra
+
+services:
+  # --------------------------------------------------------------------------
+  # mock-ev-system — hệ thống hãng xe điện giả lập (external OEM)
+  # --------------------------------------------------------------------------
+  mock-ev-system:
+    build:
+      context: ./backend
+      dockerfile: ./mock-ev-system/Dockerfile
+    image: p146-mock-ev:dev
+    container_name: p146_mock_ev
+    ports:
+      - "8100:8100"
+    environment:
+      # Outgoing webhooks to the backend running on the host (FEAT-VEH-001).
+      # The secret must equal OEM_WEBHOOK_SECRET in the root .env.
+      MOCK_WEBHOOK_URL: "http://host.docker.internal:8000/api/v1/integrations/oem/webhooks"
+      MOCK_WEBHOOK_SECRET: "${OEM_WEBHOOK_SECRET:-change-me}"
+      MOCK_WEBHOOK_USAGE_MIN_INTERVAL_SECONDS: "300"
+      # Gmail quản lý xưởng cho Workshop Portal (trống = email mẫu trong seed).
+      MOCK_SC01_MANAGER_EMAIL: "${MOCK_SC01_MANAGER_EMAIL:-}"
+      MOCK_SC02_MANAGER_EMAIL: "${MOCK_SC02_MANAGER_EMAIL:-}"
+      MOCK_SC03_MANAGER_EMAIL: "${MOCK_SC03_MANAGER_EMAIL:-}"
+      # Gmail chủ xe OWN-001 (app chủ xe; trống = email mẫu trong seed).
+      MOCK_OWN001_EMAIL: "${MOCK_OWN001_EMAIL:-}"
+      # Gmail dev: tự tạo chủ xe + xe khi khởi động (xem DEV_GUIDE.md).
+      MOCK_DEV_OWNER_EMAILS: "${MOCK_DEV_OWNER_EMAILS:-}"
+      MOCK_DEV_OWNER_VEHICLES: "${MOCK_DEV_OWNER_VEHICLES:-2}"
+      # Fixed date the generated ODO / dates / warranty status are computed against.
+      MOCK_DEV_REFERENCE_DATE: "${MOCK_DEV_REFERENCE_DATE:-}"
+      # Persistent SQLite file on the mock_ev_data volume: data survives restart,
+      # rebuild and container re-creation. POST /admin/reset reloads the seed dump.
+      MOCK_DB_PATH: "/app/data/mock-ev.db"
+    volumes:
+      - mock_ev_data:/app/data
+      # Seed dump from the repo (read-only): a new dump needs no image rebuild.
+      - ./backend/mock-ev-system/seed-data:/app/seed-data:ro
+    # Makes host.docker.internal resolve on Linux too (built in on Docker Desktop).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    networks:
+      - p146_infra_net
+
+  # --------------------------------------------------------------------------
+  # redis — bản alpine nhẹ
+  # --------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: p146_redis
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - p146_infra_net
+
+
+volumes:
+  redis_data:
+    driver: local
+  mock_ev_data:
+    driver: local
+
+networks:
+  p146_infra_net:
+    driver: bridge

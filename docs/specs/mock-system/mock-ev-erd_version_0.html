@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ERD — Mock hệ thống dữ liệu xe điện</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 32px 24px;
+    background: #ffffff;
+    color: #2C2C2A;
+  }
+  body.dark { background: #1a1a18; color: #F1EFE8; }
+  h1 { font-size: 20px; margin: 0 0 4px 0; }
+  p.subtitle { color: #73726c; margin: 0 0 28px 0; font-size: 14px; }
+  body.dark p.subtitle { color: #9c9a92; }
+  #erd { max-width: 100%; overflow-x: auto; }
+  #erd svg.erDiagram .row-rect-odd path,
+  #erd svg.erDiagram .row-rect-odd rect,
+  #erd svg.erDiagram .row-rect-even path,
+  #erd svg.erDiagram .row-rect-even rect { stroke: none !important; }
+  #erd svg.erDiagram .divider path { stroke-opacity: 0.5; }
+</style>
+</head>
+<body>
+<h1>ERD — Mock hệ thống dữ liệu xe điện</h1>
+<p class="subtitle">Chủ sở hữu &middot; xe &middot; model xe &middot; bảo hiểm &middot; trạng thái xe (odometer, phụ tùng đã thay, hạn bảo hành)</p>
+<div id="erd"></div>
+
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+if (dark) document.body.classList.add('dark');
+
+const textFill   = dark ? '#F1EFE8' : '#2C2C2A';
+const headerFill = dark ? '#3A3A37' : '#F1EFE8';
+const rowOdd     = dark ? '#242422' : '#FFFFFF';
+const rowEven    = dark ? '#2C2C2A' : '#F5F4EF';
+const borderCol  = dark ? '#888780' : '#B4B2A9';
+const lineCol    = dark ? '#9c9a92' : '#73726c';
+
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '-apple-system, "Segoe UI", Roboto, sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '13px',
+    lineColor: lineCol,
+    textColor: textFill,
+    primaryColor: headerFill,
+    primaryTextColor: textFill,
+    primaryBorderColor: borderCol,
+    attributeBackgroundColorOdd: rowOdd,
+    attributeBackgroundColorEven: rowEven,
+  },
+});
+
+const src = `erDiagram
+  VEHICLE_MODEL ||--o{ VEHICLE : has
+  OWNER ||--o{ VEHICLE : owns
+  VEHICLE ||--o{ INSURANCE : has
+  VEHICLE ||--o| VEHICLE_STATUS : has
+  VEHICLE ||--o{ PART_REPLACEMENT : has
+
+  VEHICLE_MODEL {
+    string model_id PK
+    string model_name
+    string version
+    float battery_capacity_kwh
+    float motor_power_kw
+    int production_year
+  }
+  OWNER {
+    string owner_id PK
+    string full_name
+    string phone
+    string email
+    string national_id
+    string address
+  }
+  VEHICLE {
+    string vehicle_id PK
+    string vin
+    string model_id FK
+    string owner_id FK
+    string color
+    date manufacture_date
+    string license_plate
+  }
+  INSURANCE {
+    string insurance_id PK
+    string vehicle_id FK
+    string provider
+    string policy_number
+    string insurance_type
+    date start_date
+    date end_date
+    decimal premium_amount
+    string status
+  }
+  VEHICLE_STATUS {
+    string vehicle_id PK
+    int odometer_km
+    datetime last_updated_at
+    date warranty_end_date
+    int warranty_km_limit
+    string warranty_status
+  }
+  PART_REPLACEMENT {
+    string replacement_id PK
+    string vehicle_id FK
+    string part_name
+    date replaced_date
+    int odometer_at_replacement
+    string reason
+    decimal cost
+  }`;
+
+const { svg } = await mermaid.render('erd-svg', src);
+document.getElementById('erd').innerHTML = svg;
+
+// Round entity title boxes and force explicit, high-contrast fill/stroke
+document.querySelectorAll('#erd svg.erDiagram .node').forEach(node => {
+  const firstPath = node.querySelector('path[d]');
+  if (!firstPath) return;
+  const d = firstPath.getAttribute('d');
+  const nums = d.match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs = [nums[0], nums[2], nums[4], nums[6]];
+  const ys = [nums[1], nums[3], nums[5], nums[7]];
+  const x = Math.min(...xs), y = Math.min(...ys);
+  const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+  const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  rect.setAttribute('x', x); rect.setAttribute('y', y);
+  rect.setAttribute('width', w); rect.setAttribute('height', h);
+  rect.setAttribute('rx', '8');
+  rect.setAttribute('fill', headerFill);
+  rect.setAttribute('stroke', borderCol);
+  rect.setAttribute('stroke-width', '0.5');
+  firstPath.replaceWith(rect);
+});
+
+// Force explicit fill on attribute rows (odd/even), whether rendered as path or rect
+document.querySelectorAll('#erd svg.erDiagram .row-rect-odd path, #erd svg.erDiagram .row-rect-odd rect').forEach(el => {
+  el.setAttribute('fill', rowOdd);
+  el.setAttribute('stroke', 'none');
+});
+document.querySelectorAll('#erd svg.erDiagram .row-rect-even path, #erd svg.erDiagram .row-rect-even rect').forEach(el => {
+  el.setAttribute('fill', rowEven);
+  el.setAttribute('stroke', 'none');
+});
+
+// Force explicit, uniform text color everywhere for guaranteed contrast
+document.querySelectorAll('#erd svg text').forEach(t => {
+  t.setAttribute('fill', textFill);
+});
+
+// Force relationship line color for visibility in both themes
+document.querySelectorAll('#erd svg .er.relationshipLine').forEach(l => {
+  l.setAttribute('stroke', lineCol);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+[project]
+name = "ev-contracts"
+version = "0.1.0"
+description = "Contract (Pydantic schemas) của API hệ thống xe điện, dùng chung giữa mock-ev-system và EV Care backend"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.10.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.19,<0.13"]
+build-backend = "uv_build"

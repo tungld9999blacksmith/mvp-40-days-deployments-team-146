@@ -1,0 +1,64 @@
+# ==============================================================================
+# Railway image for mock-ev-system (dev/debug infra — see
+# docs/RUN_LOCAL_BACKEND_RAILWAY.md).
+#
+# Same layout as ./Dockerfile, with two Railway-specific differences:
+#   - No `--mount=type=cache`: Railway's builder rejects cache mounts whose id
+#     is not prefixed with `s/<service-id>`, so plain layers are used instead.
+#   - Listens on $PORT (injected by Railway), falling back to 8100.
+#
+# The archive root must be backend/ (workspace root). Deploy with:
+#     railway up ./backend --path-as-root --service mock-ev-system
+# and set the service variable
+#     RAILWAY_DOCKERFILE_PATH=mock-ev-system/Dockerfile.railway
+# ==============================================================================
+
+ARG PYTHON_VERSION=3.13
+
+# ---- Stage 1: builder --------------------------------------------------------
+FROM ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim AS builder
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=0
+
+WORKDIR /app
+
+# 1) Dependency layer — only rebuilt when a manifest or the lockfile changes.
+COPY pyproject.toml uv.lock ./
+COPY mock-ev-system/pyproject.toml mock-ev-system/pyproject.toml
+COPY shared/ev-contracts/pyproject.toml shared/ev-contracts/pyproject.toml
+RUN uv sync --frozen --no-dev --no-install-workspace --package mock-ev-system
+
+# 2) Project layer — install mock-ev-system + ev-contracts as wheels.
+COPY shared/ shared/
+COPY mock-ev-system/ mock-ev-system/
+RUN uv sync --frozen --no-dev --no-editable --package mock-ev-system
+
+
+# ---- Stage 2: runtime --------------------------------------------------------
+FROM python:${PYTHON_VERSION}-slim-bookworm AS runtime
+
+RUN groupadd --system app && useradd --system --gid app --uid 1000 app
+
+WORKDIR /app
+
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+COPY --from=builder --chown=app:app /app/.venv /app/.venv
+
+# Shared seed data: the mock loads this SQLite dump at startup instead of the
+# built-in seed. Regenerate with `tools/ev_mock_data/ev_mock_data.py dump
+# --out backend/mock-ev-system/seed-data/ev-mock-dump.sql`. Run with
+# -e MOCK_SEED_DUMP= (empty) to use the built-in seed instead.
+COPY --chown=app:app mock-ev-system/seed-data/ev-mock-dump.sql /app/seed-data/ev-mock-dump.sql
+ENV MOCK_SEED_DUMP=/app/seed-data/ev-mock-dump.sql
+
+USER app
+
+EXPOSE 8100
+
+# Shell form so $PORT is expanded at runtime.
+CMD uvicorn mock_ev_system.main:app --host 0.0.0.0 --port ${PORT:-8100}

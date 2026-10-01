@@ -1,0 +1,79 @@
+# uv workspace root cho backend (monorepo).
+#
+# - Project gốc (file này) chính là app EV Care hiện tại: code vẫn nằm ở ./src và
+#   chạy như cũ (`uvicorn src.main:app`), nên không build thành package (package = false).
+# - Member `mock-ev-system/`: FastAPI giả lập toàn bộ hệ thống công ty xe điện.
+# - Member `shared/*`: thư viện dùng chung giữa app và mock (vd: ev-contracts).
+#
+# requirements.txt / requirements.local.txt vẫn được giữ cho pip, Dockerfile và CI.
+# Khi thêm/sửa dependency, cập nhật cả hai nơi cho tới khi bỏ hẳn requirements.txt.
+
+[project]
+name = "ev-care-backend"
+version = "0.1.0"
+description = "EV Care backend (FastAPI + LangGraph)"
+readme = "README.MD"
+requires-python = ">=3.11"
+dependencies = [
+    # Shared libraries (workspace)
+    "ev-contracts",
+    # Core
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.7.0",
+    "python-dotenv>=1.0.0",
+    # AI / LangChain
+    "langchain>=0.3.0",
+    "langchain-openai>=0.3.0",
+    "langgraph>=0.2.0",
+    # LLM provider SDKs (Grok, DeepSeek dùng lại client `openai` qua base_url)
+    "openai>=3.19.0",
+    "anthropic>=1.8.0",
+    "google-genai>=2.25.0",
+    # Database
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.14.0",
+    "psycopg2-binary>=2.9.0",
+    "sqlmodel>=0.0.47",
+    # Vector Store & RAG Retrieval
+    "chromadb>=1.5.0",
+    "pgvector>=0.3.6",
+    "qdrant-client>=1.12.0",
+    "rank-bm25>=0.2.2",
+    "flashrank>=0.2.9",
+    # RAG ingestion: HTML/PDF parsing (agents/tools/RAG/ingestion)
+    "html2text>=2025.4.15",
+    "beautifulsoup4>=4.15.0",
+    "pypdf>=6.19.0",
+    # File storage (infrastructure/storage — Supabase Storage)
+    "supabase>=2.31.0",
+    # Auth
+    "firebase-admin>=7.7.0",
+    # Background jobs (Celery + Redis broker/backend)
+    "celery[redis]>=5.6.0",
+    # Redis toolkit
+    "redis>=5.2.0",
+    # Structured logging (infrastructure/logging)
+    "structlog>=26.1.0",
+    # Booking ticket QR image (us-053 API-BT-02)
+    "segno>=1.6.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.24.0",
+    "fakeredis[lua]>=2.26.0",
+    "httpx>=0.28.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["mock-ev-system", "shared/*"]
+
+[tool.uv.sources]
+ev-contracts = { workspace = true }

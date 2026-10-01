@@ -1,0 +1,119 @@
+# =============================================================================
+# docker-compose.dev.yaml — Stack backend chạy LOCAL cho P-146
+#
+# Gồm 3 service, tất cả đều là Docker image / build từ Docker:
+#   1. backend         — FastAPI core API (src.main:app)          → cổng 8000
+#   2. mock-ev-system  — FastAPI giả lập hệ thống hãng xe điện     → cổng 8100
+#   3. redis           — Redis 7 (alpine, bản nhẹ) cache/pub-sub   → cổng 6379
+#
+# Backend gọi mock-ev-system / redis qua DNS nội bộ; Qdrant Cloud đọc từ .env.
+#
+# Chạy:  docker compose -f docker-compose.dev.yaml up -d --build
+# =============================================================================
+
+name: p146-dev
+
+services:
+  # --------------------------------------------------------------------------
+  # 1) FastAPI core — API chính của project
+  # --------------------------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile
+    image: p146-backend:dev
+    container_name: p146_backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    # Override để trỏ về service nội bộ trong compose (đè lên .env).
+    environment:
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "8000"
+      # Gọi mock-ev qua DNS nội bộ thay vì localhost
+      OEM_API_BASE_URL: "http://mock-ev-system:8100"
+      # Shared with mock-ev-system (MOCK_WEBHOOK_SECRET) for signed webhooks (FEAT-VEH-001).
+      # Set OEM_WEBHOOK_SECRET in the root .env; falls back to "change-me" for dev.
+      OEM_WEBHOOK_SECRET: "${OEM_WEBHOOK_SECRET:-change-me}"
+      # Redis nội bộ (không đặt password ở local cho gọn)
+      REDIS_URL: ""
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ""
+      # Celery broker/result backend: empty -> built from REDIS_HOST/REDIS_PORT (db 0/1).
+      REDIS_BROKER_URL: ""
+      REDIS_BACKEND_URL: ""
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
+      mock-ev-system:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - p146_net
+
+  # --------------------------------------------------------------------------
+  # 2) mock-ev-system — hệ thống hãng xe điện giả lập (external OEM)
+  # --------------------------------------------------------------------------
+  mock-ev-system:
+    build:
+      # Build context là backend/ vì Dockerfile cần uv.lock + shared/ev-contracts
+      context: ./backend
+      dockerfile: ./mock-ev-system/Dockerfile
+    image: p146-mock-ev:dev
+    container_name: p146_mock_ev
+    ports:
+      - "8100:8100"
+    environment:
+      # Outgoing webhooks to EV Care (FEAT-VEH-001). Empty URL = disabled.
+      # Same .env variable as the backend's OEM_WEBHOOK_SECRET, so both sides always match.
+      MOCK_WEBHOOK_URL: "http://backend:8000/api/v1/integrations/oem/webhooks"
+      MOCK_WEBHOOK_SECRET: "${OEM_WEBHOOK_SECRET:-change-me}"
+      MOCK_WEBHOOK_USAGE_MIN_INTERVAL_SECONDS: "300"
+      # Gmail dev: tự tạo chủ xe + xe khi khởi động (xem DEV_GUIDE.md).
+      MOCK_DEV_OWNER_EMAILS: "${MOCK_DEV_OWNER_EMAILS:-}"
+      MOCK_DEV_OWNER_VEHICLES: "${MOCK_DEV_OWNER_VEHICLES:-2}"
+      # Fixed date the generated ODO / dates / warranty status are computed against.
+      MOCK_DEV_REFERENCE_DATE: "${MOCK_DEV_REFERENCE_DATE:-}"
+    restart: unless-stopped
+    # Healthcheck đã được định nghĩa sẵn trong Dockerfile (hit /health)
+    networks:
+      - p146_net
+
+  # --------------------------------------------------------------------------
+  # 3) Redis — bản alpine nhẹ, dùng cho cache / locks / pub-sub / queue
+  # --------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: p146_redis
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - p146_net
+
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  p146_net:
+    driver: bridge

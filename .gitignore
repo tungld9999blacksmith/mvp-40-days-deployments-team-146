@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (never commit large data)
+data/
+*.db
+*.sqlite3
+
+# Logs
+logs/
+*.log
+
+# Test coverage
+htmlcov/
+.coverage
+coverage.xml
+
+# Docker
+docker-compose.override.yml
+
+# Node (frontend)
+node_modules/
+.next/
+out/
+.nuxt/
+
+# Build
+*.pyc
+*.pyo
+
+# AI logs — tracked structure, ignored content
+.ai-log/*.jsonl
+.ai-log/archive/
+
+# Frontend (frontend — Vite)
+*.tsbuildinfo
+.vite/
+.copilot
+personal/tungld-03005/
+*/.env
+backend/src/assets/secrets/*.json
+personal/tungld-03005/*.md
+backend/data/api_samples/
+tools/api_sync/type_script/api_models/
+/backend/data/api_samples/
+# Service account keys / secrets (never commit)
+**/assets/secrets/*.json
+*firebase-adminsdk*.json
+prompt.txt
+
+# repo_sync state (machine-specific)
+tools/repo_sync/.state.json
