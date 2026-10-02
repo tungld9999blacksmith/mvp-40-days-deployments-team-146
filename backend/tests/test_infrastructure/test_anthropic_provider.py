@@ -73,9 +73,7 @@ async def test_rate_limit_error_is_translated(provider: AnthropicProvider):
 @pytest.mark.asyncio
 async def test_connection_error_is_translated(provider: AnthropicProvider):
     request = httpx2.Request("POST", "https://api.anthropic.com/v1/messages")
-    provider._client.messages.create = AsyncMock(
-        side_effect=anthropic.APIConnectionError(request=request)
-    )
+    provider._client.messages.create = AsyncMock(side_effect=anthropic.APIConnectionError(request=request))
 
     with pytest.raises(LLMProviderUnavailableError):
         await provider.chat([ChatMessage(role="user", content="Hi")])

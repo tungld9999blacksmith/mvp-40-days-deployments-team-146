@@ -76,9 +76,7 @@ def require_active_vehicle_owner(
     uid = claims.get("uid")
     user = session.exec(select(VehicleUser).where(VehicleUser.firebase_uid == uid)).first()
     if user is None:
-        is_workshop_owner = session.exec(
-            select(WorkshopOwner.id).where(WorkshopOwner.firebase_uid == uid)
-        ).first()
+        is_workshop_owner = session.exec(select(WorkshopOwner.id).where(WorkshopOwner.firebase_uid == uid)).first()
         raise errors.ForbiddenError() if is_workshop_owner else errors.UserNotRegisteredError()
     if user.status != UserStatus.ACTIVE:
         raise errors.ForbiddenError("The account is not allowed to use this feature.")

@@ -24,10 +24,7 @@ _CONSENT = {"granted": True, "policyVersion": _POLICY_VERSION}
 PROFILE_UPDATE_EXAMPLES: dict[str, dict[str, Any]] = {
     "manual_address": {
         "summary": "Valid: manual address (seed owner OWN-001)",
-        "description": (
-            "National id matches mock owner OWN-001, so the later vehicle "
-            "verification can succeed."
-        ),
+        "description": ("National id matches mock owner OWN-001, so the later vehicle verification can succeed."),
         "value": {
             "fullName": "Nguyen Van An",
             "phoneNumber": "0901000001",

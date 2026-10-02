@@ -133,6 +133,4 @@ def _level_for(status_code: int) -> int:
 
 
 def _headers(scope: Scope) -> dict[str, str]:
-    return {
-        k.decode("latin-1").lower(): v.decode("latin-1") for k, v in scope.get("headers", [])
-    }
+    return {k.decode("latin-1").lower(): v.decode("latin-1") for k, v in scope.get("headers", [])}

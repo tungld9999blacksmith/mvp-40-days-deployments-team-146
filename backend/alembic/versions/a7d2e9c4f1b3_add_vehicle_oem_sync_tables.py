@@ -8,6 +8,7 @@ Revision ID: a7d2e9c4f1b3
 Revises: f6c3a8d1b2e4
 Create Date: 2026-09-28
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa
@@ -22,26 +23,16 @@ branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 # create_type=False: each type is created once in upgrade(), not per column.
-oem_usage_source = postgresql.ENUM(
-    "telematics", "manual", name="oem_usage_source_enum", create_type=False
-)
-oem_sync_trigger = postgresql.ENUM(
-    "poll", "webhook", "initial", name="oem_sync_trigger_enum", create_type=False
-)
-service_record_source = postgresql.ENUM(
-    "oem", "ev_care", name="service_record_source_enum", create_type=False
-)
+oem_usage_source = postgresql.ENUM("telematics", "manual", name="oem_usage_source_enum", create_type=False)
+oem_sync_trigger = postgresql.ENUM("poll", "webhook", "initial", name="oem_sync_trigger_enum", create_type=False)
+service_record_source = postgresql.ENUM("oem", "ev_care", name="service_record_source_enum", create_type=False)
 ENUMS = (oem_usage_source, oem_sync_trigger, service_record_source)
 
 
 def _timestamps() -> list[sa.Column]:
     return [
-        sa.Column(
-            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
-        ),
-        sa.Column(
-            "updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
-        ),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
     ]
 
 
@@ -63,13 +54,9 @@ def upgrade() -> None:
         sa.Column("recorded_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("oem_data_source", oem_usage_source, nullable=False),
         sa.Column("received_via", oem_sync_trigger, nullable=False),
-        sa.Column(
-            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
-        ),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.CheckConstraint("odo_km BETWEEN 0 AND 999999", name="ck_odometer_odo_km"),
-        sa.UniqueConstraint(
-            "user_vehicle_id", "recorded_at", name="ux_odometer_vehicle_recorded_at"
-        ),
+        sa.UniqueConstraint("user_vehicle_id", "recorded_at", name="ux_odometer_vehicle_recorded_at"),
     )
     op.execute(
         "CREATE INDEX ix_odometer_vehicle_odo "
@@ -87,9 +74,7 @@ def upgrade() -> None:
         ),
         sa.Column("source", service_record_source, nullable=False),
         sa.Column("external_order_id", sa.String(64), nullable=True),
-        sa.Column(
-            "booking_id", sa.Uuid(), sa.ForeignKey("booking.id", ondelete="SET NULL"), nullable=True
-        ),
+        sa.Column("booking_id", sa.Uuid(), sa.ForeignKey("booking.id", ondelete="SET NULL"), nullable=True),
         sa.Column("service_date", sa.Date(), nullable=False),
         sa.Column("odo_km", sa.Integer(), nullable=True),
         sa.Column("external_center_id", sa.String(64), nullable=True),
@@ -102,15 +87,9 @@ def upgrade() -> None:
         sa.Column("items_done", sa.Text(), nullable=True),
         sa.Column("synced_at", sa.DateTime(timezone=True), nullable=True),
         *_timestamps(),
-        sa.CheckConstraint(
-            "odo_km IS NULL OR odo_km BETWEEN 0 AND 999999", name="ck_service_record_odo_km"
-        ),
-        sa.CheckConstraint(
-            "source <> 'oem' OR external_order_id IS NOT NULL", name="ck_service_record_oem_order"
-        ),
-        sa.CheckConstraint(
-            "source = 'oem' OR external_order_id IS NULL", name="ck_service_record_order_only_oem"
-        ),
+        sa.CheckConstraint("odo_km IS NULL OR odo_km BETWEEN 0 AND 999999", name="ck_service_record_odo_km"),
+        sa.CheckConstraint("source <> 'oem' OR external_order_id IS NOT NULL", name="ck_service_record_oem_order"),
+        sa.CheckConstraint("source = 'oem' OR external_order_id IS NULL", name="ck_service_record_order_only_oem"),
         sa.CheckConstraint(
             "source = 'ev_care' OR booking_id IS NULL",
             name="ck_service_record_booking_only_ev_care",

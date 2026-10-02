@@ -110,7 +110,6 @@ class EmbeddingEngine(ABC):
         for vector in vectors:
             if len(vector) != self.dimensions:
                 raise EmbeddingDimensionMismatchError(
-                    f"{self.provider_name}:{self.model} returned a "
-                    f"{len(vector)}-dim vector, expected {self.dimensions}"
+                    f"{self.provider_name}:{self.model} returned a {len(vector)}-dim vector, expected {self.dimensions}"
                 )
         return vectors

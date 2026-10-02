@@ -22,9 +22,7 @@ def get_sync_scheduler() -> SyncScheduler:
 
 def get_webhook_event_store() -> WebhookEventStore:
     settings = get_settings()
-    return RedisWebhookEventStore(
-        get_redis_toolkit().redis, key_prefix=settings.redis_key_prefix
-    )
+    return RedisWebhookEventStore(get_redis_toolkit().redis, key_prefix=settings.redis_key_prefix)
 
 
 def get_webhook_service(

@@ -16,6 +16,4 @@ class WorkshopSessionRevoker(Protocol):
     Raise ``RevokeEnqueueError`` if the task was not accepted.
     """
 
-    def enqueue_revoke(
-        self, *, uid: str, owner_id: UUID | None, trace_id: str | None = None
-    ) -> None: ...
+    def enqueue_revoke(self, *, uid: str, owner_id: UUID | None, trace_id: str | None = None) -> None: ...

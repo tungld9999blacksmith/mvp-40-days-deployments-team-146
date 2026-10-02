@@ -4,6 +4,7 @@ Kiểm tra End-to-End RAG Pipeline với Qdrant Cloud + Gemini LLM:
 Chạy từ root project:
     python backend/tests/test_agents/test_qdrant_rag.py
 """
+
 from __future__ import annotations
 
 import logging
@@ -83,7 +84,7 @@ def run_test():
     user_car = UserVehicleContext(model="VFe34")
 
     print(f"\n[4/4] Thực thi truy vấn RAG:")
-    print(f"  -> Câu hỏi: \"{question}\"")
+    print(f'  -> Câu hỏi: "{question}"')
     print(f"  -> Ngữ cảnh xe: VinFast {user_car.model}")
 
     t0 = time.time()

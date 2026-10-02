@@ -14,7 +14,7 @@ Rules:
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, func
@@ -33,7 +33,7 @@ def _enum_values(enum_cls: type[Enum]) -> list[str]:
     return [member.value for member in enum_cls]
 
 
-class AuthEventType(str, Enum):
+class AuthEventType(StrEnum):
     """Kind of authentication event recorded for audit (ENT-101)."""
 
     LOGIN = "login"
@@ -43,7 +43,7 @@ class AuthEventType(str, Enum):
     LOGIN_DENIED = "login_denied"
 
 
-class AuthEventResult(str, Enum):
+class AuthEventResult(StrEnum):
     """Outcome of an authentication event."""
 
     SUCCESS = "success"
@@ -93,26 +93,18 @@ class AuthEvent(SQLModel, table=True):
         )
     )
 
-    reason: str | None = Field(
-        default=None, sa_column=Column(String(64), nullable=True)
-    )
+    reason: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
 
     auth_provider: str | None = Field(
         default="google.com",
         sa_column=Column(String(32), nullable=True, server_default="google.com"),
     )
 
-    ip_address: str | None = Field(
-        default=None, sa_column=Column(String(64), nullable=True)
-    )
+    ip_address: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
 
-    user_agent: str | None = Field(
-        default=None, sa_column=Column(String(512), nullable=True)
-    )
+    user_agent: str | None = Field(default=None, sa_column=Column(String(512), nullable=True))
 
-    trace_id: str | None = Field(
-        default=None, sa_column=Column(String(64), nullable=True)
-    )
+    trace_id: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
 
     created_at: datetime = Field(
         sa_column=Column(

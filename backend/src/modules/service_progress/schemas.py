@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -14,14 +14,14 @@ class CamelModel(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
-class StageIn(str, Enum):
+class StageIn(StrEnum):
     SERVICING = "SERVICING"
     WAITING_PARTS = "WAITING_PARTS"
     QUALITY_CHECK = "QUALITY_CHECK"
     READY_FOR_PICKUP = "READY_FOR_PICKUP"
 
 
-class StageAny(str, Enum):
+class StageAny(StrEnum):
     CHECKED_IN = "CHECKED_IN"
     INSPECTING = "INSPECTING"
     SERVICING = "SERVICING"

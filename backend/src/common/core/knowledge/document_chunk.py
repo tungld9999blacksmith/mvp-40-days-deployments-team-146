@@ -32,9 +32,7 @@ class DocumentChunk(SQLModel, table=True):
     __tablename__ = "document_chunk"
     __table_args__ = (
         CheckConstraint("chunk_index >= 0", name="ck_document_chunk_chunk_index"),
-        CheckConstraint(
-            "page_number IS NULL OR page_number > 0", name="ck_document_chunk_page_number"
-        ),
+        CheckConstraint("page_number IS NULL OR page_number > 0", name="ck_document_chunk_page_number"),
         UniqueConstraint("document_id", "chunk_index", name="ux_document_chunk_document_index"),
         # ANN index for semantic search (cosine distance).
         Index(
@@ -46,21 +44,13 @@ class DocumentChunk(SQLModel, table=True):
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    document_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("official_document.id", ondelete="CASCADE"), nullable=False
-        )
-    )
+    document_id: UUID = Field(sa_column=Column(ForeignKey("official_document.id", ondelete="CASCADE"), nullable=False))
     chunk_index: int = Field(sa_column=Column(Integer, nullable=False))
     content: str = Field(sa_column=Column(Text, nullable=False))
     page_number: int | None = Field(default=None, sa_column=Column(Integer, nullable=True))
-    embedding: list[float] = Field(
-        sa_column=Column(Vector(EMBEDDING_DIMENSIONS), nullable=False)
-    )
+    embedding: list[float] = Field(sa_column=Column(Vector(EMBEDDING_DIMENSIONS), nullable=False))
 
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
 
 
 class DocumentChunkRepository(SQLModelRepository[DocumentChunk, UUID]):

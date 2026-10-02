@@ -45,9 +45,7 @@ async def get_cost_estimate(
     odo_milestone: Annotated[int | None, Query(alias="odoMilestone", gt=0)] = None,
     workshop_id: Annotated[UUID | None, Query(alias="workshopId")] = None,
 ) -> schemas.EstimateEnvelope:
-    data = service.estimate_for_request(
-        user, vehicle, odo_milestone=odo_milestone, workshop_id=workshop_id
-    )
+    data = service.estimate_for_request(user, vehicle, odo_milestone=odo_milestone, workshop_id=workshop_id)
     return schemas.EstimateEnvelope(data=data)
 
 

@@ -9,7 +9,7 @@ import math
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
@@ -35,15 +35,15 @@ class BookingConfig:
     reschedule_max_count: int = 2  # us-053 BR-1207
 
 
-class AnchorSource(str, Enum):
+class AnchorSource(StrEnum):
     SPECIFIED = "SPECIFIED"  # BR-002 #1 — location given in the request
-    PROFILE = "PROFILE"      # BR-002 #2 — user_location primary
+    PROFILE = "PROFILE"  # BR-002 #2 — user_location primary
     PREFERRED = "PREFERRED"  # BR-002 #3 — vehicle_user.preferred_workshop_id
 
 
-class RankedBy(str, Enum):
+class RankedBy(StrEnum):
     DISTANCE = "DISTANCE"  # BR-003 — coordinates on both sides
-    REGION = "REGION"      # BR-004 — province match only
+    REGION = "REGION"  # BR-004 — province match only
 
 
 @dataclass(frozen=True)
@@ -97,7 +97,7 @@ def qr_url(booking_id: UUID) -> str:
     return f"/api/v1/bookings/{booking_id}/qr"
 
 
-class RescheduleBlock(str, Enum):
+class RescheduleBlock(StrEnum):
     NOT_CONFIRMED = "NOT_CONFIRMED"
     TOO_CLOSE_TO_APPOINTMENT = "TOO_CLOSE_TO_APPOINTMENT"
     MAX_RESCHEDULES_REACHED = "MAX_RESCHEDULES_REACHED"

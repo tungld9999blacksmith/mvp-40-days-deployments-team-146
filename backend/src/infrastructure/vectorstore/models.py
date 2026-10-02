@@ -48,9 +48,5 @@ class VectorEmbedding(SQLModel, table=True):
     embedding: list[float] = Field(sa_column=Column(Vector(VECTOR_DIM), nullable=False))
     # "<provider>:<model>" that produced `embedding`. All vectors in one
     # collection must share a model (same dimension is not enough for cosine).
-    embedding_model: str | None = Field(
-        default=None, sa_column=Column("embedding_model", String(128), nullable=True)
-    )
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    embedding_model: str | None = Field(default=None, sa_column=Column("embedding_model", String(128), nullable=True))
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))

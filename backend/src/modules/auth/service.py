@@ -127,11 +127,7 @@ class AuthService:
         self._db.add(
             AuthEvent(
                 user_id=user_id,
-                event_type=(
-                    AuthEventType.SESSION_REVOKED
-                    if success
-                    else AuthEventType.SESSION_REVOKE_FAILED
-                ),
+                event_type=(AuthEventType.SESSION_REVOKED if success else AuthEventType.SESSION_REVOKE_FAILED),
                 result=AuthEventResult.SUCCESS if success else AuthEventResult.FAILED,
                 reason=reason,
                 trace_id=trace_id,

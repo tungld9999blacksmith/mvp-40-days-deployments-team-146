@@ -177,9 +177,7 @@ class WorkshopBoardService:
                 f"Mốc {booking.odo_milestone:,} km".replace(",", ".") if booking.odo_milestone else None
             ),
             "estimated_cost": booking.estimated_cost,
-            "quote": schemas.QuoteRefOut(quote_id=quote.id, status=quote.status.value.upper())
-            if quote
-            else None,
+            "quote": schemas.QuoteRefOut(quote_id=quote.id, status=quote.status.value.upper()) if quote else None,
             "attendance_confirmed_at": booking.attendance_confirmed_at,
             "confirm_deadline": self.confirm_deadline(booking) if booking.status == S.PENDING else None,
             "allowed_actions": self.allowed_actions(booking),
@@ -234,9 +232,10 @@ class WorkshopBoardService:
         for b, u, v in rows:
             if wanted and b.status.value.upper() not in wanted:
                 continue
-            if needle and needle not in b.booking_code.upper() and (
-                _norm_plate(needle) not in _norm_plate(v.license_plate or "")
-                or not _norm_plate(needle)
+            if (
+                needle
+                and needle not in b.booking_code.upper()
+                and (_norm_plate(needle) not in _norm_plate(v.license_plate or "") or not _norm_plate(needle))
             ):
                 continue
             items.append(schemas.BoardItemOut(**self._item(b, u, v)))
@@ -276,9 +275,7 @@ class WorkshopBoardService:
         if not _CODE_RE.match(normalized):
             raise errors.InvalidRequestError("Invalid booking code.")
         booking = self._db.exec(
-            select(Booking).where(
-                Booking.booking_code == normalized, Booking.workshop_id == workshop.id
-            )
+            select(Booking).where(Booking.booking_code == normalized, Booking.workshop_id == workshop.id)
         ).first()
         if booking is None:
             raise errors.BookingNotFoundError()  # EDGE-803
@@ -318,9 +315,7 @@ class WorkshopBoardService:
         if booking.status == to and self._last_actor_is(booking.id, to, owner.id):
             return self._transition_out(booking, None)  # EDGE-805: repeated action
         if req.expected_status.value != frm.value.upper() or booking.status != frm:
-            raise errors.InvalidStatusTransitionError(
-                booking.status.value, self.allowed_actions(booking)
-            )
+            raise errors.InvalidStatusTransitionError(booking.status.value, self.allowed_actions(booking))
         reason, note = self._validate_fields(action, req)
         self._check_time_rules(action, booking, reason)
 
@@ -330,8 +325,13 @@ class WorkshopBoardService:
         effects = None
         try:
             machine.transition(
-                booking, to, actor=actor, source=req.source.value,
-                reason_code=reason, note=note, values=values,
+                booking,
+                to,
+                actor=actor,
+                source=req.source.value,
+                reason_code=reason,
+                note=note,
+                values=values,
             )
             if self._progress is not None:
                 self._progress.on_booking_transition(booking, action)  # HOOK-PG-01
@@ -342,9 +342,7 @@ class WorkshopBoardService:
             self._db.commit()
         except TransitionConflict as exc:
             self._db.rollback()
-            raise errors.InvalidStatusTransitionError(
-                exc.current.value, self.allowed_actions(booking)
-            ) from exc
+            raise errors.InvalidStatusTransitionError(exc.current.value, self.allowed_actions(booking)) from exc
         except DBAPIError as exc:  # BR-807: COMPLETE is all-or-nothing
             self._db.rollback()
             logger.exception("board transition %s failed for %s", action, booking.id)
@@ -424,9 +422,7 @@ class WorkshopBoardService:
             follow_up_scheduled_at=as_utc(follow_up.scheduled_at),
         )
 
-    def _transition_out(
-        self, booking: Booking, effects: schemas.TransitionEffectsOut | None
-    ) -> schemas.TransitionOut:
+    def _transition_out(self, booking: Booking, effects: schemas.TransitionEffectsOut | None) -> schemas.TransitionOut:
         return schemas.TransitionOut(
             booking_id=booking.id,
             status=booking.status.value.upper(),
@@ -448,13 +444,10 @@ class WorkshopBoardService:
             body = f"❌ {workshop.name} chưa nhận được lịch {when}. Mời bạn chọn khung/xưởng khác."
         else:
             body = (
-                f"⚠️ {workshop.name} đã huỷ lịch hẹn {when}. "
-                f"Lý do: {REASON_LABEL_VI.get(reason or '', reason or '')}."
+                f"⚠️ {workshop.name} đã huỷ lịch hẹn {when}. Lý do: {REASON_LABEL_VI.get(reason or '', reason or '')}."
             )
         try:
-            await self._notifier.notify(
-                booking.user_id, NotificationMessage(subject="Lịch hẹn", body=body, link=link)
-            )
+            await self._notifier.notify(booking.user_id, NotificationMessage(subject="Lịch hẹn", body=body, link=link))
         except Exception:  # noqa: BLE001 — never fail after commit
             logger.exception("board notification failed for booking %s", booking.id)
 
@@ -544,8 +537,7 @@ class WorkshopBoardService:
             or hours.is_closed
             or hours.open_time is None
             or hours.close_time is None
-            or req.time_slot
-            not in slot_starts(req.date, hours.open_time, hours.close_time, self._config.slot_minutes)
+            or req.time_slot not in slot_starts(req.date, hours.open_time, hours.close_time, self._config.slot_minutes)
         ):
             raise errors.SlotOutOfHoursError()
         note = (req.note or "").strip() or None
@@ -584,9 +576,7 @@ class WorkshopBoardService:
                 self._db.delete(block)
         else:
             if block is None:
-                block = WorkshopSlotBlock(
-                    workshop_id=workshop.id, block_date=req.date, time_slot=req.time_slot
-                )
+                block = WorkshopSlotBlock(workshop_id=workshop.id, block_date=req.date, time_slot=req.time_slot)
             block.blocked_count = req.blocked_count
             block.reason = SlotBlockReason(req.reason.value.lower())
             block.note = note
@@ -605,9 +595,9 @@ class WorkshopBoardService:
     # ── API-WB-07 / 08 ──────────────────────────────────────────────────
     def settings(self, workshop: Workshop) -> schemas.BookingSettingsOut:
         pending = self._db.exec(
-            select(func.count()).select_from(Booking).where(
-                Booking.workshop_id == workshop.id, Booking.status == S.PENDING
-            )
+            select(func.count())
+            .select_from(Booking)
+            .where(Booking.workshop_id == workshop.id, Booking.status == S.PENDING)
         ).one()
         return schemas.BookingSettingsOut(
             confirmation_mode=workshop.booking_confirmation_mode.value.upper(),

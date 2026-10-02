@@ -99,7 +99,7 @@ class QueryRewriter:
             return self._heuristic_fallback(cleaned_query, vehicle_context)
 
         # Xây dựng prompt người dùng kèm ngữ cảnh xe
-        user_prompt_lines = [f"Câu hỏi của người dùng: \"{cleaned_query}\""]
+        user_prompt_lines = [f'Câu hỏi của người dùng: "{cleaned_query}"']
         if vehicle_context:
             context_desc = []
             if vehicle_context.model:
@@ -233,9 +233,35 @@ class QueryRewriter:
     def _fallback_keywords(self, query: str) -> list[str]:
         """Trích xuất từ khóa đơn giản theo token loại bỏ stop-words cơ bản."""
         stop_words = {
-            "cho", "tôi", "hỏi", "xe", "của", "và", "là", "có", "không", "thì",
-            "những", "gì", "như", "thế", "nào", "ở", "đâu", "với", "được", "bao",
-            "nhiêu", "cần", "phải", "làm", "sao", "bị", "đã", "đi", "đang",
+            "cho",
+            "tôi",
+            "hỏi",
+            "xe",
+            "của",
+            "và",
+            "là",
+            "có",
+            "không",
+            "thì",
+            "những",
+            "gì",
+            "như",
+            "thế",
+            "nào",
+            "ở",
+            "đâu",
+            "với",
+            "được",
+            "bao",
+            "nhiêu",
+            "cần",
+            "phải",
+            "làm",
+            "sao",
+            "bị",
+            "đã",
+            "đi",
+            "đang",
         }
         words = re.findall(r"\b[\w\d]+\b", query.lower())
         keywords = [w for w in words if w not in stop_words and len(w) > 1]

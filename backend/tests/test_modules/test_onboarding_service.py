@@ -285,9 +285,7 @@ async def test_verification_vin_already_linked_to_other_account():
 
     await svc.sign_in(_claims(uid="uid-2", email="other@example.com"))
     user_b = svc.find_user_by_firebase_uid("uid-2")
-    svc.update_profile(
-        user_b, _profile_req(phone="0901000009", national_id="079200009999")
-    )
+    svc.update_profile(user_b, _profile_req(phone="0901000009", national_id="079200009999"))
     with pytest.raises(errors.VehicleAlreadyLinkedError):
         await svc.submit_verification(user_b, _verify_req(), idempotency_key="k2")
 

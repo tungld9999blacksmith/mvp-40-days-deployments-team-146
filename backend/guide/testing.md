@@ -115,12 +115,11 @@ import pytest
 async def test_create_vehicle_returns_201(client):
     response = await client.post(
         "/api/v1/vehicles/",
-        json={"license_plate": "59a-12345", "brand": "Toyota",
-              "model": "Camry", "year": 2024},
+        json={"license_plate": "59a-12345", "brand": "Toyota", "model": "Camry", "year": 2024},
     )
     assert response.status_code == 201
     body = response.json()
-    assert body["license_plate"] == "59A-12345"   # chuẩn hóa hoa
+    assert body["license_plate"] == "59A-12345"  # chuẩn hóa hoa
 ```
 
 ### 3.2 Test service / business logic — cô lập, không I/O thật
@@ -134,10 +133,12 @@ from tests._onboarding import StubOemGateway, make_session
 
 
 def _service(gateway, *, max_failed=5):
-    session = next(make_session())        # SQLite in-memory, tự tạo bảng
+    session = next(make_session())  # SQLite in-memory, tự tạo bảng
     return OnboardingService(
-        session, gateway,
-        retention_days=15, max_failed_attempts=max_failed,
+        session,
+        gateway,
+        retention_days=15,
+        max_failed_attempts=max_failed,
         policy_version="2026-09",
     )
 

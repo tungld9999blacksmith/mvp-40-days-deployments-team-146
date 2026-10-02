@@ -16,7 +16,6 @@ Rules:
 from __future__ import annotations
 
 import logging
-from typing import Optional
 
 from src.modules.examples.domain import FuelType, VehicleEntity, VehicleStatus
 from src.modules.examples.error import (
@@ -134,9 +133,7 @@ class VehicleService:
         page_size: int = 20,
     ) -> VehicleListResponse:
         """Return a paginated list of vehicles owned by *owner_id*."""
-        items, total = await self._repo.list_by_owner(
-            owner_id, page=page, page_size=page_size
-        )
+        items, total = await self._repo.list_by_owner(owner_id, page=page, page_size=page_size)
         return VehicleListResponse(
             items=[self._to_response(item) for item in items],
             total=total,

@@ -27,9 +27,7 @@ def get_workshop_session_revoker() -> WorkshopSessionRevoker:
     return CeleryWorkshopSessionRevoker()
 
 
-def build_workshop_auth_service(
-    session: Session, revoker: WorkshopSessionRevoker | None = None
-) -> WorkshopAuthService:
+def build_workshop_auth_service(session: Session, revoker: WorkshopSessionRevoker | None = None) -> WorkshopAuthService:
     settings = get_settings()
     return WorkshopAuthService(
         session,
@@ -70,11 +68,7 @@ def verify_firebase_token_check_revoked(
             "Phiên đăng nhập đã bị thu hồi. Vui lòng đăng nhập lại.", code="TOKEN_REVOKED"
         ) from exc
     except (auth.InvalidIdTokenError, auth.UserDisabledError, ValueError) as exc:
-        raise errors.WorkshopAuthError(
-            "Token không hợp lệ hoặc đã hết hạn.", code="INVALID_TOKEN"
-        ) from exc
+        raise errors.WorkshopAuthError("Token không hợp lệ hoặc đã hết hạn.", code="INVALID_TOKEN") from exc
     except Exception as exc:  # noqa: BLE001 — Firebase unreachable (revoke check needs a call)
         logger.warning("revocation check failed: %s", exc)
-        raise errors.AuthProviderUnavailableError(
-            "Không kiểm tra được phiên lúc này. Vui lòng thử lại."
-        ) from exc
+        raise errors.AuthProviderUnavailableError("Không kiểm tra được phiên lúc này. Vui lòng thử lại.") from exc

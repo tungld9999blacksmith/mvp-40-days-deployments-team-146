@@ -128,17 +128,13 @@ def verify_manager(
     """The manager email identifies exactly one service center; the national
     id is the second factor. On success the center's identity is returned so
     EV Care never has to ask the user which workshop they run."""
-    center = LookupService(session).get_service_center_by_manager_email(
-        payload.manager_email
-    )
+    center = LookupService(session).get_service_center_by_manager_email(payload.manager_email)
     if center is None:
         return ManagerVerifyResponse(
             verified=False,
             failure_reason=ManagerVerifyFailureReason.MANAGER_NOT_FOUND,
         )
-    if normalize_national_id(center.manager_national_id) != normalize_national_id(
-        payload.manager_national_id
-    ):
+    if normalize_national_id(center.manager_national_id) != normalize_national_id(payload.manager_national_id):
         return ManagerVerifyResponse(
             verified=False,
             failure_reason=ManagerVerifyFailureReason.NATIONAL_ID_MISMATCH,

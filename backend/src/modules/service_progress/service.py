@@ -80,9 +80,7 @@ class ServiceProgressService:
             current_stage=current.value.upper() if current else None,
             is_frozen=booking.status in FROZEN_STATUSES,
             next_stages=(
-                [s.value.upper() for s in owner_next_stages(booking.status, current)]
-                if for_workshop
-                else None
+                [s.value.upper() for s in owner_next_stages(booking.status, current)] if for_workshop else None
             ),
             entries=[
                 schemas.ProgressEntryOut(
@@ -106,9 +104,7 @@ class ServiceProgressService:
         expected_current: ServiceStage | None,
     ) -> schemas.ProgressOut:
         self.ensure_enabled()
-        locked = self._db.exec(
-            select(Booking).where(Booking.id == booking.id).with_for_update()
-        ).one()
+        locked = self._db.exec(select(Booking).where(Booking.id == booking.id).with_for_update()).one()
         if locked.status != BookingStatus.IN_PROGRESS:
             raise errors.BookingNotInProgressError(locked.status.value)
         current = self.current_stage(locked, self.entries(locked.id))

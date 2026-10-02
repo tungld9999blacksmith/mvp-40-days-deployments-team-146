@@ -3,11 +3,15 @@ line-length = 120
 
 [lint]
 select = ["E", "F", "I", "N", "W", "UP"]
-ignore = ["E501"]
+# N818: exception names without "Error" suffix are an established convention here
+ignore = ["E501", "N818"]
 
 [lint.per-file-ignores]
 "tests/**" = ["E402", "F401", "F841", "F541"]
 "scripts/**" = ["E402", "F401"]
+# camelCase fields mirror the public wire format (REST / WebSocket / events)
+"src/modules/conversation/schemas.py" = ["N815"]
+"src/infrastructure/messaging/events.py" = ["N815"]
 
 [format]
 quote-style = "double"

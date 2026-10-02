@@ -52,15 +52,9 @@ def list_conversations(
     limit: Annotated[int, Query(ge=1, le=50)] = 20,
     cursor: str | None = None,
 ) -> schemas.ConversationListEnvelope:
-    items, next_cursor, has_more = service.list_conversations(
-        user_id, user_vehicle_id, limit, cursor
-    )
-    data = [
-        _conversation_dto(c, preview=service.last_message_preview(c.id)) for c in items
-    ]
-    return schemas.ConversationListEnvelope(
-        data=data, page=schemas.PageInfo(nextCursor=next_cursor, hasMore=has_more)
-    )
+    items, next_cursor, has_more = service.list_conversations(user_id, user_vehicle_id, limit, cursor)
+    data = [_conversation_dto(c, preview=service.last_message_preview(c.id)) for c in items]
+    return schemas.ConversationListEnvelope(data=data, page=schemas.PageInfo(nextCursor=next_cursor, hasMore=has_more))
 
 
 # ── API-CONV-004 — keyword search (must precede /{id} routes) ────────────
@@ -74,9 +68,7 @@ def search_conversations(
     cursor: str | None = None,
 ) -> schemas.SearchEnvelope:
     before_seq = int(cursor) if cursor and cursor.isdigit() else None
-    hits, next_cursor, has_more = service.search_messages(
-        user_id, q, user_vehicle_id, limit, before_seq
-    )
+    hits, next_cursor, has_more = service.search_messages(user_id, q, user_vehicle_id, limit, before_seq)
     data = [
         schemas.SearchHit(
             conversationId=m.conversation_id,
@@ -91,9 +83,7 @@ def search_conversations(
     ]
     return schemas.SearchEnvelope(
         data=data,
-        page=schemas.PageInfo(
-            nextCursor=str(next_cursor) if next_cursor is not None else None, hasMore=has_more
-        ),
+        page=schemas.PageInfo(nextCursor=str(next_cursor) if next_cursor is not None else None, hasMore=has_more),
     )
 
 
@@ -196,9 +186,7 @@ def delete_conversation(
 
 
 # ── API-CHAT-007 / 008 — workshop conversation excerpt ───────────────────
-@workshop_router.get(
-    "/bookings/{bookingId}/conversation-excerpt", response_model=schemas.ExcerptEnvelope
-)
+@workshop_router.get("/bookings/{bookingId}/conversation-excerpt", response_model=schemas.ExcerptEnvelope)
 def booking_excerpt(
     booking_id: Annotated[UUID, Path(alias="bookingId")],
     service: Annotated[ChatService, Depends(get_chat_service)],
@@ -215,9 +203,7 @@ def booking_excerpt(
     return _excerpt_envelope(service.excerpt_for_source("booking", source_id, booking_id))
 
 
-@workshop_router.get(
-    "/quotes/{quoteId}/conversation-excerpt", response_model=schemas.ExcerptEnvelope
-)
+@workshop_router.get("/quotes/{quoteId}/conversation-excerpt", response_model=schemas.ExcerptEnvelope)
 def quote_excerpt(
     quote_id: Annotated[UUID, Path(alias="quoteId")],
     service: Annotated[ChatService, Depends(get_chat_service)],
@@ -260,9 +246,7 @@ def _excerpt_envelope(excerpt: dict) -> schemas.ExcerptEnvelope:
     ]
     return schemas.ExcerptEnvelope(
         data=schemas.ExcerptData(
-            source=schemas.ExcerptSource(
-                type=src["type"], id=src["id"], confirmedMessageId=src["confirmedMessageId"]
-            ),
+            source=schemas.ExcerptSource(type=src["type"], id=src["id"], confirmedMessageId=src["confirmedMessageId"]),
             messages=messages,
         )
     )

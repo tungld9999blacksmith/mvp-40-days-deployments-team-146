@@ -82,16 +82,10 @@ class MaintenanceReminderService:
         ):
             return ReminderOutcome("skipped", "VEHICLE_NOT_ELIGIBLE")  # BR-510
         user = self._db.get(VehicleUser, vehicle.user_id)
-        if (
-            user is None
-            or user.status != UserStatus.ACTIVE
-            or user.onboarding_status != OnboardingStatus.ACTIVE
-        ):
+        if user is None or user.status != UserStatus.ACTIVE or user.onboarding_status != OnboardingStatus.ACTIVE:
             return ReminderOutcome("skipped", "USER_NOT_ACTIVE")
 
-        prefs = load_preferences(
-            self._db, user.user_id, default_lead_days=self._default_lead_days
-        )
+        prefs = load_preferences(self._db, user.user_id, default_lead_days=self._default_lead_days)
         if not prefs.reminders_enabled:
             return ReminderOutcome("skipped", "REMINDERS_DISABLED")  # AF-504
 
@@ -109,13 +103,9 @@ class MaintenanceReminderService:
         # Reminders of an older milestone are obsolete once the milestone moved on.
         self._resolve_reminders(vehicle.id, keep_milestone=milestone.odo_milestone_km)
 
-        level = decide_level(
-            result, lead_days=prefs.lead_days, due_soon_km=self._due_soon_km
-        )
+        level = decide_level(result, lead_days=prefs.lead_days, due_soon_km=self._due_soon_km)
         created = None
-        if level is not None and self._create_reminder(
-            vehicle.id, milestone.odo_milestone_km, level, prefs, now
-        ):
+        if level is not None and self._create_reminder(vehicle.id, milestone.odo_milestone_km, level, prefs, now):
             created = level
 
         sent = await self._deliver_open(vehicle, user, result)
@@ -134,12 +124,8 @@ class MaintenanceReminderService:
             is not None
         )
 
-    def _resolve_reminders(
-        self, user_vehicle_id: UUID, *, keep_milestone: int | None = None
-    ) -> None:
-        stmt = select(Reminder).where(
-            Reminder.user_vehicle_id == user_vehicle_id, Reminder.is_resolved.is_(False)
-        )
+    def _resolve_reminders(self, user_vehicle_id: UUID, *, keep_milestone: int | None = None) -> None:
+        stmt = select(Reminder).where(Reminder.user_vehicle_id == user_vehicle_id, Reminder.is_resolved.is_(False))
         if keep_milestone is not None:
             stmt = stmt.where(Reminder.target_odo_milestone != keep_milestone)
         reminders = self._db.exec(stmt).all()
@@ -188,9 +174,7 @@ class MaintenanceReminderService:
         return True
 
     # --------------------------------------------------------- deliveries
-    async def _deliver_open(
-        self, vehicle: UserVehicle, user: VehicleUser, result: DueResult
-    ) -> int:
+    async def _deliver_open(self, vehicle: UserVehicle, user: VehicleUser, result: DueResult) -> int:
         rows = self._db.exec(
             select(ReminderDelivery, Reminder)
             .join(Reminder, Reminder.id == ReminderDelivery.reminder_id)
@@ -235,10 +219,7 @@ class MaintenanceReminderService:
         return sent
 
     def _on_failure(self, delivery: ReminderDelivery, user_id: int) -> None:
-        if (
-            delivery.error_code == DELIVERY_FORBIDDEN
-            and delivery.channel is ReminderChannel.DISCORD
-        ):
+        if delivery.error_code == DELIVERY_FORBIDDEN and delivery.channel is ReminderChannel.DISCORD:
             # BR-ENT-442: the bot lost access, ask the owner to connect again.
             link = self._db.get(UserDiscordLink, user_id)
             if link is not None and link.status is not DiscordLinkStatus.REVOKED:

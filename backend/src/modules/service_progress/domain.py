@@ -29,9 +29,7 @@ OWNER_STAGES: frozenset[ServiceStage] = frozenset(
 # BR-1305 — stages that notify the vehicle owner.
 NOTIFY_STAGES: frozenset[ServiceStage] = frozenset({St.WAITING_PARTS, St.READY_FOR_PICKUP})
 
-FROZEN_STATUSES: frozenset[BookingStatus] = frozenset(
-    {BookingStatus.COMPLETED, BookingStatus.CANCELLED}
-)
+FROZEN_STATUSES: frozenset[BookingStatus] = frozenset({BookingStatus.COMPLETED, BookingStatus.CANCELLED})
 
 NOTE_MAX = 500
 WAITING_PARTS_NOTE_MIN = 10

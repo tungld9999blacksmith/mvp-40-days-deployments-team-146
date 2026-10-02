@@ -53,9 +53,7 @@ def close_expired_follow_ups_task() -> int:
 
     session = next(get_session())
     try:
-        return close_expired(
-            session, response_window_hours=get_settings().follow_up_response_window_hours
-        )
+        return close_expired(session, response_window_hours=get_settings().follow_up_response_window_hours)
     finally:
         session.close()
 

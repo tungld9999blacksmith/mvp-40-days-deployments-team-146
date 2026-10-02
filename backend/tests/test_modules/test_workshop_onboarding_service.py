@@ -58,9 +58,7 @@ def _signed_in_with_profile(service) -> WorkshopOwner:
 
 
 async def _submit(service, owner, key: str = "key-1", **overrides):
-    return await service.submit_verification(
-        owner, _verification(**overrides), idempotency_key=key, trace_id="req-1"
-    )
+    return await service.submit_verification(owner, _verification(**overrides), idempotency_key=key, trace_id="req-1")
 
 
 # ======================================================================
@@ -259,9 +257,7 @@ async def test_submit_verified_creates_workshop_and_activates_owner(session):
 
 @pytest.mark.asyncio
 async def test_submit_rejected_by_oem_then_fixed_and_resubmitted(session):
-    gateway = StubServiceCenterGateway(
-        result=failure_response(ManagerVerifyFailureReason.NATIONAL_ID_MISMATCH)
-    )
+    gateway = StubServiceCenterGateway(result=failure_response(ManagerVerifyFailureReason.NATIONAL_ID_MISMATCH))
     service = make_service(session, gateway)
     owner = _signed_in_with_profile(service)
 
@@ -293,9 +289,15 @@ async def test_submit_already_claimed_workshop_is_rejected(session):
     session.commit()
     session.add(
         Workshop(
-            external_center_id="SC-01", name="VinFast Thăng Long", region="Hà Nội",
-            type="dealer", address="Somewhere 123", total_technicians=5,
-            owner_id=other.id, hotline="0243000000", onboarded_at=datetime.now(UTC),
+            external_center_id="SC-01",
+            name="VinFast Thăng Long",
+            region="Hà Nội",
+            type="dealer",
+            address="Somewhere 123",
+            total_technicians=5,
+            owner_id=other.id,
+            hotline="0243000000",
+            onboarded_at=datetime.now(UTC),
         )
     )
     session.commit()
@@ -315,8 +317,13 @@ async def test_submit_already_claimed_workshop_is_rejected(session):
 async def test_submit_claims_existing_ownerless_workshop(session):
     session.add(
         Workshop(
-            external_center_id="SC-01", name="Old name", region="Hà Nội", type="dealer",
-            address="Old address", total_technicians=3, status=WorkshopStatus.INACTIVE,
+            external_center_id="SC-01",
+            name="Old name",
+            region="Hà Nội",
+            type="dealer",
+            address="Old address",
+            total_technicians=3,
+            status=WorkshopStatus.INACTIVE,
         )
     )
     session.commit()
@@ -386,9 +393,7 @@ async def test_timeout_retries_five_times_over_30_minutes_then_fails(session):
 
 @pytest.mark.asyncio
 async def test_scheduler_failure_does_not_fail_the_request(session):
-    service = make_service(
-        session, StubServiceCenterGateway(timeouts=1), RecordingScheduler(fail=True)
-    )
+    service = make_service(session, StubServiceCenterGateway(timeouts=1), RecordingScheduler(fail=True))
     owner = _signed_in_with_profile(service)
     _, status = await _submit(service, owner)
     assert status == 202
@@ -402,9 +407,7 @@ async def test_scheduler_failure_does_not_fail_the_request(session):
 
 @pytest.mark.asyncio
 async def test_idempotent_replay_and_key_reuse(session):
-    gateway = StubServiceCenterGateway(
-        result=failure_response(ManagerVerifyFailureReason.MANAGER_NOT_FOUND)
-    )
+    gateway = StubServiceCenterGateway(result=failure_response(ManagerVerifyFailureReason.MANAGER_NOT_FOUND))
     service = make_service(session, gateway)
     owner = _signed_in_with_profile(service)
 
@@ -420,9 +423,7 @@ async def test_idempotent_replay_and_key_reuse(session):
 
 @pytest.mark.asyncio
 async def test_failed_attempt_limit(session):
-    gateway = StubServiceCenterGateway(
-        result=failure_response(ManagerVerifyFailureReason.MANAGER_NOT_FOUND)
-    )
+    gateway = StubServiceCenterGateway(result=failure_response(ManagerVerifyFailureReason.MANAGER_NOT_FOUND))
     service = make_service(session, gateway, max_failed_attempts=2)
     owner = _signed_in_with_profile(service)
     await _submit(service, owner, key="a")
@@ -445,8 +446,7 @@ async def test_failed_attempt_limit(session):
         (
             {
                 "operatingHours": [
-                    {"dayOfWeek": d, "isClosed": True, "openTime": None, "closeTime": None}
-                    for d in range(1, 8)
+                    {"dayOfWeek": d, "isClosed": True, "openTime": None, "closeTime": None} for d in range(1, 8)
                 ]
             },
             "operatingHours",

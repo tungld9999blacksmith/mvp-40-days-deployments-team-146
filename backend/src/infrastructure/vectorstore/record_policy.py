@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from .base import VectorRecord
@@ -114,9 +114,7 @@ class VectorRecordBuilder:
         }
 
     @classmethod
-    def from_message(
-        cls, message: ChatMessage, policy: VectorMetadataPolicy | None = None
-    ) -> VectorRecord:
+    def from_message(cls, message: ChatMessage, policy: VectorMetadataPolicy | None = None) -> VectorRecord:
         policy = policy or policy_for(CONVERSATION_MESSAGES)
         content = mask_pii(message.content) if policy.mask else message.content
         metadata = cls._base_metadata(

@@ -49,9 +49,7 @@ RETRY_DELAYS = [60, 120, 300, 600, 720]
 
 
 def make_engine():
-    engine = create_engine(
-        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
-    )
+    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
     SQLModel.metadata.create_all(engine, tables=WORKSHOP_TABLES)
     return engine
 
@@ -62,9 +60,7 @@ def make_session() -> Iterator[Session]:
 
 
 def center(center_id: str = "SC-01") -> ServiceCenterInfo:
-    return ServiceCenterInfo(
-        center_id=center_id, name="VinFast Thăng Long", region="Hà Nội", type="dealer"
-    )
+    return ServiceCenterInfo(center_id=center_id, name="VinFast Thăng Long", region="Hà Nội", type="dealer")
 
 
 def verified_response(center_id: str = "SC-01") -> ManagerVerifyResponse:
@@ -78,9 +74,7 @@ def failure_response(reason: ManagerVerifyFailureReason) -> ManagerVerifyRespons
 class StubServiceCenterGateway(OemServiceCenterGateway):
     """Returns ``result``; raises a timeout while ``timeouts_left > 0``."""
 
-    def __init__(
-        self, *, result: ManagerVerifyResponse | None = None, timeouts: int = 0
-    ) -> None:
+    def __init__(self, *, result: ManagerVerifyResponse | None = None, timeouts: int = 0) -> None:
         self.result = result or verified_response()
         self.timeouts_left = timeouts
         self.calls: list[ManagerVerifyRequest] = []
@@ -135,9 +129,7 @@ def claims(uid: str = "ws-uid-1", email: str = MANAGER_EMAIL, **extra) -> dict:
     }
 
 
-def profile_body(
-    *, phone: str = "0912 000 101", national_id: str = MANAGER_NATIONAL_ID, granted: bool = True
-) -> dict:
+def profile_body(*, phone: str = "0912 000 101", national_id: str = MANAGER_NATIONAL_ID, granted: bool = True) -> dict:
     return {
         "fullName": "Trần Thu Hà",
         "phoneNumber": phone,
@@ -147,10 +139,7 @@ def profile_body(
 
 
 def week_hours() -> list[dict]:
-    hours = [
-        {"dayOfWeek": d, "isClosed": False, "openTime": "08:00", "closeTime": "17:30"}
-        for d in range(1, 7)
-    ]
+    hours = [{"dayOfWeek": d, "isClosed": False, "openTime": "08:00", "closeTime": "17:30"} for d in range(1, 7)]
     hours.append({"dayOfWeek": 7, "isClosed": True, "openTime": None, "closeTime": None})
     return hours
 

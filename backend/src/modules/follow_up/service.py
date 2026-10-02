@@ -125,10 +125,7 @@ class FollowUpScheduler:
         plate = mask_plate(vehicle.license_plate) if vehicle else None
         car = f"Xe {model}" + (f" ({plate})" if plate else "")
         where = workshop.name if workshop else "xưởng"
-        return (
-            f"{car} đã bảo dưỡng xong tại {where} ngày {booking.booking_date:%d/%m}. "
-            "Xe của bạn chạy thế nào?"
-        )
+        return f"{car} đã bảo dưỡng xong tại {where} ngày {booking.booking_date:%d/%m}. Xe của bạn chạy thế nào?"
 
 
 # ── owner side ──────────────────────────────────────────────────────────────
@@ -162,20 +159,14 @@ class FollowUpService:
         return as_utc(follow_up.sent_at) + timedelta(hours=self._config.response_window_hours)
 
     def _ticket(self, follow_up_id: UUID) -> SupportTicket | None:
-        return self._db.exec(
-            select(SupportTicket).where(SupportTicket.follow_up_id == follow_up_id)
-        ).first()
+        return self._db.exec(select(SupportTicket).where(SupportTicket.follow_up_id == follow_up_id)).first()
 
     # API-FU-01
     def get(self, user: VehicleUser, follow_up_id: UUID) -> schemas.FollowUpOut:
         follow_up, booking = self._owned(user, follow_up_id)
         workshop = self._db.get(Workshop, booking.workshop_id)
         deadline = self._deadline(follow_up)
-        can_respond = (
-            follow_up.status == FollowUpStatus.SENT
-            and deadline is not None
-            and self._clock() <= deadline
-        )
+        can_respond = follow_up.status == FollowUpStatus.SENT and deadline is not None and self._clock() <= deadline
         response = None
         if follow_up.rating is not None and follow_up.responded_at is not None:
             response = schemas.ResponseOut(
@@ -189,9 +180,7 @@ class FollowUpService:
             outcome = schemas.OutcomeOut(
                 has_issue=follow_up.has_issue,
                 safety_advice=bool(ticket and ticket.priority == SupportTicketPriority.HIGH),
-                ticket=schemas.TicketRefOut(ticket_id=ticket.id, status=_upper(ticket.status))
-                if ticket
-                else None,
+                ticket=schemas.TicketRefOut(ticket_id=ticket.id, status=_upper(ticket.status)) if ticket else None,
             )
         return schemas.FollowUpOut(
             follow_up_id=follow_up.id,
@@ -291,9 +280,7 @@ class FollowUpService:
                     if result.safety
                     else None
                 ),
-                ticket=schemas.TicketRefOut(ticket_id=ticket.id, status=_upper(ticket.status))
-                if ticket
-                else None,
+                ticket=schemas.TicketRefOut(ticket_id=ticket.id, status=_upper(ticket.status)) if ticket else None,
             ),
         )
 
@@ -345,9 +332,7 @@ class FollowUpService:
         if status is not None:
             query = query.where(SupportTicket.status == status)
         rows = self._db.exec(
-            query.order_by(SupportTicket.created_at.desc(), SupportTicket.id.desc())
-            .offset(offset)
-            .limit(limit + 1)
+            query.order_by(SupportTicket.created_at.desc(), SupportTicket.id.desc()).offset(offset).limit(limit + 1)
         ).all()
         page = rows[:limit]
         return schemas.OwnerTicketListData(
@@ -382,9 +367,7 @@ class FollowUpService:
             ticket_id=ticket.id,
             status=_upper(ticket.status),
             issue_summary=ticket.issue_summary,
-            your_feedback=schemas.FeedbackOut(
-                rating=follow_up.rating, comment=follow_up.customer_response
-            ),
+            your_feedback=schemas.FeedbackOut(rating=follow_up.rating, comment=follow_up.customer_response),
             booking=schemas.FollowUpBookingOut(
                 booking_id=booking.id,
                 booking_code=booking.booking_code,
@@ -439,9 +422,7 @@ class WorkshopTicketService:
             "priority": _upper(t.priority),
             "issue_summary": t.issue_summary,
             "rating": f.rating,
-            "customer": schemas.CustomerOut(
-                full_name=u.full_name, phone=u.phone if with_phone else None
-            ),
+            "customer": schemas.CustomerOut(full_name=u.full_name, phone=u.phone if with_phone else None),
             "vehicle": schemas.VehicleOut(model_name=v.model_name, license_plate=v.license_plate),
             "booking_code": b.booking_code,
             "created_at": t.created_at,
@@ -465,9 +446,7 @@ class WorkshopTicketService:
             query = query.where(SupportTicket.priority == priority)
         high_first = (SupportTicket.priority == SupportTicketPriority.HIGH).desc()
         rows = self._db.exec(
-            query.order_by(high_first, SupportTicket.created_at, SupportTicket.id)
-            .offset(offset)
-            .limit(limit + 1)
+            query.order_by(high_first, SupportTicket.created_at, SupportTicket.id).offset(offset).limit(limit + 1)
         ).all()
         return schemas.WorkshopTicketListData(
             summary=self._summary(owner, workshop_id),
@@ -491,17 +470,13 @@ class WorkshopTicketService:
         return summary
 
     def _load(self, owner: WorkshopOwner, workshop_id: UUID | None, ticket_id: UUID):
-        row = self._db.exec(
-            self._base(owner, workshop_id).where(SupportTicket.id == ticket_id)
-        ).first()
+        row = self._db.exec(self._base(owner, workshop_id).where(SupportTicket.id == ticket_id)).first()
         if row is None:
             raise errors.SupportTicketNotFoundError()
         return row
 
     # API-FU-06
-    def get(
-        self, owner: WorkshopOwner, workshop_id: UUID | None, ticket_id: UUID
-    ) -> schemas.WorkshopTicketOut:
+    def get(self, owner: WorkshopOwner, workshop_id: UUID | None, ticket_id: UUID) -> schemas.WorkshopTicketOut:
         t, f, b, u, v = self._load(owner, workshop_id, ticket_id)
         return schemas.WorkshopTicketOut(
             **self._item(t, f, b, u, v, with_phone=True),
@@ -510,9 +485,7 @@ class WorkshopTicketService:
             ),
             classification=schemas.ClassificationOut(
                 intent=f.feedback_intent,
-                confidence=float(f.classification_confidence)
-                if f.classification_confidence is not None
-                else None,
+                confidence=float(f.classification_confidence) if f.classification_confidence is not None else None,
                 classified_by=f.classified_by,
             ),
             booking=schemas.WorkshopTicketBookingOut(

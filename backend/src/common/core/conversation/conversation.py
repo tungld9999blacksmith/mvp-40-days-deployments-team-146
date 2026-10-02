@@ -38,24 +38,12 @@ class Conversation(SQLModel, table=True):
             nullable=False,
         )
     )
-    user_vehicle_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("user_vehicle.id", ondelete="CASCADE"), nullable=False
-        )
-    )
-    title: str | None = Field(
-        default=None, sa_column=Column(String(255), nullable=True)
-    )
+    user_vehicle_id: UUID = Field(sa_column=Column(ForeignKey("user_vehicle.id", ondelete="CASCADE"), nullable=False))
+    title: str | None = Field(default=None, sa_column=Column(String(255), nullable=True))
     last_message_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     )
-    created_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), nullable=False
-        )
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
         sa_column=Column(
             DateTime(timezone=True),

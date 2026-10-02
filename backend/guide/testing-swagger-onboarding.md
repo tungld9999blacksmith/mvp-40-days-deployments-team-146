@@ -199,11 +199,15 @@ Backend so khớp **email của token** với email owner trong mock.
   `_seed_owners`, đổi email của `OWN-001`:
 
   ```python
-  Owner(
-      owner_id="OWN-001", full_name="Nguyễn Văn An",
-      phone="0901000001", email="ban@gmail.com",   # ← email test của bạn
-      national_id="079200001001",
-  ),
+  (
+      Owner(
+          owner_id="OWN-001",
+          full_name="Nguyễn Văn An",
+          phone="0901000001",
+          email="ban@gmail.com",  # ← email test của bạn
+          national_id="079200001001",
+      ),
+  )
   ```
 
   (CCCD giữ nguyên `079200001001` để nhập ở bước hồ sơ.) Token ở mục 2.4 khi đó

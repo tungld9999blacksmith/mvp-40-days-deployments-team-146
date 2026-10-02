@@ -55,9 +55,7 @@ class HttpOemVehicleGateway(OemVehicleGateway):
                 raise OemTimeoutError(str(exc)) from exc
             raise
 
-    async def verify_ownership(
-        self, request: OwnershipVerifyRequest
-    ) -> OwnershipVerifyResponse:
+    async def verify_ownership(self, request: OwnershipVerifyRequest) -> OwnershipVerifyResponse:
         try:
             async with httpx.AsyncClient(timeout=self._timeout) as client:
                 resp = await client.post(

@@ -37,9 +37,7 @@ async def _run_sync(user_vehicle_id: UUID, trigger_value: str):
     try:
         service = OemVehicleSyncService(
             session,
-            HttpOemVehicleDataGateway(
-                settings.oem_api_base_url, timeout_seconds=settings.oem_api_timeout_seconds
-            ),
+            HttpOemVehicleDataGateway(settings.oem_api_base_url, timeout_seconds=settings.oem_api_timeout_seconds),
             RedisSyncLock(redis, key_prefix=settings.redis_key_prefix),
             failure_alert_threshold=settings.oem_sync_alert_failures,
         )

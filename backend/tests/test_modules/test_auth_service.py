@@ -82,9 +82,7 @@ def test_record_revoke_result_failure_writes_session_revoke_failed():
     user = make_user(session, uid="uid-1")
     svc = AuthService(session, StubRevoker())
 
-    svc.record_revoke_result(
-        user_id=user.user_id, success=False, reason="FirebaseError", trace_id="req-4"
-    )
+    svc.record_revoke_result(user_id=user.user_id, success=False, reason="FirebaseError", trace_id="req-4")
 
     event = session.exec(select(AuthEvent)).one()
     assert event.event_type == AuthEventType.SESSION_REVOKE_FAILED

@@ -86,9 +86,7 @@ class QuoteService:
     # ── derived state (§4 table) ────────────────────────────────────────
     def _items(self, quote_id: UUID) -> list[QuoteItem]:
         return list(
-            self._db.exec(
-                select(QuoteItem).where(QuoteItem.quote_id == quote_id).order_by(QuoteItem.item_code)
-            ).all()
+            self._db.exec(select(QuoteItem).where(QuoteItem.quote_id == quote_id).order_by(QuoteItem.item_code)).all()
         )
 
     def display_status(self, quote: Quote, items: list[QuoteItem] | None = None) -> tuple[str, str]:
@@ -97,9 +95,7 @@ class QuoteService:
             if quote.expires_at is not None and self._clock() >= as_utc(quote.expires_at):
                 return "EXPIRED", EXPIRED_LABEL
             items = items if items is not None else self._items(quote.id)
-            modified = any(
-                i.approved_price is not None and i.approved_price != i.estimated_price for i in items
-            )
+            modified = any(i.approved_price is not None and i.approved_price != i.estimated_price for i in items)
             return ("MODIFIED" if modified else "APPROVED"), APPROVED_LABEL
         return quote.status.value.upper(), ESTIMATE_LABEL
 
@@ -122,9 +118,7 @@ class QuoteService:
             "price_label": label,
             "can_attach_to_booking": self._can_attach(quote, display),
             "user_vehicle_id": quote.user_vehicle_id,
-            "workshop": schemas.QuoteWorkshopOut(
-                workshop_id=quote.workshop_id, name=workshop.name if workshop else ""
-            ),
+            "workshop": schemas.QuoteWorkshopOut(workshop_id=quote.workshop_id, name=workshop.name if workshop else ""),
             "odo_milestone": quote.odo_milestone,
             "items": [
                 schemas.QuoteItemOut(
@@ -182,9 +176,7 @@ class QuoteService:
         ).first()
         if month is None:
             has_rules = self._db.exec(
-                select(MaintenanceRule.odo_milestone).where(
-                    MaintenanceRule.model_id == vehicle.external_model_id
-                )
+                select(MaintenanceRule.odo_milestone).where(MaintenanceRule.model_id == vehicle.external_model_id)
             ).all()
             if not has_rules:
                 raise errors.NoMaintenanceRuleError()
@@ -375,9 +367,7 @@ class QuoteService:
         vehicle = self._db.get(UserVehicle, quote.user_vehicle_id)
         user = self._db.get(VehicleUser, vehicle.user_id) if vehicle else None
         return (
-            schemas.CustomerOut(
-                full_name=user.full_name if user else None, phone=user.phone if user else None
-            ),
+            schemas.CustomerOut(full_name=user.full_name if user else None, phone=user.phone if user else None),
             vehicle,
         )
 
@@ -401,11 +391,7 @@ class QuoteService:
             query = query.where(
                 Quote.submitted_at < datetime.combine(date_to + timedelta(days=1), time.min, tzinfo=UTC)
             )
-        rows = list(
-            self._db.exec(
-                query.order_by(Quote.submitted_at, Quote.id).offset(offset).limit(limit + 1)
-            ).all()
-        )
+        rows = list(self._db.exec(query.order_by(Quote.submitted_at, Quote.id).offset(offset).limit(limit + 1)).all())
         now = self._clock()
         items = []
         for q in rows[:limit]:
@@ -449,9 +435,7 @@ class QuoteService:
             model_name=vehicle.model_name if vehicle else None,
             plate_number=vehicle.license_plate if vehicle else None,
             conversation_excerpt_url=(
-                f"/api/v1/workshop/quotes/{quote.id}/conversation-excerpt"
-                if quote.source_message_id
-                else None
+                f"/api/v1/workshop/quotes/{quote.id}/conversation-excerpt" if quote.source_message_id else None
             ),
         )
 
@@ -468,9 +452,7 @@ class QuoteService:
     ) -> schemas.WorkshopQuoteOut:
         validity = payload.validity_days or self._config.default_validity_days
         if validity > self._config.max_validity_days:
-            raise errors.InvalidRequestError(
-                f"validityDays must be between 1 and {self._config.max_validity_days}."
-            )
+            raise errors.InvalidRequestError(f"validityDays must be between 1 and {self._config.max_validity_days}.")
         quote = self._lock_pending(workshop_id, quote_id)
         items = {i.id: i for i in self._items(quote.id)}
         edits: dict[UUID, schemas.ApproveItemIn] = {}

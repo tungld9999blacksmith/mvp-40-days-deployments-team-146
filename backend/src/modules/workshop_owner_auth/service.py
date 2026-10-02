@@ -67,9 +67,7 @@ class WorkshopAuthService:
         self._add_event(owner_id, AuthEventType.LOGIN, AuthEventResult.SUCCESS, context)
 
     def record_login_denied(self, owner_id: UUID, reason: str, context: RequestContext) -> None:
-        self._add_event(
-            owner_id, AuthEventType.LOGIN_DENIED, AuthEventResult.DENIED, context, reason=reason
-        )
+        self._add_event(owner_id, AuthEventType.LOGIN_DENIED, AuthEventResult.DENIED, context, reason=reason)
 
     # ==================================================================
     # API-301 — logout
@@ -91,9 +89,7 @@ class WorkshopAuthService:
                 self._db.add(owner)
                 self._add_event(owner.id, AuthEventType.LOGOUT, AuthEventResult.SUCCESS, context)
             # Commit only once the revoke task is durably accepted.
-            self._revoker.enqueue_revoke(
-                uid=uid, owner_id=owner.id if owner else None, trace_id=context.trace_id
-            )
+            self._revoker.enqueue_revoke(uid=uid, owner_id=owner.id if owner else None, trace_id=context.trace_id)
             self._db.commit()
         except RevokeEnqueueError as exc:
             self._db.rollback()
@@ -164,9 +160,7 @@ class WorkshopAuthService:
     def purge_events(self) -> int:
         """Delete audit rows older than the retention period (BR-ENT-305)."""
         cutoff = _now() - timedelta(days=self._event_retention_days)
-        old = [
-            e for e in self._db.exec(select(WorkshopAuthEvent)).all() if _aware(e.created_at) < cutoff
-        ]
+        old = [e for e in self._db.exec(select(WorkshopAuthEvent)).all() if _aware(e.created_at) < cutoff]
         for event in old:
             self._db.delete(event)
         self._db.commit()

@@ -12,36 +12,36 @@ from __future__ import annotations
 import calendar
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, timedelta, timezone
-from enum import Enum
+from enum import StrEnum
 
 # Vietnam has no daylight saving time, so a fixed offset is exact.
 VN_TZ = timezone(timedelta(hours=7), name="Asia/Ho_Chi_Minh")
 
 
-class DueStatus(str, Enum):
+class DueStatus(StrEnum):
     NORMAL = "NORMAL"
     DUE_SOON = "DUE_SOON"
     OVERDUE = "OVERDUE"
     UNKNOWN = "UNKNOWN"
 
 
-class DueReason(str, Enum):
+class DueReason(StrEnum):
     KM = "KM"
     TIME = "TIME"
     BOTH = "BOTH"
 
 
-class CalculationBasis(str, Enum):
+class CalculationBasis(StrEnum):
     KM_AND_TIME = "KM_AND_TIME"
     TIME_ONLY = "TIME_ONLY"
 
 
-class UnknownReason(str, Enum):
+class UnknownReason(StrEnum):
     OEM_DATA_NOT_SYNCED = "OEM_DATA_NOT_SYNCED"
     NO_MAINTENANCE_RULE = "NO_MAINTENANCE_RULE"
 
 
-class LastServiceType(str, Enum):
+class LastServiceType(StrEnum):
     OEM_SERVICE_RECORD = "OEM_SERVICE_RECORD"
     EV_CARE_SERVICE_RECORD = "EV_CARE_SERVICE_RECORD"
     PURCHASE_DATE = "PURCHASE_DATE"
@@ -207,13 +207,10 @@ def calculate_due_status(
     return DueResult(
         due_status=status,
         due_reason=reason,
-        calculation_basis=(
-            CalculationBasis.KM_AND_TIME if odometer is not None else CalculationBasis.TIME_ONLY
-        ),
+        calculation_basis=(CalculationBasis.KM_AND_TIME if odometer is not None else CalculationBasis.TIME_ONLY),
         next_milestone=milestone,
         remaining_km=remaining_km,
         remaining_days=remaining_days,
         odometer=odometer,
-        last_service=last_service
-        or LastService(LastServiceType.PURCHASE_DATE, purchase_date, 0),
+        last_service=last_service or LastService(LastServiceType.PURCHASE_DATE, purchase_date, 0),
     )

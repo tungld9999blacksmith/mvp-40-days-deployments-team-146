@@ -102,9 +102,7 @@ async def update_vehicle(
     svc: VehicleService = Depends(get_vehicle_service),
 ) -> VehicleResponse:
     """Partially update a vehicle. Only the owner may update."""
-    return await svc.update_vehicle(
-        vehicle_id=vehicle_id, requester_id=user_id, req=body
-    )
+    return await svc.update_vehicle(vehicle_id=vehicle_id, requester_id=user_id, req=body)
 
 
 @vehicle_router.delete(

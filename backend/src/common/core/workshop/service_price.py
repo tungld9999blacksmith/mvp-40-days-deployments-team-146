@@ -28,9 +28,7 @@ class ServicePrice(SQLModel, table=True):
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    workshop_id: UUID = Field(
-        sa_column=Column(ForeignKey("workshop.id", ondelete="CASCADE"), nullable=False)
-    )
+    workshop_id: UUID = Field(sa_column=Column(ForeignKey("workshop.id", ondelete="CASCADE"), nullable=False))
     model_id: str = Field(sa_column=Column(String(64), nullable=False))
     item_code: str = Field(sa_column=Column(String(50), nullable=False))
     item_name: str = Field(sa_column=Column(String(200), nullable=False))
@@ -39,13 +37,9 @@ class ServicePrice(SQLModel, table=True):
     valid_from: date | None = Field(default=None, sa_column=Column(Date, nullable=True))
     valid_to: date | None = Field(default=None, sa_column=Column(Date, nullable=True))
 
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 

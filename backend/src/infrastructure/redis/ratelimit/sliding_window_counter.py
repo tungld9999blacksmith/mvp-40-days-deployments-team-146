@@ -107,9 +107,7 @@ class SlidingWindowCounterLimiter(RateLimiter):
             return remaining_in_win_ms / 1000.0
         return 0.0
 
-    def _retry_after(
-        self, cur: float, prev: float, remaining_in_win_ms: float, limit: int, cost: int
-    ) -> float:
+    def _retry_after(self, cur: float, prev: float, remaining_in_win_ms: float, limit: int, cost: int) -> float:
         """
         Estimate when the request would fit, exploiting that the previous
         window's weighted contribution decays linearly to 0 by window end.

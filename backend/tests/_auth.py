@@ -42,9 +42,7 @@ class StubRevoker:
         self.fail = fail
         self.calls: list[dict] = []
 
-    def enqueue_revoke(
-        self, *, uid: str, user_id: int, trace_id: str | None = None
-    ) -> None:
+    def enqueue_revoke(self, *, uid: str, user_id: int, trace_id: str | None = None) -> None:
         if self.fail:
             raise RevokeEnqueueError("stub broker down")
         self.calls.append({"uid": uid, "user_id": user_id, "trace_id": trace_id})

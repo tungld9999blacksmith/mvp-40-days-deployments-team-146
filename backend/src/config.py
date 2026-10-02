@@ -112,9 +112,7 @@ class Settings(BaseSettings):
     my_bookings_past_days: int = Field(default=90, ge=1)  # BR-1213
     app_base_url: str = ""  # QR payload base: {APP_BASE_URL}/c/{bookingCode} (BR-1203)
     # BR-1208 — JSON list of documents the owner should bring.
-    booking_documents_to_bring: str = (
-        '["Giấy đăng ký xe", "Sổ bảo hành / sổ bảo dưỡng", "CCCD của chủ xe"]'
-    )
+    booking_documents_to_bring: str = '["Giấy đăng ký xe", "Sổ bảo hành / sổ bảo dưỡng", "CCCD của chủ xe"]'
 
     # 24h appointment reminder job (docs/specs/sprint-3/**/us-033*)
     booking_reminder_lead_hours: int = Field(default=24, ge=1)  # BR-702

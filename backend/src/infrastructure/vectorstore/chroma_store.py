@@ -43,9 +43,7 @@ class ChromaVectorStore(VectorStore):
     def _upsert(self, collection: str, records: list[VectorRecord]) -> None:
         # Chroma has no dedicated column, so the model tag rides in metadata.
         metadatas = [
-            {**r.metadata, "embedding_model": r.embedding_model}
-            if r.embedding_model
-            else dict(r.metadata)
+            {**r.metadata, "embedding_model": r.embedding_model} if r.embedding_model else dict(r.metadata)
             for r in records
         ]
         payload_metadatas = metadatas if any(metadatas) else None

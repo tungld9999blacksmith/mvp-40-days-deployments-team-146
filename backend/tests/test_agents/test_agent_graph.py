@@ -66,7 +66,7 @@ async def _async_test_agent_graph_execution():
     citations = result.get("citations", [])
     print(f"Citations count: {len(citations)}")
     for i, c in enumerate(citations):
-        print(f"  [{i+1}] {c.get('title')} | Section: {c.get('section')} | Doc: {c.get('document_id')}")
+        print(f"  [{i + 1}] {c.get('title')} | Section: {c.get('section')} | Doc: {c.get('document_id')}")
 
     assert result.get("response") is not None
     assert len(result.get("response")) > 0

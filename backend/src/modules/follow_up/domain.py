@@ -11,7 +11,7 @@ import unicodedata
 from dataclasses import dataclass
 from datetime import datetime, time, timedelta
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum
 from zoneinfo import ZoneInfo
 
 TZ_VN = ZoneInfo("Asia/Ho_Chi_Minh")
@@ -19,14 +19,14 @@ ISSUE_SUMMARY_MAX = 500
 LOW_CONFIDENCE = Decimal("0.70")
 
 
-class FeedbackIntent(str, Enum):
+class FeedbackIntent(StrEnum):
     SATISFIED = "SATISFIED"
     ISSUE_REPORTED = "ISSUE_REPORTED"
     COMPLAINT_SERVICE = "COMPLAINT_SERVICE"
     UNCLEAR = "UNCLEAR"
 
 
-class ClassifiedBy(str, Enum):
+class ClassifiedBy(StrEnum):
     RULES = "RULES"
     LLM = "LLM"
     LLM_FALLBACK = "LLM_FALLBACK"

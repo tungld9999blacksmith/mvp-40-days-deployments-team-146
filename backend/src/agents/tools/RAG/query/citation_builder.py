@@ -22,9 +22,7 @@ class CitationBuilder:
         if not candidates:
             return "Không có tài liệu tham khảo phù hợp.", []
 
-        context_lines: list[str] = [
-            "### DANH SÁCH TÀI LIỆU CHÍNH HÃNG ĐƯỢC CẤP PHÉP THAM KHẢO:\n"
-        ]
+        context_lines: list[str] = ["### DANH SÁCH TÀI LIỆU CHÍNH HÃNG ĐƯỢC CẤP PHÉP THAM KHẢO:\n"]
         citation_items: list[CitationItem] = []
 
         for idx, cand in enumerate(candidates, start=1):
@@ -60,7 +58,7 @@ class CitationBuilder:
 
             context_lines.append(f"{doc_header}")
             context_lines.append(f"- Thông tin nguồn: {' | '.join(meta_details)}")
-            context_lines.append(f"- Nội dung trích xuất:\n\"\"\"\n{cand.content.strip()}\n\"\"\"\n")
+            context_lines.append(f'- Nội dung trích xuất:\n"""\n{cand.content.strip()}\n"""\n')
             context_lines.append("---\n")
 
         formatted_context = "\n".join(context_lines)

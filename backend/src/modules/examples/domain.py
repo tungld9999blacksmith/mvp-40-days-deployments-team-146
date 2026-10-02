@@ -16,14 +16,13 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from enum import Enum
-from typing import Optional
+from enum import StrEnum
 
 
 # ---------------------------------------------------------------------------
 # Enums — domain vocabulary
 # ---------------------------------------------------------------------------
-class FuelType(str, Enum):
+class FuelType(StrEnum):
     """Supported fuel types for a vehicle."""
 
     GASOLINE = "gasoline"
@@ -32,7 +31,7 @@ class FuelType(str, Enum):
     HYBRID = "hybrid"
 
 
-class VehicleStatus(str, Enum):
+class VehicleStatus(StrEnum):
     """Lifecycle status of a vehicle in the system."""
 
     ACTIVE = "active"
@@ -62,7 +61,7 @@ class VehicleEntity:
         year: int,
         fuel_type: FuelType = FuelType.GASOLINE,
         status: VehicleStatus = VehicleStatus.ACTIVE,
-        vin: Optional[str] = None,
+        vin: str | None = None,
         created_at: datetime | None = None,
         updated_at: datetime | None = None,
     ) -> None:
@@ -86,9 +85,7 @@ class VehicleEntity:
     def _validate(self) -> None:
         """Enforce domain invariants."""
         if self.year < 1886 or self.year > datetime.utcnow().year + 1:
-            raise ValueError(
-                f"Vehicle year must be between 1886 and {datetime.utcnow().year + 1}."
-            )
+            raise ValueError(f"Vehicle year must be between 1886 and {datetime.utcnow().year + 1}.")
         if not self.license_plate:
             raise ValueError("License plate must not be empty.")
 
@@ -118,7 +115,4 @@ class VehicleEntity:
         return self.owner_id == user_id
 
     def __repr__(self) -> str:
-        return (
-            f"<Vehicle id={self.id} plate={self.license_plate} "
-            f"status={self.status.value}>"
-        )
+        return f"<Vehicle id={self.id} plate={self.license_plate} status={self.status.value}>"

@@ -103,10 +103,14 @@ class StubOemGateway(OemVehicleGateway):
     ) -> None:
         self.verify_result = verify_result or verified_response()
         self.raise_timeout = raise_timeout
-        self.models = models if models is not None else [
-            {"model_id": "MDL-03", "model_name": "VF6", "trim": "Plus", "production_year": 2024},
-            {"model_id": "MDL-02", "model_name": "VF6", "trim": "Eco", "production_year": 2024},
-        ]
+        self.models = (
+            models
+            if models is not None
+            else [
+                {"model_id": "MDL-03", "model_name": "VF6", "trim": "Plus", "production_year": 2024},
+                {"model_id": "MDL-02", "model_name": "VF6", "trim": "Eco", "production_year": 2024},
+            ]
+        )
         self.verify_calls = 0
         self.last_request: OwnershipVerifyRequest | None = None
 
@@ -115,9 +119,7 @@ class StubOemGateway(OemVehicleGateway):
             raise OemTimeoutError("stub timeout")
         return self.models
 
-    async def verify_ownership(
-        self, request: OwnershipVerifyRequest
-    ) -> OwnershipVerifyResponse:
+    async def verify_ownership(self, request: OwnershipVerifyRequest) -> OwnershipVerifyResponse:
         self.verify_calls += 1
         self.last_request = request
         if self.raise_timeout:

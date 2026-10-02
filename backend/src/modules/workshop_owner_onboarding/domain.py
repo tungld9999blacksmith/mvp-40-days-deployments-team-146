@@ -16,7 +16,7 @@ import re
 from dataclasses import dataclass
 from datetime import datetime, time, timedelta
 from decimal import Decimal
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
@@ -45,13 +45,13 @@ _JSON = JSON().with_variant(JSONB(), "postgresql")
 # ---------------------------------------------------------------------------
 # Enums
 # ---------------------------------------------------------------------------
-class WorkshopVerificationStatus(str, Enum):
+class WorkshopVerificationStatus(StrEnum):
     PENDING = "pending"
     VERIFIED = "verified"
     FAILED = "failed"
 
 
-class AttemptStatus(str, Enum):
+class AttemptStatus(StrEnum):
     """Same values as the shared PG type ``verification_attempt_status_enum``."""
 
     PENDING = "pending"
@@ -59,21 +59,21 @@ class AttemptStatus(str, Enum):
     FAILED = "failed"
 
 
-class WorkshopVerificationFailureReason(str, Enum):
+class WorkshopVerificationFailureReason(StrEnum):
     MANAGER_NOT_FOUND = "manager_not_found"
     NATIONAL_ID_MISMATCH = "national_id_mismatch"
     ALREADY_CLAIMED = "already_claimed"
     OEM_UNAVAILABLE = "oem_unavailable"
 
 
-class ConsentType(str, Enum):
+class ConsentType(StrEnum):
     """Same values as the shared PG type ``consent_type_enum``."""
 
     PERSONAL_DATA_PROCESSING = "personal_data_processing"
     OEM_DATA_SHARING = "oem_data_sharing"
 
 
-class WorkshopNextStep(str, Enum):
+class WorkshopNextStep(StrEnum):
     PROFILE = "PROFILE"
     WORKSHOP = "WORKSHOP"
     VERIFYING = "VERIFYING"
@@ -98,18 +98,14 @@ class WorkshopRegistration(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     owner_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("workshop_owner.id", ondelete="CASCADE"), nullable=False, index=True
-        )
+        sa_column=Column(ForeignKey("workshop_owner.id", ondelete="CASCADE"), nullable=False, index=True)
     )
     address: str = Field(sa_column=Column(Text, nullable=False))
     latitude: Decimal | None = Field(default=None, sa_column=Column(Numeric(9, 6), nullable=True))
     longitude: Decimal | None = Field(default=None, sa_column=Column(Numeric(9, 6), nullable=True))
     hotline: str = Field(sa_column=Column(String(20), nullable=False))
     total_technicians: int = Field(sa_column=Column(Integer, nullable=False))
-    emergency_slots_reserved: int = Field(
-        default=0, sa_column=Column(Integer, nullable=False, server_default="0")
-    )
+    emergency_slots_reserved: int = Field(default=0, sa_column=Column(Integer, nullable=False, server_default="0"))
     # [{"dayOfWeek": 1, "isClosed": false, "openTime": "08:00", "closeTime": "17:30"}, ...]
     operating_hours: list = Field(default_factory=list, sa_column=Column(_JSON, nullable=False))
     verification_status: WorkshopVerificationStatus = Field(
@@ -124,24 +120,16 @@ class WorkshopRegistration(SQLModel, table=True):
             server_default="pending",
         ),
     )
-    verification_failure_reason: str | None = Field(
-        default=None, sa_column=Column(String(64), nullable=True)
-    )
+    verification_failure_reason: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
     external_center_id: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
     workshop_id: UUID | None = Field(
         default=None,
         sa_column=Column(ForeignKey("workshop.id", ondelete="SET NULL"), nullable=True),
     )
-    verified_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    verified_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 
@@ -156,14 +144,10 @@ class WorkshopVerificationAttempt(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     owner_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("workshop_owner.id", ondelete="CASCADE"), nullable=False, index=True
-        )
+        sa_column=Column(ForeignKey("workshop_owner.id", ondelete="CASCADE"), nullable=False, index=True)
     )
     registration_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("workshop_registration.id", ondelete="CASCADE"), nullable=False
-        )
+        sa_column=Column(ForeignKey("workshop_registration.id", ondelete="CASCADE"), nullable=False)
     )
     status: AttemptStatus = Field(
         default=AttemptStatus.PENDING,
@@ -181,21 +165,15 @@ class WorkshopVerificationAttempt(SQLModel, table=True):
     external_center_id: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
     oem_http_status: int | None = Field(default=None, sa_column=Column(SmallInteger, nullable=True))
     oem_request_id: str | None = Field(default=None, sa_column=Column(String(128), nullable=True))
-    retry_count: int = Field(
-        default=0, sa_column=Column(SmallInteger, nullable=False, server_default="0")
-    )
-    next_retry_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
+    retry_count: int = Field(default=0, sa_column=Column(SmallInteger, nullable=False, server_default="0"))
+    next_retry_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
     idempotency_key: str = Field(sa_column=Column(String(128), nullable=False))
     request_hash: str = Field(sa_column=Column(String(64), nullable=False))
     trace_id: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
     requested_at: datetime = Field(
         sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
     )
-    responded_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
+    responded_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
     latency_ms: int | None = Field(default=None, sa_column=Column(Integer, nullable=True))
 
 
@@ -206,9 +184,7 @@ class WorkshopOwnerConsent(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     owner_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("workshop_owner.id", ondelete="CASCADE"), nullable=False, index=True
-        )
+        sa_column=Column(ForeignKey("workshop_owner.id", ondelete="CASCADE"), nullable=False, index=True)
     )
     consent_type: ConsentType = Field(
         sa_column=Column(
@@ -220,17 +196,13 @@ class WorkshopOwnerConsent(SQLModel, table=True):
     granted: bool = Field(sa_column=Column(Boolean, nullable=False))
     ip_address: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
     user_agent: str | None = Field(default=None, sa_column=Column(String(512), nullable=True))
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
 
 
 # ---------------------------------------------------------------------------
 # Pure business helpers
 # ---------------------------------------------------------------------------
-def compute_next_step(
-    status: WorkshopOwnerOnboardingStatus, profile_completed: bool
-) -> WorkshopNextStep:
+def compute_next_step(status: WorkshopOwnerOnboardingStatus, profile_completed: bool) -> WorkshopNextStep:
     """Which screen the portal shows next (Entity Spec ENT-007 §8)."""
     if status == WorkshopOwnerOnboardingStatus.ACTIVE:
         return WorkshopNextStep.DASHBOARD

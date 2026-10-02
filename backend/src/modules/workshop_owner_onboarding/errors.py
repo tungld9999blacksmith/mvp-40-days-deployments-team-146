@@ -15,9 +15,7 @@ class WorkshopOnboardingError(Exception):
 
     code: str = "WORKSHOP_ONBOARDING_ERROR"
 
-    def __init__(
-        self, message: str, *, code: str | None = None, field: str | None = None
-    ) -> None:
+    def __init__(self, message: str, *, code: str | None = None, field: str | None = None) -> None:
         super().__init__(message)
         self.message = message
         self.field = field
@@ -70,9 +68,7 @@ class WorkshopAlreadyClaimedError(WorkshopOnboardingError):
     code = "WORKSHOP_ALREADY_CLAIMED"
 
     def __init__(self, attempt_id: UUID) -> None:
-        super().__init__(
-            "Xưởng này đang được quản lý bởi một tài khoản khác. Vui lòng liên hệ hãng."
-        )
+        super().__init__("Xưởng này đang được quản lý bởi một tài khoản khác. Vui lòng liên hệ hãng.")
         self.attempt_id = attempt_id
 
     def details(self) -> dict | None:
@@ -83,10 +79,7 @@ class VerificationAttemptsExceededError(WorkshopOnboardingError):
     code = "VERIFICATION_ATTEMPTS_EXCEEDED"
 
     def __init__(self, retry_after_seconds: int, max_attempts: int) -> None:
-        super().__init__(
-            f"Bạn đã xác thực thất bại quá {max_attempts} lần trong 24 giờ. "
-            "Vui lòng thử lại sau."
-        )
+        super().__init__(f"Bạn đã xác thực thất bại quá {max_attempts} lần trong 24 giờ. Vui lòng thử lại sau.")
         self.retry_after_seconds = retry_after_seconds
 
     def details(self) -> dict | None:

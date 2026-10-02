@@ -9,30 +9,30 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID
 
 ESTIMATE_LABEL = "Chi phí ước tính"  # BR-1005 — always shown with the total
 CURRENCY = "VND"
 
 
-class EstimateStatus(str, Enum):
+class EstimateStatus(StrEnum):
     READY = "READY"
     NO_RULE = "NO_RULE"  # BR-1009 — never show a number without a rule
 
 
-class WarrantyState(str, Enum):
+class WarrantyState(StrEnum):
     ACTIVE = "ACTIVE"
     EXPIRED = "EXPIRED"
     UNKNOWN = "UNKNOWN"  # no chassis warranty data — treated as still covered (Q-1001)
 
 
-class PriceSource(str, Enum):
+class PriceSource(StrEnum):
     WORKSHOP_PRICE = "WORKSHOP_PRICE"
     REFERENCE_PRICE = "REFERENCE_PRICE"
 
 
-class WorkshopSelection(str, Enum):
+class WorkshopSelection(StrEnum):
     REQUEST = "REQUEST"
     PREFERRED = "PREFERRED"
     NEAREST = "NEAREST"
@@ -83,19 +83,13 @@ def compute_estimate(
     for rule in sorted(rules, key=lambda r: r.item_code):
         covered = rule.is_covered_by_warranty and under_warranty
         if covered:
-            lines.append(
-                EstimateLine(
-                    rule.maintenance_rule_id, rule.item_code, rule.item_name, True, Decimal(0), None
-                )
-            )
+            lines.append(EstimateLine(rule.maintenance_rule_id, rule.item_code, rule.item_name, True, Decimal(0), None))
             continue
         price = workshop_prices.get(rule.item_code)
         source = PriceSource.WORKSHOP_PRICE
         if price is None:  # BR-1004 #2 — fall back to the schedule's reference price
             price, source = rule.reference_price, PriceSource.REFERENCE_PRICE
-        lines.append(
-            EstimateLine(rule.maintenance_rule_id, rule.item_code, rule.item_name, False, price, source)
-        )
+        lines.append(EstimateLine(rule.maintenance_rule_id, rule.item_code, rule.item_name, False, price, source))
     return EstimateTotals(
         lines=lines,
         covered_count=sum(1 for line in lines if line.covered),

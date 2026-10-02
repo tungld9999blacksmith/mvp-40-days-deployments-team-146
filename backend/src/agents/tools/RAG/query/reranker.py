@@ -56,10 +56,7 @@ class FlashRankReranker(BaseReranker):
 
         from flashrank import RerankRequest  # type: ignore
 
-        passages = [
-            {"id": c.chunk_id, "text": c.content, "meta": c.metadata}
-            for c in candidates
-        ]
+        passages = [{"id": c.chunk_id, "text": c.content, "meta": c.metadata} for c in candidates]
 
         rerank_req = RerankRequest(query=query, passages=passages)
         results = self._ranker.rerank(rerank_req)
