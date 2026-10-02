@@ -56,7 +56,7 @@ merge vào staging      ──► backend-test ──► deploy-backend ──�
 ```
 Railway project
 └── environment: staging
-    ├── backend   (FastAPI, dockerfiles/Dockerfile.railway, public domain, port 8000)
+    ├── backend         (FastAPI, dockerfiles/Dockerfile.railway, public domain, port 8000)
     ├── worker          (Celery worker + beat, cùng Dockerfile, không có domain)
     ├── mock-ev-system  (mock hệ thống hãng xe / OEM, port 8100,
     │                    private network mock-ev-system.railway.internal)
@@ -152,7 +152,12 @@ Mock giả lập hệ thống hãng xe (OEM). `backend` và `worker` gọi nó q
 1. Tạo service kèm biến (chạy ở thư mục gốc repo, đã `railway link` vào `staging`). Dùng **nháy đơn** để shell không xử lý `${{...}}`:
 
    ```bash
-   railway add --service mock-ev-system      --variables 'RAILWAY_DOCKERFILE_PATH=mock-ev-system/Dockerfile.railway'      --variables 'PORT=8100'      --variables 'MOCK_WEBHOOK_SECRET=${{shared.OEM_WEBHOOK_SECRET}}'      --variables 'MOCK_WEBHOOK_URL=https://${{backend.RAILWAY_PUBLIC_DOMAIN}}/api/v1/integrations/oem/webhooks'      --variables 'MOCK_WEBHOOK_USAGE_MIN_INTERVAL_SECONDS=300'
+   railway add --service mock-ev-system \
+     --variables 'RAILWAY_DOCKERFILE_PATH=mock-ev-system/Dockerfile.railway' \
+     --variables 'PORT=8100' \
+     --variables 'MOCK_WEBHOOK_SECRET=${{shared.OEM_WEBHOOK_SECRET}}' \
+     --variables 'MOCK_WEBHOOK_URL=https://${{backend.RAILWAY_PUBLIC_DOMAIN}}/api/v1/integrations/oem/webhooks' \
+     --variables 'MOCK_WEBHOOK_USAGE_MIN_INTERVAL_SECONDS=300'
    ```
 
    - `RAILWAY_DOCKERFILE_PATH` tính từ `backend/` (không phải gốc repo), vì mock được upload với `backend/` làm gốc (xem bước 3).
@@ -538,6 +543,8 @@ jobs:
           cache: pip
           cache-dependency-path: backend/requirements.txt
       - run: pip install -r ./backend/requirements.txt
+      # ev-contracts là package nội bộ (uv workspace), không có trong requirements.txt
+      - run: pip install ./backend/shared/ev-contracts
       - run: pytest ./backend/tests/ -v --tb=short
         env:
           APP_ENV: test
