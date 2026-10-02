@@ -16,6 +16,7 @@ env/
 .env
 .env.local
 .env.production
+infrastructure/backend/railway/.railway.env
 
 # IDE
 .vscode/

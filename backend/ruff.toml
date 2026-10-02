@@ -3,11 +3,18 @@ line-length = 120
 
 [lint]
 select = ["E", "F", "I", "N", "W", "UP"]
-ignore = ["E501"]
+ignore = [
+    "E501",
+    "N818",  # exception names without "Error" suffix: renaming breaks every import/except site
+    "UP042", # str+Enum -> StrEnum changes str()/format() output (DB values, API payloads)
+]
 
 [lint.per-file-ignores]
 "tests/**" = ["E402", "F401", "F841", "F541"]
 "scripts/**" = ["E402", "F401"]
+# camelCase fields are the JSON contract with the frontend / message bus
+"src/modules/conversation/schemas.py" = ["N815"]
+"src/infrastructure/messaging/events.py" = ["N815"]
 
 [format]
 quote-style = "double"
