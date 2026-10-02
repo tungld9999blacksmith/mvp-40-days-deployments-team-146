@@ -14,7 +14,6 @@ from __future__ import annotations
 
 from copy import deepcopy
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple
 
 from src.modules.examples.model import VehicleRepositoryPort
 
@@ -28,21 +27,19 @@ class InMemoryVehicleRepository(VehicleRepositoryPort):
     """
 
     def __init__(self) -> None:
-        self._store: Dict[str, dict] = {}
+        self._store: dict[str, dict] = {}
 
-    async def get_by_id(self, vehicle_id: str) -> Optional[dict]:
+    async def get_by_id(self, vehicle_id: str) -> dict | None:
         return deepcopy(self._store.get(vehicle_id))
 
-    async def get_by_plate(self, plate: str) -> Optional[dict]:
+    async def get_by_plate(self, plate: str) -> dict | None:
         plate_upper = plate.upper().strip()
         for v in self._store.values():
             if v["license_plate"] == plate_upper:
                 return deepcopy(v)
         return None
 
-    async def list_by_owner(
-        self, owner_id: str, *, page: int = 1, page_size: int = 20
-    ) -> Tuple[List[dict], int]:
+    async def list_by_owner(self, owner_id: str, *, page: int = 1, page_size: int = 20) -> tuple[list[dict], int]:
         owned = [v for v in self._store.values() if v["owner_id"] == owner_id]
         total = len(owned)
 
@@ -58,7 +55,7 @@ class InMemoryVehicleRepository(VehicleRepositoryPort):
         self._store[record["id"]] = record
         return deepcopy(record)
 
-    async def update(self, vehicle_id: str, updates: dict) -> Optional[dict]:
+    async def update(self, vehicle_id: str, updates: dict) -> dict | None:
         if vehicle_id not in self._store:
             return None
 

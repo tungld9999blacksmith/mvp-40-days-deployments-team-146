@@ -115,9 +115,7 @@ class BookingTicketService:
 
         block = None
         if self._config.reschedule_enabled:
-            reason = reschedule_block(
-                booking.status.value, appt, booking.reschedule_count, now, self._config.booking
-            )
+            reason = reschedule_block(booking.status.value, appt, booking.reschedule_count, now, self._config.booking)
             if reason is None:
                 actions.append("RESCHEDULE")
             elif booking.status in (S.PENDING, S.CONFIRMED):
@@ -174,9 +172,7 @@ class BookingTicketService:
         return f"{self._config.app_base_url.rstrip('/')}/c/{booking.booking_code}"
 
     @staticmethod
-    def _workshop_out(
-        workshop: Workshop | None, workshop_id: UUID, *, with_contact: bool
-    ) -> schemas.TicketWorkshopOut:
+    def _workshop_out(workshop: Workshop | None, workshop_id: UUID, *, with_contact: bool) -> schemas.TicketWorkshopOut:
         return schemas.TicketWorkshopOut(
             workshop_id=workshop_id,
             name=workshop.name if workshop else "",
@@ -189,9 +185,7 @@ class BookingTicketService:
             select(Quote).where(Quote.booking_id == booking_id, Quote.status == QuoteStatus.APPROVED)
         ).first()
 
-    def _items(
-        self, booking: Booking, vehicle: UserVehicle | None, quote: Quote | None
-    ) -> list[schemas.TicketItemOut]:
+    def _items(self, booking: Booking, vehicle: UserVehicle | None, quote: Quote | None) -> list[schemas.TicketItemOut]:
         """BR-1202 — quote lines if a quote is attached, else the milestone's schedule."""
         if quote is not None:
             rows = self._db.exec(
@@ -213,9 +207,7 @@ class BookingTicketService:
     @staticmethod
     def _cost(booking: Booking, quote: Quote | None) -> schemas.TicketCostOut:
         if quote is not None and quote.approved_total is not None:
-            return schemas.TicketCostOut(
-                amount=quote.approved_total, label="APPROVED_QUOTE", quote_id=quote.id
-            )
+            return schemas.TicketCostOut(amount=quote.approved_total, label="APPROVED_QUOTE", quote_id=quote.id)
         if booking.estimated_cost is not None:
             return schemas.TicketCostOut(amount=booking.estimated_cost, label="ESTIMATE")
         return schemas.TicketCostOut(label="NONE")
@@ -234,9 +226,7 @@ class BookingTicketService:
             )
             for e in BookingStateMachine(self._db).history(booking_id)
         ]
-        for r in self._db.exec(
-            select(BookingReschedule).where(BookingReschedule.booking_id == booking_id)
-        ).all():
+        for r in self._db.exec(select(BookingReschedule).where(BookingReschedule.booking_id == booking_id)).all():
             out.append(
                 schemas.TicketHistoryOut(
                     type="RESCHEDULE",
@@ -287,12 +277,14 @@ class BookingTicketService:
         rows = list(self._db.exec(query.order_by(*order).limit(limit + 1)).all())
         page, more = rows[:limit], len(rows) > limit
 
-        workshops = {
-            w.id: w
-            for w in self._db.exec(
-                select(Workshop).where(Workshop.id.in_({b.workshop_id for b in page}))
-            ).all()
-        } if page else {}
+        workshops = (
+            {
+                w.id: w
+                for w in self._db.exec(select(Workshop).where(Workshop.id.in_({b.workshop_id for b in page}))).all()
+            }
+            if page
+            else {}
+        )
         items = []
         for b in page:
             actions, _ = self._actions(b, now)
@@ -309,9 +301,7 @@ class BookingTicketService:
                     allowed_actions=actions,
                 )
             )
-        return schemas.MyBookingsData(
-            items=items, next_cursor=_encode_cursor(page[-1]) if more else None
-        )
+        return schemas.MyBookingsData(items=items, next_cursor=_encode_cursor(page[-1]) if more else None)
 
     # ── API-BR-02 ───────────────────────────────────────────────────────
     def confirm_attendance(self, user: VehicleUser, booking_id: UUID) -> schemas.AttendanceData:
@@ -417,9 +407,7 @@ class BookingTicketService:
         if not _CODE_RE.match(normalized):
             raise errors.BookingNotFoundError()
         booking = self._db.exec(
-            select(Booking).where(
-                Booking.booking_code == normalized, Booking.user_id == user.user_id
-            )
+            select(Booking).where(Booking.booking_code == normalized, Booking.user_id == user.user_id)
         ).first()
         if booking is None:
             raise errors.BookingNotFoundError()  # EDGE-1208

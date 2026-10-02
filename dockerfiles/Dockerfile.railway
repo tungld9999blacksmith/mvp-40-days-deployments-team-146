@@ -1,0 +1,71 @@
+# ==============================================================================
+# Railway image for the EV Care core backend (services `backend` and `worker`,
+# see docs/deployments/RAILWAY_BACKEND_DEPLOYMENT.MD).
+#
+# Same layout as ./Dockerfile, with Railway-specific differences:
+#   - No `--mount=type=cache`: Railway's builder rejects cache mounts whose id
+#     is not prefixed with `s/<service-id>`, and backend/worker have different
+#     service ids, so plain layers are used instead.
+#   - No bind mounts: manifests are COPY'd, which keeps layer caching without
+#     relying on BuildKit-only features.
+#   - Listens on $PORT (injected by Railway), falling back to 8000.
+#   - No Docker HEALTHCHECK: Railway uses the service's Healthcheck Path
+#     (/health on `backend`) and ignores it; the worker serves no HTTP.
+#
+# The build context is the REPO ROOT. Deploy from the repo root with:
+#     railway up --service backend
+#     railway up --service worker
+# and set the service variable on both services
+#     RAILWAY_DOCKERFILE_PATH=dockerfiles/Dockerfile.railway
+# The worker overrides CMD with its Custom Start Command (celery ... -B).
+# ==============================================================================
+
+ARG PYTHON_VERSION=3.11
+
+# ---- Stage 1: builder --------------------------------------------------------
+FROM ghcr.io/astral-sh/uv:python${PYTHON_VERSION}-bookworm-slim AS builder
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=0
+
+WORKDIR /app
+
+# 1) Dependency layer — only rebuilt when a manifest or the lockfile changes.
+COPY backend/pyproject.toml backend/uv.lock ./
+COPY backend/mock-ev-system/pyproject.toml mock-ev-system/pyproject.toml
+COPY backend/shared/ev-contracts/pyproject.toml shared/ev-contracts/pyproject.toml
+RUN uv sync --frozen --no-dev --no-install-workspace
+
+# 2) Workspace layer — install ev-contracts as a non-editable wheel. The root
+#    project is `package = false`; src/ is copied into the runtime stage.
+COPY backend/shared/ shared/
+RUN uv sync --frozen --no-dev --no-editable
+
+
+# ---- Stage 2: runtime --------------------------------------------------------
+FROM python:${PYTHON_VERSION}-slim-bookworm AS runtime
+
+RUN groupadd --system app && useradd --system --gid app --uid 1000 --create-home app
+
+WORKDIR /app
+
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+COPY --from=builder --chown=app:app /app/.venv /app/.venv
+
+# Preserve the "src" package layout (main.py is loaded as `src.main`).
+COPY --chown=app:app backend/src ./src
+
+# Writable dirs for the unprivileged user: /app is root-owned, so the app
+# cannot create LOG_DIR (default `logs`, relative to /app) at startup.
+RUN mkdir -p /app/data /app/logs && chown app:app /app/data /app/logs
+
+USER app
+
+EXPOSE 8000
+
+# Shell form so $PORT is expanded at runtime.
+CMD uvicorn src.main:app --host 0.0.0.0 --port ${PORT:-8000}

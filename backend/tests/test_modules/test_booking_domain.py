@@ -70,9 +70,7 @@ def test_rank_by_distance_puts_preferred_first():
     preferred = _workshop("Pref", "Hà Nội", lat=21.19, lng=105.99)
     anchor = LocationAnchor(AnchorSource.SPECIFIED, latitude=21.0, longitude=105.8)
 
-    ranked, ranked_by = finder.rank(
-        anchor, [far, near, preferred], preferred_workshop_id=preferred.id, limit=5
-    )
+    ranked, ranked_by = finder.rank(anchor, [far, near, preferred], preferred_workshop_id=preferred.id, limit=5)
 
     assert ranked_by.value == "DISTANCE"
     assert ranked[0].workshop.id == preferred.id and ranked[0].is_preferred

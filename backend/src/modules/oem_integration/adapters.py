@@ -19,15 +19,11 @@ DEBOUNCE_TTL_SECONDS = 10
 
 
 class CelerySyncScheduler(SyncScheduler):
-    def schedule(
-        self, user_vehicle_id: UUID, trigger: OemSyncTrigger, *, delay_seconds: int = 0
-    ) -> None:
+    def schedule(self, user_vehicle_id: UUID, trigger: OemSyncTrigger, *, delay_seconds: int = 0) -> None:
         # Imported lazily so the API process never needs the broker at import time.
         from src.infrastructure.celery.tasks.oem_sync_tasks import sync_vehicle_oem_data_task
 
-        sync_vehicle_oem_data_task.apply_async(
-            args=[str(user_vehicle_id), trigger.value], countdown=delay_seconds
-        )
+        sync_vehicle_oem_data_task.apply_async(args=[str(user_vehicle_id), trigger.value], countdown=delay_seconds)
 
 
 class RedisSyncLock(SyncLock):
@@ -41,9 +37,7 @@ class RedisSyncLock(SyncLock):
         return f"{self._prefix}:oem:sync:lock:{user_vehicle_id}"
 
     async def acquire(self, user_vehicle_id: UUID) -> bool:
-        return bool(
-            await self._redis.set(self._key(user_vehicle_id), "1", nx=True, ex=SYNC_LOCK_TTL_SECONDS)
-        )
+        return bool(await self._redis.set(self._key(user_vehicle_id), "1", nx=True, ex=SYNC_LOCK_TTL_SECONDS))
 
     async def release(self, user_vehicle_id: UUID) -> None:
         await self._redis.delete(self._key(user_vehicle_id))

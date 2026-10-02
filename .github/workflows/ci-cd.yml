@@ -1,0 +1,91 @@
+name: Backend CI/CD
+
+# Xem docs/deployments/RAILWAY_BACKEND_DEPLOYMENT.MD (Bước 12-14)
+
+on:
+  # Push lên develop -> test/check; push (merge) vào staging -> test/check + deploy
+  push:
+    branches: [develop, staging]
+    paths:
+      - 'backend/**'
+      - 'dockerfiles/**'
+      - '.github/workflows/ci-cd.yml'
+  # PR vào develop/staging (từ bất kỳ nhánh nào) -> test/check, chặn merge nếu fail
+  pull_request:
+    branches: [develop, staging]
+    paths:
+      - 'backend/**'
+      - 'dockerfiles/**'
+      - '.github/workflows/ci-cd.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/staging' }}
+
+jobs:
+  # Tất cả job chạy trên GitHub-hosted runner (ubuntu-latest)
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - run: pip install -r ./backend/requirements.txt
+      - run: ruff check ./backend/src/ ./backend/tests/
+      - run: ruff format --check ./backend/src/ ./backend/tests/
+
+  backend-test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - run: pip install -r ./backend/requirements.txt
+      - run: pytest ./backend/tests/ -v --tb=short
+        env:
+          APP_ENV: test
+          OPENAI_API_KEY: test-key
+
+  # Chỉ khi đích là staging: đảm bảo image build được trước khi deploy
+  build-check:
+    needs: backend-test
+    if: (github.base_ref || github.ref_name) == 'staging'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f dockerfiles/Dockerfile.railway -t p146-backend:ci .
+      # mock-ev-system: build context là backend/ (uv workspace root)
+      - run: docker build -f backend/mock-ev-system/Dockerfile.railway -t p146-mock-ev-system:ci backend
+
+  deploy-backend:
+    needs: build-check
+    if: github.ref == 'refs/heads/staging' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: staging
+    env:
+      # Account token (Account Settings -> Tokens) -> CLI đọc từ RAILWAY_API_TOKEN
+      RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install -g @railway/cli
+      # Account token không gắn sẵn project, nên phải link project trước
+      - run: railway link --project "${{ vars.RAILWAY_PROJECT_ID }}" --environment staging
+      # Mock OEM deploy trước: backend/worker gọi nó qua mock-ev-system.railway.internal
+      - run: railway up ./backend --path-as-root --ci --service "${{ vars.RAILWAY_MOCK_SERVICE }}" --environment staging
+      - run: railway up --ci --service "${{ vars.RAILWAY_BACKEND_SERVICE }}" --environment staging
+      - run: railway up --ci --service "${{ vars.RAILWAY_WORKER_SERVICE }}" --environment staging
+
+  smoke-test:
+    needs: deploy-backend
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - run: curl --fail --retry 10 --retry-delay 10 --retry-all-errors "${{ vars.BACKEND_STAGING_URL }}/health"

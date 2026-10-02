@@ -19,6 +19,7 @@ Revision ID: f1d3b5a7c9e2
 Revises: e2b6a4c8d1f7
 Create Date: 2026-10-01
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa
@@ -38,9 +39,7 @@ actor_type = postgresql.ENUM(
     "vehicle_owner", "workshop_owner", "system", name="booking_actor_type_enum", create_type=False
 )
 booking_status = postgresql.ENUM(name="booking_status_enum", create_type=False)
-ticket_priority = postgresql.ENUM(
-    "normal", "high", name="support_ticket_priority_enum", create_type=False
-)
+ticket_priority = postgresql.ENUM("normal", "high", name="support_ticket_priority_enum", create_type=False)
 reminder_kind = postgresql.ENUM("before_24h", name="booking_reminder_kind_enum", create_type=False)
 reminder_status = postgresql.ENUM(
     "scheduled", "sent", "failed", "skipped", name="booking_reminder_status_enum", create_type=False
@@ -80,35 +79,26 @@ def _delivery_table(name: str, parent_col: str, parent_table: str, unique_name: 
     )
 
 
-
 def upgrade() -> None:
     bind = op.get_bind()
     actor_type.create(bind, checkfirst=True)
     ticket_priority.create(bind, checkfirst=True)
 
     # ── booking (us-033, us-053) ──────────────────────────────────────────
-    op.add_column(
-        "booking", sa.Column("attendance_confirmed_at", sa.DateTime(timezone=True), nullable=True)
-    )
+    op.add_column("booking", sa.Column("attendance_confirmed_at", sa.DateTime(timezone=True), nullable=True))
     op.add_column("booking", sa.Column("odo_milestone", sa.Integer(), nullable=True))
     op.add_column(
         "booking",
         sa.Column("reschedule_count", sa.SmallInteger(), server_default="0", nullable=False),
     )
-    op.create_check_constraint(
-        "ck_booking_odo_milestone", "booking", "odo_milestone IS NULL OR odo_milestone > 0"
-    )
-    op.create_check_constraint(
-        "ck_booking_reschedule_count", "booking", "reschedule_count >= 0"
-    )
+    op.create_check_constraint("ck_booking_odo_milestone", "booking", "odo_milestone IS NULL OR odo_milestone > 0")
+    op.create_check_constraint("ck_booking_reschedule_count", "booking", "reschedule_count >= 0")
 
     # ── ENT-426 booking_status_event ─────────────────────────────────────
     op.create_table(
         "booking_status_event",
         sa.Column("id", sa.Uuid(), primary_key=True),
-        sa.Column(
-            "booking_id", sa.Uuid(), sa.ForeignKey("booking.id", ondelete="CASCADE"), nullable=False
-        ),
+        sa.Column("booking_id", sa.Uuid(), sa.ForeignKey("booking.id", ondelete="CASCADE"), nullable=False),
         sa.Column("from_status", booking_status, nullable=True),
         sa.Column("to_status", booking_status, nullable=False),
         sa.Column("actor_type", actor_type, nullable=False),
@@ -129,15 +119,10 @@ def upgrade() -> None:
         sa.Column("note", sa.String(255), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=_NOW, nullable=False),
         sa.CheckConstraint("from_status IS DISTINCT FROM to_status", name="ck_bse_status_changed"),
+        sa.CheckConstraint("to_status <> 'cancelled' OR reason_code IS NOT NULL", name="ck_bse_cancel_reason"),
+        sa.CheckConstraint("reason_code IS DISTINCT FROM 'OTHER' OR note IS NOT NULL", name="ck_bse_other_note"),
         sa.CheckConstraint(
-            "to_status <> 'cancelled' OR reason_code IS NOT NULL", name="ck_bse_cancel_reason"
-        ),
-        sa.CheckConstraint(
-            "reason_code IS DISTINCT FROM 'OTHER' OR note IS NOT NULL", name="ck_bse_other_note"
-        ),
-        sa.CheckConstraint(
-            "actor_type <> 'system' "
-            "OR (actor_user_id IS NULL AND actor_workshop_owner_id IS NULL)",
+            "actor_type <> 'system' OR (actor_user_id IS NULL AND actor_workshop_owner_id IS NULL)",
             name="ck_bse_system_actor",
         ),
     )
@@ -147,9 +132,7 @@ def upgrade() -> None:
     op.create_table(
         "booking_reschedule",
         sa.Column("id", sa.Uuid(), primary_key=True),
-        sa.Column(
-            "booking_id", sa.Uuid(), sa.ForeignKey("booking.id", ondelete="CASCADE"), nullable=False
-        ),
+        sa.Column("booking_id", sa.Uuid(), sa.ForeignKey("booking.id", ondelete="CASCADE"), nullable=False),
         sa.Column("from_date", sa.Date(), nullable=False),
         sa.Column("from_time_slot", sa.Time(), nullable=False),
         sa.Column("to_date", sa.Date(), nullable=False),
@@ -174,18 +157,14 @@ def upgrade() -> None:
             name="ck_booking_reschedule_changed",
         ),
     )
-    op.create_index(
-        "ix_booking_reschedule_booking_created", "booking_reschedule", ["booking_id", "created_at"]
-    )
+    op.create_index("ix_booking_reschedule_booking_created", "booking_reschedule", ["booking_id", "created_at"])
 
     # ── quote / quote_item (us-049) ──────────────────────────────────────
     op.add_column("quote", sa.Column("submitted_at", sa.DateTime(timezone=True), nullable=True))
     op.add_column("quote", sa.Column("result_seen_at", sa.DateTime(timezone=True), nullable=True))
     # Rows reviewed before this revision have no submission time: use created_at.
     op.execute("UPDATE quote SET submitted_at = created_at WHERE status <> 'draft'")
-    op.create_check_constraint(
-        "ck_quote_submitted_at", "quote", "status = 'draft' OR submitted_at IS NOT NULL"
-    )
+    op.create_check_constraint("ck_quote_submitted_at", "quote", "status = 'draft' OR submitted_at IS NOT NULL")
     op.create_check_constraint(
         "ck_quote_reviewed_after_submit",
         "quote",
@@ -200,25 +179,20 @@ def upgrade() -> None:
     )
     op.add_column(
         "quote_item",
-        sa.Column(
-            "is_covered_by_warranty", sa.Boolean(), server_default=sa.false(), nullable=False
-        ),
+        sa.Column("is_covered_by_warranty", sa.Boolean(), server_default=sa.false(), nullable=False),
     )
     op.add_column("quote_item", sa.Column("price_source", sa.String(20), nullable=True))
     op.add_column("quote_item", sa.Column("reviewer_note", sa.String(255), nullable=True))
     op.create_check_constraint(
         "ck_quote_item_covered_zero",
         "quote_item",
-        "NOT is_covered_by_warranty "
-        "OR (estimated_price = 0 AND (approved_price IS NULL OR approved_price = 0))",
+        "NOT is_covered_by_warranty OR (estimated_price = 0 AND (approved_price IS NULL OR approved_price = 0))",
     )
 
     # ── follow_up (us-041) ───────────────────────────────────────────────
     op.add_column("follow_up", sa.Column("rating", sa.SmallInteger(), nullable=True))
     op.add_column("follow_up", sa.Column("feedback_intent", sa.String(32), nullable=True))
-    op.add_column(
-        "follow_up", sa.Column("classification_confidence", sa.Numeric(3, 2), nullable=True)
-    )
+    op.add_column("follow_up", sa.Column("classification_confidence", sa.Numeric(3, 2), nullable=True))
     op.add_column("follow_up", sa.Column("classified_by", sa.String(16), nullable=True))
     op.add_column("follow_up", sa.Column("closed_reason", sa.String(32), nullable=True))
     op.add_column("follow_up", sa.Column("closed_at", sa.DateTime(timezone=True), nullable=True))
@@ -239,9 +213,7 @@ def upgrade() -> None:
         "follow_up",
         "status <> 'responded' OR (responded_at IS NOT NULL AND rating IS NOT NULL)",
     )
-    op.create_check_constraint(
-        "ck_follow_up_rating", "follow_up", "rating IS NULL OR rating BETWEEN 1 AND 5"
-    )
+    op.create_check_constraint("ck_follow_up_rating", "follow_up", "rating IS NULL OR rating BETWEEN 1 AND 5")
     op.create_check_constraint(
         "ck_follow_up_closed",
         "follow_up",
@@ -272,17 +244,9 @@ def upgrade() -> None:
         sa.Column("priority", ticket_priority, server_default="normal", nullable=False),
     )
     op.add_column("support_ticket", sa.Column("resolution_note", sa.Text(), nullable=True))
-    op.add_column(
-        "support_ticket", sa.Column("started_at", sa.DateTime(timezone=True), nullable=True)
-    )
-    op.execute(
-        "UPDATE support_ticket SET started_at = updated_at "
-        "WHERE status = 'in_progress' AND started_at IS NULL"
-    )
-    op.execute(
-        "UPDATE support_ticket SET resolution_note = '' "
-        "WHERE status = 'resolved' AND resolution_note IS NULL"
-    )
+    op.add_column("support_ticket", sa.Column("started_at", sa.DateTime(timezone=True), nullable=True))
+    op.execute("UPDATE support_ticket SET started_at = updated_at WHERE status = 'in_progress' AND started_at IS NULL")
+    op.execute("UPDATE support_ticket SET resolution_note = '' WHERE status = 'resolved' AND resolution_note IS NULL")
     op.create_unique_constraint("ux_support_ticket_follow_up", "support_ticket", ["follow_up_id"])
     op.create_check_constraint(
         "ck_support_ticket_resolution",
@@ -322,9 +286,7 @@ def upgrade() -> None:
         "ALTER TABLE service_progress ADD CONSTRAINT ck_service_progress_waiting_parts_note "
         "CHECK (stage <> 'waiting_parts' OR char_length(note) BETWEEN 10 AND 500) NOT VALID"
     )
-    op.create_index(
-        "ix_service_progress_booking_created", "service_progress", ["booking_id", "created_at"]
-    )
+    op.create_index("ix_service_progress_booking_created", "service_progress", ["booking_id", "created_at"])
 
     # ── ENT-424 / ENT-425 booking reminders (us-033) ─────────────────────
     reminder_kind.create(bind, checkfirst=True)
@@ -332,9 +294,7 @@ def upgrade() -> None:
     op.create_table(
         "booking_reminder",
         sa.Column("id", sa.Uuid(), primary_key=True),
-        sa.Column(
-            "booking_id", sa.Uuid(), sa.ForeignKey("booking.id", ondelete="CASCADE"), nullable=False
-        ),
+        sa.Column("booking_id", sa.Uuid(), sa.ForeignKey("booking.id", ondelete="CASCADE"), nullable=False),
         sa.Column("kind", reminder_kind, server_default="before_24h", nullable=False),
         sa.Column("appointment_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("scheduled_at", sa.DateTime(timezone=True), nullable=False),
@@ -343,19 +303,13 @@ def upgrade() -> None:
         sa.Column("sent_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=_NOW, nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), server_default=_NOW, nullable=False),
-        sa.UniqueConstraint(
-            "booking_id", "kind", "appointment_at", name="ux_booking_reminder_booking_kind_appt"
-        ),
-        sa.CheckConstraint(
-            "scheduled_at < appointment_at", name="ck_booking_reminder_schedule_before_appt"
-        ),
+        sa.UniqueConstraint("booking_id", "kind", "appointment_at", name="ux_booking_reminder_booking_kind_appt"),
+        sa.CheckConstraint("scheduled_at < appointment_at", name="ck_booking_reminder_schedule_before_appt"),
         sa.CheckConstraint(
             "(status = 'skipped') = (skip_reason IS NOT NULL)",
             name="ck_booking_reminder_skip_reason",
         ),
-        sa.CheckConstraint(
-            "status <> 'sent' OR sent_at IS NOT NULL", name="ck_booking_reminder_sent_at"
-        ),
+        sa.CheckConstraint("status <> 'sent' OR sent_at IS NOT NULL", name="ck_booking_reminder_sent_at"),
     )
     op.create_index(
         "ix_booking_reminder_due",
@@ -371,9 +325,7 @@ def upgrade() -> None:
     )
 
     # ── follow_up_delivery (us-041) ──────────────────────────────────────
-    _delivery_table(
-        "follow_up_delivery", "follow_up_id", "follow_up", "ux_follow_up_delivery_channel"
-    )
+    _delivery_table("follow_up_delivery", "follow_up_id", "follow_up", "ux_follow_up_delivery_channel")
 
 
 def downgrade() -> None:
@@ -407,9 +359,7 @@ def downgrade() -> None:
         "ck_follow_up_sent_at",
     ):
         op.drop_constraint(name, "follow_up", type_="check")
-    op.create_check_constraint(
-        "ck_follow_up_sent_at", "follow_up", "status = 'pending' OR sent_at IS NOT NULL"
-    )
+    op.create_check_constraint("ck_follow_up_sent_at", "follow_up", "status = 'pending' OR sent_at IS NOT NULL")
     op.create_check_constraint(
         "ck_follow_up_responded",
         "follow_up",

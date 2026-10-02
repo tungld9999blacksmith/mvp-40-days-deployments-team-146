@@ -105,9 +105,7 @@ async def get_capacity(
     response_model=schemas.SlotBlockEnvelope,
     summary="Set the number of blocked slots for one time slot; 0 removes it (BR-809)",
 )
-async def put_slot_block(
-    payload: schemas.SlotBlockRequest, scope: Scope, board: Board
-) -> schemas.SlotBlockEnvelope:
+async def put_slot_block(payload: schemas.SlotBlockRequest, scope: Scope, board: Board) -> schemas.SlotBlockEnvelope:
     data = await board.set_slot_block(scope.owner, scope.workshop, payload)
     return schemas.SlotBlockEnvelope(data=data)
 

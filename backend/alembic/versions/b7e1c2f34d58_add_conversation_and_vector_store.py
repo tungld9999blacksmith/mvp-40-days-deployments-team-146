@@ -34,9 +34,7 @@ depends_on: str | Sequence[str] | None = None
 
 EMBEDDING_DIM = 1024
 
-chat_message_role = postgresql.ENUM(
-    "user", "assistant", "tool", name="chat_message_role_enum", create_type=False
-)
+chat_message_role = postgresql.ENUM("user", "assistant", "tool", name="chat_message_role_enum", create_type=False)
 
 _SEARCH_EXPR = "to_tsvector('simple', immutable_unaccent(coalesce(content, '')))"
 
@@ -59,15 +57,9 @@ def upgrade() -> None:
         sa.Column("user_id", sa.BigInteger(), nullable=False),
         sa.Column("user_vehicle_id", sa.Uuid(), nullable=False),
         sa.Column("title", sa.String(length=255), nullable=True),
-        sa.Column(
-            "last_message_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
-        ),
-        sa.Column(
-            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
-        ),
-        sa.Column(
-            "updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
-        ),
+        sa.Column("last_message_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.ForeignKeyConstraint(["user_id"], ["vehicle_user.user_id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["user_vehicle_id"], ["user_vehicle.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
@@ -104,9 +96,7 @@ def upgrade() -> None:
             nullable=True,
         ),
         sa.Column("embedded", sa.Boolean(), server_default=sa.false(), nullable=False),
-        sa.Column(
-            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
-        ),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.ForeignKeyConstraint(["conversation_id"], ["conversation.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("seq", name="uq_chat_message_seq"),
@@ -127,9 +117,7 @@ def upgrade() -> None:
     )
     op.create_index("ix_chat_message_conversation_seq", "chat_message", ["conversation_id", "seq"])
     op.create_index("ix_chat_message_created_at", "chat_message", ["created_at"])
-    op.create_index(
-        "ix_chat_message_search", "chat_message", ["search_vector"], postgresql_using="gin"
-    )
+    op.create_index("ix_chat_message_search", "chat_message", ["search_vector"], postgresql_using="gin")
     op.create_index(
         "ux_chat_message_client_id",
         "chat_message",
@@ -144,14 +132,10 @@ def upgrade() -> None:
         sa.Column("id", sa.String(length=255), nullable=False),
         sa.Column("collection", sa.String(length=255), nullable=False),
         sa.Column("content", sa.Text(), nullable=False),
-        sa.Column(
-            "metadata", postgresql.JSONB(), server_default=sa.text("'{}'::jsonb"), nullable=False
-        ),
+        sa.Column("metadata", postgresql.JSONB(), server_default=sa.text("'{}'::jsonb"), nullable=False),
         sa.Column("embedding", Vector(EMBEDDING_DIM), nullable=False),
         sa.Column("embedding_model", sa.String(length=128), nullable=True),
-        sa.Column(
-            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
-        ),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index("ix_vector_embedding_collection", "vector_embedding", ["collection"])

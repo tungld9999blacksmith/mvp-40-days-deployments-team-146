@@ -306,9 +306,7 @@ class BookingReminderJob:
         phase C, which flips it to sent on a later success.
         """
         rows = self._db.exec(
-            select(BookingReminderDelivery).where(
-                BookingReminderDelivery.booking_reminder_id == reminder.id
-            )
+            select(BookingReminderDelivery).where(BookingReminderDelivery.booking_reminder_id == reminder.id)
         ).all()
         sent = [r for r in rows if r.status == DeliveryStatus.SENT]
         if sent:

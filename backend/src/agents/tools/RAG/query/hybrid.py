@@ -154,7 +154,9 @@ class HybridRetriever:
                         doc_id=meta.get("doc_id", ""),
                         content=r.content,
                         metadata=meta,
-                        dense_score=getattr(r, "score", None) if getattr(r, "score", None) is not None else getattr(r, "dense_score", None),
+                        dense_score=getattr(r, "score", None)
+                        if getattr(r, "score", None) is not None
+                        else getattr(r, "dense_score", None),
                     )
                 )
             return candidates

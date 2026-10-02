@@ -18,10 +18,8 @@ NOTE:
 
 from __future__ import annotations
 
-import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -39,7 +37,7 @@ class CreateVehicleRequest(BaseModel):
     model: str = Field(..., min_length=1, max_length=100, examples=["Camry"])
     year: int = Field(..., ge=1886, le=2030, examples=[2024])
     fuel_type: FuelType = Field(default=FuelType.GASOLINE)
-    vin: Optional[str] = Field(default=None, max_length=17, examples=["1HGBH41JXMN109186"])
+    vin: str | None = Field(default=None, max_length=17, examples=["1HGBH41JXMN109186"])
 
     @field_validator("license_plate")
     @classmethod
@@ -64,12 +62,12 @@ class CreateVehicleRequest(BaseModel):
 class UpdateVehicleRequest(BaseModel):
     """Schema for partially updating a vehicle."""
 
-    license_plate: Optional[str] = Field(default=None, min_length=1, max_length=20)
-    brand: Optional[str] = Field(default=None, min_length=1, max_length=100)
-    model: Optional[str] = Field(default=None, min_length=1, max_length=100)
-    year: Optional[int] = Field(default=None, ge=1886, le=2030)
-    fuel_type: Optional[FuelType] = None
-    vin: Optional[str] = Field(default=None, max_length=17)
+    license_plate: str | None = Field(default=None, min_length=1, max_length=20)
+    brand: str | None = Field(default=None, min_length=1, max_length=100)
+    model: str | None = Field(default=None, min_length=1, max_length=100)
+    year: int | None = Field(default=None, ge=1886, le=2030)
+    fuel_type: FuelType | None = None
+    vin: str | None = Field(default=None, max_length=17)
 
     model_config = {
         "json_schema_extra": {
@@ -96,7 +94,7 @@ class VehicleResponse(BaseModel):
     year: int
     fuel_type: FuelType
     status: VehicleStatus
-    vin: Optional[str] = None
+    vin: str | None = None
     created_at: datetime
     updated_at: datetime
 
@@ -104,7 +102,7 @@ class VehicleResponse(BaseModel):
 class VehicleListResponse(BaseModel):
     """Paginated list response."""
 
-    items: List[VehicleResponse]
+    items: list[VehicleResponse]
     total: int
     page: int
     page_size: int
@@ -115,7 +113,7 @@ class MessageResponse(BaseModel):
 
     success: bool = True
     message: str = ""
-    vehicle_id: Optional[str] = None
+    vehicle_id: str | None = None
 
 
 # ===========================================================================
@@ -131,19 +129,17 @@ class VehicleRepositoryPort(ABC):
     """
 
     @abstractmethod
-    async def get_by_id(self, vehicle_id: str) -> Optional[dict]:
+    async def get_by_id(self, vehicle_id: str) -> dict | None:
         """Return a vehicle dict or None."""
         ...
 
     @abstractmethod
-    async def get_by_plate(self, plate: str) -> Optional[dict]:
+    async def get_by_plate(self, plate: str) -> dict | None:
         """Return a vehicle dict matching the license plate, or None."""
         ...
 
     @abstractmethod
-    async def list_by_owner(
-        self, owner_id: str, *, page: int = 1, page_size: int = 20
-    ) -> tuple[list[dict], int]:
+    async def list_by_owner(self, owner_id: str, *, page: int = 1, page_size: int = 20) -> tuple[list[dict], int]:
         """Return (items, total_count) for a given owner."""
         ...
 
@@ -153,7 +149,7 @@ class VehicleRepositoryPort(ABC):
         ...
 
     @abstractmethod
-    async def update(self, vehicle_id: str, updates: dict) -> Optional[dict]:
+    async def update(self, vehicle_id: str, updates: dict) -> dict | None:
         """Apply partial updates; return updated dict or None."""
         ...
 

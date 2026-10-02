@@ -111,9 +111,7 @@ async def test_discord_shows_connected_with_active_link(api: _Api, owner):
 
 @pytest.mark.asyncio
 async def test_save_lead_days_and_switch_ac502(api: _Api, owner):
-    r = await api.client.put(
-        URL, json={"reminderLeadDays": 5, "remindersEnabled": False}, headers=AUTH
-    )
+    r = await api.client.put(URL, json={"reminderLeadDays": 5, "remindersEnabled": False}, headers=AUTH)
 
     assert r.status_code == 200
     data = r.json()["data"]
@@ -128,9 +126,7 @@ async def test_save_lead_days_and_switch_ac502(api: _Api, owner):
 async def test_partial_update_keeps_other_values(api: _Api, owner):
     await api.client.put(URL, json={"reminderLeadDays": 7}, headers=AUTH)
 
-    data = (await api.client.put(URL, json={"remindersEnabled": False}, headers=AUTH)).json()[
-        "data"
-    ]
+    data = (await api.client.put(URL, json={"remindersEnabled": False}, headers=AUTH)).json()["data"]
 
     assert data["reminderLeadDays"] == 7 and data["remindersEnabled"] is False
 
@@ -155,9 +151,7 @@ async def test_lead_days_bounds_are_accepted(api: _Api, owner, days):
 
 @pytest.mark.asyncio
 async def test_unavailable_channel_cannot_be_enabled_ac510(api: _Api, owner):
-    r = await api.client.put(
-        URL, json={"channels": [{"channel": "SMS", "enabled": True}]}, headers=AUTH
-    )
+    r = await api.client.put(URL, json={"channels": [{"channel": "SMS", "enabled": True}]}, headers=AUTH)
 
     assert r.status_code == 422
     assert r.json()["error"]["code"] == "CHANNEL_NOT_AVAILABLE"
@@ -180,9 +174,7 @@ async def test_unavailable_channel_can_be_switched_off(api: _Api, owner):
 
 @pytest.mark.asyncio
 async def test_turning_off_the_only_channel_needs_reminders_off(api: _Api, owner):
-    r = await api.client.put(
-        URL, json={"channels": [{"channel": "DISCORD", "enabled": False}]}, headers=AUTH
-    )
+    r = await api.client.put(URL, json={"channels": [{"channel": "DISCORD", "enabled": False}]}, headers=AUTH)
 
     assert r.status_code == 422
     assert r.json()["error"]["code"] == "NO_CHANNEL_ENABLED"

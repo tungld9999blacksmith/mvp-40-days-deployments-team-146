@@ -170,9 +170,7 @@ async def test_profile_masks_vin_and_shows_oem_data(api: _Api, ready_vehicle):
 
 @pytest.mark.asyncio
 async def test_status_due_soon_ac001(api: _Api, ready_vehicle):
-    r = await api.client.get(
-        f"/api/v1/user-vehicles/{ready_vehicle.id}/maintenance-status", headers=AUTH
-    )
+    r = await api.client.get(f"/api/v1/user-vehicles/{ready_vehicle.id}/maintenance-status", headers=AUTH)
 
     assert r.status_code == 200
     data = r.json()["data"]
@@ -195,11 +193,9 @@ async def test_status_due_soon_ac001(api: _Api, ready_vehicle):
 async def test_status_new_oem_odometer_applies_ac003(api: _Api, ready_vehicle):
     add_odometer(api.session, ready_vehicle, 12_300, NOW + timedelta(minutes=5))
 
-    data = (
-        await api.client.get(
-            f"/api/v1/user-vehicles/{ready_vehicle.id}/maintenance-status", headers=AUTH
-        )
-    ).json()["data"]
+    data = (await api.client.get(f"/api/v1/user-vehicles/{ready_vehicle.id}/maintenance-status", headers=AUTH)).json()[
+        "data"
+    ]
 
     assert data["dueStatus"] == "OVERDUE"
     assert data["remainingKm"] == -300
@@ -210,11 +206,9 @@ async def test_status_odometer_never_goes_down_ac006(api: _Api, ready_vehicle):
     add_odometer(api.session, ready_vehicle, 12_300, NOW + timedelta(minutes=5))
     add_odometer(api.session, ready_vehicle, 12_100, NOW + timedelta(minutes=10))
 
-    data = (
-        await api.client.get(
-            f"/api/v1/user-vehicles/{ready_vehicle.id}/maintenance-status", headers=AUTH
-        )
-    ).json()["data"]
+    data = (await api.client.get(f"/api/v1/user-vehicles/{ready_vehicle.id}/maintenance-status", headers=AUTH)).json()[
+        "data"
+    ]
 
     assert data["odometer"]["odoKm"] == 12_300
 
@@ -225,9 +219,7 @@ async def test_status_time_only_when_oem_has_no_odometer_ac002(api: _Api):
     add_rules(api.session)
     mark_synced(api.session, vehicle)
 
-    data = (
-        await api.client.get(f"/api/v1/user-vehicles/{vehicle.id}/maintenance-status", headers=AUTH)
-    ).json()["data"]
+    data = (await api.client.get(f"/api/v1/user-vehicles/{vehicle.id}/maintenance-status", headers=AUTH)).json()["data"]
 
     assert data["calculationBasis"] == "TIME_ONLY"
     assert data["remainingKm"] is None
@@ -240,9 +232,7 @@ async def test_status_unknown_before_first_sync_self_heals_ac011(api: _Api):
     vehicle = add_vehicle(api.session, add_owner(api.session))
     add_rules(api.session)
 
-    data = (
-        await api.client.get(f"/api/v1/user-vehicles/{vehicle.id}/maintenance-status", headers=AUTH)
-    ).json()["data"]
+    data = (await api.client.get(f"/api/v1/user-vehicles/{vehicle.id}/maintenance-status", headers=AUTH)).json()["data"]
 
     assert data["dueStatus"] == "UNKNOWN"
     assert data["unknownReason"] == "OEM_DATA_NOT_SYNCED"
@@ -253,9 +243,7 @@ async def test_status_unknown_before_first_sync_self_heals_ac011(api: _Api):
 @pytest.mark.asyncio
 async def test_status_no_self_heal_when_sync_just_attempted(api: _Api):
     vehicle = add_vehicle(api.session, add_owner(api.session))
-    api.session.add(
-        VehicleOemSync(user_vehicle_id=vehicle.id, last_attempt_at=NOW - timedelta(minutes=1))
-    )
+    api.session.add(VehicleOemSync(user_vehicle_id=vehicle.id, last_attempt_at=NOW - timedelta(minutes=1)))
     api.session.commit()
 
     await api.client.get(f"/api/v1/user-vehicles/{vehicle.id}/maintenance-status", headers=AUTH)
@@ -269,9 +257,7 @@ async def test_status_unknown_without_maintenance_rules_ef003(api: _Api):
     mark_synced(api.session, vehicle)
     add_odometer(api.session, vehicle, 5_200)
 
-    data = (
-        await api.client.get(f"/api/v1/user-vehicles/{vehicle.id}/maintenance-status", headers=AUTH)
-    ).json()["data"]
+    data = (await api.client.get(f"/api/v1/user-vehicles/{vehicle.id}/maintenance-status", headers=AUTH)).json()["data"]
 
     assert data["dueStatus"] == "UNKNOWN"
     assert data["unknownReason"] == "NO_MAINTENANCE_RULE"
@@ -291,11 +277,9 @@ async def test_status_next_milestone_after_oem_service_ac007(api: _Api, ready_ve
     )
     api.session.commit()
 
-    data = (
-        await api.client.get(
-            f"/api/v1/user-vehicles/{ready_vehicle.id}/maintenance-status", headers=AUTH
-        )
-    ).json()["data"]
+    data = (await api.client.get(f"/api/v1/user-vehicles/{ready_vehicle.id}/maintenance-status", headers=AUTH)).json()[
+        "data"
+    ]
 
     assert data["nextMilestone"]["odoMilestoneKm"] == 24_000
     assert data["lastService"]["type"] == "OEM_SERVICE_RECORD"
@@ -316,11 +300,9 @@ async def test_status_ignores_non_periodic_repair_q304(api: _Api, ready_vehicle)
     )
     api.session.commit()
 
-    data = (
-        await api.client.get(
-            f"/api/v1/user-vehicles/{ready_vehicle.id}/maintenance-status", headers=AUTH
-        )
-    ).json()["data"]
+    data = (await api.client.get(f"/api/v1/user-vehicles/{ready_vehicle.id}/maintenance-status", headers=AUTH)).json()[
+        "data"
+    ]
 
     # The repair is not a baseline: still measured from the purchase date.
     assert data["lastService"]["type"] == "PURCHASE_DATE"
@@ -351,9 +333,7 @@ async def test_unknown_vehicle_id_is_not_found(api: _Api, ready_vehicle):
 
 @pytest.mark.asyncio
 async def test_unlinked_vehicle_is_not_active_ef004(api: _Api):
-    vehicle = add_vehicle(
-        api.session, add_owner(api.session), link_status=VehicleLinkStatus.UNLINKED
-    )
+    vehicle = add_vehicle(api.session, add_owner(api.session), link_status=VehicleLinkStatus.UNLINKED)
 
     r = await api.client.get(f"/api/v1/user-vehicles/{vehicle.id}", headers=AUTH)
 

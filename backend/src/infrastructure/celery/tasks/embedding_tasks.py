@@ -61,9 +61,7 @@ def index_message_task(self, message_id: str) -> str:
             record = VectorRecordBuilder.from_message(message)
             get_vector_store().add(CONVERSATION_MESSAGES, [record])
         except Exception as exc:  # noqa: BLE001 — retry on provider/store failure
-            countdown = RETRY_DELAYS_SECONDS[
-                min(self.request.retries, len(RETRY_DELAYS_SECONDS) - 1)
-            ]
+            countdown = RETRY_DELAYS_SECONDS[min(self.request.retries, len(RETRY_DELAYS_SECONDS) - 1)]
             raise self.retry(exc=exc, countdown=countdown)
 
         repo.update(message, {"embedded": True})

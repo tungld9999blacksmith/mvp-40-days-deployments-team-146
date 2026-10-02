@@ -6,7 +6,7 @@ bookings, reminders, quotes and support tickets all reference ``user_vehicle``.
 
 from datetime import date, datetime
 from decimal import Decimal
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, Numeric, SmallInteger, String, func
@@ -16,18 +16,18 @@ from sqlmodel import Field, SQLModel
 from src.common.data_access import SQLModelRepository
 
 
-class VehicleVerificationStatus(str, Enum):
+class VehicleVerificationStatus(StrEnum):
     PENDING = "pending"
     VERIFIED = "verified"
     FAILED = "failed"
 
 
-class VehicleLinkStatus(str, Enum):
+class VehicleLinkStatus(StrEnum):
     ACTIVE = "active"
     UNLINKED = "unlinked"
 
 
-class VerificationFailureReason(str, Enum):
+class VerificationFailureReason(StrEnum):
     VIN_NOT_FOUND = "vin_not_found"
     PLATE_MISMATCH = "plate_mismatch"
     MODEL_MISMATCH = "model_mismatch"
@@ -59,9 +59,7 @@ class UserVehicle(SQLModel, table=True):
     vin: str = Field(sa_column=Column(String(17), nullable=False, index=True))
     license_plate: str = Field(sa_column=Column(String(20), nullable=False, index=True))
     declared_model_id: str = Field(sa_column=Column(String(64), nullable=False))
-    declared_manufacture_year: int | None = Field(
-        default=None, sa_column=Column(SmallInteger, nullable=True)
-    )
+    declared_manufacture_year: int | None = Field(default=None, sa_column=Column(SmallInteger, nullable=True))
     # Manufacturer snapshot (set on verification)
     external_vehicle_id: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
     external_owner_id: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
@@ -71,9 +69,7 @@ class UserVehicle(SQLModel, table=True):
     color: str | None = Field(default=None, sa_column=Column(String(50), nullable=True))
     manufacture_date: date | None = Field(default=None, sa_column=Column(Date, nullable=True))
     production_year: int | None = Field(default=None, sa_column=Column(SmallInteger, nullable=True))
-    battery_capacity_kwh: Decimal | None = Field(
-        default=None, sa_column=Column(Numeric(6, 2), nullable=True)
-    )
+    battery_capacity_kwh: Decimal | None = Field(default=None, sa_column=Column(Numeric(6, 2), nullable=True))
     motor_power_kw: Decimal | None = Field(default=None, sa_column=Column(Numeric(7, 2), nullable=True))
     # State
     verification_status: VehicleVerificationStatus = Field(
@@ -109,13 +105,9 @@ class UserVehicle(SQLModel, table=True):
         ),
     )
     oem_synced_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 

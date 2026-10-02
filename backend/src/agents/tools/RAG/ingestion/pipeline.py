@@ -173,9 +173,14 @@ class IngestionEngine:
         lower = stem.lower()
         # Xác định model từ tên file
         model_map = {
-            "vfe34": "VF e34", "vfmpv7": "VF MPV 7",
-            "vf3": "VF3", "vf5": "VF5", "vf6": "VF6",
-            "vf7": "VF7", "vf8": "VF8", "vf9": "VF9",
+            "vfe34": "VF e34",
+            "vfmpv7": "VF MPV 7",
+            "vf3": "VF3",
+            "vf5": "VF5",
+            "vf6": "VF6",
+            "vf7": "VF7",
+            "vf8": "VF8",
+            "vf9": "VF9",
         }
         model_label = ""
         for key, label in model_map.items():

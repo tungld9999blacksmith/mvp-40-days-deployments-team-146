@@ -190,9 +190,7 @@ def sign_webhook(secret: str, timestamp: int | str, raw_body: bytes) -> str:
     return WEBHOOK_SIGNATURE_PREFIX + digest
 
 
-def verify_webhook_signature(
-    secret: str, timestamp: int | str, raw_body: bytes, signature: str
-) -> bool:
+def verify_webhook_signature(secret: str, timestamp: int | str, raw_body: bytes, signature: str) -> bool:
     """Constant-time check of an ``X-OEM-Signature`` header."""
     return hmac.compare_digest(sign_webhook(secret, timestamp, raw_body), signature)
 

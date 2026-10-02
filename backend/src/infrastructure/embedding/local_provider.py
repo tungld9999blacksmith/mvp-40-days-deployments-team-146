@@ -45,9 +45,7 @@ class LocalEmbeddingEngine(EmbeddingEngine):
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
         if not texts:
             return []
-        vectors = self._model.encode(
-            texts, normalize_embeddings=True, convert_to_numpy=True
-        ).tolist()
+        vectors = self._model.encode(texts, normalize_embeddings=True, convert_to_numpy=True).tolist()
         return self._validate(vectors)
 
     def embed_query(self, text: str) -> list[float]:

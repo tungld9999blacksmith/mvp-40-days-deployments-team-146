@@ -9,7 +9,7 @@ document re-ingest (BR-ENT-603/609).
 """
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
@@ -35,7 +35,7 @@ from sqlmodel import Field, SQLModel
 from src.common.data_access import SQLModelRepository
 
 
-class MessageRole(str, Enum):
+class MessageRole(StrEnum):
     USER = "user"
     ASSISTANT = "assistant"
     TOOL = "tool"
@@ -85,11 +85,7 @@ class ChatMessage(SQLModel, table=True):
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    conversation_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("conversation.id", ondelete="CASCADE"), nullable=False
-        )
-    )
+    conversation_id: UUID = Field(sa_column=Column(ForeignKey("conversation.id", ondelete="CASCADE"), nullable=False))
     # Global monotonic order; larger = newer. Assigned by the DB.
     seq: int | None = Field(
         default=None,
@@ -103,9 +99,7 @@ class ChatMessage(SQLModel, table=True):
     )
     content: str = Field(sa_column=Column(Text, nullable=False, server_default=""))
     # Client-generated id, present only on user turns; backs idempotent resend.
-    client_message_id: UUID | None = Field(
-        default=None, sa_column=Column(Uuid, nullable=True)
-    )
+    client_message_id: UUID | None = Field(default=None, sa_column=Column(Uuid, nullable=True))
     citations: list = Field(
         default_factory=list,
         sa_column=Column(JSONB, nullable=False, server_default="[]"),
@@ -114,12 +108,8 @@ class ChatMessage(SQLModel, table=True):
         default_factory=list,
         sa_column=Column(JSONB, nullable=False, server_default="[]"),
     )
-    tool_call_id: str | None = Field(
-        default=None, sa_column=Column(String(64), nullable=True)
-    )
-    tool_name: str | None = Field(
-        default=None, sa_column=Column(String(64), nullable=True)
-    )
+    tool_call_id: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
+    tool_name: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
     refs: dict = Field(
         default_factory=dict,
         sa_column=Column(JSONB, nullable=False, server_default="{}"),
@@ -138,11 +128,7 @@ class ChatMessage(SQLModel, table=True):
         default=False,
         sa_column=Column(Boolean, nullable=False, server_default="false"),
     )
-    created_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), nullable=False
-        )
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
 
 
 class ChatMessageRepository(SQLModelRepository[ChatMessage, UUID]):

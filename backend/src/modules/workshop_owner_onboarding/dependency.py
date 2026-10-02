@@ -23,9 +23,7 @@ from .service import WorkshopOnboardingService
 
 def get_service_center_gateway() -> OemServiceCenterGateway:
     settings = get_settings()
-    return HttpOemServiceCenterGateway(
-        settings.oem_api_base_url, timeout_seconds=settings.oem_api_timeout_seconds
-    )
+    return HttpOemServiceCenterGateway(settings.oem_api_base_url, timeout_seconds=settings.oem_api_timeout_seconds)
 
 
 def get_retry_scheduler() -> VerificationRetryScheduler:
@@ -86,7 +84,5 @@ def require_active_workshop_owner(
 ) -> WorkshopOwner:
     """Guard for workshop-management APIs (BR-203)."""
     if owner.onboarding_status != WorkshopOwnerOnboardingStatus.ACTIVE:
-        raise errors.WorkshopOnboardingError(
-            "Vui lòng hoàn tất onboarding trước.", code="ONBOARDING_REQUIRED"
-        )
+        raise errors.WorkshopOnboardingError("Vui lòng hoàn tất onboarding trước.", code="ONBOARDING_REQUIRED")
     return owner

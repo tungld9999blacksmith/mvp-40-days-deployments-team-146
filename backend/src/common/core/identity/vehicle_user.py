@@ -4,7 +4,7 @@ Columns follow ``docs/specs/entity/identity/vehicle_user.entity.md``.
 """
 
 from datetime import date, datetime
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID
 
 from sqlalchemy import Boolean, Column, Date, DateTime, ForeignKey, String, func
@@ -14,7 +14,7 @@ from sqlmodel import Field, SQLModel
 from src.common.data_access import SQLModelRepository
 
 
-class UserStatus(str, Enum):
+class UserStatus(StrEnum):
     """Administrative account state (independent of onboarding)."""
 
     ACTIVE = "active"
@@ -22,7 +22,7 @@ class UserStatus(str, Enum):
     SUSPENDED = "suspended"
 
 
-class OnboardingStatus(str, Enum):
+class OnboardingStatus(StrEnum):
     """Where the user is in the registration / onboarding flow (FF section 13)."""
 
     ONBOARDING_IN_PROGRESS = "onboarding_in_progress"
@@ -42,9 +42,7 @@ class VehicleUser(SQLModel, table=True):
     user_id: int | None = Field(default=None, primary_key=True)
 
     # ── Identity (from Firebase / Google) ────────────────────────────
-    firebase_uid: str = Field(
-        sa_column=Column(String(128), unique=True, index=True, nullable=False)
-    )
+    firebase_uid: str = Field(sa_column=Column(String(128), unique=True, index=True, nullable=False))
 
     email: str | None = Field(
         default=None,

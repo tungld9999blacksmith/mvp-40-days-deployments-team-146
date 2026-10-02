@@ -21,6 +21,7 @@ from src.modules.vehicle_owner_onboarding.domain import (
     WarrantyComponent,
     WarrantyStatus,
 )
+from tests._maintenance import add_workshop, make_session
 from tests._user_vehicle import (
     MODEL_ID,
     NOW,
@@ -29,7 +30,6 @@ from tests._user_vehicle import (
     add_rules,
     add_vehicle,
 )
-from tests._maintenance import add_workshop, make_session
 
 
 @pytest.fixture
@@ -71,9 +71,7 @@ def _chassis(session: Session, vehicle, end: date):
 
 
 def _service(session: Session, next_km: int | None = 12_000) -> CostEstimationService:
-    return CostEstimationService(
-        session, SimpleTextLocationFinder(), lambda _v: next_km, clock=lambda: NOW
-    )
+    return CostEstimationService(session, SimpleTextLocationFinder(), lambda _v: next_km, clock=lambda: NOW)
 
 
 def test_milestones_mark_next(session):
@@ -143,9 +141,7 @@ def test_unknown_milestone_lists_valid_ones(session):
         _service(session).estimate_for_request(user, vehicle, odo_milestone=13_000, workshop_id=ws.id)
     assert exc.value.details == {"validMilestones": [12_000, 24_000]}
     with pytest.raises(errors.MilestoneRequiredError):
-        _service(session, next_km=None).estimate_for_request(
-            user, vehicle, odo_milestone=None, workshop_id=ws.id
-        )
+        _service(session, next_km=None).estimate_for_request(user, vehicle, odo_milestone=None, workshop_id=ws.id)
 
 
 def test_default_workshop_preferred_then_required(session):
@@ -184,9 +180,7 @@ def test_compare_sorts_by_total_and_reports_failures(session):
     _price(session, cheap, "BRAKE_INSPECTION", 50_000)
     _price(session, pricey, "BRAKE_INSPECTION", 500_000)
 
-    data = _service(session).compare(
-        user, vehicle, odo_milestone=12_000, workshop_ids=[pricey.id, closed.id, cheap.id]
-    )
+    data = _service(session).compare(user, vehicle, odo_milestone=12_000, workshop_ids=[pricey.id, closed.id, cheap.id])
     assert [e.workshop.name for e in data.estimates[:2]] == ["Cheap", "Pricey"]
     assert data.estimates[2].error.code == "WORKSHOP_NOT_FOUND"
 

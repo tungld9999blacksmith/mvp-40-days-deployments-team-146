@@ -65,9 +65,7 @@ def load_settings() -> WebhookSettings:
     return WebhookSettings(
         url=os.getenv("MOCK_WEBHOOK_URL") or None,
         secret=os.getenv("MOCK_WEBHOOK_SECRET", ""),
-        usage_min_interval_seconds=float(
-            os.getenv("MOCK_WEBHOOK_USAGE_MIN_INTERVAL_SECONDS", "300")
-        ),
+        usage_min_interval_seconds=float(os.getenv("MOCK_WEBHOOK_USAGE_MIN_INTERVAL_SECONDS", "300")),
         timeout_seconds=float(os.getenv("MOCK_WEBHOOK_TIMEOUT_SECONDS", "5")),
     )
 
@@ -130,9 +128,7 @@ async def send_event(
 
     for attempt in range(1, max_attempts + 1):
         try:
-            status = await asyncio.to_thread(
-                _post, settings.url, headers, body, settings.timeout_seconds
-            )
+            status = await asyncio.to_thread(_post, settings.url, headers, body, settings.timeout_seconds)
             last_error = None
             if status < 500:
                 break
@@ -146,7 +142,10 @@ async def send_event(
     if not delivered:
         logger.warning(
             "Webhook %s %s for %s not delivered: %s",
-            event_id, event_type.value, vehicle_id, last_error or f"HTTP {status}",
+            event_id,
+            event_type.value,
+            vehicle_id,
+            last_error or f"HTTP {status}",
         )
     return DeliveryResult(
         event_id=event_id,

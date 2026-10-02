@@ -61,12 +61,8 @@ class VehicleModel(SQLModel, table=True):
 
     # relationships
     vehicles: list["Vehicle"] = Relationship(back_populates="model")
-    warranty_policies: list["WarrantyPolicy"] = Relationship(
-        back_populates="model"
-    )
-    maintenance_schedules: list["MaintenanceSchedule"] = Relationship(
-        back_populates="model"
-    )
+    warranty_policies: list["WarrantyPolicy"] = Relationship(back_populates="model")
+    maintenance_schedules: list["MaintenanceSchedule"] = Relationship(back_populates="model")
 
 
 class Owner(SQLModel, table=True):
@@ -97,9 +93,7 @@ class ServiceCenter(SQLModel, table=True):
     manager_email: str = Field(index=True, unique=True)
     manager_national_id: str
 
-    service_histories: list["ServiceHistory"] = Relationship(
-        back_populates="service_center"
-    )
+    service_histories: list["ServiceHistory"] = Relationship(back_populates="service_center")
 
 
 # ── Transactional data ───────────────────────────────────────────────
@@ -122,12 +116,8 @@ class Vehicle(SQLModel, table=True):
     owner: Optional[Owner] = Relationship(back_populates="vehicles")
     usage: Optional["VehicleUsage"] = Relationship(back_populates="vehicle")
     warranties: list["Warranty"] = Relationship(back_populates="vehicle")
-    service_histories: list["ServiceHistory"] = Relationship(
-        back_populates="vehicle"
-    )
-    warranty_claims: list["WarrantyClaim"] = Relationship(
-        back_populates="vehicle"
-    )
+    service_histories: list["ServiceHistory"] = Relationship(back_populates="vehicle")
+    warranty_claims: list["WarrantyClaim"] = Relationship(back_populates="vehicle")
 
 
 class VehicleUsage(SQLModel, table=True):
@@ -135,15 +125,11 @@ class VehicleUsage(SQLModel, table=True):
 
     __tablename__ = "vehicle_usage"
 
-    vehicle_id: str = Field(
-        primary_key=True, foreign_key="vehicle.vehicle_id"
-    )
+    vehicle_id: str = Field(primary_key=True, foreign_key="vehicle.vehicle_id")
     current_km: int
     battery_soh: float  # 0-100 %
     data_source: DataSource = DataSource.telematics
-    last_updated_at: Optional[datetime] = Field(
-        default=None, sa_column=Column(DateTime, nullable=False)
-    )
+    last_updated_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime, nullable=False))
 
     vehicle: Optional[Vehicle] = Relationship(back_populates="usage")
 
@@ -163,9 +149,7 @@ class WarrantyPolicy(SQLModel, table=True):
     km_limit: int
     terms_description: str
 
-    model: Optional[VehicleModel] = Relationship(
-        back_populates="warranty_policies"
-    )
+    model: Optional[VehicleModel] = Relationship(back_populates="warranty_policies")
     warranties: list["Warranty"] = Relationship(back_populates="policy")
 
 
@@ -183,9 +167,7 @@ class Warranty(SQLModel, table=True):
     status: WarrantyStatus
 
     vehicle: Optional[Vehicle] = Relationship(back_populates="warranties")
-    policy: Optional[WarrantyPolicy] = Relationship(
-        back_populates="warranties"
-    )
+    policy: Optional[WarrantyPolicy] = Relationship(back_populates="warranties")
     claims: list["WarrantyClaim"] = Relationship(back_populates="warranty")
 
 
@@ -201,9 +183,7 @@ class WarrantyClaim(SQLModel, table=True):
     status: ClaimStatus
     reject_reason: Optional[str] = None
 
-    vehicle: Optional[Vehicle] = Relationship(
-        back_populates="warranty_claims"
-    )
+    vehicle: Optional[Vehicle] = Relationship(back_populates="warranty_claims")
     warranty: Optional[Warranty] = Relationship(back_populates="claims")
 
 
@@ -221,9 +201,7 @@ class MaintenanceSchedule(SQLModel, table=True):
     milestone_months: int
     description: str
 
-    model: Optional[VehicleModel] = Relationship(
-        back_populates="maintenance_schedules"
-    )
+    model: Optional[VehicleModel] = Relationship(back_populates="maintenance_schedules")
     items: list["MaintenanceItem"] = Relationship(back_populates="schedule")
 
 
@@ -233,16 +211,12 @@ class MaintenanceItem(SQLModel, table=True):
     __tablename__ = "maintenance_item"
 
     item_id: str = Field(primary_key=True)
-    schedule_id: str = Field(
-        foreign_key="maintenance_schedule.schedule_id"
-    )
+    schedule_id: str = Field(foreign_key="maintenance_schedule.schedule_id")
     item_name: str
     is_covered_by_warranty: bool = False
     reference_price: Decimal = Field(default=Decimal("0"), decimal_places=0)
 
-    schedule: Optional[MaintenanceSchedule] = Relationship(
-        back_populates="items"
-    )
+    schedule: Optional[MaintenanceSchedule] = Relationship(back_populates="items")
 
 
 class ServiceHistory(SQLModel, table=True):
@@ -252,18 +226,12 @@ class ServiceHistory(SQLModel, table=True):
 
     order_id: str = Field(primary_key=True)
     vehicle_id: str = Field(foreign_key="vehicle.vehicle_id")
-    service_center_id: str = Field(
-        foreign_key="service_center.center_id"
-    )
+    service_center_id: str = Field(foreign_key="service_center.center_id")
     service_date: date
     km_at_service: int
     items_done: str  # JSON text ở MVP
     is_periodic: bool = Field(default=True)  # False = sửa chữa ngoài định kỳ
     total_cost: Decimal = Field(default=Decimal("0"), decimal_places=0)
 
-    vehicle: Optional[Vehicle] = Relationship(
-        back_populates="service_histories"
-    )
-    service_center: Optional[ServiceCenter] = Relationship(
-        back_populates="service_histories"
-    )
+    vehicle: Optional[Vehicle] = Relationship(back_populates="service_histories")
+    service_center: Optional[ServiceCenter] = Relationship(back_populates="service_histories")

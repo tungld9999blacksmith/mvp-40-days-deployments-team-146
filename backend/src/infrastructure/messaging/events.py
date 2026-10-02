@@ -22,10 +22,7 @@ _CITATION_CLIENT_KEYS = ("title", "version", "documentType", "pageNumber", "snip
 
 
 def _client_citations(citations: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
-    return [
-        {k: c.get(k) for k in _CITATION_CLIENT_KEYS if k in c}
-        for c in (citations or [])
-    ]
+    return [{k: c.get(k) for k in _CITATION_CLIENT_KEYS if k in c} for c in (citations or [])]
 
 
 class MessageDto(BaseModel):

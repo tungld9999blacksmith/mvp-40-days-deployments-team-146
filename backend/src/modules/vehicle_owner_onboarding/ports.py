@@ -29,9 +29,7 @@ class OemVehicleGateway(ABC):
         ...
 
     @abstractmethod
-    async def verify_ownership(
-        self, request: OwnershipVerifyRequest
-    ) -> OwnershipVerifyResponse:
+    async def verify_ownership(self, request: OwnershipVerifyRequest) -> OwnershipVerifyResponse:
         """Verify a user owns a vehicle and return its spec + warranties.
 
         Raises:

@@ -107,7 +107,10 @@ async def test_full_happy_path(api):
     assert data["workshop"]["type"] == "DEALER"
     assert data["workshop"]["latitude"] == 21.017
     assert data["workshop"]["operatingHours"][0] == {
-        "dayOfWeek": 1, "isClosed": False, "openTime": "08:00", "closeTime": "17:30"
+        "dayOfWeek": 1,
+        "isClosed": False,
+        "openTime": "08:00",
+        "closeTime": "17:30",
     }
 
     resp = await api.client.get(f"{BASE}/onboarding")
@@ -220,9 +223,7 @@ async def test_schema_violation_uses_error_envelope(api):
 async def test_missing_idempotency_key_is_400(api):
     await api.sign_in()
     await api.profile()
-    resp = await api.client.post(
-        f"{BASE}/onboarding/workshop-verification", json=verification_body()
-    )
+    resp = await api.client.post(f"{BASE}/onboarding/workshop-verification", json=verification_body())
     assert resp.status_code == 400
 
 

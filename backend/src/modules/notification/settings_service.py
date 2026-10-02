@@ -35,20 +35,14 @@ class NotificationSettingsService:
 
     def get(self, user: VehicleUser) -> schemas.NotificationSettingsOut:
         """API-NOTI-001. Read only: never creates rows."""
-        prefs = load_preferences(
-            self._db, user.user_id, default_lead_days=self._default_lead_days
-        )
+        prefs = load_preferences(self._db, user.user_id, default_lead_days=self._default_lead_days)
         return self._out(user.user_id, prefs.reminders_enabled, prefs.lead_days, prefs.channels)
 
     def update(
         self, user: VehicleUser, payload: schemas.NotificationSettingsUpdateIn
     ) -> schemas.NotificationSettingsOut:
         """API-NOTI-002. All changes are validated first and saved in one transaction."""
-        if (
-            payload.reminders_enabled is None
-            and payload.reminder_lead_days is None
-            and not payload.channels
-        ):
+        if payload.reminders_enabled is None and payload.reminder_lead_days is None and not payload.channels:
             raise errors.InvalidRequestError("At least one setting must be provided.")
         if payload.reminder_lead_days is not None and not (
             MIN_LEAD_DAYS <= payload.reminder_lead_days <= MAX_LEAD_DAYS
@@ -72,9 +66,7 @@ class NotificationSettingsService:
             raise errors.NoChannelEnabledError()
 
         if setting is None:
-            setting = UserNotificationSetting(
-                user_id=user.user_id, reminder_lead_days=self._default_lead_days
-            )
+            setting = UserNotificationSetting(user_id=user.user_id, reminder_lead_days=self._default_lead_days)
         setting.reminders_enabled = enabled
         if payload.reminder_lead_days is not None:
             setting.reminder_lead_days = payload.reminder_lead_days
@@ -83,23 +75,17 @@ class NotificationSettingsService:
         stored = {
             row.channel: row
             for row in self._db.exec(
-                select(UserNotificationChannel).where(
-                    UserNotificationChannel.user_id == user.user_id
-                )
+                select(UserNotificationChannel).where(UserNotificationChannel.user_id == user.user_id)
             ).all()
         }
         for change in payload.channels or []:
             channel = _to_core(change.channel)
-            row = stored.get(channel) or UserNotificationChannel(
-                user_id=user.user_id, channel=channel
-            )
+            row = stored.get(channel) or UserNotificationChannel(user_id=user.user_id, channel=channel)
             row.is_enabled = change.enabled
             self._db.add(row)
         self._db.commit()
 
-        return self._out(
-            user.user_id, enabled, setting.reminder_lead_days, effective_channels(rows)
-        )
+        return self._out(user.user_id, enabled, setting.reminder_lead_days, effective_channels(rows))
 
     # ----------------------------------------------------------- helpers
     def _out(
@@ -130,9 +116,5 @@ class NotificationSettingsService:
         if channel is ReminderChannel.DISCORD:
             link = self._db.get(UserDiscordLink, user_id)
             connected = link is not None and link.status is DiscordLinkStatus.ACTIVE
-            return (
-                schemas.ChannelStatus.CONNECTED
-                if connected
-                else schemas.ChannelStatus.NOT_CONNECTED
-            )
+            return schemas.ChannelStatus.CONNECTED if connected else schemas.ChannelStatus.NOT_CONNECTED
         return schemas.ChannelStatus.NOT_CONNECTED

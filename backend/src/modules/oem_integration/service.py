@@ -120,9 +120,7 @@ class OemVehicleSyncService:
             await self._lock.release(user_vehicle_id)
 
     async def _sync_locked(self, vehicle: UserVehicle, trigger: OemSyncTrigger) -> SyncOutcome:
-        state = self._db.get(VehicleOemSync, vehicle.id) or VehicleOemSync(
-            user_vehicle_id=vehicle.id
-        )
+        state = self._db.get(VehicleOemSync, vehicle.id) or VehicleOemSync(user_vehicle_id=vehicle.id)
         state.last_attempt_at = self._clock()
         state.last_trigger = trigger
         self._db.add(state)
@@ -184,9 +182,7 @@ class OemVehicleSyncService:
         )
 
     # ------------------------------------------------------------ odometer
-    def _store_usage(
-        self, user_vehicle_id: UUID, usage: UsageSnapshot | None, trigger: OemSyncTrigger
-    ) -> bool:
+    def _store_usage(self, user_vehicle_id: UUID, usage: UsageSnapshot | None, trigger: OemSyncTrigger) -> bool:
         """Insert a new snapshot if it is newer than the last one (BR-ENT-431)."""
         if usage is None:
             return False
@@ -235,9 +231,7 @@ class OemVehicleSyncService:
         return True
 
     # ------------------------------------------------------ service history
-    def _store_service_history(
-        self, user_vehicle_id: UUID, history: list[ServiceHistoryEntry]
-    ) -> int:
+    def _store_service_history(self, user_vehicle_id: UUID, history: list[ServiceHistoryEntry]) -> int:
         """Upsert manufacturer records by order id (BR-ENT-433). Returns rows changed.
 
         Records are never deleted, even if the manufacturer drops them (Q-311).
@@ -255,9 +249,7 @@ class OemVehicleSyncService:
         workshops = (
             {
                 w.external_center_id: w.id
-                for w in self._db.exec(
-                    select(Workshop).where(Workshop.external_center_id.in_(center_ids))
-                ).all()
+                for w in self._db.exec(select(Workshop).where(Workshop.external_center_id.in_(center_ids))).all()
             }
             if center_ids
             else {}
@@ -335,9 +327,7 @@ class OemWebhookService:
         if not self._secret:
             logger.error("OEM_WEBHOOK_SECRET is not configured; rejecting webhook")
             raise errors.WebhookSignatureInvalidError()
-        if not signature or not verify_webhook_signature(
-            self._secret, timestamp, raw_body, signature
-        ):
+        if not signature or not verify_webhook_signature(self._secret, timestamp, raw_body, signature):
             raise errors.WebhookSignatureInvalidError()
         if not event_id or len(event_id) > 128:
             raise errors.InvalidWebhookRequestError("X-OEM-Event-Id header is required.")
@@ -357,9 +347,7 @@ class OemWebhookService:
             return WebhookResult(event_id=event_id, ignored=True)
 
         if await self._events.claim_debounce(vehicle_id):
-            self._scheduler.schedule(
-                vehicle_id, OemSyncTrigger.WEBHOOK, delay_seconds=WEBHOOK_DEBOUNCE_SECONDS
-            )
+            self._scheduler.schedule(vehicle_id, OemSyncTrigger.WEBHOOK, delay_seconds=WEBHOOK_DEBOUNCE_SECONDS)
         logger.info(
             "OEM webhook %s %s accepted for vehicle %s",
             event_id,

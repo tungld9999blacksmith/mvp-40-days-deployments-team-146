@@ -75,9 +75,7 @@ class LocationAnchorRequiredError(BookingError):
     code = "LOCATION_ANCHOR_REQUIRED"
 
     def __init__(self) -> None:
-        super().__init__(
-            "Please provide a location or choose a workshop to search near."
-        )
+        super().__init__("Please provide a location or choose a workshop to search near.")
 
 
 class SlotOutOfHoursError(BookingError):
@@ -143,9 +141,7 @@ class BookingNotConfirmedError(BookingError):
     code = "BOOKING_NOT_CONFIRMED"
 
     def __init__(self, current_status: str) -> None:
-        super().__init__(
-            "The booking is not confirmed.", details={"currentStatus": current_status.upper()}
-        )
+        super().__init__("The booking is not confirmed.", details={"currentStatus": current_status.upper()})
 
 
 class AppointmentStartedError(BookingError):

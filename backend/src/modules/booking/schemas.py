@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, time
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -17,9 +17,7 @@ from src.common.money import Money
 
 
 class CamelModel(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=to_camel, populate_by_name=True, protected_namespaces=()
-    )
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, protected_namespaces=())
 
 
 # ── API-BK-01 nearby ───────────────────────────────────────────────────────
@@ -240,7 +238,7 @@ class AttendanceEnvelope(CamelModel):
     data: AttendanceData
 
 
-class OwnerCancelSource(str, Enum):
+class OwnerCancelSource(StrEnum):
     REMINDER_24H = "REMINDER_24H"
     APP = "APP"
 
@@ -270,7 +268,7 @@ class BookingByCodeEnvelope(CamelModel):
     data: BookingByCodeData
 
 
-class RescheduleSource(str, Enum):
+class RescheduleSource(StrEnum):
     APP = "APP"
     REMINDER_24H = "REMINDER_24H"
 

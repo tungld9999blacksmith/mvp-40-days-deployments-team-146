@@ -15,7 +15,6 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel import Session, select
 
 from src.common.core.identity.vehicle_user import UserStatus, VehicleUser
-
 from src.config import get_settings
 from src.infrastructure.llm.dependency import get_llm_provider
 from src.infrastructure.messaging import get_message_service
@@ -60,9 +59,7 @@ def get_current_user_id(
             claims = auth.verify_id_token(cred.credentials, clock_skew_seconds=_CLOCK_SKEW_SECONDS)
         except Exception as exc:  # noqa: BLE001 — any verification failure is a 401
             raise errors.Unauthorized("Invalid or expired Firebase token.") from exc
-        user = session.exec(
-            select(VehicleUser).where(VehicleUser.firebase_uid == claims.get("uid"))
-        ).first()
+        user = session.exec(select(VehicleUser).where(VehicleUser.firebase_uid == claims.get("uid"))).first()
         if user is None or user.user_id is None:
             raise errors.Forbidden("This account is not a vehicle owner.")
         if user.status != UserStatus.ACTIVE:

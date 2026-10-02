@@ -79,9 +79,7 @@ class SyncScheduler(ABC):
     """Enqueues a background sync of one vehicle (Celery in production)."""
 
     @abstractmethod
-    def schedule(
-        self, user_vehicle_id: UUID, trigger: OemSyncTrigger, *, delay_seconds: int = 0
-    ) -> None: ...
+    def schedule(self, user_vehicle_id: UUID, trigger: OemSyncTrigger, *, delay_seconds: int = 0) -> None: ...
 
 
 class WebhookEventStore(ABC):

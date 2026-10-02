@@ -44,6 +44,4 @@ class VehicleOwnershipDeniedError(VehicleException):
     def __init__(self, user_id: str, vehicle_id: str) -> None:
         self.user_id = user_id
         self.vehicle_id = vehicle_id
-        super().__init__(
-            f"User '{user_id}' is not the owner of vehicle '{vehicle_id}'."
-        )
+        super().__init__(f"User '{user_id}' is not the owner of vehicle '{vehicle_id}'.")

@@ -57,9 +57,7 @@ class _Receiver:
 
 
 def _settings(url: str | None) -> webhooks.WebhookSettings:
-    return webhooks.WebhookSettings(
-        url=url, secret=SECRET, usage_min_interval_seconds=300, timeout_seconds=2
-    )
+    return webhooks.WebhookSettings(url=url, secret=SECRET, usage_min_interval_seconds=300, timeout_seconds=2)
 
 
 @pytest.fixture(autouse=True)
@@ -82,14 +80,10 @@ def test_signature_roundtrip_and_tamper_detection():
 
 
 def test_build_request_is_signed_and_parsable():
-    event_id, headers, body = webhooks.build_request(
-        WebhookEventType.VEHICLE_USAGE_UPDATED, "VEH-001", SECRET
-    )
+    event_id, headers, body = webhooks.build_request(WebhookEventType.VEHICLE_USAGE_UPDATED, "VEH-001", SECRET)
 
     assert headers[WEBHOOK_EVENT_ID_HEADER] == event_id
-    assert verify_webhook_signature(
-        SECRET, headers[WEBHOOK_TIMESTAMP_HEADER], body, headers[WEBHOOK_SIGNATURE_HEADER]
-    )
+    assert verify_webhook_signature(SECRET, headers[WEBHOOK_TIMESTAMP_HEADER], body, headers[WEBHOOK_SIGNATURE_HEADER])
     event = WebhookEvent.model_validate_json(body)
     assert event.event_type is WebhookEventType.VEHICLE_USAGE_UPDATED
     assert event.vehicle_id == "VEH-001"
@@ -99,9 +93,7 @@ def test_build_request_is_signed_and_parsable():
 
 
 def test_send_event_disabled_returns_none():
-    result = asyncio.run(
-        webhooks.send_event(WebhookEventType.VEHICLE_USAGE_UPDATED, "VEH-001", _settings(None))
-    )
+    result = asyncio.run(webhooks.send_event(WebhookEventType.VEHICLE_USAGE_UPDATED, "VEH-001", _settings(None)))
     assert result is None
 
 
@@ -129,9 +121,7 @@ def test_send_event_delivers_signed_request():
 def test_send_event_does_not_retry_client_errors():
     with _Receiver(status=401) as receiver:
         result = asyncio.run(
-            webhooks.send_event(
-                WebhookEventType.VEHICLE_USAGE_UPDATED, "VEH-001", _settings(receiver.url)
-            )
+            webhooks.send_event(WebhookEventType.VEHICLE_USAGE_UPDATED, "VEH-001", _settings(receiver.url))
         )
 
     assert not result.delivered
@@ -142,9 +132,7 @@ def test_send_event_does_not_retry_client_errors():
 def test_send_event_retries_server_errors():
     with _Receiver(status=503) as receiver:
         result = asyncio.run(
-            webhooks.send_event(
-                WebhookEventType.VEHICLE_USAGE_UPDATED, "VEH-001", _settings(receiver.url)
-            )
+            webhooks.send_event(WebhookEventType.VEHICLE_USAGE_UPDATED, "VEH-001", _settings(receiver.url))
         )
 
     assert not result.delivered
@@ -180,9 +168,7 @@ def mock_client():
 
 def test_create_service_record_dispatches_webhook(mock_client, monkeypatch):
     sent: list[tuple[WebhookEventType, str]] = []
-    monkeypatch.setattr(
-        maintenance_router, "dispatch", lambda event, vid: sent.append((event, vid))
-    )
+    monkeypatch.setattr(maintenance_router, "dispatch", lambda event, vid: sent.append((event, vid)))
 
     resp = mock_client.post(
         "/vehicles/VEH-001/service-history",

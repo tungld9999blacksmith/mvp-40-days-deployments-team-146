@@ -16,7 +16,7 @@ import logging
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Path, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Path, WebSocket, WebSocketDisconnect
 
 from src.config import get_settings
 from src.infrastructure.messaging import get_message_service
@@ -51,10 +51,8 @@ async def stream(
 
     # 1) Authenticate via the first frame (dev: {"type":"auth","userId":N}).
     try:
-        auth = await asyncio.wait_for(
-            websocket.receive_json(), timeout=settings.conversation_ws_auth_timeout_seconds
-        )
-    except (asyncio.TimeoutError, WebSocketDisconnect):
+        auth = await asyncio.wait_for(websocket.receive_json(), timeout=settings.conversation_ws_auth_timeout_seconds)
+    except (TimeoutError, WebSocketDisconnect):
         await websocket.close(code=_CLOSE_UNAUTH)
         return
     if not isinstance(auth, dict) or auth.get("type") != "auth" or "userId" not in auth:
@@ -89,9 +87,7 @@ async def stream(
 
         async def pump_out() -> None:
             async for event in messages.subscribe(conversation_id):
-                await websocket.send_json(
-                    {"type": "message", "data": event.model_dump(mode="json")}
-                )
+                await websocket.send_json({"type": "message", "data": event.model_dump(mode="json")})
 
         async def pump_ping() -> None:
             while True:

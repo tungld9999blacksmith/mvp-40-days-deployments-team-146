@@ -23,11 +23,7 @@ async def rag_retrieval_node(state: AgentState) -> dict[str, Any]:
     model = state.get("vehicle_model")
     odo = state.get("current_odometer_km")
 
-    vehicle_context = (
-        UserVehicleContext(model=model, current_odometer_km=odo)
-        if model
-        else None
-    )
+    vehicle_context = UserVehicleContext(model=model, current_odometer_km=odo) if model else None
 
     try:
         pipeline = _get_rag_pipeline()

@@ -141,9 +141,7 @@ async def test_owner_lead_days_apply_ac502(session, vehicle, owner):
 
 @pytest.mark.asyncio
 async def test_default_lead_days_come_from_config(session, vehicle):
-    outcome = await _service(
-        session, [_discord()], FIVE_DAYS_BEFORE, default_lead_days=7
-    ).remind(vehicle.id)
+    outcome = await _service(session, [_discord()], FIVE_DAYS_BEFORE, default_lead_days=7).remind(vehicle.id)
 
     assert outcome.created_level is ReminderLevel.EARLY
 
@@ -241,9 +239,7 @@ async def test_open_booking_stops_and_closes_reminders_ac505(session, vehicle, o
     )
     session.commit()
 
-    outcome = await _service(session, [discord], THREE_DAYS_LATE.replace(day=13)).remind(
-        vehicle.id
-    )
+    outcome = await _service(session, [discord], THREE_DAYS_LATE.replace(day=13)).remind(vehicle.id)
 
     assert (outcome.status, outcome.reason) == ("skipped", "HAS_BOOKING")
     assert all(r.is_resolved for r in session.exec(select(Reminder)).all())
@@ -322,9 +318,7 @@ async def test_logging_discord_adapter_needs_an_active_link(session, vehicle, ow
 @pytest.mark.asyncio
 async def test_logging_discord_adapter_sends_to_active_link(session, vehicle, owner):
     add_discord_link(session, owner)
-    service = _service(
-        session, [LoggingDiscordAdapter(session, clock=lambda: TWO_DAYS_BEFORE)], TWO_DAYS_BEFORE
-    )
+    service = _service(session, [LoggingDiscordAdapter(session, clock=lambda: TWO_DAYS_BEFORE)], TWO_DAYS_BEFORE)
 
     outcome = await service.remind(vehicle.id)
 
@@ -351,11 +345,7 @@ async def test_every_enabled_channel_gets_a_delivery_af503(session, vehicle, own
 
 @pytest.mark.asyncio
 async def test_disabled_channel_is_not_used(session, vehicle, owner):
-    session.add(
-        UserNotificationChannel(
-            user_id=owner.user_id, channel=ReminderChannel.DISCORD, is_enabled=False
-        )
-    )
+    session.add(UserNotificationChannel(user_id=owner.user_id, channel=ReminderChannel.DISCORD, is_enabled=False))
     session.add(UserNotificationChannel(user_id=owner.user_id, channel=ReminderChannel.TELEGRAM))
     session.commit()
     discord = _discord()

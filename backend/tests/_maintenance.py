@@ -20,14 +20,14 @@ from src.common.core.identity.vehicle_user import VehicleUser
 from src.common.core.identity.workshop_owner import WorkshopOwner
 from src.common.core.maintenance.booking import Booking, BookingStatus
 from src.common.core.maintenance.booking_status_event import BookingReschedule, BookingStatusEvent
+from src.common.core.maintenance.quote import Quote
+from src.common.core.maintenance.quote_item import QuoteItem
+from src.common.core.maintenance.service_progress import ServiceProgress
 from src.common.core.notification import (
     BookingReminder,
     BookingReminderDelivery,
     FollowUpDelivery,
 )
-from src.common.core.maintenance.quote import Quote
-from src.common.core.maintenance.quote_item import QuoteItem
-from src.common.core.maintenance.service_progress import ServiceProgress
 from src.common.core.vehicle import UserVehicle
 from src.common.core.workshop import (
     BookingConfirmationMode,
@@ -58,9 +58,7 @@ TABLES = [
 
 
 def make_session() -> Iterator[Session]:
-    engine = create_engine(
-        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
-    )
+    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
     metadata = MetaData()
     for table in TABLES:
         _make_sqlite_compatible(table.to_metadata(metadata))
@@ -107,9 +105,7 @@ def add_workshop(
     return workshop
 
 
-def add_hours(
-    session: Session, workshop: Workshop, *, open_at: time = time(8), close_at: time = time(17)
-) -> None:
+def add_hours(session: Session, workshop: Workshop, *, open_at: time = time(8), close_at: time = time(17)) -> None:
     """Open every day of the week between ``open_at`` and ``close_at``."""
     for dow in range(1, 8):
         session.add(

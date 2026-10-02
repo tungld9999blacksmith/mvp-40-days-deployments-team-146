@@ -68,7 +68,9 @@ class GeminiProvider(LLMProvider):
                     continue
                 raise last_error from exc
             except Exception as exc:
-                if attempt < max_retries - 1 and ("demand" in str(exc).lower() or "503" in str(exc) or "429" in str(exc)):
+                if attempt < max_retries - 1 and (
+                    "demand" in str(exc).lower() or "503" in str(exc) or "429" in str(exc)
+                ):
                     await asyncio.sleep(2 * (attempt + 1))
                     continue
                 raise exc

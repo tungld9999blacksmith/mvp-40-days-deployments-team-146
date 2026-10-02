@@ -69,9 +69,7 @@ async def list_my_support_tickets(
     limit: Annotated[int, Query(ge=1, le=50)] = 20,
     cursor: Annotated[str | None, Query(max_length=100)] = None,
 ) -> schemas.OwnerTicketListEnvelope:
-    data = service.list_tickets(
-        user, status=_status(status.value if status else None), limit=limit, cursor=cursor
-    )
+    data = service.list_tickets(user, status=_status(status.value if status else None), limit=limit, cursor=cursor)
     return schemas.OwnerTicketListEnvelope(data=data)
 
 

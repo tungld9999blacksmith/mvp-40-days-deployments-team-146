@@ -66,9 +66,7 @@ def world(session):
 
 
 def _job(session, adapter, now=NOW):
-    return BookingReminderJob(
-        session, NotificationService([adapter]), ReminderConfig(), clock=lambda: now
-    )
+    return BookingReminderJob(session, NotificationService([adapter]), ReminderConfig(), clock=lambda: now)
 
 
 # ── HOOK-BR-001 ─────────────────────────────────────────────────────────────
@@ -85,8 +83,11 @@ def test_confirm_schedules_reminder_and_cancel_skips_it(world):
     assert as_utc(reminder.scheduled_at) == datetime(2026, 10, 4, 2, 0, tzinfo=UTC)
 
     machine.transition(
-        booking, BookingStatus.CANCELLED, actor=Actor.vehicle_owner(user.user_id),
-        source="APP", reason_code="OWNER_CANCELLED",
+        booking,
+        BookingStatus.CANCELLED,
+        actor=Actor.vehicle_owner(user.user_id),
+        source="APP",
+        reason_code="OWNER_CANCELLED",
     )
     session.commit()
     session.refresh(reminder)
@@ -208,13 +209,29 @@ def test_close_expired_after_72h(world):
 # ── JOB-QT-01 ───────────────────────────────────────────────────────────────
 def test_purge_only_old_drafts(world):
     session, user, vehicle, workshop = world
-    old = Quote(user_vehicle_id=vehicle.id, workshop_id=workshop.id, odo_milestone=12000,
-                estimated_total=Decimal(0), created_at=NOW - timedelta(days=8))
-    fresh = Quote(user_vehicle_id=vehicle.id, workshop_id=workshop.id, odo_milestone=24000,
-                  estimated_total=Decimal(0), created_at=NOW - timedelta(days=1))
-    pending = Quote(user_vehicle_id=vehicle.id, workshop_id=workshop.id, odo_milestone=36000,
-                    estimated_total=Decimal(0), status=QuoteStatus.PENDING_APPROVAL,
-                    submitted_at=NOW - timedelta(days=9), created_at=NOW - timedelta(days=9))
+    old = Quote(
+        user_vehicle_id=vehicle.id,
+        workshop_id=workshop.id,
+        odo_milestone=12000,
+        estimated_total=Decimal(0),
+        created_at=NOW - timedelta(days=8),
+    )
+    fresh = Quote(
+        user_vehicle_id=vehicle.id,
+        workshop_id=workshop.id,
+        odo_milestone=24000,
+        estimated_total=Decimal(0),
+        created_at=NOW - timedelta(days=1),
+    )
+    pending = Quote(
+        user_vehicle_id=vehicle.id,
+        workshop_id=workshop.id,
+        odo_milestone=36000,
+        estimated_total=Decimal(0),
+        status=QuoteStatus.PENDING_APPROVAL,
+        submitted_at=NOW - timedelta(days=9),
+        created_at=NOW - timedelta(days=9),
+    )
     session.add_all([old, fresh, pending])
     session.commit()
 

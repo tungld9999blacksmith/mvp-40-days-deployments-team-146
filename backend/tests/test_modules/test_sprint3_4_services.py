@@ -95,9 +95,7 @@ def test_ticket_hides_other_owner_and_blocks_after_start(world):
 def test_my_bookings_paginates_and_finds_by_code(world):
     session, user, vehicle, _, workshop = world
     for i in range(3):
-        add_booking(
-            session, user, vehicle, workshop, d=TODAY + timedelta(days=i + 1), code=f"EVC-0000000{i}"
-        )
+        add_booking(session, user, vehicle, workshop, d=TODAY + timedelta(days=i + 1), code=f"EVC-0000000{i}")
     tickets = _tickets(session)
     first = tickets.list_for_user(user, limit=2)
     second = tickets.list_for_user(user, limit=2, cursor=first.next_cursor)
@@ -117,17 +115,13 @@ def _board(session, now=NOW):
 
 
 def _move(action, expected, **kw):
-    return board_schemas.TransitionRequest(
-        action=action, expected_status=expected, **kw
-    )
+    return board_schemas.TransitionRequest(action=action, expected_status=expected, **kw)
 
 
 @pytest.mark.asyncio
 async def test_board_full_lifecycle_creates_record_and_follow_up(world):
     session, user, vehicle, owner, workshop = world
-    booking = add_booking(
-        session, user, vehicle, workshop, d=TODAY, t=time(15), status=BookingStatus.PENDING
-    )
+    booking = add_booking(session, user, vehicle, workshop, d=TODAY, t=time(15), status=BookingStatus.PENDING)
     booking.created_at = NOW - timedelta(hours=1)  # within the 12h confirm deadline
     session.add(booking)
     session.commit()
@@ -161,9 +155,7 @@ async def test_board_guards(world):
         await board.transition(owner, workshop, tomorrow.id, _move("CANCEL", "CONFIRMED"))
     today = add_booking(session, user, vehicle, workshop, d=TODAY, t=time(9), code="EVC-0002")
     with pytest.raises(board_errors.NoShowTooEarlyError):
-        await board.transition(
-            owner, workshop, today.id, _move("CANCEL", "CONFIRMED", reason_code="NO_SHOW")
-        )
+        await board.transition(owner, workshop, today.id, _move("CANCEL", "CONFIRMED", reason_code="NO_SHOW"))
     other_ws = add_workshop(session, name="Other")
     with pytest.raises(board_errors.BookingNotFoundError):
         board.detail(other_ws, today.id)
@@ -207,9 +199,7 @@ def test_quote_draft_submit_approve(world):
     quotes = _quotes(session)
     draft = quotes.create(
         user,
-        quote_schemas.CreateQuoteRequest(
-            user_vehicle_id=vehicle.id, workshop_id=workshop.id, odo_milestone=12_000
-        ),
+        quote_schemas.CreateQuoteRequest(user_vehicle_id=vehicle.id, workshop_id=workshop.id, odo_milestone=12_000),
     )
     assert draft.status == "DRAFT" and draft.estimated_total == Decimal(100_000)
 
@@ -220,9 +210,7 @@ def test_quote_draft_submit_approve(world):
 
     twin = quotes.create(
         user,
-        quote_schemas.CreateQuoteRequest(
-            user_vehicle_id=vehicle.id, workshop_id=workshop.id, odo_milestone=12_000
-        ),
+        quote_schemas.CreateQuoteRequest(user_vehicle_id=vehicle.id, workshop_id=workshop.id, odo_milestone=12_000),
     )
     with pytest.raises(quote_errors.QuoteAlreadyPendingError):
         quotes.submit(user, twin.quote_id)
@@ -253,9 +241,7 @@ def test_quote_draft_submit_approve(world):
 
     mine = quotes.get_for_owner(user, draft.quote_id)  # marks the result as seen
     assert mine.status == "APPROVED"
-    unseen = quotes.list_for_owner(
-        user, user_vehicle_id=None, statuses=None, unseen_result=True, limit=10, cursor=None
-    )
+    unseen = quotes.list_for_owner(user, user_vehicle_id=None, statuses=None, unseen_result=True, limit=10, cursor=None)
     assert unseen.items == []
 
 
@@ -265,9 +251,7 @@ def test_quote_workshop_scope_and_reject_note(world):
     quotes = _quotes(session)
     draft = quotes.create(
         user,
-        quote_schemas.CreateQuoteRequest(
-            user_vehicle_id=vehicle.id, workshop_id=workshop.id, odo_milestone=24_000
-        ),
+        quote_schemas.CreateQuoteRequest(user_vehicle_id=vehicle.id, workshop_id=workshop.id, odo_milestone=24_000),
     )
     with pytest.raises(quote_errors.QuoteNotFoundError):  # drafts are invisible to the workshop
         quotes.get_for_workshop(workshop.id, draft.quote_id)
@@ -318,7 +302,11 @@ async def test_follow_up_issue_creates_high_priority_ticket(world):
             owner, workshop.id, ticket.id, action="RESOLVE", expected_status="OPEN", resolution_note=" "
         )
     done = await tickets.transition(
-        owner, workshop.id, ticket.id, action="RESOLVE", expected_status="OPEN",
+        owner,
+        workshop.id,
+        ticket.id,
+        action="RESOLVE",
+        expected_status="OPEN",
         resolution_note="Called the owner; free brake check on 06/10.",
     )
     assert done.status == "RESOLVED" and done.allowed_actions == []
@@ -357,16 +345,25 @@ async def test_progress_order_and_note(world):
     assert out.current_stage == "SERVICING" and out.next_stages == ["WAITING_PARTS", "QUALITY_CHECK"]
     with pytest.raises(progress_errors.NoteRequiredError):
         await progress.append(
-            booking, owner.id, stage=ServiceStage.WAITING_PARTS, note="short",
+            booking,
+            owner.id,
+            stage=ServiceStage.WAITING_PARTS,
+            note="short",
             expected_current=ServiceStage.SERVICING,
         )
     with pytest.raises(progress_errors.InvalidStageTransitionError):
         await progress.append(
-            booking, owner.id, stage=ServiceStage.READY_FOR_PICKUP, note=None,
+            booking,
+            owner.id,
+            stage=ServiceStage.READY_FOR_PICKUP,
+            note=None,
             expected_current=ServiceStage.SERVICING,
         )
     with pytest.raises(progress_errors.ProgressChangedError):
         await progress.append(
-            booking, owner.id, stage=ServiceStage.QUALITY_CHECK, note=None,
+            booking,
+            owner.id,
+            stage=ServiceStage.QUALITY_CHECK,
+            note=None,
             expected_current=ServiceStage.INSPECTING,
         )

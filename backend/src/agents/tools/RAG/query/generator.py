@@ -81,13 +81,15 @@ class GroundedAnswerGenerator:
 
         # 3. Chuẩn bị prompt gửi tới LLM
         user_prompt_lines = [
-            f"CÂU HỎI NGƯỜI DÙNG: \"{query_analysis.original_query}\"",
+            f'CÂU HỎI NGƯỜI DÙNG: "{query_analysis.original_query}"',
         ]
         if query_analysis.rewritten_query != query_analysis.original_query:
-            user_prompt_lines.append(f"Ý ĐỊNH ĐÃ LÀM RÕ: \"{query_analysis.rewritten_query}\"")
+            user_prompt_lines.append(f'Ý ĐỊNH ĐÃ LÀM RÕ: "{query_analysis.rewritten_query}"')
 
         if vehicle_context and vehicle_context.model:
-            user_prompt_lines.append(f"THÔNG TIN XE NGƯỜI DÙNG: {vehicle_context.model} (ODO: {vehicle_context.current_odometer_km or 'N/A'} km)")
+            user_prompt_lines.append(
+                f"THÔNG TIN XE NGƯỜI DÙNG: {vehicle_context.model} (ODO: {vehicle_context.current_odometer_km or 'N/A'} km)"
+            )
 
         user_prompt_lines.append("\n" + context_text)
         user_content = "\n".join(user_prompt_lines)
@@ -158,7 +160,9 @@ class GroundedAnswerGenerator:
             "Theo tài liệu kỹ thuật chính hãng tìm thấy trong hệ thống:",
         ]
         for idx, c in enumerate(citations[:3], 1):
-            lines.append(f"- [{idx}] {c.title} ({c.section or 'Thông tin chung'}): Vui lòng tham khảo tài liệu [Tài liệu {idx}].")
+            lines.append(
+                f"- [{idx}] {c.title} ({c.section or 'Thông tin chung'}): Vui lòng tham khảo tài liệu [Tài liệu {idx}]."
+            )
 
         return RAGResponse(
             answer="\n".join(lines),

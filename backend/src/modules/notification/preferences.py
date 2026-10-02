@@ -21,9 +21,7 @@ class Preferences:
 
 
 def channel_rows(session: Session, user_id: int) -> dict[ReminderChannel, bool]:
-    rows = session.exec(
-        select(UserNotificationChannel).where(UserNotificationChannel.user_id == user_id)
-    ).all()
+    rows = session.exec(select(UserNotificationChannel).where(UserNotificationChannel.user_id == user_id)).all()
     return {row.channel: row.is_enabled for row in rows}
 
 

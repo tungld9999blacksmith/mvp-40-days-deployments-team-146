@@ -45,9 +45,7 @@ class BM25Searcher:
         if self.doc_count == 0:
             return
 
-        self.tokenized_corpus = [
-            self.tokenizer(c.get("content", "")) for c in self.corpus_chunks
-        ]
+        self.tokenized_corpus = [self.tokenizer(c.get("content", "")) for c in self.corpus_chunks]
         self.doc_lengths = [len(doc) for doc in self.tokenized_corpus]
         total_len = sum(self.doc_lengths)
         self.avg_doc_length = (total_len / self.doc_count) if self.doc_count > 0 else 0.0
@@ -123,7 +121,9 @@ class BM25Searcher:
 
                 # BM25 formula
                 numerator = tf * (self.k1 + 1.0)
-                denominator = tf + self.k1 * (1.0 - self.b + self.b * (doc_len / self.avg_doc_length if self.avg_doc_length > 0 else 1.0))
+                denominator = tf + self.k1 * (
+                    1.0 - self.b + self.b * (doc_len / self.avg_doc_length if self.avg_doc_length > 0 else 1.0)
+                )
                 score += idf_val * (numerator / denominator)
 
             if score > 0:

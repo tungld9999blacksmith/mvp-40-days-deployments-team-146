@@ -74,9 +74,7 @@ class CoveredItemLockedError(QuoteError):
     code = "COVERED_ITEM_LOCKED"
 
     def __init__(self, quote_item_id: str) -> None:
-        super().__init__(
-            "A warranty-covered item must stay at 0.", details={"quoteItemId": quote_item_id}
-        )
+        super().__init__("A warranty-covered item must stay at 0.", details={"quoteItemId": quote_item_id})
 
 
 class ReviewerNoteRequiredError(QuoteError):

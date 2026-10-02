@@ -82,9 +82,7 @@ class NotificationService:
     def available_channels(self) -> set[ReminderChannel]:
         return set(self._adapters)
 
-    async def deliver(
-        self, channel: ReminderChannel, user_id: int, message: NotificationMessage
-    ) -> DeliveryResult:
+    async def deliver(self, channel: ReminderChannel, user_id: int, message: NotificationMessage) -> DeliveryResult:
         adapter = self._adapters.get(channel)
         if adapter is None:
             return DeliveryResult.failed(CHANNEL_NOT_AVAILABLE)

@@ -18,5 +18,5 @@ def get_user_profile(
     return {
         "message": "Successfully retrieved profile",
         "uid": decoded_token.get("uid"),
-        "email": decoded_token.get("email")
+        "email": decoded_token.get("email"),
     }

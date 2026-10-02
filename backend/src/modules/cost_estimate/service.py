@@ -141,9 +141,7 @@ class CostEstimationService:
             raise errors.MilestoneNotFoundError(valid)
         return (odo_milestone, months_by_km[odo_milestone]), odo_milestone == next_km
 
-    def _resolve_workshop(
-        self, user: VehicleUser, workshop_id: UUID | None
-    ) -> tuple[Workshop, WorkshopSelection]:
+    def _resolve_workshop(self, user: VehicleUser, workshop_id: UUID | None) -> tuple[Workshop, WorkshopSelection]:
         if workshop_id is not None:
             return self._active_workshop(workshop_id), WorkshopSelection.REQUEST
         # BR-1003 #1 — the preferred workshop, when still active.
@@ -153,9 +151,7 @@ class CostEstimationService:
                 return preferred, WorkshopSelection.PREFERRED
         # BR-1003 #2 — the nearest workshop to the primary location (us-029 BR-002..004).
         loc = self._db.exec(
-            select(UserLocation).where(
-                UserLocation.user_id == user.user_id, UserLocation.is_primary.is_(True)
-            )
+            select(UserLocation).where(UserLocation.user_id == user.user_id, UserLocation.is_primary.is_(True))
         ).first()
         if loc is not None:
             anchor = LocationAnchor(
@@ -205,10 +201,7 @@ class CostEstimationService:
         prices = self._effective_prices(workshop.id, model_id, codes, today)
         state = warranty_state(self._chassis_end_date(vehicle.id), today)
         totals = compute_estimate(
-            [
-                RuleLine(r.id, r.item_code, r.item_name, r.is_covered_by_warranty, r.estimated_cost)
-                for r in rules
-            ],
+            [RuleLine(r.id, r.item_code, r.item_name, r.is_covered_by_warranty, r.estimated_cost) for r in rules],
             prices,
             state,
         )
@@ -260,9 +253,7 @@ class CostEstimationService:
             computed_at=self._clock(),
         )
 
-    def _effective_prices(
-        self, workshop_id: UUID, model_id: str, codes: list[str], today: date
-    ) -> dict[str, Decimal]:
+    def _effective_prices(self, workshop_id: UUID, model_id: str, codes: list[str], today: date) -> dict[str, Decimal]:
         """BR-1004: price valid today; overlapping periods → newest ``valid_from`` + WARN."""
         rows = self._db.exec(
             select(ServicePrice).where(
@@ -304,12 +295,8 @@ class CostEstimationService:
         odo_milestone: int | None,
         workshop_ids: list[UUID],
     ) -> schemas.CompareData:
-        if len(set(workshop_ids)) != len(workshop_ids) or not (
-            MIN_COMPARE <= len(workshop_ids) <= MAX_COMPARE
-        ):
-            raise errors.InvalidRequestError(
-                f"Provide {MIN_COMPARE}-{MAX_COMPARE} distinct workshops to compare."
-            )
+        if len(set(workshop_ids)) != len(workshop_ids) or not (MIN_COMPARE <= len(workshop_ids) <= MAX_COMPARE):
+            raise errors.InvalidRequestError(f"Provide {MIN_COMPARE}-{MAX_COMPARE} distinct workshops to compare.")
         rows = self._milestone_rows(vehicle.external_model_id)
         if not rows:
             return schemas.CompareData(estimates=[self._no_rule(vehicle)])
@@ -322,9 +309,7 @@ class CostEstimationService:
                 workshop = self._active_workshop(workshop_id)
             except errors.CostEstimateError as exc:
                 failed.append(
-                    schemas.CompareFailureOut(
-                        workshop_id=workshop_id, error=schemas.CompareErrorOut(code=exc.code)
-                    )
+                    schemas.CompareFailureOut(workshop_id=workshop_id, error=schemas.CompareErrorOut(code=exc.code))
                 )
                 continue
             ok.append(self.estimate(vehicle, milestone, workshop, is_next=is_next))

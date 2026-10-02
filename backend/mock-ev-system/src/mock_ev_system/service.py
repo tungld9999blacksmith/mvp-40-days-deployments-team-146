@@ -44,9 +44,7 @@ class VehicleService:
         return self.session.exec(stmt).first()
 
     def get_vehicle_by_plate(self, license_plate: str) -> Vehicle | None:
-        stmt = select(Vehicle).where(
-            Vehicle.license_plate == license_plate
-        )
+        stmt = select(Vehicle).where(Vehicle.license_plate == license_plate)
         return self.session.exec(stmt).first()
 
 
@@ -61,9 +59,7 @@ class OwnerService:
         return self.session.get(Owner, owner_id)
 
     def get_owner_vehicles(self, owner_id: str) -> list[Vehicle]:
-        stmt = select(Vehicle).where(
-            Vehicle.current_owner_id == owner_id
-        )
+        stmt = select(Vehicle).where(Vehicle.current_owner_id == owner_id)
         return list(self.session.exec(stmt).all())
 
 
@@ -86,23 +82,15 @@ class WarrantyService:
         self.session = session
 
     def get_policies_by_model(self, model_id: str) -> list[WarrantyPolicy]:
-        stmt = select(WarrantyPolicy).where(
-            WarrantyPolicy.model_id == model_id
-        )
+        stmt = select(WarrantyPolicy).where(WarrantyPolicy.model_id == model_id)
         return list(self.session.exec(stmt).all())
 
-    def get_warranties_for_vehicle(
-        self, vehicle_id: str
-    ) -> list[Warranty]:
+    def get_warranties_for_vehicle(self, vehicle_id: str) -> list[Warranty]:
         stmt = select(Warranty).where(Warranty.vehicle_id == vehicle_id)
         return list(self.session.exec(stmt).all())
 
-    def get_claims_for_vehicle(
-        self, vehicle_id: str
-    ) -> list[WarrantyClaim]:
-        stmt = select(WarrantyClaim).where(
-            WarrantyClaim.vehicle_id == vehicle_id
-        )
+    def get_claims_for_vehicle(self, vehicle_id: str) -> list[WarrantyClaim]:
+        stmt = select(WarrantyClaim).where(WarrantyClaim.vehicle_id == vehicle_id)
         return list(self.session.exec(stmt).all())
 
     def get_claim(self, claim_id: str) -> WarrantyClaim | None:
@@ -116,9 +104,7 @@ class MaintenanceService:
     def __init__(self, session: Session) -> None:
         self.session = session
 
-    def get_schedule_by_model(
-        self, model_id: str
-    ) -> list[MaintenanceSchedule]:
+    def get_schedule_by_model(self, model_id: str) -> list[MaintenanceSchedule]:
         stmt = (
             select(MaintenanceSchedule)
             .where(MaintenanceSchedule.model_id == model_id)
@@ -126,17 +112,11 @@ class MaintenanceService:
         )
         return list(self.session.exec(stmt).all())
 
-    def get_items_for_schedule(
-        self, schedule_id: str
-    ) -> list[MaintenanceItem]:
-        stmt = select(MaintenanceItem).where(
-            MaintenanceItem.schedule_id == schedule_id
-        )
+    def get_items_for_schedule(self, schedule_id: str) -> list[MaintenanceItem]:
+        stmt = select(MaintenanceItem).where(MaintenanceItem.schedule_id == schedule_id)
         return list(self.session.exec(stmt).all())
 
-    def get_service_history(
-        self, vehicle_id: str
-    ) -> list[ServiceHistory]:
+    def get_service_history(self, vehicle_id: str) -> list[ServiceHistory]:
         stmt = (
             select(ServiceHistory)
             .where(ServiceHistory.vehicle_id == vehicle_id)
@@ -170,9 +150,7 @@ class MaintenanceService:
         self.session.refresh(record)
         return record
 
-    def compute_next_maintenance(
-        self, vehicle_id: str
-    ) -> dict | None:
+    def compute_next_maintenance(self, vehicle_id: str) -> dict | None:
         """Tính mốc bảo dưỡng tiếp theo dựa trên km hiện tại & lịch sử."""
         vehicle = self.session.get(Vehicle, vehicle_id)
         if not vehicle:
@@ -204,9 +182,7 @@ class MaintenanceService:
         if not next_schedule:
             # Đã qua hết mốc — tính lại theo chu kỳ (quay vòng mốc đầu)
             cycle_km = schedules[0].milestone_km  # 10.000
-            next_milestone_km = (
-                (current_km // cycle_km) + 1
-            ) * cycle_km
+            next_milestone_km = ((current_km // cycle_km) + 1) * cycle_km
             next_schedule = schedules[0]  # dùng mốc đầu tiên
             overdue = current_km >= next_milestone_km
         else:
@@ -215,11 +191,7 @@ class MaintenanceService:
 
         # Tính estimated cost
         items = self.get_items_for_schedule(next_schedule.schedule_id)
-        estimated_cost = sum(
-            item.reference_price
-            for item in items
-            if not item.is_covered_by_warranty
-        )
+        estimated_cost = sum(item.reference_price for item in items if not item.is_covered_by_warranty)
 
         return {
             "vehicle_id": vehicle_id,
@@ -262,9 +234,7 @@ class LookupService:
         return self.session.get(ServiceCenter, center_id)
 
     def get_service_center_by_manager_email(self, email: str) -> ServiceCenter | None:
-        stmt = select(ServiceCenter).where(
-            ServiceCenter.manager_email == email.strip().lower()
-        )
+        stmt = select(ServiceCenter).where(ServiceCenter.manager_email == email.strip().lower())
         return self.session.exec(stmt).first()
 
 
@@ -311,18 +281,18 @@ class DataAdminService:
         result = []
         for name, model in ENTITIES.items():
             count = len(self.session.exec(select(model)).all())
-            result.append({
-                "entity": name,
-                "table": model.__tablename__,
-                "primary_key": self.primary_key(model),
-                "fields": list(model.__table__.columns.keys()),
-                "count": count,
-            })
+            result.append(
+                {
+                    "entity": name,
+                    "table": model.__tablename__,
+                    "primary_key": self.primary_key(model),
+                    "fields": list(model.__table__.columns.keys()),
+                    "count": count,
+                }
+            )
         return result
 
-    def query(
-        self, entity: str, filters: dict[str, str], limit: int, offset: int
-    ) -> tuple[int, list[dict]]:
+    def query(self, entity: str, filters: dict[str, str], limit: int, offset: int) -> tuple[int, list[dict]]:
         model = ENTITIES[entity]
         columns = model.__table__.columns
         stmt = select(model)
@@ -331,7 +301,7 @@ class DataAdminService:
                 raise KeyError(field)
             stmt = stmt.where(columns[field].cast(String) == value)
         rows = list(self.session.exec(stmt).all())
-        page = rows[offset: offset + limit]
+        page = rows[offset : offset + limit]
         return len(rows), [row.model_dump(mode="json") for row in page]
 
     def import_data(self, data: dict[str, list[dict]], mode: str) -> dict[str, dict]:
@@ -364,12 +334,8 @@ class DataAdminService:
                         for fk in column.foreign_keys:
                             value = getattr(obj, column.key)
                             parent = fk.column.table
-                            if value is not None and self.session.get(
-                                _MODEL_BY_TABLE[parent.name], value
-                            ) is None:
-                                raise DataImportError(
-                                    name, index, f"{column.key}={value} not found in {parent.name}"
-                                )
+                            if value is not None and self.session.get(_MODEL_BY_TABLE[parent.name], value) is None:
+                                raise DataImportError(name, index, f"{column.key}={value} not found in {parent.name}")
                     existing = self.session.get(model, key)
                     if existing is not None:
                         if mode == "insert":
@@ -399,4 +365,3 @@ class DataAdminService:
         self.session.delete(obj)
         self.session.commit()
         return True
-

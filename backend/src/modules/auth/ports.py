@@ -18,9 +18,7 @@ class SessionRevoker(Protocol):
     ``503`` per EF-104.
     """
 
-    def enqueue_revoke(
-        self, *, uid: str, user_id: int, trace_id: str | None = None
-    ) -> None: ...
+    def enqueue_revoke(self, *, uid: str, user_id: int, trace_id: str | None = None) -> None: ...
 
 
 class RevokeEnqueueError(Exception):

@@ -122,9 +122,7 @@ class UserVehicleService:
         last = self._latest_service_record(vehicle.id)
         last_out = None
         if last is not None:
-            center_name = (
-                self._db.get(Workshop, last.workshop_id).name if last.workshop_id else None
-            )
+            center_name = self._db.get(Workshop, last.workshop_id).name if last.workshop_id else None
             last_out = schemas.ProfileLastServiceOut(
                 service_date=last.service_date,
                 odo_km=last.odo_km,
@@ -198,9 +196,7 @@ class UserVehicleService:
                 r.is_covered_by_warranty,
             )
             for r in self._db.exec(
-                select(MaintenanceRule).where(
-                    MaintenanceRule.model_id == vehicle.external_model_id
-                )
+                select(MaintenanceRule).where(MaintenanceRule.model_id == vehicle.external_model_id)
             ).all()
         ]
         last_service = None
@@ -227,9 +223,7 @@ class UserVehicleService:
         row = self._db.exec(
             select(VehicleOdometerReading)
             .where(VehicleOdometerReading.user_vehicle_id == user_vehicle_id)
-            .order_by(
-                VehicleOdometerReading.odo_km.desc(), VehicleOdometerReading.recorded_at.desc()
-            )
+            .order_by(VehicleOdometerReading.odo_km.desc(), VehicleOdometerReading.recorded_at.desc())
             .limit(1)
         ).first()
         if row is None:
@@ -257,9 +251,7 @@ class UserVehicleService:
     def _purchase_date(self, vehicle: UserVehicle):
         """FF BR-005: earliest warranty start, else manufacture date."""
         first_warranty = self._db.exec(
-            select(func.min(VehicleWarranty.start_date)).where(
-                VehicleWarranty.user_vehicle_id == vehicle.id
-            )
+            select(func.min(VehicleWarranty.start_date)).where(VehicleWarranty.user_vehicle_id == vehicle.id)
         ).one()
         if first_warranty is not None:
             return first_warranty
@@ -291,9 +283,7 @@ def _to_float(value) -> float | None:
 def _odometer_out(odometer: Odometer | None) -> schemas.OdometerOut | None:
     if odometer is None:
         return None
-    return schemas.OdometerOut(
-        odo_km=odometer.odo_km, recorded_at=odometer.recorded_at, is_stale=odometer.is_stale
-    )
+    return schemas.OdometerOut(odo_km=odometer.odo_km, recorded_at=odometer.recorded_at, is_stale=odometer.is_stale)
 
 
 def _status_out(
@@ -341,9 +331,7 @@ def _status_out(
             if result.last_service
             else None
         ),
-        thresholds=schemas.ThresholdsOut(
-            due_soon_km=config.due_soon_km, due_soon_days=config.due_soon_days
-        ),
+        thresholds=schemas.ThresholdsOut(due_soon_km=config.due_soon_km, due_soon_days=config.due_soon_days),
         oem_synced_at=_synced_at(sync),
         calculated_at=now,
     )

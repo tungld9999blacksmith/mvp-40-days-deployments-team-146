@@ -36,10 +36,10 @@ from .modules.follow_up import status_for as follow_up_status_for
 from .modules.follow_up.route import router as follow_up_router
 from .modules.follow_up.route import workshop_router as follow_up_workshop_router
 from .modules.health.route import router as health_router
-from .modules.oauth.route import router as oauth_router
 from .modules.notification.errors import NotificationError
 from .modules.notification.errors import status_for as notification_status_for
 from .modules.notification.route import router as notification_router
+from .modules.oauth.route import router as oauth_router
 from .modules.oem_integration.errors import OemWebhookError
 from .modules.oem_integration.errors import status_for as oem_webhook_status_for
 from .modules.oem_integration.route import router as oem_integration_router
@@ -182,9 +182,7 @@ async def onboarding_error_handler(request: Request, exc: OnboardingError) -> JS
 
 
 @app.exception_handler(WorkshopOnboardingError)
-async def workshop_onboarding_error_handler(
-    request: Request, exc: WorkshopOnboardingError
-) -> JSONResponse:
+async def workshop_onboarding_error_handler(request: Request, exc: WorkshopOnboardingError) -> JSONResponse:
     """Workshop-owner onboarding errors (FEAT-AUTH-003) in the shared envelope."""
     headers = {}
     retry_after = getattr(exc, "retry_after_seconds", None)
@@ -192,9 +190,7 @@ async def workshop_onboarding_error_handler(
         headers["Retry-After"] = str(retry_after)
     return JSONResponse(
         status_code=workshop_status_for(exc.code),
-        content=_error_body(
-            exc.code, exc.message, request.headers.get("X-Request-ID"), exc.details()
-        ),
+        content=_error_body(exc.code, exc.message, request.headers.get("X-Request-ID"), exc.details()),
         headers=headers,
     )
 
@@ -235,9 +231,7 @@ async def cost_estimate_error_handler(request: Request, exc: CostEstimateError) 
     """Cost-estimate errors (FEAT-COST-001); milestone errors carry validMilestones."""
     return JSONResponse(
         status_code=cost_estimate_status_for(exc.code),
-        content=_error_body(
-            exc.code, exc.message, request.headers.get("X-Request-ID"), exc.details
-        ),
+        content=_error_body(exc.code, exc.message, request.headers.get("X-Request-ID"), exc.details),
     )
 
 
@@ -245,9 +239,7 @@ def _domain_error_response(request: Request, exc, status_for_code) -> JSONRespon
     """Shared envelope for module errors that carry ``code``, ``message`` and ``details``."""
     return JSONResponse(
         status_code=status_for_code(exc.code),
-        content=_error_body(
-            exc.code, exc.message, request.headers.get("X-Request-ID"), getattr(exc, "details", None)
-        ),
+        content=_error_body(exc.code, exc.message, request.headers.get("X-Request-ID"), getattr(exc, "details", None)),
     )
 
 
@@ -332,18 +324,14 @@ _ONBOARDING_PREFIXES = (
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_error_handler(
-    request: Request, exc: RequestValidationError
-) -> JSONResponse:
+async def validation_error_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
     """Return onboarding request-validation failures in the shared envelope (400).
 
     Other routes keep FastAPI's default 422 behavior so their existing
     contracts are unaffected.
     """
     if not request.url.path.startswith(_ONBOARDING_PREFIXES):
-        return JSONResponse(
-            status_code=422, content={"detail": jsonable_encoder(exc.errors())}
-        )
+        return JSONResponse(status_code=422, content={"detail": jsonable_encoder(exc.errors())})
     trace_id = request.headers.get("X-Request-ID")
     first = exc.errors()[0] if exc.errors() else {}
     loc = first.get("loc", [])

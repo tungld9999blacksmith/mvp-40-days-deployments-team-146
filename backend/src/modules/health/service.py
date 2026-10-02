@@ -92,6 +92,4 @@ def _log_result(result: DependenciesHealth) -> None:
             suffix = f" ({check.detail})" if check.detail else ""
             logger.info("  %-8s UP    %7.1f ms%s", name, check.latency_ms, suffix)
         else:
-            logger.warning(
-                "  %-8s DOWN  %7.1f ms - %s", name, check.latency_ms, check.error
-            )
+            logger.warning("  %-8s DOWN  %7.1f ms - %s", name, check.latency_ms, check.error)
