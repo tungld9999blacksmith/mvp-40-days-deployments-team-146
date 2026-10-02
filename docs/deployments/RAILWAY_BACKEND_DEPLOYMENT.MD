@@ -11,6 +11,7 @@ Hướng dẫn step-by-step để dựng CI/CD cho backend: **unit test → depl
 5. [Bước 3 — Tạo Redis](#bước-3--tạo-redis)
 6. [Bước 4 — Tạo service `backend`](#bước-4--tạo-service-backend)
 7. [Bước 5 — Tạo service `worker`](#bước-5--tạo-service-worker)
+   - [Bước 5b — Tạo service `mock-ev-system` (mock OEM)](#bước-5b--tạo-service-mock-ev-system-mock-oem)
 8. [Bước 6 — Biến môi trường trên Railway](#bước-6--biến-môi-trường-trên-railway)
 9. [Bước 7 — Lấy Railway token](#bước-7--lấy-railway-token)
 10. [Bước 8 — Cấu hình GitHub Environment `staging`](#bước-8--cấu-hình-github-environment-staging)
@@ -55,9 +56,11 @@ merge vào staging      ──► backend-test ──► deploy-backend ──�
 ```
 Railway project
 └── environment: staging
-    ├── backend   (FastAPI, dockerfiles/Dockerfile, public domain, port 8000)
-    ├── worker    (Celery worker + beat, cùng Dockerfile, không có domain)
-    └── Redis     (Railway database, private network redis.railway.internal)
+    ├── backend   (FastAPI, dockerfiles/Dockerfile.railway, public domain, port 8000)
+    ├── worker          (Celery worker + beat, cùng Dockerfile, không có domain)
+    ├── mock-ev-system  (mock hệ thống hãng xe / OEM, port 8100,
+    │                    private network mock-ev-system.railway.internal)
+    └── Redis           (Railway database, private network redis.railway.internal)
 
 Database Postgres: Supabase (bên ngoài Railway)
 ```
@@ -69,7 +72,10 @@ Database Postgres: Supabase (bên ngoài Railway)
 | File | Vai trò |
 |---|---|
 | [`.github/workflows/ci-cd.yml`](../../.github/workflows/ci-cd.yml) | Workflow CI/CD |
-| [`dockerfiles/Dockerfile`](../../dockerfiles/Dockerfile) | Image dùng chung cho `backend` và `worker` |
+| [`dockerfiles/Dockerfile.railway`](../../dockerfiles/Dockerfile.railway) | Image deploy lên Railway, dùng chung cho `backend` và `worker` (không cache mount, nghe trên `$PORT`) |
+| [`backend/mock-ev-system/Dockerfile.railway`](../../backend/mock-ev-system/Dockerfile.railway) | Image deploy `mock-ev-system` lên Railway (build context là `backend/`) |
+| [`scripts/build-backend-railway.ps1`](../../scripts/build-backend-railway.ps1) / [`.sh`](../../scripts/build-backend-railway.sh) | Build / chạy / smoke test 2 image Railway ở local |
+| [`dockerfiles/Dockerfile`](../../dockerfiles/Dockerfile) | Image cho docker compose ở local (có cache mount của uv) |
 | [`backend/src/config.py`](../../backend/src/config.py) | Đọc cấu hình: **biến môi trường > file `.env` > giá trị mặc định** |
 | [`backend/src/infrastructure/firebase/oauth/setup.py`](../../backend/src/infrastructure/firebase/oauth/setup.py) | Firebase Admin: đọc file JSON, không có file thì đọc `FIREBASE_CREDENTIAL_JSON` |
 | [`infrastructure/backend/railway/.railway.example.env`](../../infrastructure/backend/railway/.railway.example.env) | Mẫu biến môi trường cho Railway (commit) |
@@ -139,6 +145,40 @@ pytest backend/tests -v
 
 ---
 
+## Bước 5b — Tạo service `mock-ev-system` (mock OEM)
+
+Mock giả lập hệ thống hãng xe (OEM). `backend` và `worker` gọi nó qua private network, mock gửi webhook ngược về domain public của `backend`.
+
+1. Tạo service kèm biến (chạy ở thư mục gốc repo, đã `railway link` vào `staging`). Dùng **nháy đơn** để shell không xử lý `${{...}}`:
+
+   ```bash
+   railway add --service mock-ev-system      --variables 'RAILWAY_DOCKERFILE_PATH=mock-ev-system/Dockerfile.railway'      --variables 'PORT=8100'      --variables 'MOCK_WEBHOOK_SECRET=${{shared.OEM_WEBHOOK_SECRET}}'      --variables 'MOCK_WEBHOOK_URL=https://${{backend.RAILWAY_PUBLIC_DOMAIN}}/api/v1/integrations/oem/webhooks'      --variables 'MOCK_WEBHOOK_USAGE_MIN_INTERVAL_SECONDS=300'
+   ```
+
+   - `RAILWAY_DOCKERFILE_PATH` tính từ `backend/` (không phải gốc repo), vì mock được upload với `backend/` làm gốc (xem bước 3).
+   - `MOCK_WEBHOOK_SECRET` phải bằng `OEM_WEBHOOK_SECRET` của backend, nên tham chiếu thẳng shared variable (Bước 6.4).
+   - Các biến tuỳ chọn `MOCK_SC0x_MANAGER_EMAIL`, `MOCK_OWN001_EMAIL`, `MOCK_DEV_OWNER_EMAILS`... (xem `.railway.example.env`) đặt trên service này nếu cần.
+2. **Settings** → **Deploy** → **Healthcheck Path** = `/health`. Không cần Generate Domain (chỉ bật khi muốn gọi mock từ ngoài để debug, Target Port = `8100`).
+3. Deploy lần đầu — upload thư mục `backend/` làm gốc:
+
+   ```bash
+   railway up ./backend --path-as-root --service mock-ev-system
+   ```
+
+   Private domain `mock-ev-system.railway.internal` chỉ được cấp sau lần deploy đầu; trước đó biến tham chiếu tới nó resolve thành rỗng (`http://:8100`).
+4. Trỏ `backend` và `worker` vào mock (biến **mức service**, xem 6.4):
+
+   ```bash
+   railway variables --service backend --set 'OEM_API_BASE_URL=http://${{mock-ev-system.RAILWAY_PRIVATE_DOMAIN}}:8100'
+   railway variables --service worker  --set 'OEM_API_BASE_URL=http://${{mock-ev-system.RAILWAY_PRIVATE_DOMAIN}}:8100'
+   ```
+
+   Mock nghe trên `::` (IPv4 + IPv6) nên gọi được qua private network.
+
+> Log mock có `Webhook ... not delivered: HTTP 404` khi `backend` chưa có deploy nào — bình thường, hết khi backend chạy.
+
+---
+
 ## Bước 6 — Biến môi trường trên Railway
 
 ### 6.1. Chuẩn bị file `.railway.env`
@@ -157,7 +197,7 @@ Trước khi dán lên Railway, **rà lại các giá trị**:
 |---|---|
 | `APP_ENV` | `production` — config chỉ nhận `development` / `production` / `test`. Đặt `staging` app sẽ lỗi validate; giá trị khác `production` còn bật bypass header `X-User-Id` của dev |
 | `CORS_ORIGINS`, `FRONTEND_URL` | Domain frontend staging thật |
-| `OEM_API_BASE_URL` | URL OEM / mock-ev-system thật (không phải `localhost`) |
+| `OEM_API_BASE_URL` | **Xoá khỏi `.railway.env`** — đặt ở mức service `backend`/`worker` trỏ vào mock (Bước 5b) |
 | `DATABASE_*`, `SUPABASE_*` | Supabase của staging |
 | `FIREBASE_CREDENTIAL_JSON` | Nội dung file service account JSON, 1 dòng, bọc trong `'...'` |
 | Mọi giá trị `localhost` | Đổi sang địa chỉ thật |
@@ -195,8 +235,17 @@ CELERY_BACKEND_DB=1
 
    | Biến | Giá trị | Service |
    |---|---|---|
-   | `RAILWAY_DOCKERFILE_PATH` | `dockerfiles/Dockerfile` | backend, worker |
+   | `RAILWAY_DOCKERFILE_PATH` | `dockerfiles/Dockerfile.railway` | backend, worker |
    | `PORT` | `8000` | backend |
+
+   Hoặc đặt bằng CLI (sau khi `railway link`):
+
+   ```powershell
+   railway variables --service backend --environment staging --set "RAILWAY_DOCKERFILE_PATH=dockerfiles/Dockerfile.railway" --set "PORT=8000"
+   railway variables --service worker  --environment staging --set "RAILWAY_DOCKERFILE_PATH=dockerfiles/Dockerfile.railway"
+   ```
+
+   > ⚠️ 2 biến này **không có** trong `.railway.env`, dán file đó lên là chưa đủ. Thiếu `RAILWAY_DOCKERFILE_PATH` thì Railway không thấy Dockerfile ở thư mục gốc, chuyển sang Railpack và build lỗi `Railpack could not determine how to build the app`.
 
 ---
 
@@ -245,6 +294,7 @@ GitHub repo → **Settings** → **Environments** → **New environment** → `s
 | Variable | `RAILWAY_PROJECT_ID` | Project ID (Bước 7) |
 | Variable | `RAILWAY_BACKEND_SERVICE` | `backend` |
 | Variable | `RAILWAY_WORKER_SERVICE` | `worker` |
+| Variable | `RAILWAY_MOCK_SERVICE` | `mock-ev-system` |
 | Variable | `BACKEND_STAGING_URL` | Domain ở Bước 4, vd `https://backend-staging-xxx.up.railway.app` (**không** có `/` cuối) |
 
 Tên service phải khớp chính xác (phân biệt hoa thường) với tên trên Railway.
@@ -258,8 +308,11 @@ Deploy tay 1 lần để chắc Railway build được trước khi giao cho CI.
 ```bash
 railway login
 railway link                       # chọn project → environment staging
+railway variables --service backend | grep RAILWAY_DOCKERFILE_PATH   # phải có (Bước 6.4)
+railway variables --service worker  | grep RAILWAY_DOCKERFILE_PATH
 railway up --service backend
 railway up --service worker
+railway up ./backend --path-as-root --service mock-ev-system   # chỉ khi mock-ev-system có thay đổi
 curl https://<domain-backend>/health
 ```
 
@@ -268,6 +321,7 @@ Kiểm tra:
 - `/health` trả `200`.
 - `GET /api/v1/health/dependencies` → Redis `up`.
 - Log `worker` có dòng `Connected to redis://default:**@redis.railway.internal:6379/0`.
+- Log build chạy các bước của Dockerfile. Nếu thấy `railpack prepare` / `Railpack could not determine how to build the app` → service thiếu `RAILWAY_DOCKERFILE_PATH`, đặt lại theo Bước 6.4 rồi chạy lại `railway up`.
 
 ---
 
@@ -426,8 +480,8 @@ feature/*  ──push──► (không chạy)
 |---|---|---|
 | `lint` | `ruff check` + `ruff format --check` | Dừng, không deploy |
 | `backend-test` | `pytest` | Dừng, không deploy |
-| `build-check` | Build Docker image `dockerfiles/Dockerfile` (chỉ khi đích là `staging`) | Dừng, không deploy |
-| `deploy-backend` | `railway up` backend + worker | Không smoke test |
+| `build-check` | Build 2 image `dockerfiles/Dockerfile.railway` + `backend/mock-ev-system/Dockerfile.railway` (chỉ khi đích là `staging`) | Dừng, không deploy |
+| `deploy-backend` | `railway up` mock-ev-system → backend → worker | Không smoke test |
 | `smoke-test` | `GET /health` | Workflow đỏ → kiểm tra log Railway |
 
 ### 14.2. Workflow mẫu đầy đủ
@@ -496,7 +550,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -f dockerfiles/Dockerfile -t p146-backend:ci .
+      - run: docker build -f dockerfiles/Dockerfile.railway -t p146-backend:ci .
+      # mock-ev-system: build context là backend/ (uv workspace root)
+      - run: docker build -f backend/mock-ev-system/Dockerfile.railway -t p146-mock-ev-system:ci backend
 
   deploy-backend:
     needs: build-check
@@ -509,6 +565,8 @@ jobs:
       - uses: actions/checkout@v4
       - run: npm install -g @railway/cli
       - run: railway link --project "${{ vars.RAILWAY_PROJECT_ID }}" --environment staging
+      # Mock OEM deploy trước: backend/worker gọi nó qua mock-ev-system.railway.internal
+      - run: railway up ./backend --path-as-root --ci --service "${{ vars.RAILWAY_MOCK_SERVICE }}" --environment staging
       - run: railway up --ci --service "${{ vars.RAILWAY_BACKEND_SERVICE }}" --environment staging
       - run: railway up --ci --service "${{ vars.RAILWAY_WORKER_SERVICE }}" --environment staging
 
@@ -585,9 +643,13 @@ Kết hợp với Bước 12 (environment chỉ cho nhánh `staging`), luồng c
 | Workflow không chạy, GitHub báo lỗi YAML | Kiểm tra cú pháp `ci-cd.yml` (vd dòng thừa cuối file) |
 | `Unauthorized` / `Invalid token` | Đặt nhầm loại token vào nhầm biến — Account Token phải là `RAILWAY_API_TOKEN`, Project Token phải là `RAILWAY_TOKEN` |
 | `Project not found` / `Environment not found` | Sai `RAILWAY_PROJECT_ID`, hoặc chưa tạo environment `staging` |
-| `Service not found` | `RAILWAY_BACKEND_SERVICE` / `RAILWAY_WORKER_SERVICE` không khớp tên trên Railway |
-| Build báo không tìm thấy Dockerfile | Thiếu `RAILWAY_DOCKERFILE_PATH=dockerfiles/Dockerfile` |
-| Build lỗi kiểu *cache mount ID* | Bỏ `--mount=type=cache,target=/root/.cache/uv,sharing=locked \` ở 2 lệnh `RUN` trong Dockerfile (giữ các bind mount) |
+| `Service not found` | `RAILWAY_BACKEND_SERVICE` / `RAILWAY_WORKER_SERVICE` / `RAILWAY_MOCK_SERVICE` không khớp tên trên Railway |
+| Backend gọi OEM lỗi `http://:8100` / không kết nối được mock | `mock-ev-system` chưa deploy lần nào (chưa có private domain), hoặc `OEM_API_BASE_URL` trong shared variable đè/xung đột — chỉ đặt ở mức service (Bước 5b) |
+| Mock build lỗi không tìm thấy `pyproject.toml` / Dockerfile | Thiếu `--path-as-root ./backend` khi `railway up`, hoặc `RAILWAY_DOCKERFILE_PATH` của mock không phải `mock-ev-system/Dockerfile.railway` |
+| Backend nhận webhook `401 WEBHOOK_SIGNATURE_INVALID` | `MOCK_WEBHOOK_SECRET` của mock khác `OEM_WEBHOOK_SECRET` của backend |
+| Build báo không tìm thấy Dockerfile, hoặc `Railpack could not determine how to build the app` | Service thiếu `RAILWAY_DOCKERFILE_PATH=dockerfiles/Dockerfile.railway` (Dockerfile không nằm ở gốc repo nên Railway chuyển sang Railpack). Đặt biến cho **cả** `backend` và `worker` (Bước 6.4) |
+| Build lỗi kiểu *cache mount ID* | Service đang trỏ vào `dockerfiles/Dockerfile` (có `--mount=type=cache`, Railway không nhận). Đổi `RAILWAY_DOCKERFILE_PATH` về `dockerfiles/Dockerfile.railway` |
+| App crash `PermissionError: [Errno 13] Permission denied: 'logs'`, healthcheck fail | Container chạy bằng user `app`, `/app` thuộc root nên không tạo được `LOG_DIR`. `Dockerfile.railway` đã tạo sẵn `/app/logs`; nếu đổi `LOG_DIR` thì trỏ vào thư mục ghi được (vd `/app/data/logs`), hoặc đặt `LOG_FILE_FORMATS=` (rỗng) để chỉ log ra stdout. Không cần volume |
 | Deploy xong nhưng domain trả 502 | Thiếu `PORT=8000` hoặc Target Port ≠ 8000 |
 | App crash: `app_env` validation error | `APP_ENV` phải là `production` (không phải `staging`) |
 | `Firebase credential not found` | Thiếu `FIREBASE_CREDENTIAL_JSON`, hoặc JSON bị cắt khi dán |

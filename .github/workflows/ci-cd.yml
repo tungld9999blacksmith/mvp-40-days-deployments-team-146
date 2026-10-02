@@ -61,7 +61,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -f dockerfiles/Dockerfile -t p146-backend:ci .
+      - run: docker build -f dockerfiles/Dockerfile.railway -t p146-backend:ci .
+      # mock-ev-system: build context là backend/ (uv workspace root)
+      - run: docker build -f backend/mock-ev-system/Dockerfile.railway -t p146-mock-ev-system:ci backend
 
   deploy-backend:
     needs: build-check
@@ -76,6 +78,8 @@ jobs:
       - run: npm install -g @railway/cli
       # Account token không gắn sẵn project, nên phải link project trước
       - run: railway link --project "${{ vars.RAILWAY_PROJECT_ID }}" --environment staging
+      # Mock OEM deploy trước: backend/worker gọi nó qua mock-ev-system.railway.internal
+      - run: railway up ./backend --path-as-root --ci --service "${{ vars.RAILWAY_MOCK_SERVICE }}" --environment staging
       - run: railway up --ci --service "${{ vars.RAILWAY_BACKEND_SERVICE }}" --environment staging
       - run: railway up --ci --service "${{ vars.RAILWAY_WORKER_SERVICE }}" --environment staging
 
