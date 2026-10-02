@@ -130,4 +130,3 @@ def get_warranty_policy_rag(model: str, component: str = "") -> str:
         top_k=3,
     )
     return _format_rag_response(response)
-

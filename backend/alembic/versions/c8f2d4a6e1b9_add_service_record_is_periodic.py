@@ -8,6 +8,7 @@ Revision ID: c8f2d4a6e1b9
 Revises: b7e1c2f34d58
 Create Date: 2026-09-28
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa

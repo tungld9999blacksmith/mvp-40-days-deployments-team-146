@@ -26,20 +26,14 @@ class MaintenanceRuleSource(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     maintenance_rule_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("maintenance_rule.id", ondelete="CASCADE"), nullable=False
-        )
+        sa_column=Column(ForeignKey("maintenance_rule.id", ondelete="CASCADE"), nullable=False)
     )
     document_chunk_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("document_chunk.id", ondelete="CASCADE"), nullable=False, index=True
-        )
+        sa_column=Column(ForeignKey("document_chunk.id", ondelete="CASCADE"), nullable=False, index=True)
     )
     note: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
 
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
 
 
 class MaintenanceRuleSourceRepository(SQLModelRepository[MaintenanceRuleSource, UUID]):

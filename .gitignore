@@ -16,7 +16,6 @@ env/
 .env
 .env.local
 .env.production
-infrastructure/backend/railway/.railway.env
 
 # IDE
 .vscode/
@@ -78,3 +77,5 @@ prompt.txt
 
 # repo_sync state (machine-specific)
 tools/repo_sync/.state.json
+
+infrastructure/backend/railway/.railway.env

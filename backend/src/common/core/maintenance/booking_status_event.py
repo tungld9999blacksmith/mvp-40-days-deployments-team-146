@@ -8,7 +8,7 @@ kept in its own table.
 """
 
 from datetime import date, datetime, time
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import CheckConstraint, Column, Date, DateTime, ForeignKey, Index, Integer, String, Time, func
@@ -18,7 +18,7 @@ from sqlmodel import Field, SQLModel
 from .booking import BookingStatus
 
 
-class BookingActorType(str, Enum):
+class BookingActorType(StrEnum):
     VEHICLE_OWNER = "vehicle_owner"
     WORKSHOP_OWNER = "workshop_owner"
     SYSTEM = "system"
@@ -40,24 +40,17 @@ class BookingStatusEvent(SQLModel, table=True):
     __tablename__ = "booking_status_event"
     __table_args__ = (
         CheckConstraint("from_status IS DISTINCT FROM to_status", name="ck_bse_status_changed"),
+        CheckConstraint("to_status <> 'cancelled' OR reason_code IS NOT NULL", name="ck_bse_cancel_reason"),
+        CheckConstraint("reason_code IS DISTINCT FROM 'OTHER' OR note IS NOT NULL", name="ck_bse_other_note"),
         CheckConstraint(
-            "to_status <> 'cancelled' OR reason_code IS NOT NULL", name="ck_bse_cancel_reason"
-        ),
-        CheckConstraint(
-            "reason_code IS DISTINCT FROM 'OTHER' OR note IS NOT NULL", name="ck_bse_other_note"
-        ),
-        CheckConstraint(
-            "actor_type <> 'system' "
-            "OR (actor_user_id IS NULL AND actor_workshop_owner_id IS NULL)",
+            "actor_type <> 'system' OR (actor_user_id IS NULL AND actor_workshop_owner_id IS NULL)",
             name="ck_bse_system_actor",
         ),
         Index("ix_bse_booking_created", "booking_id", "created_at"),
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    booking_id: UUID = Field(
-        sa_column=Column(ForeignKey("booking.id", ondelete="CASCADE"), nullable=False)
-    )
+    booking_id: UUID = Field(sa_column=Column(ForeignKey("booking.id", ondelete="CASCADE"), nullable=False))
     # NULL = the booking was created.
     from_status: BookingStatus | None = Field(
         default=None,
@@ -85,9 +78,7 @@ class BookingStatusEvent(SQLModel, table=True):
     actor_type: BookingActorType = Field(sa_column=actor_type_column())
     actor_user_id: int | None = Field(
         default=None,
-        sa_column=Column(
-            Integer, ForeignKey("vehicle_user.user_id", ondelete="SET NULL"), nullable=True
-        ),
+        sa_column=Column(Integer, ForeignKey("vehicle_user.user_id", ondelete="SET NULL"), nullable=True),
     )
     actor_workshop_owner_id: UUID | None = Field(
         default=None,
@@ -98,9 +89,7 @@ class BookingStatusEvent(SQLModel, table=True):
     reason_code: str | None = Field(default=None, sa_column=Column(String(32), nullable=True))
     note: str | None = Field(default=None, sa_column=Column(String(255), nullable=True))
 
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
 
 
 class BookingReschedule(SQLModel, table=True):
@@ -114,9 +103,7 @@ class BookingReschedule(SQLModel, table=True):
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    booking_id: UUID = Field(
-        sa_column=Column(ForeignKey("booking.id", ondelete="CASCADE"), nullable=False)
-    )
+    booking_id: UUID = Field(sa_column=Column(ForeignKey("booking.id", ondelete="CASCADE"), nullable=False))
     from_date: date = Field(sa_column=Column(Date, nullable=False))
     from_time_slot: time = Field(sa_column=Column(Time, nullable=False))
     to_date: date = Field(sa_column=Column(Date, nullable=False))
@@ -124,9 +111,7 @@ class BookingReschedule(SQLModel, table=True):
     actor_type: BookingActorType = Field(sa_column=actor_type_column())
     actor_user_id: int | None = Field(
         default=None,
-        sa_column=Column(
-            Integer, ForeignKey("vehicle_user.user_id", ondelete="SET NULL"), nullable=True
-        ),
+        sa_column=Column(Integer, ForeignKey("vehicle_user.user_id", ondelete="SET NULL"), nullable=True),
     )
     # APP / CHAT / REMINDER_24H.
     source: str = Field(sa_column=Column(String(32), nullable=False))
@@ -135,6 +120,4 @@ class BookingReschedule(SQLModel, table=True):
         sa_column=Column(ForeignKey("chat_message.id", ondelete="SET NULL"), nullable=True),
     )
 
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))

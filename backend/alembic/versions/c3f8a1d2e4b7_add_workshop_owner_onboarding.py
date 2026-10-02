@@ -13,6 +13,7 @@ Revision ID: c3f8a1d2e4b7
 Revises: b2e5d7f1a9c4
 Create Date: 2026-09-27
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa
@@ -42,9 +43,7 @@ workshop_verification_status = postgresql.ENUM(
     "pending", "verified", "failed", name="workshop_verification_status_enum", create_type=False
 )
 workshop_status = postgresql.ENUM("active", "inactive", name="workshop_status_enum", create_type=False)
-service_center_type = postgresql.ENUM(
-    "dealer", "service_only", name="service_center_type_enum", create_type=False
-)
+service_center_type = postgresql.ENUM("dealer", "service_only", name="service_center_type_enum", create_type=False)
 
 _NEW_ENUMS = [
     workshop_owner_onboarding_status,
@@ -55,9 +54,7 @@ _NEW_ENUMS = [
 
 # ── Existing enum types (created by earlier revisions) ─────────────────
 user_status = postgresql.ENUM(name="user_status_enum", create_type=False)
-verification_attempt_status = postgresql.ENUM(
-    name="verification_attempt_status_enum", create_type=False
-)
+verification_attempt_status = postgresql.ENUM(name="verification_attempt_status_enum", create_type=False)
 consent_type = postgresql.ENUM(name="consent_type_enum", create_type=False)
 
 _NOW = sa.text("(CURRENT_TIMESTAMP)")
@@ -100,8 +97,7 @@ def upgrade() -> None:
             name="ck_workshop_owner_active_completed",
         ),
         sa.CheckConstraint(
-            "profile_completed_at IS NULL OR "
-            "(full_name IS NOT NULL AND phone IS NOT NULL AND national_id IS NOT NULL)",
+            "profile_completed_at IS NULL OR (full_name IS NOT NULL AND phone IS NOT NULL AND national_id IS NOT NULL)",
             name="ck_workshop_owner_profile_complete",
         ),
         sa.CheckConstraint(
@@ -147,16 +143,12 @@ def upgrade() -> None:
             "emergency_slots_reserved >= 0 AND emergency_slots_reserved <= total_technicians",
             name="ck_workshop_emergency_slots",
         ),
-        sa.CheckConstraint(
-            "status <> 'active' OR owner_id IS NOT NULL", name="ck_workshop_active_has_owner"
-        ),
+        sa.CheckConstraint("status <> 'active' OR owner_id IS NOT NULL", name="ck_workshop_active_has_owner"),
         sa.CheckConstraint(
             "owner_id IS NULL OR (hotline IS NOT NULL AND onboarded_at IS NOT NULL)",
             name="ck_workshop_owner_fields",
         ),
-        sa.CheckConstraint(
-            "(latitude IS NULL) = (longitude IS NULL)", name="ck_workshop_coordinates"
-        ),
+        sa.CheckConstraint("(latitude IS NULL) = (longitude IS NULL)", name="ck_workshop_coordinates"),
     )
     op.create_index("ix_workshop_external_center_id", "workshop", ["external_center_id"], unique=True)
     # W-05: one owner ↔ one workshop.

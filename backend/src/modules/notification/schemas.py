@@ -5,7 +5,7 @@ Shapes follow ``docs/specs/sprint-2/api/us-021-sprint-2-spec.api.md`` §C.5, API
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
@@ -15,7 +15,7 @@ class CamelModel(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
-class NotificationChannel(str, Enum):
+class NotificationChannel(StrEnum):
     DISCORD = "DISCORD"
     ZALO = "ZALO"
     TELEGRAM = "TELEGRAM"
@@ -23,7 +23,7 @@ class NotificationChannel(str, Enum):
     EMAIL = "EMAIL"
 
 
-class ChannelStatus(str, Enum):
+class ChannelStatus(StrEnum):
     CONNECTED = "CONNECTED"
     NOT_CONNECTED = "NOT_CONNECTED"
     COMING_SOON = "COMING_SOON"

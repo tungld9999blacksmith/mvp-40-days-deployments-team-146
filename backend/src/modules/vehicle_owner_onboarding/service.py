@@ -108,9 +108,7 @@ class OnboardingService:
         email = (claims.get("email") or "").strip().lower() or None
         email_verified = bool(claims.get("email_verified"))
         if not email or not email_verified:
-            raise errors.OnboardingError(
-                "A verified Google email is required.", code="EMAIL_NOT_VERIFIED"
-            )
+            raise errors.OnboardingError("A verified Google email is required.", code="EMAIL_NOT_VERIFIED")
 
         user = self.find_user_by_firebase_uid(uid)
 
@@ -123,9 +121,7 @@ class OnboardingService:
         is_new_user = user is None
         if user is None:
             # Guard: the same email must not belong to another Firebase UID.
-            existing_email = self._db.exec(
-                select(VehicleUser).where(VehicleUser.email == email)
-            ).first()
+            existing_email = self._db.exec(select(VehicleUser).where(VehicleUser.email == email)).first()
             if existing_email is not None:
                 raise errors.EmailAlreadyLinkedError()
 
@@ -146,9 +142,7 @@ class OnboardingService:
             logger.info("Created new vehicle_user id=%s", user.user_id)
         else:
             if user.status != UserStatus.ACTIVE:
-                raise errors.AccountLockedError(
-                    suspended=user.status == UserStatus.SUSPENDED
-                )
+                raise errors.AccountLockedError(suspended=user.status == UserStatus.SUSPENDED)
             user.last_login_at = _now()
             user.display_name = claims.get("name") or user.display_name
             user.avatar_url = claims.get("picture") or user.avatar_url
@@ -190,15 +184,11 @@ class OnboardingService:
     # ==================================================================
     # API-003 — save profile + location + consent
     # ==================================================================
-    def update_profile(
-        self, user: VehicleUser, req: schemas.ProfileUpdateRequest
-    ) -> schemas.ProfileUpdateData:
+    def update_profile(self, user: VehicleUser, req: schemas.ProfileUpdateRequest) -> schemas.ProfileUpdateData:
         self._assert_editable(user)
 
         if not req.personal_data_consent.granted:
-            raise errors.ConsentRequiredError(
-                "You must agree to personal data processing to continue."
-            )
+            raise errors.ConsentRequiredError("You must agree to personal data processing to continue.")
 
         try:
             phone = normalize_phone(req.phone_number)
@@ -207,9 +197,7 @@ class OnboardingService:
 
         national_id = normalize_national_id(req.national_id)
         if len(national_id) != 12:
-            raise errors.InvalidProfileError(
-                "National id (CCCD) must have 12 digits.", field="nationalId"
-            )
+            raise errors.InvalidProfileError("National id (CCCD) must have 12 digits.", field="nationalId")
 
         self._validate_location(req.location)
 
@@ -281,9 +269,7 @@ class OnboardingService:
         # --- format validation (needed to compute the idempotency hash) --
         vin = normalize_vin(req.vin)
         if len(vin) != 17 or any(ch not in _VIN_ALLOWED for ch in vin):
-            raise errors.InvalidProfileError(
-                "VIN must be 17 alphanumeric characters.", field="vin"
-            )
+            raise errors.InvalidProfileError("VIN must be 17 alphanumeric characters.", field="vin")
         plate = normalize_plate(req.license_plate)
         request_hash = self._request_hash(vin, plate, req.model_id)
 
@@ -298,21 +284,15 @@ class OnboardingService:
 
         # --- guards -------------------------------------------------------
         if user.profile_completed_at is None:
-            raise errors.OnboardingStateError(
-                "Complete your profile first.", code="PROFILE_INCOMPLETE"
-            )
+            raise errors.OnboardingStateError("Complete your profile first.", code="PROFILE_INCOMPLETE")
         self._assert_can_verify(user)
 
         if not req.oem_data_sharing_consent.granted:
-            raise errors.ConsentRequiredError(
-                "You must agree to share vehicle data with the manufacturer."
-            )
+            raise errors.ConsentRequiredError("You must agree to share vehicle data with the manufacturer.")
 
         # --- retry limit (D-04 / BR-006) ---------------------------------
         if self._remaining_attempts(user.user_id) <= 0:
-            raise errors.VerificationAttemptsExceededError(
-                self._seconds_until_attempt_window_frees(user.user_id)
-            )
+            raise errors.VerificationAttemptsExceededError(self._seconds_until_attempt_window_frees(user.user_id))
 
         # --- BR-002: VIN already linked to another active account --------
         if self._vin_linked_to_other(vin, user.user_id):
@@ -333,9 +313,7 @@ class OnboardingService:
             requested_at=_now(),
         )
         self._db.add(attempt)
-        self._record_consent_if_changed(
-            user.user_id, ConsentType.OEM_DATA_SHARING, req.oem_data_sharing_consent
-        )
+        self._record_consent_if_changed(user.user_id, ConsentType.OEM_DATA_SHARING, req.oem_data_sharing_consent)
         user.onboarding_status = OnboardingStatus.PENDING_VEHICLE_VERIFICATION
         self._db.add(user)
         self._db.commit()
@@ -501,9 +479,7 @@ class OnboardingService:
         return vehicles[0] if vehicles else None
 
     def _get_warranties(self, user_vehicle_id) -> list[VehicleWarranty]:
-        stmt = select(VehicleWarranty).where(
-            VehicleWarranty.user_vehicle_id == user_vehicle_id
-        )
+        stmt = select(VehicleWarranty).where(VehicleWarranty.user_vehicle_id == user_vehicle_id)
         return list(self._db.exec(stmt).all())
 
     def _get_latest_attempt(self, user_id: int) -> VehicleVerificationAttempt | None:
@@ -514,9 +490,7 @@ class OnboardingService:
         )
         return self._db.exec(stmt).first()
 
-    def _find_attempt(
-        self, user_id: int, idempotency_key: str
-    ) -> VehicleVerificationAttempt | None:
+    def _find_attempt(self, user_id: int, idempotency_key: str) -> VehicleVerificationAttempt | None:
         stmt = select(VehicleVerificationAttempt).where(
             VehicleVerificationAttempt.user_id == user_id,
             VehicleVerificationAttempt.idempotency_key == idempotency_key,
@@ -554,9 +528,7 @@ class OnboardingService:
         self._db.flush()  # assign PK before creating the attempt
         return draft
 
-    def _upsert_primary_location(
-        self, user_id: int, loc: schemas.LocationIn
-    ) -> UserLocation:
+    def _upsert_primary_location(self, user_id: int, loc: schemas.LocationIn) -> UserLocation:
         existing = self._get_primary_location(user_id)
         if existing is None:
             existing = UserLocation(user_id=user_id, address_line=loc.address_line, province=loc.province)
@@ -573,9 +545,7 @@ class OnboardingService:
         self._db.flush()
         return existing
 
-    def _record_consent_if_changed(
-        self, user_id: int, consent_type: ConsentType, consent: schemas.ConsentIn
-    ) -> None:
+    def _record_consent_if_changed(self, user_id: int, consent_type: ConsentType, consent: schemas.ConsentIn) -> None:
         current = self._current_consent(user_id, consent_type)
         if current is not None and current.granted == consent.granted:
             return
@@ -588,9 +558,7 @@ class OnboardingService:
             )
         )
 
-    def _current_consent(
-        self, user_id: int, consent_type: ConsentType
-    ) -> UserConsent | None:
+    def _current_consent(self, user_id: int, consent_type: ConsentType) -> UserConsent | None:
         stmt = (
             select(UserConsent)
             .where(
@@ -608,11 +576,7 @@ class OnboardingService:
             ("oemDataSharing", ConsentType.OEM_DATA_SHARING),
         ):
             c = self._current_consent(user_id, ctype)
-            out[key] = (
-                schemas.ConsentStateOut(granted=c.granted, policy_version=c.policy_version)
-                if c
-                else None
-            )
+            out[key] = schemas.ConsentStateOut(granted=c.granted, policy_version=c.policy_version) if c else None
         return out
 
     # ==================================================================
@@ -631,24 +595,16 @@ class OnboardingService:
     def _assert_editable(self, user: VehicleUser) -> None:
         status = user.onboarding_status
         if status == OnboardingStatus.ACTIVE:
-            raise errors.OnboardingStateError(
-                "Onboarding already completed.", code="ONBOARDING_ALREADY_COMPLETED"
-            )
+            raise errors.OnboardingStateError("Onboarding already completed.", code="ONBOARDING_ALREADY_COMPLETED")
         if status == OnboardingStatus.PENDING_VEHICLE_VERIFICATION:
-            raise errors.OnboardingStateError(
-                "Vehicle verification is in progress.", code="VERIFICATION_IN_PROGRESS"
-            )
+            raise errors.OnboardingStateError("Vehicle verification is in progress.", code="VERIFICATION_IN_PROGRESS")
 
     def _assert_can_verify(self, user: VehicleUser) -> None:
         status = user.onboarding_status
         if status == OnboardingStatus.ACTIVE:
-            raise errors.OnboardingStateError(
-                "Onboarding already completed.", code="ONBOARDING_ALREADY_COMPLETED"
-            )
+            raise errors.OnboardingStateError("Onboarding already completed.", code="ONBOARDING_ALREADY_COMPLETED")
         if status == OnboardingStatus.PENDING_VEHICLE_VERIFICATION:
-            raise errors.OnboardingStateError(
-                "Vehicle verification is in progress.", code="VERIFICATION_IN_PROGRESS"
-            )
+            raise errors.OnboardingStateError("Vehicle verification is in progress.", code="VERIFICATION_IN_PROGRESS")
 
     @staticmethod
     def _validate_location(loc: schemas.LocationIn) -> None:
@@ -659,25 +615,17 @@ class OnboardingService:
         has_lat = loc.latitude is not None
         has_lng = loc.longitude is not None
         if has_lat != has_lng:
-            raise errors.InvalidProfileError(
-                "Latitude and longitude must be provided together.", field="location"
-            )
+            raise errors.InvalidProfileError("Latitude and longitude must be provided together.", field="location")
         if source in (LocationSource.MAP_PICK, LocationSource.GPS) and not has_lat:
-            raise errors.InvalidProfileError(
-                "Coordinates are required for map/GPS locations.", field="location"
-            )
+            raise errors.InvalidProfileError("Coordinates are required for map/GPS locations.", field="location")
 
     def _assert_phone_available(self, phone: str, user_id: int) -> None:
-        stmt = select(VehicleUser).where(
-            VehicleUser.phone == phone, VehicleUser.user_id != user_id
-        )
+        stmt = select(VehicleUser).where(VehicleUser.phone == phone, VehicleUser.user_id != user_id)
         if self._db.exec(stmt).first() is not None:
             raise errors.PhoneAlreadyInUseError()
 
     def _assert_national_id_available(self, national_id: str, user_id: int) -> None:
-        stmt = select(VehicleUser).where(
-            VehicleUser.national_id == national_id, VehicleUser.user_id != user_id
-        )
+        stmt = select(VehicleUser).where(VehicleUser.national_id == national_id, VehicleUser.user_id != user_id)
         if self._db.exec(stmt).first() is not None:
             raise errors.OnboardingError(
                 "This national id is already used by another account.",
@@ -693,8 +641,7 @@ class OnboardingService:
         stmt = select(VehicleVerificationAttempt).where(
             VehicleVerificationAttempt.user_id == user_id,
             VehicleVerificationAttempt.status == VerificationAttemptStatus.FAILED,
-            VehicleVerificationAttempt.failure_reason
-            != VerificationFailureReason.OEM_UNAVAILABLE,
+            VehicleVerificationAttempt.failure_reason != VerificationFailureReason.OEM_UNAVAILABLE,
             VehicleVerificationAttempt.requested_at >= window_start,
         )
         return len(list(self._db.exec(stmt).all()))
@@ -721,9 +668,7 @@ class OnboardingService:
 
     @staticmethod
     def _request_hash(vin: str, plate: str, model_id: str) -> str:
-        canonical = json.dumps(
-            {"vin": vin, "plate": plate, "model_id": model_id}, sort_keys=True
-        )
+        canonical = json.dumps({"vin": vin, "plate": plate, "model_id": model_id}, sort_keys=True)
         return hashlib.sha256(canonical.encode()).hexdigest()
 
     # ==================================================================
@@ -732,9 +677,7 @@ class OnboardingService:
     def _onboarding_state(self, user: VehicleUser) -> schemas.OnboardingStateOut:
         profile_completed = user.profile_completed_at is not None
         next_step = compute_next_step(user.onboarding_status, profile_completed)
-        expires_at = compute_expires_at(
-            user.created_at, user.onboarding_status, self._retention_days
-        )
+        expires_at = compute_expires_at(user.created_at, user.onboarding_status, self._retention_days)
         return schemas.OnboardingStateOut(
             status=user.onboarding_status.name,
             next_step=next_step.value,
@@ -801,9 +744,7 @@ class OnboardingService:
             declared_model_id=vehicle.declared_model_id,
             verification_status=vehicle.verification_status.name,
             verification_failure_reason=(
-                vehicle.verification_failure_reason.name
-                if vehicle.verification_failure_reason
-                else None
+                vehicle.verification_failure_reason.name if vehicle.verification_failure_reason else None
             ),
             verified_at=vehicle.verified_at,
             spec=spec,
@@ -831,9 +772,7 @@ class OnboardingService:
         return schemas.LatestVerificationOut(
             attempt_id=attempt.id,
             status=attempt.status.name,
-            failure_reason=(
-                attempt.failure_reason.name if attempt.failure_reason else None
-            ),
+            failure_reason=(attempt.failure_reason.name if attempt.failure_reason else None),
             requested_at=attempt.requested_at,
             responded_at=attempt.responded_at,
         )
@@ -873,9 +812,7 @@ class OnboardingService:
         result = schemas.VerificationResultOut(
             attempt_id=attempt.id,
             status=attempt.status.name,
-            failure_reason=(
-                attempt.failure_reason.name if attempt.failure_reason else None
-            ),
+            failure_reason=(attempt.failure_reason.name if attempt.failure_reason else None),
             message=message,
             remaining_attempts=self._remaining_attempts(user.user_id),
         )

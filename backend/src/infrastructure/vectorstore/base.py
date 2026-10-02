@@ -94,10 +94,7 @@ class VectorStore(ABC):
         metadatas: list[dict[str, Any]] | None = None,
     ) -> None:
         metadatas = metadatas or [{} for _ in texts]
-        records = [
-            VectorRecord(id=i, content=t, metadata=m)
-            for i, t, m in zip(ids, texts, metadatas, strict=True)
-        ]
+        records = [VectorRecord(id=i, content=t, metadata=m) for i, t, m in zip(ids, texts, metadatas, strict=True)]
         self.add(collection, records)
 
     @abstractmethod
@@ -112,9 +109,7 @@ class VectorStore(ABC):
         k: int = 5,
         where: dict[str, Any] | None = None,
     ) -> list[SearchResult]:
-        return self.similarity_search_by_vector(
-            collection, self._engine.embed_query(query), k=k, where=where
-        )
+        return self.similarity_search_by_vector(collection, self._engine.embed_query(query), k=k, where=where)
 
     @abstractmethod
     def similarity_search_by_vector(

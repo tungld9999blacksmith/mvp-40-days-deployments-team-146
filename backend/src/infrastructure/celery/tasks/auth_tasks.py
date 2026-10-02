@@ -28,9 +28,7 @@ _RETRY_BACKOFF_SECONDS = 10
     default_retry_delay=_RETRY_BACKOFF_SECONDS,
     acks_late=True,
 )
-def revoke_session_task(
-    self, uid: str, user_id: int, trace_id: str | None = None
-) -> None:
+def revoke_session_task(self, uid: str, user_id: int, trace_id: str | None = None) -> None:
     # Imported lazily so importing this module never requires Firebase creds
     # or a DB connection (e.g. when the API process registers the task).
     from firebase_admin import auth
@@ -61,8 +59,6 @@ def _record(*, user_id: int, success: bool, reason: str | None, trace_id: str | 
     session = next(get_session())
     try:
         service = AuthService(session, CelerySessionRevoker())
-        service.record_revoke_result(
-            user_id=user_id, success=success, reason=reason, trace_id=trace_id
-        )
+        service.record_revoke_result(user_id=user_id, success=success, reason=reason, trace_id=trace_id)
     finally:
         session.close()

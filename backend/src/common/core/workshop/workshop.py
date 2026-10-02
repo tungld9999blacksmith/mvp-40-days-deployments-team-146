@@ -8,7 +8,7 @@ workshops too.
 
 from datetime import datetime, time
 from decimal import Decimal
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
@@ -32,17 +32,17 @@ from sqlmodel import Field, SQLModel
 from src.common.data_access import SQLModelRepository
 
 
-class WorkshopStatus(str, Enum):
+class WorkshopStatus(StrEnum):
     ACTIVE = "active"
     INACTIVE = "inactive"
 
 
-class ServiceCenterType(str, Enum):
+class ServiceCenterType(StrEnum):
     DEALER = "dealer"
     SERVICE_ONLY = "service_only"
 
 
-class BookingConfirmationMode(str, Enum):
+class BookingConfirmationMode(StrEnum):
     """How a held booking becomes a confirmed appointment (F6 BR-014, AI-Q-401).
 
     ``auto``   — the system confirms right after the owner holds the slot.
@@ -66,17 +66,13 @@ class Workshop(SQLModel, table=True):
             name="ck_workshop_emergency_slots",
         ),
         # W-09: an active workshop always has an owner.
-        CheckConstraint(
-            "status <> 'active' OR owner_id IS NOT NULL", name="ck_workshop_active_has_owner"
-        ),
+        CheckConstraint("status <> 'active' OR owner_id IS NOT NULL", name="ck_workshop_active_has_owner"),
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 
     # ── From the manufacturer (ServiceCenter) ────────────────────────
-    external_center_id: str = Field(
-        sa_column=Column(String(64), unique=True, index=True, nullable=False)
-    )
+    external_center_id: str = Field(sa_column=Column(String(64), unique=True, index=True, nullable=False))
     name: str = Field(sa_column=Column(String(150), nullable=False))
     region: str = Field(sa_column=Column(String(50), nullable=False))
     type: ServiceCenterType = Field(
@@ -93,9 +89,7 @@ class Workshop(SQLModel, table=True):
     # ── Operations (declared by the workshop owner) ──────────────────
     address: str = Field(sa_column=Column(Text, nullable=False))
     total_technicians: int = Field(sa_column=Column(Integer, nullable=False))
-    emergency_slots_reserved: int = Field(
-        default=0, sa_column=Column(Integer, nullable=False, server_default="0")
-    )
+    emergency_slots_reserved: int = Field(default=0, sa_column=Column(Integer, nullable=False, server_default="0"))
     status: WorkshopStatus = Field(
         default=WorkshopStatus.ACTIVE,
         sa_column=Column(
@@ -134,20 +128,12 @@ class Workshop(SQLModel, table=True):
     hotline: str | None = Field(default=None, sa_column=Column(String(20), nullable=True))
     latitude: Decimal | None = Field(default=None, sa_column=Column(Numeric(9, 6), nullable=True))
     longitude: Decimal | None = Field(default=None, sa_column=Column(Numeric(9, 6), nullable=True))
-    onboarded_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
-    oem_synced_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
+    onboarded_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
+    oem_synced_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
 
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 
@@ -168,23 +154,15 @@ class WorkshopOperatingHour(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     workshop_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("workshop.id", ondelete="CASCADE"), nullable=False, index=True
-        )
+        sa_column=Column(ForeignKey("workshop.id", ondelete="CASCADE"), nullable=False, index=True)
     )
     day_of_week: int = Field(sa_column=Column(SmallInteger, nullable=False))
-    is_closed: bool = Field(
-        default=False, sa_column=Column(Boolean, nullable=False, server_default="false")
-    )
+    is_closed: bool = Field(default=False, sa_column=Column(Boolean, nullable=False, server_default="false"))
     open_time: time | None = Field(default=None, sa_column=Column(Time, nullable=True))
     close_time: time | None = Field(default=None, sa_column=Column(Time, nullable=True))
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 

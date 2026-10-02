@@ -9,6 +9,7 @@ Revision ID: b2e5d7f1a9c4
 Revises: a1f4c2d3e5b6
 Create Date: 2026-09-27
 """
+
 from typing import Sequence, Union
 
 import sqlalchemy as sa
@@ -31,11 +32,10 @@ auth_event_type = postgresql.ENUM(
     "session_revoked",
     "session_revoke_failed",
     "login_denied",
-    name="auth_event_type_enum", create_type=False,
+    name="auth_event_type_enum",
+    create_type=False,
 )
-auth_event_result = postgresql.ENUM(
-    "success", "denied", "failed", name="auth_event_result_enum", create_type=False
-)
+auth_event_result = postgresql.ENUM("success", "denied", "failed", name="auth_event_result_enum", create_type=False)
 
 _ALL_ENUMS = [auth_event_type, auth_event_result]
 
@@ -74,19 +74,13 @@ def upgrade() -> None:
             server_default=sa.text("(CURRENT_TIMESTAMP)"),
             nullable=False,
         ),
-        sa.ForeignKeyConstraint(
-            ["user_id"], ["vehicle_user.user_id"], ondelete="CASCADE"
-        ),
+        sa.ForeignKeyConstraint(["user_id"], ["vehicle_user.user_id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
     # Audit lookup: a user's auth history, newest first.
-    op.create_index(
-        "ix_auth_event_user_created", "auth_event", ["user_id", "created_at"]
-    )
+    op.create_index("ix_auth_event_user_created", "auth_event", ["user_id", "created_at"])
     # Retention purge scans by created_at.
-    op.create_index(
-        op.f("ix_auth_event_created_at"), "auth_event", ["created_at"]
-    )
+    op.create_index(op.f("ix_auth_event_created_at"), "auth_event", ["created_at"])
 
 
 def downgrade() -> None:

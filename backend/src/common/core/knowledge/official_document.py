@@ -5,7 +5,7 @@ The chunked content lives in ``document_chunk``.
 """
 
 from datetime import date, datetime
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import Column, Date, DateTime, Index, String, Text, UniqueConstraint, func
@@ -15,7 +15,7 @@ from sqlmodel import Field, SQLModel
 from src.common.data_access import SQLModelRepository
 
 
-class OfficialDocumentType(str, Enum):
+class OfficialDocumentType(StrEnum):
     OWNER_MANUAL = "owner_manual"
     MAINTENANCE_MANUAL = "maintenance_manual"
     WARRANTY_POLICY = "warranty_policy"
@@ -58,13 +58,9 @@ class OfficialDocument(SQLModel, table=True):
     source_url: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
     effective_date: date | None = Field(default=None, sa_column=Column(Date, nullable=True))
 
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 

@@ -60,9 +60,7 @@ class CheckInNotTodayError(BoardError):
     code = "CHECK_IN_NOT_TODAY"
 
     def __init__(self, booking_date: str) -> None:
-        super().__init__(
-            "Check-in is only possible on the booking date.", details={"bookingDate": booking_date}
-        )
+        super().__init__("Check-in is only possible on the booking date.", details={"bookingDate": booking_date})
 
 
 class ConfirmDeadlinePassedError(BoardError):
@@ -86,9 +84,7 @@ class BlockExceedsFreeCapacityError(BoardError):
     code = "BLOCK_EXCEEDS_FREE_CAPACITY"
 
     def __init__(self, max_block: int) -> None:
-        super().__init__(
-            "Cannot block more slots than are free.", details={"maxBlock": max_block}
-        )
+        super().__init__("Cannot block more slots than are free.", details={"maxBlock": max_block})
 
 
 class BlockDateOutOfRangeError(BoardError):

@@ -8,7 +8,7 @@ becomes ``completed`` (Q-412, BR-ENT-421). ``has_issue`` escalates to a
 
 from datetime import datetime, timedelta
 from decimal import Decimal
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
@@ -33,7 +33,7 @@ from src.common.data_access import SQLModelRepository
 FOLLOW_UP_DELAY = timedelta(hours=12)
 
 
-class FollowUpStatus(str, Enum):
+class FollowUpStatus(StrEnum):
     PENDING = "pending"
     SENT = "sent"
     RESPONDED = "responded"
@@ -83,15 +83,11 @@ class FollowUp(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     booking_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("booking.id", ondelete="CASCADE"), nullable=False, unique=True
-        )
+        sa_column=Column(ForeignKey("booking.id", ondelete="CASCADE"), nullable=False, unique=True)
     )
     message: str = Field(sa_column=Column(Text, nullable=False))
     customer_response: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
-    has_issue: bool = Field(
-        default=False, sa_column=Column(Boolean, nullable=False, server_default="false")
-    )
+    has_issue: bool = Field(default=False, sa_column=Column(Boolean, nullable=False, server_default="false"))
     status: FollowUpStatus = Field(
         default=FollowUpStatus.PENDING,
         sa_column=Column(
@@ -102,33 +98,21 @@ class FollowUp(SQLModel, table=True):
     )
     # When the follow-up is due: booking completion time + FOLLOW_UP_DELAY.
     scheduled_at: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=False))
-    sent_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
-    responded_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
+    sent_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
+    responded_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
     # us-041 extension: answer, classification and closing.
     rating: int | None = Field(default=None, sa_column=Column(SmallInteger, nullable=True))
     feedback_intent: str | None = Field(default=None, sa_column=Column(String(32), nullable=True))
-    classification_confidence: Decimal | None = Field(
-        default=None, sa_column=Column(Numeric(3, 2), nullable=True)
-    )
+    classification_confidence: Decimal | None = Field(default=None, sa_column=Column(Numeric(3, 2), nullable=True))
     # RULES / LLM / LLM_FALLBACK.
     classified_by: str | None = Field(default=None, sa_column=Column(String(16), nullable=True))
     # PROCESSED / NO_RESPONSE / NOT_ELIGIBLE.
     closed_reason: str | None = Field(default=None, sa_column=Column(String(32), nullable=True))
-    closed_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
+    closed_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
 
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 

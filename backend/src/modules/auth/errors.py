@@ -35,10 +35,7 @@ class AuthProviderUnavailableError(AuthError):
 
     def __init__(
         self,
-        message: str = (
-            "Không thể thu hồi phiên lúc này. Vui lòng thử lại; "
-            "phiên trên thiết bị đã được đăng xuất."
-        ),
+        message: str = ("Không thể thu hồi phiên lúc này. Vui lòng thử lại; phiên trên thiết bị đã được đăng xuất."),
     ) -> None:
         super().__init__(message)
 

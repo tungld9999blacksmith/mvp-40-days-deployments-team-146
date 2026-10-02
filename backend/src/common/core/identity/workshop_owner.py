@@ -8,7 +8,7 @@ Gmail / national id may exist in both tables as two independent accounts.
 """
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import Boolean, Column, DateTime, String, func
@@ -20,7 +20,7 @@ from src.common.data_access import SQLModelRepository
 from .vehicle_user import UserStatus
 
 
-class WorkshopOwnerOnboardingStatus(str, Enum):
+class WorkshopOwnerOnboardingStatus(StrEnum):
     """Where the workshop owner is in onboarding (FF FEAT-AUTH-003 §13)."""
 
     ONBOARDING_IN_PROGRESS = "onboarding_in_progress"
@@ -40,14 +40,10 @@ class WorkshopOwner(SQLModel, table=True):
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 
     # ── Identity (from Firebase / Google) ────────────────────────────
-    firebase_uid: str = Field(
-        sa_column=Column(String(128), unique=True, index=True, nullable=False)
-    )
+    firebase_uid: str = Field(sa_column=Column(String(128), unique=True, index=True, nullable=False))
 
     # Also the manager email the manufacturer matches against (W-01).
-    email: str = Field(
-        sa_column=Column(String(255), unique=True, index=True, nullable=False)
-    )
+    email: str = Field(sa_column=Column(String(255), unique=True, index=True, nullable=False))
 
     email_verified: bool = Field(
         default=False,
@@ -59,18 +55,12 @@ class WorkshopOwner(SQLModel, table=True):
         sa_column=Column(String(32), nullable=False, server_default="google.com"),
     )
 
-    display_name: str | None = Field(
-        default=None, sa_column=Column(String(255), nullable=True)
-    )
+    display_name: str | None = Field(default=None, sa_column=Column(String(255), nullable=True))
 
-    avatar_url: str | None = Field(
-        default=None, sa_column=Column(String(1024), nullable=True)
-    )
+    avatar_url: str | None = Field(default=None, sa_column=Column(String(1024), nullable=True))
 
     # ── Profile (entered during onboarding) ──────────────────────────
-    full_name: str | None = Field(
-        default=None, sa_column=Column(String(150), nullable=True)
-    )
+    full_name: str | None = Field(default=None, sa_column=Column(String(150), nullable=True))
 
     phone: str | None = Field(
         default=None,
@@ -115,19 +105,11 @@ class WorkshopOwner(SQLModel, table=True):
         default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
     )
 
-    last_login_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
+    last_login_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
 
-    last_logout_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
+    last_logout_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
 
-    created_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), nullable=False
-        )
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
 
     updated_at: datetime = Field(
         sa_column=Column(

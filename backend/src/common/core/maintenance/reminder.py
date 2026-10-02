@@ -4,7 +4,7 @@ Columns follow ``docs/specs/entity/maintenance/reminder.entity.md``.
 """
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
@@ -23,14 +23,14 @@ from sqlmodel import Field, SQLModel
 from src.common.data_access import SQLModelRepository
 
 
-class ReminderLevel(str, Enum):
+class ReminderLevel(StrEnum):
     EARLY = "early"
     WARNING = "warning"
     URGENT = "urgent"
     EXPIRED = "expired"
 
 
-class ReminderChannel(str, Enum):
+class ReminderChannel(StrEnum):
     """Delivery channel (BR-ENT-408).
 
     Only DISCORD has an adapter today. ZALO / TELEGRAM / SMS / EMAIL are listed
@@ -49,7 +49,6 @@ class ReminderChannel(str, Enum):
     IN_APP = "in_app"
     PUSH = "push"
     SMS_ZALO = "sms_zalo"
-
 
 
 def _enum_values(enum_cls: type[Enum]) -> list[str]:
@@ -72,9 +71,7 @@ class Reminder(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_vehicle_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("user_vehicle.id", ondelete="CASCADE"), nullable=False, index=True
-        )
+        sa_column=Column(ForeignKey("user_vehicle.id", ondelete="CASCADE"), nullable=False, index=True)
     )
     target_odo_milestone: int = Field(sa_column=Column(Integer, nullable=False))
     reminder_level: ReminderLevel = Field(
@@ -93,21 +90,13 @@ class Reminder(SQLModel, table=True):
             server_default="discord",
         ),
     )
-    snooze_count: int = Field(
-        default=0, sa_column=Column(Integer, nullable=False, server_default="0")
-    )
-    is_resolved: bool = Field(
-        default=False, sa_column=Column(Boolean, nullable=False, server_default="false")
-    )
+    snooze_count: int = Field(default=0, sa_column=Column(Integer, nullable=False, server_default="0"))
+    is_resolved: bool = Field(default=False, sa_column=Column(Boolean, nullable=False, server_default="false"))
     scheduled_at: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=False))
 
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 

@@ -166,15 +166,15 @@ def ensure_dev_owners(session: Session) -> None:
         owner_ids.add(owner_id)
 
         if fixed_national_id and fixed_national_id in national_ids:
-            logger.warning("%s: national id %s already used, generating one for %s", EMAILS_ENV, fixed_national_id, email)
+            logger.warning(
+                "%s: national id %s already used, generating one for %s", EMAILS_ENV, fixed_national_id, email
+            )
             fixed_national_id = None
         if fixed_national_id:
             national_id = fixed_national_id
             national_ids.add(national_id)
         else:
-            national_id = _unique(
-                email, "national_id", lambda r: f"0792{r.randint(0, 99_999_999):08d}", national_ids
-            )
+            national_id = _unique(email, "national_id", lambda r: f"0792{r.randint(0, 99_999_999):08d}", national_ids)
 
         local = email.split("@")[0]
         owner = Owner(
@@ -215,25 +215,29 @@ def ensure_dev_owners(session: Session) -> None:
 
             age_years = max((ref - mfg).days / 365, 0.1)
             current_km = int(age_years * KM_PER_YEAR)
-            session.add(VehicleUsage(
-                vehicle_id=vehicle.vehicle_id,
-                current_km=current_km,
-                battery_soh=round(max(85.0, 100 - age_years * 1.5), 1),
-                data_source=DataSource.telematics,
-                last_updated_at=datetime.combine(ref, datetime.min.time()).replace(hour=8),
-            ))
+            session.add(
+                VehicleUsage(
+                    vehicle_id=vehicle.vehicle_id,
+                    current_km=current_km,
+                    battery_soh=round(max(85.0, 100 - age_years * 1.5), 1),
+                    data_source=DataSource.telematics,
+                    last_updated_at=datetime.combine(ref, datetime.min.time()).replace(hour=8),
+                )
+            )
 
             for policy in (p for p in policies if p.model_id == model.model_id):
                 end = _add_months(mfg, policy.duration_months)
-                session.add(Warranty(
-                    warranty_id=f"WRT-DEV-{key}-{n}-{policy.policy_id}",
-                    vehicle_id=vehicle.vehicle_id,
-                    policy_id=policy.policy_id,
-                    start_date=mfg,
-                    end_date=end,
-                    km_limit=policy.km_limit,
-                    status=WarrantyStatus.active if end > ref else WarrantyStatus.expired,
-                ))
+                session.add(
+                    Warranty(
+                        warranty_id=f"WRT-DEV-{key}-{n}-{policy.policy_id}",
+                        vehicle_id=vehicle.vehicle_id,
+                        policy_id=policy.policy_id,
+                        start_date=mfg,
+                        end_date=end,
+                        km_limit=policy.km_limit,
+                        status=WarrantyStatus.active if end > ref else WarrantyStatus.expired,
+                    )
+                )
 
             days_owned = max((ref - mfg).days, 1)
             for s in sorted((s for s in schedules if s.model_id == model.model_id), key=lambda s: s.milestone_km):
@@ -242,20 +246,26 @@ def ensure_dev_owners(session: Session) -> None:
                 srnd = _rng(email, "service", n, s.milestone_km)
                 km = min(s.milestone_km + srnd.randint(-500, 800), current_km)
                 served = mfg + timedelta(days=int(days_owned * km / max(current_km, 1)))
-                session.add(ServiceHistory(
-                    order_id=f"SH-DEV-{key}-{n}-{s.milestone_km}",
-                    vehicle_id=vehicle.vehicle_id,
-                    service_center_id=srnd.choice(centers).center_id,
-                    service_date=min(served, ref),
-                    km_at_service=km,
-                    items_done=s.description,
-                    is_periodic=True,
-                    total_cost=srnd.choice([0, 350_000, 900_000, 1_900_000]),
-                ))
+                session.add(
+                    ServiceHistory(
+                        order_id=f"SH-DEV-{key}-{n}-{s.milestone_km}",
+                        vehicle_id=vehicle.vehicle_id,
+                        service_center_id=srnd.choice(centers).center_id,
+                        service_date=min(served, ref),
+                        km_at_service=km,
+                        items_done=s.description,
+                        is_periodic=True,
+                        total_cost=srnd.choice([0, 350_000, 900_000, 1_900_000]),
+                    )
+                )
             created.append(f"{vehicle.vehicle_id} VIN={vin} plate={plate} model={model.model_id}")
 
         logger.info(
             "%s: created owner %s (%s, CCCD=%s) with vehicles: %s",
-            EMAILS_ENV, owner.owner_id, email, national_id, "; ".join(created),
+            EMAILS_ENV,
+            owner.owner_id,
+            email,
+            national_id,
+            "; ".join(created),
         )
     session.commit()

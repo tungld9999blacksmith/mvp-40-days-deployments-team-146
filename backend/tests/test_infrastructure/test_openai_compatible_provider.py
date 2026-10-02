@@ -57,9 +57,7 @@ async def test_chat_keeps_system_message_inline(provider: OpenAICompatibleProvid
 
 
 def test_grok_and_deepseek_reuse_the_same_provider_class_with_base_url():
-    grok = OpenAICompatibleProvider(
-        api_key="k", model="grok-4", provider_name="grok", base_url="https://api.x.ai/v1"
-    )
+    grok = OpenAICompatibleProvider(api_key="k", model="grok-4", provider_name="grok", base_url="https://api.x.ai/v1")
     deepseek = OpenAICompatibleProvider(
         api_key="k", model="deepseek-chat", provider_name="deepseek", base_url="https://api.deepseek.com"
     )
@@ -82,9 +80,7 @@ async def test_rate_limit_error_is_translated(provider: OpenAICompatibleProvider
 @pytest.mark.asyncio
 async def test_connection_error_is_translated(provider: OpenAICompatibleProvider):
     request = httpx2.Request("POST", "https://api.openai.com/v1/chat/completions")
-    provider._client.chat.completions.create = AsyncMock(
-        side_effect=openai.APIConnectionError(request=request)
-    )
+    provider._client.chat.completions.create = AsyncMock(side_effect=openai.APIConnectionError(request=request))
 
     with pytest.raises(LLMProviderUnavailableError):
         await provider.chat([ChatMessage(role="user", content="Hi")])

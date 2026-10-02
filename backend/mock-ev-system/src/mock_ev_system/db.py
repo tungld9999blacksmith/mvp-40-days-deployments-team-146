@@ -76,6 +76,7 @@ def init_db(reset: bool = False) -> None:
     # Owners + vehicles for the Gmail accounts in MOCK_DEV_OWNER_EMAILS.
     with Session(engine) as session:
         from .dev_accounts import ensure_dev_owners
+
         ensure_dev_owners(session)
 
 
@@ -96,6 +97,7 @@ def _load_startup_data(mock_tables: list) -> None:
         SQLModel.metadata.create_all(engine, tables=mock_tables)
         with Session(engine) as session:
             from .seed import seed_all
+
             seed_all(session)
 
 

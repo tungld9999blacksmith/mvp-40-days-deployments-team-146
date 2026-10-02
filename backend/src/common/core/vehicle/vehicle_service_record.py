@@ -6,7 +6,7 @@ the sync job) and ``ev_care`` (a booking completed on the Workshop Board, F8).
 """
 
 from datetime import date, datetime
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
@@ -30,7 +30,7 @@ from sqlmodel import Field, SQLModel
 from src.common.data_access import SQLModelRepository
 
 
-class ServiceRecordSource(str, Enum):
+class ServiceRecordSource(StrEnum):
     OEM = "oem"
     EV_CARE = "ev_care"
 
@@ -42,9 +42,7 @@ def _enum_values(enum_cls: type[Enum]) -> list[str]:
 class VehicleServiceRecord(SQLModel, table=True):
     __tablename__ = "vehicle_service_record"
     __table_args__ = (
-        CheckConstraint(
-            "odo_km IS NULL OR odo_km BETWEEN 0 AND 999999", name="ck_service_record_odo_km"
-        ),
+        CheckConstraint("odo_km IS NULL OR odo_km BETWEEN 0 AND 999999", name="ck_service_record_odo_km"),
         CheckConstraint(
             "source <> 'oem' OR external_order_id IS NOT NULL",
             name="ck_service_record_oem_order",
@@ -76,9 +74,7 @@ class VehicleServiceRecord(SQLModel, table=True):
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    user_vehicle_id: UUID = Field(
-        sa_column=Column(ForeignKey("user_vehicle.id", ondelete="CASCADE"), nullable=False)
-    )
+    user_vehicle_id: UUID = Field(sa_column=Column(ForeignKey("user_vehicle.id", ondelete="CASCADE"), nullable=False))
     source: ServiceRecordSource = Field(
         sa_column=Column(
             SQLEnum(
@@ -89,37 +85,25 @@ class VehicleServiceRecord(SQLModel, table=True):
             nullable=False,
         )
     )
-    external_order_id: str | None = Field(
-        default=None, sa_column=Column(String(64), nullable=True)
-    )
+    external_order_id: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
     booking_id: UUID | None = Field(
         default=None,
         sa_column=Column(ForeignKey("booking.id", ondelete="SET NULL"), nullable=True),
     )
     service_date: date = Field(sa_column=Column(Date, nullable=False))
     odo_km: int | None = Field(default=None, sa_column=Column(Integer, nullable=True))
-    external_center_id: str | None = Field(
-        default=None, sa_column=Column(String(64), nullable=True)
-    )
+    external_center_id: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
     workshop_id: UUID | None = Field(
         default=None,
         sa_column=Column(ForeignKey("workshop.id", ondelete="SET NULL"), nullable=True),
     )
     items_done: str | None = Field(default=None, sa_column=Column(Text, nullable=True))
     # False = repair outside the periodic schedule; never used as the baseline (Q-304).
-    is_periodic: bool = Field(
-        default=True, sa_column=Column(Boolean, server_default=true(), nullable=False)
-    )
-    synced_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    is_periodic: bool = Field(default=True, sa_column=Column(Boolean, server_default=true(), nullable=False))
+    synced_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 

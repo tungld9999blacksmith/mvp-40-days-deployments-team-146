@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, time
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -16,7 +16,7 @@ class CamelModel(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
-class BookingStatusIn(str, Enum):
+class BookingStatusIn(StrEnum):
     PENDING = "PENDING"
     CONFIRMED = "CONFIRMED"
     CHECKED_IN = "CHECKED_IN"
@@ -100,7 +100,7 @@ class ByCodeEnvelope(CamelModel):
 
 
 # ── API-WB-04 ───────────────────────────────────────────────────────────────
-class BoardAction(str, Enum):
+class BoardAction(StrEnum):
     ACCEPT = "ACCEPT"
     REJECT = "REJECT"
     CHECK_IN = "CHECK_IN"
@@ -109,7 +109,7 @@ class BoardAction(str, Enum):
     CANCEL = "CANCEL"
 
 
-class TransitionSource(str, Enum):
+class TransitionSource(StrEnum):
     BOARD = "BOARD"
     QR_SCAN = "QR_SCAN"
 
@@ -171,7 +171,7 @@ class CapacityEnvelope(CamelModel):
     data: CapacityData
 
 
-class BlockReasonIn(str, Enum):
+class BlockReasonIn(StrEnum):
     PHONE_BOOKING = "PHONE_BOOKING"
     WALK_IN = "WALK_IN"
     MAINTENANCE = "MAINTENANCE"
@@ -200,7 +200,7 @@ class SlotBlockEnvelope(CamelModel):
 
 
 # ── API-WB-07 / 08 ──────────────────────────────────────────────────────────
-class ConfirmationModeIn(str, Enum):
+class ConfirmationModeIn(StrEnum):
     AUTO = "AUTO"
     MANUAL = "MANUAL"
 

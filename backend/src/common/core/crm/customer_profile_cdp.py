@@ -24,26 +24,14 @@ class CustomerProfileCDP(SQLModel, table=True):
             primary_key=True,
         )
     )
-    interaction_history: dict[str, Any] | None = Field(
-        default=None, sa_column=Column(JSONB, nullable=True)
-    )
-    preferences: dict[str, Any] | None = Field(
-        default=None, sa_column=Column(JSONB, nullable=True)
-    )
-    last_active_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
-    is_cold_start: bool = Field(
-        default=True, sa_column=Column(Boolean, nullable=False, server_default="true")
-    )
+    interaction_history: dict[str, Any] | None = Field(default=None, sa_column=Column(JSONB, nullable=True))
+    preferences: dict[str, Any] | None = Field(default=None, sa_column=Column(JSONB, nullable=True))
+    last_active_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
+    is_cold_start: bool = Field(default=True, sa_column=Column(Boolean, nullable=False, server_default="true"))
 
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 

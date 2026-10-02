@@ -18,7 +18,7 @@ from __future__ import annotations
 import re
 from datetime import date, datetime, timedelta
 from decimal import Decimal
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
@@ -74,42 +74,42 @@ __all__ = [
 # ---------------------------------------------------------------------------
 # Enums (DB stores the lowercase value)
 # ---------------------------------------------------------------------------
-class VerificationAttemptStatus(str, Enum):
+class VerificationAttemptStatus(StrEnum):
     PENDING = "pending"
     SUCCESS = "success"
     FAILED = "failed"
 
 
-class LocationType(str, Enum):
+class LocationType(StrEnum):
     HOME = "home"
     WORK = "work"
     OTHER = "other"
 
 
-class LocationSource(str, Enum):
+class LocationSource(StrEnum):
     MANUAL = "manual"
     MAP_PICK = "map_pick"
     GPS = "gps"
 
 
-class ConsentType(str, Enum):
+class ConsentType(StrEnum):
     PERSONAL_DATA_PROCESSING = "personal_data_processing"
     OEM_DATA_SHARING = "oem_data_sharing"
 
 
-class WarrantyComponent(str, Enum):
+class WarrantyComponent(StrEnum):
     BATTERY = "battery"
     MOTOR = "motor"
     CHASSIS = "chassis"
     ELECTRONICS = "electronics"
 
 
-class WarrantyStatus(str, Enum):
+class WarrantyStatus(StrEnum):
     ACTIVE = "active"
     EXPIRED = "expired"
 
 
-class NextStep(str, Enum):
+class NextStep(StrEnum):
     """Screen the frontend should route to after each onboarding call."""
 
     PROFILE = "PROFILE"
@@ -162,16 +162,10 @@ class UserLocation(SQLModel, table=True):
         ),
     )
     place_id: str | None = Field(default=None, sa_column=Column(String(255), nullable=True))
-    is_primary: bool = Field(
-        default=True, sa_column=Column(Boolean, nullable=False, server_default="true")
-    )
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    is_primary: bool = Field(default=True, sa_column=Column(Boolean, nullable=False, server_default="true"))
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 
@@ -182,9 +176,7 @@ class VehicleWarranty(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_vehicle_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("user_vehicle.id", ondelete="CASCADE"), nullable=False, index=True
-        )
+        sa_column=Column(ForeignKey("user_vehicle.id", ondelete="CASCADE"), nullable=False, index=True)
     )
     external_warranty_id: str = Field(sa_column=Column(String(64), nullable=False))
     external_policy_id: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
@@ -205,16 +197,10 @@ class VehicleWarranty(SQLModel, table=True):
             nullable=False,
         )
     )
-    synced_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    synced_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 
@@ -225,13 +211,9 @@ class VehicleVerificationAttempt(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: int = Field(
-        sa_column=Column(
-            Integer, ForeignKey("vehicle_user.user_id", ondelete="CASCADE"), nullable=False, index=True
-        )
+        sa_column=Column(Integer, ForeignKey("vehicle_user.user_id", ondelete="CASCADE"), nullable=False, index=True)
     )
-    user_vehicle_id: UUID = Field(
-        sa_column=Column(ForeignKey("user_vehicle.id", ondelete="CASCADE"), nullable=False)
-    )
+    user_vehicle_id: UUID = Field(sa_column=Column(ForeignKey("user_vehicle.id", ondelete="CASCADE"), nullable=False))
     vin: str = Field(sa_column=Column(String(17), nullable=False))
     license_plate: str = Field(sa_column=Column(String(20), nullable=False))
     declared_model_id: str = Field(sa_column=Column(String(64), nullable=False))
@@ -278,9 +260,7 @@ class UserConsent(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: int = Field(
-        sa_column=Column(
-            Integer, ForeignKey("vehicle_user.user_id", ondelete="CASCADE"), nullable=False, index=True
-        )
+        sa_column=Column(Integer, ForeignKey("vehicle_user.user_id", ondelete="CASCADE"), nullable=False, index=True)
     )
     consent_type: ConsentType = Field(
         sa_column=Column(
@@ -292,9 +272,7 @@ class UserConsent(SQLModel, table=True):
     granted: bool = Field(sa_column=Column(Boolean, nullable=False))
     ip_address: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
     user_agent: str | None = Field(default=None, sa_column=Column(String(512), nullable=True))
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
 
 
 # ---------------------------------------------------------------------------

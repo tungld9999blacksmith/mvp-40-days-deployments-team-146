@@ -10,6 +10,7 @@ Revision ID: a1f4c2d3e5b6
 Revises: 272915ecc478
 Create Date: 2026-09-27
 """
+
 from typing import Sequence, Union
 
 import sqlalchemy as sa
@@ -32,7 +33,8 @@ onboarding_status = postgresql.ENUM(
     "pending_vehicle_verification",
     "verification_failed",
     "active",
-    name="onboarding_status_enum", create_type=False,
+    name="onboarding_status_enum",
+    create_type=False,
 )
 location_type = postgresql.ENUM("home", "work", "other", name="location_type_enum", create_type=False)
 location_source = postgresql.ENUM("manual", "map_pick", "gps", name="location_source_enum", create_type=False)
@@ -51,7 +53,8 @@ verification_failure_reason = postgresql.ENUM(
     "national_id_mismatch",
     "already_linked",
     "oem_unavailable",
-    name="verification_failure_reason_enum", create_type=False,
+    name="verification_failure_reason_enum",
+    create_type=False,
 )
 warranty_component = postgresql.ENUM(
     "battery", "motor", "chassis", "electronics", name="warranty_component_enum", create_type=False
@@ -83,8 +86,12 @@ def upgrade() -> None:
         enum.create(bind, checkfirst=True)
 
     # ── vehicle_user: new onboarding columns ──────────────────────────
-    op.add_column("vehicle_user", sa.Column("email_verified", sa.Boolean(), nullable=False, server_default=sa.text("false")))
-    op.add_column("vehicle_user", sa.Column("auth_provider", sa.String(length=32), nullable=False, server_default="google.com"))
+    op.add_column(
+        "vehicle_user", sa.Column("email_verified", sa.Boolean(), nullable=False, server_default=sa.text("false"))
+    )
+    op.add_column(
+        "vehicle_user", sa.Column("auth_provider", sa.String(length=32), nullable=False, server_default="google.com")
+    )
     op.add_column("vehicle_user", sa.Column("display_name", sa.String(length=255), nullable=True))
     op.add_column("vehicle_user", sa.Column("avatar_url", sa.String(length=1024), nullable=True))
     op.add_column("vehicle_user", sa.Column("full_name", sa.String(length=150), nullable=True))
@@ -130,8 +137,12 @@ def upgrade() -> None:
         sa.Column("source", location_source, nullable=False, server_default="manual"),
         sa.Column("place_id", sa.String(length=255), nullable=True),
         sa.Column("is_primary", sa.Boolean(), nullable=False, server_default=sa.text("true")),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False
+        ),
+        sa.Column(
+            "updated_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["vehicle_user.user_id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -168,8 +179,12 @@ def upgrade() -> None:
         sa.Column("verified_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("link_status", vehicle_link_status, nullable=False, server_default="active"),
         sa.Column("oem_synced_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False
+        ),
+        sa.Column(
+            "updated_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["vehicle_user.user_id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -215,9 +230,15 @@ def upgrade() -> None:
         sa.Column("duration_months", sa.Integer(), nullable=True),
         sa.Column("terms_description", sa.Text(), nullable=True),
         sa.Column("oem_status", warranty_status, nullable=False),
-        sa.Column("synced_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False),
+        sa.Column(
+            "synced_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False
+        ),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False
+        ),
+        sa.Column(
+            "updated_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False
+        ),
         sa.ForeignKeyConstraint(["user_vehicle_id"], ["user_vehicle.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("user_vehicle_id", "external_warranty_id", name="ux_vehicle_warranty_unique"),
@@ -241,7 +262,9 @@ def upgrade() -> None:
         sa.Column("idempotency_key", sa.String(length=128), nullable=False),
         sa.Column("request_hash", sa.String(length=64), nullable=False),
         sa.Column("trace_id", sa.String(length=64), nullable=True),
-        sa.Column("requested_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False),
+        sa.Column(
+            "requested_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False
+        ),
         sa.Column("responded_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("latency_ms", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(["user_id"], ["vehicle_user.user_id"], ondelete="CASCADE"),
@@ -250,7 +273,9 @@ def upgrade() -> None:
         sa.UniqueConstraint("user_id", "idempotency_key", name="ux_attempt_user_idempotency"),
     )
     op.create_index("ix_attempt_user_requested", "vehicle_verification_attempt", ["user_id", "requested_at"])
-    op.create_index(op.f("ix_vehicle_verification_attempt_requested_at"), "vehicle_verification_attempt", ["requested_at"])
+    op.create_index(
+        op.f("ix_vehicle_verification_attempt_requested_at"), "vehicle_verification_attempt", ["requested_at"]
+    )
     op.create_index(
         "ux_attempt_user_pending",
         "vehicle_verification_attempt",
@@ -269,7 +294,9 @@ def upgrade() -> None:
         sa.Column("granted", sa.Boolean(), nullable=False),
         sa.Column("ip_address", sa.String(length=64), nullable=True),
         sa.Column("user_agent", sa.String(length=512), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), server_default=sa.text("(CURRENT_TIMESTAMP)"), nullable=False
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["vehicle_user.user_id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )

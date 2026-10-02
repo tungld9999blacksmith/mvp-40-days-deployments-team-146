@@ -18,15 +18,11 @@ from src.common.data_access import SQLModelRepository
 
 class UserNotificationChannel(SQLModel, table=True):
     __tablename__ = "user_notification_channel"
-    __table_args__ = (
-        UniqueConstraint("user_id", "channel", name="ux_notification_channel_user_channel"),
-    )
+    __table_args__ = (UniqueConstraint("user_id", "channel", name="ux_notification_channel_user_channel"),)
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     user_id: int = Field(
-        sa_column=Column(
-            Integer, ForeignKey("vehicle_user.user_id", ondelete="CASCADE"), nullable=False
-        )
+        sa_column=Column(Integer, ForeignKey("vehicle_user.user_id", ondelete="CASCADE"), nullable=False)
     )
     channel: ReminderChannel = Field(
         sa_column=Column(
@@ -39,16 +35,10 @@ class UserNotificationChannel(SQLModel, table=True):
             nullable=False,
         )
     )
-    is_enabled: bool = Field(
-        default=True, sa_column=Column(Boolean, nullable=False, server_default="true")
-    )
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    is_enabled: bool = Field(default=True, sa_column=Column(Boolean, nullable=False, server_default="true"))
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 

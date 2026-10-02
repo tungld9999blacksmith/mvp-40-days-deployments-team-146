@@ -13,7 +13,7 @@ import json
 import logging
 import secrets
 from datetime import UTC, date, datetime, time, timedelta
-from uuid import UUID, uuid4
+from uuid import UUID
 
 from sqlalchemy import func, update
 from sqlalchemy.exc import DBAPIError
@@ -41,7 +41,6 @@ from .domain import (
     AnchorSource,
     BookingConfig,
     LocationAnchor,
-    RankedBy,
     appointment_at,
     available_from,
     now_vn,
@@ -118,11 +117,15 @@ class BookingService:
         self, workshop: Workshop, d: date, t: time, *, exclude_booking_id: UUID | None = None
     ) -> tuple[int, bool]:
         """BR-005; ``exclude_booking_id`` frees the slot of a booking being moved (BR-1204)."""
-        query = select(func.count()).select_from(Booking).where(
-            Booking.workshop_id == workshop.id,
-            Booking.booking_date == d,
-            Booking.time_slot == t,
-            Booking.status.in_(_OCCUPYING),
+        query = (
+            select(func.count())
+            .select_from(Booking)
+            .where(
+                Booking.workshop_id == workshop.id,
+                Booking.booking_date == d,
+                Booking.time_slot == t,
+                Booking.status.in_(_OCCUPYING),
+            )
         )
         if exclude_booking_id is not None:
             query = query.where(Booking.id != exclude_booking_id)
@@ -173,14 +176,10 @@ class BookingService:
     ) -> schemas.NearbyData:
         anchor = self._resolve_anchor(user, anchor_source, lat, lng, query, province)
         vehicle = (
-            self.get_owned_active_vehicle(user, user_vehicle_id)
-            if user_vehicle_id
-            else self._default_vehicle(user)
+            self.get_owned_active_vehicle(user, user_vehicle_id) if user_vehicle_id else self._default_vehicle(user)
         )
 
-        workshops = self._session.exec(
-            select(Workshop).where(Workshop.status == WorkshopStatus.ACTIVE)
-        ).all()
+        workshops = self._session.exec(select(Workshop).where(Workshop.status == WorkshopStatus.ACTIVE)).all()
         ranked, ranked_by = self._finder.rank(
             anchor,
             list(workshops),
@@ -201,12 +200,18 @@ class BookingService:
                 if available and vehicle is not None:
                     token = await self._issue_token(user, w.id, d, time_slot)
                 availability = schemas.SlotAvailabilityOut(
-                    date=d, time_slot=time_slot, available=available,
-                    remaining=remaining, confirmation_token=token,
+                    date=d,
+                    time_slot=time_slot,
+                    available=available,
+                    remaining=remaining,
+                    confirmation_token=token,
                 )
             out.append(
                 schemas.NearbyWorkshopOut(
-                    workshop_id=w.id, name=w.name, address=w.address, region=w.region,
+                    workshop_id=w.id,
+                    name=w.name,
+                    address=w.address,
+                    region=w.region,
                     distance_km=(round(r.distance_km, 2) if r.distance_km is not None else None),
                     is_preferred=r.is_preferred,
                     operating_hours_today=(
@@ -250,9 +255,7 @@ class BookingService:
 
         # BR-002 #2 — the primary profile location.
         loc = self._session.exec(
-            select(UserLocation).where(
-                UserLocation.user_id == user.user_id, UserLocation.is_primary.is_(True)
-            )
+            select(UserLocation).where(UserLocation.user_id == user.user_id, UserLocation.is_primary.is_(True))
         ).first()
         if loc is not None:
             return LocationAnchor(
@@ -290,9 +293,7 @@ class BookingService:
         if d < now_vn().date():
             raise errors.SlotOutOfHoursError("The date is in the past.")
         moving = (
-            self._reschedulable_booking(user, reschedule_booking_id, workshop_id)
-            if reschedule_booking_id
-            else None
+            self._reschedulable_booking(user, reschedule_booking_id, workshop_id) if reschedule_booking_id else None
         )
         exclude = moving.id if moving else None
 
@@ -314,7 +315,9 @@ class BookingService:
             if available:
                 token = await self._issue_token(user, workshop_id, d, time_slot, rescheduling=moving)
             requested = schemas.RequestedSlotOut(
-                time_slot=time_slot, available=available, remaining=remaining,
+                time_slot=time_slot,
+                available=available,
+                remaining=remaining,
                 confirmation_token=token,
             )
             if not available and with_alternatives:
@@ -323,8 +326,11 @@ class BookingService:
                 )
 
         return schemas.AvailabilityData(
-            workshop_id=workshop_id, date=d, requested=requested,
-            slots=slots_out, alternatives=alternatives,
+            workshop_id=workshop_id,
+            date=d,
+            requested=requested,
+            slots=slots_out,
+            alternatives=alternatives,
         )
 
     def _alternatives(
@@ -344,12 +350,11 @@ class BookingService:
 
         # 1) Same workshop, same day, other slots (nearest to requested first).
         same_day = [
-            s for s in self._slots_for_day(workshop.id, d) if s != t
-            and self._capacity(workshop, d, s, exclude_booking_id=exclude)[1]
+            s
+            for s in self._slots_for_day(workshop.id, d)
+            if s != t and self._capacity(workshop, d, s, exclude_booking_id=exclude)[1]
         ]
-        same_day.sort(key=lambda s: abs(
-            datetime.combine(d, s) - datetime.combine(d, t)
-        ))
+        same_day.sort(key=lambda s: abs(datetime.combine(d, s) - datetime.combine(d, t)))
         for s in same_day:
             out.append(self._alt(workshop, d, s))
             if len(out) >= 3:
@@ -385,9 +390,7 @@ class BookingService:
 
     def _alt(self, w: Workshop, d: date, t: time) -> schemas.AlternativeOut:
         remaining, _ = self._capacity(w, d, t)
-        return schemas.AlternativeOut(
-            workshop_id=w.id, name=w.name, date=d, time_slot=t, remaining=remaining
-        )
+        return schemas.AlternativeOut(workshop_id=w.id, name=w.name, date=d, time_slot=t, remaining=remaining)
 
     # ── Confirmation token (issued at BK-02, single-use at BK-03) ────────
     def _token_key(self, token: str) -> str:
@@ -418,9 +421,7 @@ class BookingService:
                 "old_time_slot": rescheduling.time_slot.isoformat(),
             }
         payload = json.dumps(data)
-        await self._redis.set(
-            self._token_key(token), payload, ex=self._config.token_ttl_seconds
-        )
+        await self._redis.set(self._token_key(token), payload, ex=self._config.token_ttl_seconds)
         return token
 
     async def _consume_token(self, user: VehicleUser, token: str) -> tuple[UUID, date, time]:
@@ -458,7 +459,9 @@ class BookingService:
 
         # BR-013: one open booking per vehicle.
         open_exists = self._session.exec(
-            select(func.count()).select_from(Booking).where(
+            select(func.count())
+            .select_from(Booking)
+            .where(
                 Booking.user_vehicle_id == vehicle.id,
                 Booking.status.in_(_OCCUPYING),
             )
@@ -468,12 +471,16 @@ class BookingService:
 
         lock_name = f"booking:{workshop_id}:{d.isoformat()}:{t.isoformat()}"
         try:
-            async with self._locks.transaction(
-                lock_name, ttl=self._config.lock_ttl_seconds, wait_timeout=2.0
-            ):
+            async with self._locks.transaction(lock_name, ttl=self._config.lock_ttl_seconds, wait_timeout=2.0):
                 return self._create_booking_locked(
-                    user, vehicle, workshop, d, t, quote,
-                    source=source, odo_milestone=_milestone_from_ref(payload.milestone_ref),
+                    user,
+                    vehicle,
+                    workshop,
+                    d,
+                    t,
+                    quote,
+                    source=source,
+                    odo_milestone=_milestone_from_ref(payload.milestone_ref),
                 )
         except LockAcquireError as exc:
             raise errors.SlotFullError(self._alternatives(workshop, d, t)) from exc
@@ -599,9 +606,7 @@ class BookingService:
             raise errors.BookingNotFoundError()  # never reveal another owner's booking
         return booking
 
-    def _reschedulable_booking(
-        self, user: VehicleUser, booking_id: UUID, workshop_id: UUID
-    ) -> Booking:
+    def _reschedulable_booking(self, user: VehicleUser, booking_id: UUID, workshop_id: UUID) -> Booking:
         booking = self._owned_booking(user, booking_id)
         block = reschedule_block(
             booking.status.value,
@@ -616,9 +621,7 @@ class BookingService:
             raise errors.RescheduleWorkshopMismatchError()  # Q-1201
         return booking
 
-    async def _consume_reschedule_token(
-        self, user: VehicleUser, booking_id: UUID, token: str
-    ) -> dict:
+    async def _consume_reschedule_token(self, user: VehicleUser, booking_id: UUID, token: str) -> dict:
         raw = await self._redis.getdel(self._token_key(token))
         if raw is None:
             raise errors.ConfirmationTokenExpiredError()
@@ -641,9 +644,7 @@ class BookingService:
         except (KeyError, ValueError, TypeError) as exc:
             raise errors.InvalidConfirmationTokenError() from exc
 
-    async def reschedule(
-        self, user: VehicleUser, booking_id: UUID, token: str, *, source: str = "APP"
-    ) -> Booking:
+    async def reschedule(self, user: VehicleUser, booking_id: UUID, token: str, *, source: str = "APP") -> Booking:
         """API-BT-04 — move a confirmed booking atomically; same id and code (BR-1205)."""
         booking = self._owned_booking(user, booking_id)
         slot = await self._consume_reschedule_token(user, booking_id, token)
@@ -661,9 +662,7 @@ class BookingService:
             async with contextlib.AsyncExitStack() as stack:
                 for name in names:
                     await stack.enter_async_context(
-                        self._locks.transaction(
-                            name, ttl=self._config.lock_ttl_seconds, wait_timeout=2.0
-                        )
+                        self._locks.transaction(name, ttl=self._config.lock_ttl_seconds, wait_timeout=2.0)
                     )
                 return self._reschedule_locked(user, booking, workshop, slot, source)
         except LockAcquireError as exc:
@@ -694,9 +693,7 @@ class BookingService:
         new_d, new_t = slot["date"], slot["time_slot"]
         if not self._capacity(workshop, new_d, new_t, exclude_booking_id=booking.id)[1]:
             raise errors.SlotFullError(
-                self._alternatives(
-                    workshop, new_d, new_t, same_workshop_only=True, exclude=booking.id
-                )
+                self._alternatives(workshop, new_d, new_t, same_workshop_only=True, exclude=booking.id)
             )
         try:
             result = self._session.execute(
@@ -738,9 +735,7 @@ class BookingService:
             self._session.rollback()
             if "SLOT_FULL" in str(getattr(exc, "orig", exc)):
                 raise errors.SlotFullError(
-                    self._alternatives(
-                        workshop, new_d, new_t, same_workshop_only=True, exclude=booking.id
-                    )
+                    self._alternatives(workshop, new_d, new_t, same_workshop_only=True, exclude=booking.id)
                 ) from exc
             raise
         self._session.refresh(booking)
@@ -758,16 +753,12 @@ class BookingService:
         Returns the number of bookings cancelled.
         """
         now = now or now_vn()
-        pending = self._session.exec(
-            select(Booking).where(Booking.status == BookingStatus.PENDING)
-        ).all()
+        pending = self._session.exec(select(Booking).where(Booking.status == BookingStatus.PENDING)).all()
         machine = BookingStateMachine(self._session)
         cancelled = 0
         for booking in pending:
             deadline = booking.created_at + timedelta(hours=self._config.ws_confirm_deadline_hours)
-            appointment = datetime.combine(booking.booking_date, booking.time_slot).replace(
-                tzinfo=now.tzinfo
-            )
+            appointment = datetime.combine(booking.booking_date, booking.time_slot).replace(tzinfo=now.tzinfo)
             if now >= min(deadline, appointment):
                 try:
                     machine.transition(

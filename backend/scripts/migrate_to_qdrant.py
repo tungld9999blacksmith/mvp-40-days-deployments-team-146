@@ -5,6 +5,7 @@ kết hợp Embedding API Google Gemini (models/gemini-embedding-001 - 3072 dims
 Chạy từ root project:
     python backend/scripts/migrate_to_qdrant.py
 """
+
 from __future__ import annotations
 
 import logging
@@ -86,6 +87,7 @@ def migrate():
     # 3. Đọc dữ liệu nguồn từ ChromaDB hiện có (751 chunks đã sạch và có metadata)
     print("\n[3/3] Trích xuất 751 chunks từ ChromaDB và nạp sang Qdrant...")
     import chromadb  # type: ignore
+
     client = chromadb.PersistentClient(path=str(ROOT / "data" / "chroma"))
     collection = client.get_or_create_collection("vinfast_ev_knowledge")
     chroma_data = collection.get(include=["documents", "metadatas"])

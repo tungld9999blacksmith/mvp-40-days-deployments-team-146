@@ -90,9 +90,7 @@ class PgVectorStore(VectorStore):
         ]
 
     def delete(self, collection: str, ids: list[str]) -> None:
-        stmt = delete(VectorEmbedding).where(
-            VectorEmbedding.collection == collection, VectorEmbedding.id.in_(ids)
-        )
+        stmt = delete(VectorEmbedding).where(VectorEmbedding.collection == collection, VectorEmbedding.id.in_(ids))
         with Session(self._db_engine) as session:
             session.execute(stmt)
             session.commit()
@@ -104,10 +102,6 @@ class PgVectorStore(VectorStore):
             session.commit()
 
     def count(self, collection: str) -> int:
-        stmt = (
-            select(func.count())
-            .select_from(VectorEmbedding)
-            .where(VectorEmbedding.collection == collection)
-        )
+        stmt = select(func.count()).select_from(VectorEmbedding).where(VectorEmbedding.collection == collection)
         with Session(self._db_engine) as session:
             return int(session.exec(stmt).one())

@@ -129,9 +129,7 @@ async def test_lower_value_is_kept_for_traceability_br_ent_432(session, vehicle,
 
 @pytest.mark.asyncio
 async def test_no_usage_data_is_success_without_row(session, vehicle):
-    outcome = await _sync_service(session, StubDataGateway(usage=None)).sync(
-        vehicle.id, OemSyncTrigger.INITIAL
-    )
+    outcome = await _sync_service(session, StubDataGateway(usage=None)).sync(vehicle.id, OemSyncTrigger.INITIAL)
 
     assert outcome.status == "synced"
     assert _readings(session, vehicle) == []
@@ -196,18 +194,14 @@ async def test_history_maps_service_center_to_workshop(session, vehicle):
     session.add(workshop)
     session.commit()
 
-    await _sync_service(session, StubDataGateway(history=[_entry()])).sync(
-        vehicle.id, OemSyncTrigger.POLL
-    )
+    await _sync_service(session, StubDataGateway(history=[_entry()])).sync(vehicle.id, OemSyncTrigger.POLL)
 
     assert session.exec(select(VehicleServiceRecord)).one().workshop_id == workshop.id
 
 
 @pytest.mark.asyncio
 async def test_partial_failure_counts_and_keeps_other_side(session, vehicle):
-    gateway = StubDataGateway(
-        usage=_usage(11_600), history_error=OemUnavailableError("timeout")
-    )
+    gateway = StubDataGateway(usage=_usage(11_600), history_error=OemUnavailableError("timeout"))
 
     outcome = await _sync_service(session, gateway).sync(vehicle.id, OemSyncTrigger.POLL)
 
@@ -241,9 +235,7 @@ async def test_repeated_failures_alert_and_reset_on_success(session, vehicle, ca
 
 @pytest.mark.asyncio
 async def test_failure_alert_threshold_is_configurable_q312(session, vehicle, caplog):
-    gateway = StubDataGateway(
-        usage_error=OemUnavailableError("down"), history_error=OemUnavailableError("down")
-    )
+    gateway = StubDataGateway(usage_error=OemUnavailableError("down"), history_error=OemUnavailableError("down"))
     service = _sync_service(session, gateway, failure_alert_threshold=2)
 
     await service.sync(vehicle.id, OemSyncTrigger.POLL)
@@ -258,9 +250,7 @@ async def test_ineligible_vehicle_is_skipped(session):
     user = add_owner(session)
     unlinked = add_vehicle(session, user, link_status=VehicleLinkStatus.UNLINKED)
 
-    outcome = await _sync_service(session, StubDataGateway(usage=_usage(1))).sync(
-        unlinked.id, OemSyncTrigger.POLL
-    )
+    outcome = await _sync_service(session, StubDataGateway(usage=_usage(1))).sync(unlinked.id, OemSyncTrigger.POLL)
 
     assert outcome.status == "skipped"
     assert list_eligible_vehicle_ids(session) == []
@@ -271,9 +261,7 @@ async def test_concurrent_sync_is_skipped_by_lock(session, vehicle):
     lock = MemoryLock()
     lock.held.add(vehicle.id)
 
-    outcome = await _sync_service(session, StubDataGateway(), lock).sync(
-        vehicle.id, OemSyncTrigger.WEBHOOK
-    )
+    outcome = await _sync_service(session, StubDataGateway(), lock).sync(vehicle.id, OemSyncTrigger.WEBHOOK)
 
     assert outcome.status == "skipped" and outcome.error_code == "SYNC_IN_PROGRESS"
 
@@ -392,9 +380,7 @@ async def test_webhook_signed_by_mock_is_accepted(session, vehicle):
     from ev_contracts import WebhookEventType
     from mock_ev_system.webhooks import build_request
 
-    event_id, headers, body = build_request(
-        WebhookEventType.VEHICLE_USAGE_UPDATED, "VEH-006", SECRET, now=NOW
-    )
+    event_id, headers, body = build_request(WebhookEventType.VEHICLE_USAGE_UPDATED, "VEH-006", SECRET, now=NOW)
     scheduler = RecordingScheduler()
 
     result = await _webhook(session, scheduler).handle(

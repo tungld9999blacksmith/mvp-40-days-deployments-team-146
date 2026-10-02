@@ -36,8 +36,7 @@ class WorkshopLocationFinder(Protocol):
         *,
         preferred_workshop_id: UUID | None,
         limit: int,
-    ) -> tuple[list[RankedWorkshop], RankedBy]:
-        ...
+    ) -> tuple[list[RankedWorkshop], RankedBy]: ...
 
 
 class SimpleTextLocationFinder:
@@ -62,8 +61,10 @@ class SimpleTextLocationFinder:
                     scored.append(RankedWorkshop(w, None, w.id == preferred_workshop_id))
                     continue
                 dist = haversine_km(
-                    float(anchor.latitude), float(anchor.longitude),
-                    float(w.latitude), float(w.longitude),
+                    float(anchor.latitude),
+                    float(anchor.longitude),
+                    float(w.latitude),
+                    float(w.longitude),
                 )
                 scored.append(RankedWorkshop(w, dist, w.id == preferred_workshop_id))
             # Preferred first, then nearest; unknown distance sinks to the end.
@@ -74,10 +75,7 @@ class SimpleTextLocationFinder:
         ranked_by = RankedBy.REGION
         needle = (anchor.province or anchor.query or "").strip().lower()
         matched = [
-            w for w in active
-            if not needle
-            or needle in (w.region or "").lower()
-            or needle in (w.name or "").lower()
+            w for w in active if not needle or needle in (w.region or "").lower() or needle in (w.name or "").lower()
         ]
         matched.sort(key=lambda w: (w.id != preferred_workshop_id, (w.name or "").lower()))
         ranked = [RankedWorkshop(w, None, w.id == preferred_workshop_id) for w in matched]

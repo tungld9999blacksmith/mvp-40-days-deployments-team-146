@@ -22,9 +22,7 @@ def require_admin_token(x_admin_token: str | None = Header(default=None)) -> Non
         raise HTTPException(401, "Invalid or missing X-Admin-Token")
 
 
-router = APIRouter(
-    prefix="/admin", tags=["Admin (data)"], dependencies=[Depends(require_admin_token)]
-)
+router = APIRouter(prefix="/admin", tags=["Admin (data)"], dependencies=[Depends(require_admin_token)])
 
 
 class ImportRequest(BaseModel):
@@ -66,9 +64,7 @@ def import_data(body: ImportRequest, session: Session = Depends(get_session)):
     try:
         summary = DataAdminService(session).import_data(body.data, body.mode)
     except DataImportError as exc:
-        raise HTTPException(
-            422, {"entity": exc.entity, "index": exc.index, "message": exc.message}
-        ) from exc
+        raise HTTPException(422, {"entity": exc.entity, "index": exc.index, "message": exc.message}) from exc
     return {"mode": body.mode, "imported": summary}
 
 
@@ -80,13 +76,9 @@ def create_records(
     session: Session = Depends(get_session),
 ):
     try:
-        summary = DataAdminService(session).import_data(
-            {_entity(entity): records}, "upsert" if upsert else "insert"
-        )
+        summary = DataAdminService(session).import_data({_entity(entity): records}, "upsert" if upsert else "insert")
     except DataImportError as exc:
-        raise HTTPException(
-            422, {"entity": exc.entity, "index": exc.index, "message": exc.message}
-        ) from exc
+        raise HTTPException(422, {"entity": exc.entity, "index": exc.index, "message": exc.message}) from exc
     return summary.get(entity, {"created": 0, "updated": 0})
 
 

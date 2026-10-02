@@ -4,7 +4,7 @@ Columns follow ``docs/specs/entity/maintenance/service_progress.entity.md``.
 """
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
@@ -26,7 +26,7 @@ from src.common.data_access import SQLModelRepository
 from .booking_status_event import BookingActorType, actor_type_column
 
 
-class ServiceStage(str, Enum):
+class ServiceStage(StrEnum):
     CHECKED_IN = "checked_in"
     INSPECTING = "inspecting"
     SERVICING = "servicing"
@@ -54,11 +54,7 @@ class ServiceProgress(SQLModel, table=True):
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    booking_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("booking.id", ondelete="CASCADE"), nullable=False, index=True
-        )
-    )
+    booking_id: UUID = Field(sa_column=Column(ForeignKey("booking.id", ondelete="CASCADE"), nullable=False, index=True))
     stage: ServiceStage = Field(
         sa_column=Column(
             SQLEnum(ServiceStage, name="service_stage_enum", values_callable=_enum_values),
@@ -76,13 +72,9 @@ class ServiceProgress(SQLModel, table=True):
         sa_column=Column(ForeignKey("workshop_owner.id", ondelete="SET NULL"), nullable=True),
     )
     # CHECK_IN / START (hook) or BOARD (workshop owner).
-    source: str = Field(
-        default="BOARD", sa_column=Column(String(32), nullable=False, server_default="BOARD")
-    )
+    source: str = Field(default="BOARD", sa_column=Column(String(32), nullable=False, server_default="BOARD"))
 
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
 
 
 class ServiceProgressRepository(SQLModelRepository[ServiceProgress, UUID]):

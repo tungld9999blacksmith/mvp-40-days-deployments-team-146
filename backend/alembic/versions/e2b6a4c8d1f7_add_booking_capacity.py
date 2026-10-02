@@ -13,6 +13,7 @@ Revision ID: e2b6a4c8d1f7
 Revises: d9a3e5b7f2c1
 Create Date: 2026-09-29
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa
@@ -26,12 +27,14 @@ down_revision: str | Sequence[str] | None = "d9a3e5b7f2c1"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
-confirmation_mode = postgresql.ENUM(
-    "auto", "manual", name="booking_confirmation_mode_enum", create_type=False
-)
+confirmation_mode = postgresql.ENUM("auto", "manual", name="booking_confirmation_mode_enum", create_type=False)
 slot_block_reason = postgresql.ENUM(
-    "phone_booking", "walk_in", "maintenance", "other",
-    name="slot_block_reason_enum", create_type=False,
+    "phone_booking",
+    "walk_in",
+    "maintenance",
+    "other",
+    name="slot_block_reason_enum",
+    create_type=False,
 )
 
 # Statuses that occupy a technician slot (F6 BR-005).
@@ -132,16 +135,10 @@ def upgrade() -> None:
             sa.ForeignKey("workshop_owner.id", ondelete="SET NULL"),
             nullable=True,
         ),
-        sa.Column(
-            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
-        ),
-        sa.Column(
-            "updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
-        ),
+        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
         sa.CheckConstraint("blocked_count > 0", name="ck_slot_block_count_positive"),
-        sa.UniqueConstraint(
-            "workshop_id", "block_date", "time_slot", name="ux_slot_block_ws_date_slot"
-        ),
+        sa.UniqueConstraint("workshop_id", "block_date", "time_slot", name="ux_slot_block_ws_date_slot"),
     )
     op.execute("ALTER TABLE workshop_slot_block ENABLE ROW LEVEL SECURITY")
 

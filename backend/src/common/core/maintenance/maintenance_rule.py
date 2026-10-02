@@ -33,12 +33,8 @@ class MaintenanceRule(SQLModel, table=True):
         CheckConstraint("odo_milestone > 0", name="ck_maintenance_rule_odo_milestone"),
         CheckConstraint("month_milestone > 0", name="ck_maintenance_rule_month_milestone"),
         CheckConstraint("estimated_cost >= 0", name="ck_maintenance_rule_estimated_cost"),
-        CheckConstraint(
-            "estimated_duration_minutes > 0", name="ck_maintenance_rule_estimated_duration"
-        ),
-        CheckConstraint(
-            "item_code ~ '^[A-Z0-9_]{2,50}$'", name="ck_maintenance_rule_item_code_format"
-        ),
+        CheckConstraint("estimated_duration_minutes > 0", name="ck_maintenance_rule_estimated_duration"),
+        CheckConstraint("item_code ~ '^[A-Z0-9_]{2,50}$'", name="ck_maintenance_rule_item_code_format"),
         UniqueConstraint(
             "model_id",
             "odo_milestone",
@@ -66,13 +62,9 @@ class MaintenanceRule(SQLModel, table=True):
     estimated_cost: Decimal = Field(sa_column=Column(Numeric(12, 2), nullable=False))
     estimated_duration_minutes: int = Field(sa_column=Column(Integer, nullable=False))
 
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 

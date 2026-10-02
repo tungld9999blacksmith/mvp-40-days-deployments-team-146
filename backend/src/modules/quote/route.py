@@ -72,9 +72,7 @@ async def get_my_quote(user: Owner, service: Quotes, quote_id: QuoteId):
     response_model=schemas.QuoteEnvelope,
     summary="Send a draft to the workshop for approval (BR-1103, BR-1104)",
 )
-async def submit_quote(
-    payload: schemas.SubmitQuoteRequest, user: Owner, service: Quotes, quote_id: QuoteId
-):
+async def submit_quote(payload: schemas.SubmitQuoteRequest, user: Owner, service: Quotes, quote_id: QuoteId):
     return schemas.QuoteEnvelope(data=service.submit(user, quote_id))
 
 
@@ -120,9 +118,7 @@ async def get_workshop_quote(scope: Scope, service: Quotes, quote_id: QuoteId):
     response_model=schemas.WorkshopQuoteEnvelope,
     summary="Approve, optionally adjusting line prices and validity (BR-1105, BR-1106)",
 )
-async def approve_quote(
-    payload: schemas.ApproveQuoteRequest, scope: Scope, service: Quotes, quote_id: QuoteId
-):
+async def approve_quote(payload: schemas.ApproveQuoteRequest, scope: Scope, service: Quotes, quote_id: QuoteId):
     data = service.approve(scope.owner, scope.workshop.id, quote_id, payload)
     return schemas.WorkshopQuoteEnvelope(data=data)
 
@@ -132,8 +128,6 @@ async def approve_quote(
     response_model=schemas.WorkshopQuoteEnvelope,
     summary="Reject with a reason (BR-1107)",
 )
-async def reject_quote(
-    payload: schemas.RejectQuoteRequest, scope: Scope, service: Quotes, quote_id: QuoteId
-):
+async def reject_quote(payload: schemas.RejectQuoteRequest, scope: Scope, service: Quotes, quote_id: QuoteId):
     data = service.reject(scope.owner, scope.workshop.id, quote_id, payload.reviewer_note)
     return schemas.WorkshopQuoteEnvelope(data=data)

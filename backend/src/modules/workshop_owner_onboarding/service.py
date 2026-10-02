@@ -121,9 +121,7 @@ class WorkshopOnboardingService:
     # ==================================================================
     # API-201 — sign-in / account sync
     # ==================================================================
-    def sign_in(
-        self, claims: dict, context: RequestContext | None = None
-    ) -> tuple[schemas.SignInData, bool]:
+    def sign_in(self, claims: dict, context: RequestContext | None = None) -> tuple[schemas.SignInData, bool]:
         """Find/create the account and audit the sign-in (FEAT-AUTH-004 BR-305)."""
         provider = (claims.get("firebase") or {}).get("sign_in_provider")
         if provider and provider != "google.com":
@@ -134,9 +132,7 @@ class WorkshopOnboardingService:
         email = (claims.get("email") or "").strip().lower()
         email_verified = bool(claims.get("email_verified"))
         if not email or not email_verified:
-            raise errors.WorkshopOnboardingError(
-                "Cần email Google đã được xác minh.", code="EMAIL_NOT_VERIFIED"
-            )
+            raise errors.WorkshopOnboardingError("Cần email Google đã được xác minh.", code="EMAIL_NOT_VERIFIED")
 
         audit_ctx = RequestContext(
             ip_address=context.ip_address if context else None,
@@ -154,9 +150,7 @@ class WorkshopOnboardingService:
 
         is_new = owner is None
         if owner is None:
-            taken = self._db.exec(
-                select(WorkshopOwner).where(WorkshopOwner.email == email)
-            ).first()
+            taken = self._db.exec(select(WorkshopOwner).where(WorkshopOwner.email == email)).first()
             if taken is not None:
                 raise errors.WorkshopOnboardingError(
                     "Email này đã được liên kết với một tài khoản chủ xưởng khác.",
@@ -275,9 +269,7 @@ class WorkshopOnboardingService:
         if owner.profile_completed_at is None:
             owner.profile_completed_at = _now()
         self._db.add(owner)
-        self._record_consent_if_changed(
-            owner.id, ConsentType.PERSONAL_DATA_PROCESSING, req.personal_data_consent
-        )
+        self._record_consent_if_changed(owner.id, ConsentType.PERSONAL_DATA_PROCESSING, req.personal_data_consent)
         self._db.commit()
         self._db.refresh(owner)
         return schemas.ProfileUpdateData(onboarding=self._state(owner), profile=self._profile_out(owner))
@@ -294,9 +286,7 @@ class WorkshopOnboardingService:
         trace_id: str | None = None,
     ) -> tuple[schemas.VerificationData, int]:
         payload = self._normalize_verification(req)
-        request_hash = hashlib.sha256(
-            json.dumps(payload, sort_keys=True, default=str).encode()
-        ).hexdigest()
+        request_hash = hashlib.sha256(json.dumps(payload, sort_keys=True, default=str).encode()).hexdigest()
 
         # --- idempotency: replay the stored outcome, never call the OEM again
         existing = self._db.exec(
@@ -370,9 +360,7 @@ class WorkshopOnboardingService:
             WorkshopVerificationAttempt.status == AttemptStatus.PENDING,
         )
         return [
-            a.id
-            for a in self._db.exec(stmt).all()
-            if a.next_retry_at is not None and _aware(a.next_retry_at) < cutoff
+            a.id for a in self._db.exec(stmt).all() if a.next_retry_at is not None and _aware(a.next_retry_at) < cutoff
         ]
 
     def purge_expired_onboarding(self) -> int:
@@ -424,9 +412,7 @@ class WorkshopOnboardingService:
 
         if not result.verified or result.service_center is None:
             reason = (
-                _REASON[result.failure_reason.name]
-                if result.failure_reason is not None
-                else _REASON.MANAGER_NOT_FOUND
+                _REASON[result.failure_reason.name] if result.failure_reason is not None else _REASON.MANAGER_NOT_FOUND
             )
             self._apply_failed(owner, registration, attempt, reason)
             self._db.commit()
@@ -572,9 +558,7 @@ class WorkshopOnboardingService:
     ) -> tuple[schemas.VerificationData, int]:
         if attempt.failure_reason == _REASON.ALREADY_CLAIMED.value:
             raise errors.WorkshopAlreadyClaimedError(attempt.id)
-        workshop = (
-            self._owned_workshop(owner.id) if attempt.status == AttemptStatus.SUCCESS else None
-        )
+        workshop = self._owned_workshop(owner.id) if attempt.status == AttemptStatus.SUCCESS else None
         data = schemas.VerificationData(
             onboarding=self._state(owner),
             verification=schemas.VerificationResultOut(
@@ -666,8 +650,7 @@ class WorkshopOnboardingService:
         return [
             a
             for a in self._db.exec(stmt).all()
-            if a.failure_reason != _REASON.OEM_UNAVAILABLE.value
-            and _aware(a.requested_at) >= window_start
+            if a.failure_reason != _REASON.OEM_UNAVAILABLE.value and _aware(a.requested_at) >= window_start
         ]
 
     def _failed_last_24h(self, owner_id: UUID) -> int:
@@ -724,9 +707,7 @@ class WorkshopOnboardingService:
     def _owned_workshop(self, owner_id: UUID) -> Workshop | None:
         return self._db.exec(select(Workshop).where(Workshop.owner_id == owner_id)).first()
 
-    def _record_consent_if_changed(
-        self, owner_id: UUID, consent_type: ConsentType, consent: schemas.ConsentIn
-    ) -> None:
+    def _record_consent_if_changed(self, owner_id: UUID, consent_type: ConsentType, consent: schemas.ConsentIn) -> None:
         current = self._current_consent(owner_id, consent_type)
         if current is not None and current.granted == consent.granted:
             return
@@ -740,9 +721,7 @@ class WorkshopOnboardingService:
             )
         )
 
-    def _current_consent(
-        self, owner_id: UUID, consent_type: ConsentType
-    ) -> WorkshopOwnerConsent | None:
+    def _current_consent(self, owner_id: UUID, consent_type: ConsentType) -> WorkshopOwnerConsent | None:
         stmt = (
             select(WorkshopOwnerConsent)
             .where(
@@ -774,9 +753,7 @@ class WorkshopOnboardingService:
             profile_completed=profile_completed,
             profile_completed_at=owner.profile_completed_at,
             completed_at=owner.onboarding_completed_at,
-            expires_at=compute_expires_at(
-                _aware(owner.created_at), owner.onboarding_status, self._retention_days
-            ),
+            expires_at=compute_expires_at(_aware(owner.created_at), owner.onboarding_status, self._retention_days),
         )
 
     @staticmethod
@@ -815,9 +792,7 @@ class WorkshopOnboardingService:
             failure_reason=reg.verification_failure_reason.upper() if reg.verification_failure_reason else None,
         )
 
-    def _latest_attempt_out(
-        self, owner_id: UUID, attempt: WorkshopVerificationAttempt
-    ) -> schemas.LatestAttemptOut:
+    def _latest_attempt_out(self, owner_id: UUID, attempt: WorkshopVerificationAttempt) -> schemas.LatestAttemptOut:
         return schemas.LatestAttemptOut(
             attempt_id=attempt.id,
             status=self._verification_status_name(attempt.status),

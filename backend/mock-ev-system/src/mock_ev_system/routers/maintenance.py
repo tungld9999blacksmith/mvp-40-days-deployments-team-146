@@ -35,21 +35,23 @@ def get_maintenance_schedule(
     result = []
     for s in schedules:
         items = m_svc.get_items_for_schedule(s.schedule_id)
-        result.append({
-            "schedule_id": s.schedule_id,
-            "milestone_km": s.milestone_km,
-            "milestone_months": s.milestone_months,
-            "description": s.description,
-            "items": [
-                {
-                    "item_id": item.item_id,
-                    "item_name": item.item_name,
-                    "is_covered_by_warranty": item.is_covered_by_warranty,
-                    "reference_price": float(item.reference_price),
-                }
-                for item in items
-            ],
-        })
+        result.append(
+            {
+                "schedule_id": s.schedule_id,
+                "milestone_km": s.milestone_km,
+                "milestone_months": s.milestone_months,
+                "description": s.description,
+                "items": [
+                    {
+                        "item_id": item.item_id,
+                        "item_name": item.item_name,
+                        "is_covered_by_warranty": item.is_covered_by_warranty,
+                        "reference_price": float(item.reference_price),
+                    }
+                    for item in items
+                ],
+            }
+        )
 
     return {"vehicle_id": vehicle_id, "model_id": vehicle.model_id, "schedules": result}
 

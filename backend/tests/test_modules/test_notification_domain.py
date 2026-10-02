@@ -16,9 +16,7 @@ from src.modules.user_vehicle.domain import (
 )
 
 
-def _result(
-    status: DueStatus, *, days: int | None, km: int | None, milestone: bool = True
-) -> DueResult:
+def _result(status: DueStatus, *, days: int | None, km: int | None, milestone: bool = True) -> DueResult:
     return DueResult(
         due_status=status,
         next_milestone=(

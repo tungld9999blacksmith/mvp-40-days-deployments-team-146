@@ -185,9 +185,7 @@ async def cancel_confirmed_booking(
     tickets: Annotated[BookingTicketService, Depends(get_ticket_service)],
     booking_id: Annotated[UUID, Path(alias="bookingId")],
 ) -> schemas.OwnerCancelEnvelope:
-    data = tickets.cancel_by_owner(
-        user, booking_id, source=payload.source.value, reason=payload.reason
-    )
+    data = tickets.cancel_by_owner(user, booking_id, source=payload.source.value, reason=payload.reason)
     return schemas.OwnerCancelEnvelope(data=data)
 
 
@@ -221,9 +219,7 @@ async def reschedule_booking(
     tickets: Annotated[BookingTicketService, Depends(get_ticket_service)],
     booking_id: Annotated[UUID, Path(alias="bookingId")],
 ) -> schemas.TicketEnvelope:
-    booking = await service.reschedule(
-        user, booking_id, payload.confirmation_token, source=payload.source.value
-    )
+    booking = await service.reschedule(user, booking_id, payload.confirmation_token, source=payload.source.value)
     return schemas.TicketEnvelope(data=tickets.ticket(booking))
 
 

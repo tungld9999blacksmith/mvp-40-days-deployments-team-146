@@ -33,11 +33,7 @@ class GeminiEmbeddingProvider(BaseEmbeddingProvider):
     def __init__(self, api_key: str | None = None, model: str = "models/gemini-embedding-001") -> None:
         from google import genai
 
-        self.api_key = (
-            api_key
-            or os.getenv("GOOGLE_API_KEY", "")
-            or os.getenv("GEMINI_API_KEY", "")
-        )
+        self.api_key = api_key or os.getenv("GOOGLE_API_KEY", "") or os.getenv("GEMINI_API_KEY", "")
         self.model = model
 
         if not self.api_key or self.api_key.startswith("your_"):

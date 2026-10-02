@@ -20,8 +20,8 @@ from sqlmodel import Session, create_engine
 import src.common.core  # noqa: F401
 from src.common.core.conversation.conversation import Conversation
 from src.common.core.conversation.message import ChatMessage
-from src.common.core.identity.vehicle_user import OnboardingStatus, UserStatus, VehicleUser
 from src.common.core.identity.user_discord_link import DiscordLinkStatus, UserDiscordLink
+from src.common.core.identity.vehicle_user import OnboardingStatus, UserStatus, VehicleUser
 from src.common.core.identity.workshop_owner import WorkshopOwner
 from src.common.core.maintenance.booking import Booking
 from src.common.core.maintenance.maintenance_rule import MaintenanceRule
@@ -124,9 +124,7 @@ def make_session() -> Iterator[Session]:
     Tables are created from a copy of the metadata made SQLite-compatible
     (see ``_make_sqlite_compatible``); the real models are left untouched.
     """
-    engine = create_engine(
-        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
-    )
+    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
     metadata = MetaData()
     for table in TABLES:
         _make_sqlite_compatible(table.to_metadata(metadata))
@@ -144,9 +142,7 @@ def add_owner(
     onboarding_status: OnboardingStatus = OnboardingStatus.ACTIVE,
     status: UserStatus = UserStatus.ACTIVE,
 ) -> VehicleUser:
-    user = VehicleUser(
-        firebase_uid=uid, email=email, onboarding_status=onboarding_status, status=status
-    )
+    user = VehicleUser(firebase_uid=uid, email=email, onboarding_status=onboarding_status, status=status)
     session.add(user)
     session.commit()
     session.refresh(user)
@@ -221,9 +217,7 @@ def add_rules(session: Session, model_id: str = MODEL_ID) -> None:
     session.commit()
 
 
-def add_odometer(
-    session: Session, vehicle: UserVehicle, odo_km: int, recorded_at: datetime = NOW
-) -> None:
+def add_odometer(session: Session, vehicle: UserVehicle, odo_km: int, recorded_at: datetime = NOW) -> None:
     session.add(
         VehicleOdometerReading(
             user_vehicle_id=vehicle.id,
@@ -310,9 +304,7 @@ class RecordingScheduler(SyncScheduler):
     def __init__(self) -> None:
         self.calls: list[tuple[UUID, OemSyncTrigger, int]] = []
 
-    def schedule(
-        self, user_vehicle_id: UUID, trigger: OemSyncTrigger, *, delay_seconds: int = 0
-    ) -> None:
+    def schedule(self, user_vehicle_id: UUID, trigger: OemSyncTrigger, *, delay_seconds: int = 0) -> None:
         self.calls.append((user_vehicle_id, trigger, delay_seconds))
 
 

@@ -18,6 +18,7 @@ Revision ID: e5b1c7d9f2a3
 Revises: d4a9b2c5e6f1
 Create Date: 2026-09-27
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa
@@ -56,12 +57,8 @@ service_stage = postgresql.ENUM(
     name="service_stage_enum",
     create_type=False,
 )
-reminder_level = postgresql.ENUM(
-    "early", "warning", "urgent", "expired", name="reminder_level_enum", create_type=False
-)
-reminder_channel = postgresql.ENUM(
-    "in_app", "push", "sms_zalo", name="reminder_channel_enum", create_type=False
-)
+reminder_level = postgresql.ENUM("early", "warning", "urgent", "expired", name="reminder_level_enum", create_type=False)
+reminder_channel = postgresql.ENUM("in_app", "push", "sms_zalo", name="reminder_channel_enum", create_type=False)
 official_document_type = postgresql.ENUM(
     "owner_manual",
     "maintenance_manual",
@@ -113,9 +110,7 @@ _NEW_TABLES = (
 def _timestamps(*, with_updated_at: bool = True) -> list[sa.Column]:
     cols = [sa.Column("created_at", sa.DateTime(timezone=True), server_default=_NOW, nullable=False)]
     if with_updated_at:
-        cols.append(
-            sa.Column("updated_at", sa.DateTime(timezone=True), server_default=_NOW, nullable=False)
-        )
+        cols.append(sa.Column("updated_at", sa.DateTime(timezone=True), server_default=_NOW, nullable=False))
     return cols
 
 
@@ -136,9 +131,7 @@ def upgrade() -> None:
         ["id"],
         ondelete="SET NULL",
     )
-    op.create_index(
-        op.f("ix_vehicle_user_preferred_workshop_id"), "vehicle_user", ["preferred_workshop_id"]
-    )
+    op.create_index(op.f("ix_vehicle_user_preferred_workshop_id"), "vehicle_user", ["preferred_workshop_id"])
 
     # ── maintenance_rule (ENT-401) ────────────────────────────────────
     op.create_table(
@@ -149,9 +142,7 @@ def upgrade() -> None:
         sa.Column("month_milestone", sa.Integer(), nullable=False),
         sa.Column("item_code", sa.String(length=50), nullable=False),
         sa.Column("item_name", sa.String(length=200), nullable=False),
-        sa.Column(
-            "is_covered_by_warranty", sa.Boolean(), nullable=False, server_default=sa.text("false")
-        ),
+        sa.Column("is_covered_by_warranty", sa.Boolean(), nullable=False, server_default=sa.text("false")),
         sa.Column("estimated_cost", sa.Numeric(12, 2), nullable=False),
         sa.Column("estimated_duration_minutes", sa.Integer(), nullable=False),
         *_timestamps(),
@@ -159,23 +150,13 @@ def upgrade() -> None:
         sa.CheckConstraint("odo_milestone > 0", name="ck_maintenance_rule_odo_milestone"),
         sa.CheckConstraint("month_milestone > 0", name="ck_maintenance_rule_month_milestone"),
         sa.CheckConstraint("estimated_cost >= 0", name="ck_maintenance_rule_estimated_cost"),
-        sa.CheckConstraint(
-            "estimated_duration_minutes > 0", name="ck_maintenance_rule_estimated_duration"
-        ),
-        sa.CheckConstraint(
-            "item_code ~ '^[A-Z0-9_]{2,50}$'", name="ck_maintenance_rule_item_code_format"
-        ),
-        sa.UniqueConstraint(
-            "model_id", "odo_milestone", "item_name", name="ux_maintenance_rule_model_milestone_item"
-        ),
-        sa.UniqueConstraint(
-            "model_id", "odo_milestone", "item_code", name="ux_maintenance_rule_model_milestone_code"
-        ),
+        sa.CheckConstraint("estimated_duration_minutes > 0", name="ck_maintenance_rule_estimated_duration"),
+        sa.CheckConstraint("item_code ~ '^[A-Z0-9_]{2,50}$'", name="ck_maintenance_rule_item_code_format"),
+        sa.UniqueConstraint("model_id", "odo_milestone", "item_name", name="ux_maintenance_rule_model_milestone_item"),
+        sa.UniqueConstraint("model_id", "odo_milestone", "item_code", name="ux_maintenance_rule_model_milestone_code"),
     )
     op.create_index(op.f("ix_maintenance_rule_model_id"), "maintenance_rule", ["model_id"])
-    op.create_index(
-        "ix_maintenance_rule_model_item_code", "maintenance_rule", ["model_id", "item_code"]
-    )
+    op.create_index("ix_maintenance_rule_model_item_code", "maintenance_rule", ["model_id", "item_code"])
 
     # ── customer_profile_cdp (ENT-404) ────────────────────────────────
     op.create_table(
@@ -228,9 +209,7 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["user_vehicle_id"], ["user_vehicle.id"]),
         sa.ForeignKeyConstraint(["workshop_id"], ["workshop.id"]),
         sa.PrimaryKeyConstraint("id"),
-        sa.CheckConstraint(
-            "estimated_cost IS NULL OR estimated_cost >= 0", name="ck_booking_estimated_cost"
-        ),
+        sa.CheckConstraint("estimated_cost IS NULL OR estimated_cost >= 0", name="ck_booking_estimated_cost"),
         sa.CheckConstraint("actual_cost IS NULL OR actual_cost >= 0", name="ck_booking_actual_cost"),
     )
     op.create_index(op.f("ix_booking_booking_code"), "booking", ["booking_code"], unique=True)
@@ -271,9 +250,7 @@ def upgrade() -> None:
             postgresql_nulls_not_distinct=True,
         ),
     )
-    op.create_index(
-        "ix_official_document_model_type", "official_document", ["model_id", "document_type"]
-    )
+    op.create_index("ix_official_document_model_type", "official_document", ["model_id", "document_type"])
 
     # ── document_chunk (ENT-407, append-only) ─────────────────────────
     op.create_table(
@@ -288,9 +265,7 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["document_id"], ["official_document.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
         sa.CheckConstraint("chunk_index >= 0", name="ck_document_chunk_chunk_index"),
-        sa.CheckConstraint(
-            "page_number IS NULL OR page_number > 0", name="ck_document_chunk_page_number"
-        ),
+        sa.CheckConstraint("page_number IS NULL OR page_number > 0", name="ck_document_chunk_page_number"),
         sa.UniqueConstraint("document_id", "chunk_index", name="ux_document_chunk_document_index"),
     )
     op.create_index(
@@ -309,9 +284,7 @@ def upgrade() -> None:
         sa.Column("document_chunk_id", sa.Uuid(), nullable=False),
         sa.Column("note", sa.Text(), nullable=True),
         *_timestamps(with_updated_at=False),
-        sa.ForeignKeyConstraint(
-            ["maintenance_rule_id"], ["maintenance_rule.id"], ondelete="CASCADE"
-        ),
+        sa.ForeignKeyConstraint(["maintenance_rule_id"], ["maintenance_rule.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["document_chunk_id"], ["document_chunk.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint(
@@ -374,15 +347,10 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["reviewed_by"], ["workshop_owner.id"], ondelete="SET NULL"),
         sa.PrimaryKeyConstraint("id"),
         sa.CheckConstraint("estimated_total >= 0", name="ck_quote_estimated_total"),
+        sa.CheckConstraint("approved_total IS NULL OR approved_total >= 0", name="ck_quote_approved_total"),
+        sa.CheckConstraint("odo_milestone IS NULL OR odo_milestone > 0", name="ck_quote_odo_milestone"),
         sa.CheckConstraint(
-            "approved_total IS NULL OR approved_total >= 0", name="ck_quote_approved_total"
-        ),
-        sa.CheckConstraint(
-            "odo_milestone IS NULL OR odo_milestone > 0", name="ck_quote_odo_milestone"
-        ),
-        sa.CheckConstraint(
-            "status NOT IN ('approved', 'rejected') "
-            "OR (reviewed_by IS NOT NULL AND reviewed_at IS NOT NULL)",
+            "status NOT IN ('approved', 'rejected') OR (reviewed_by IS NOT NULL AND reviewed_at IS NOT NULL)",
             name="ck_quote_reviewed",
         ),
         sa.CheckConstraint(
@@ -393,9 +361,7 @@ def upgrade() -> None:
             "expires_at IS NULL OR (reviewed_at IS NOT NULL AND expires_at > reviewed_at)",
             name="ck_quote_expires_after_review",
         ),
-        sa.CheckConstraint(
-            "booking_id IS NULL OR status = 'approved'", name="ck_quote_booking_requires_approval"
-        ),
+        sa.CheckConstraint("booking_id IS NULL OR status = 'approved'", name="ck_quote_booking_requires_approval"),
     )
     op.create_index(op.f("ix_quote_booking_id"), "quote", ["booking_id"])
     op.create_index(op.f("ix_quote_reviewed_by"), "quote", ["reviewed_by"])
@@ -415,14 +381,10 @@ def upgrade() -> None:
         sa.Column("note", sa.Text(), nullable=True),
         *_timestamps(),
         sa.ForeignKeyConstraint(["quote_id"], ["quote.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(
-            ["maintenance_rule_id"], ["maintenance_rule.id"], ondelete="SET NULL"
-        ),
+        sa.ForeignKeyConstraint(["maintenance_rule_id"], ["maintenance_rule.id"], ondelete="SET NULL"),
         sa.PrimaryKeyConstraint("id"),
         sa.CheckConstraint("estimated_price >= 0", name="ck_quote_item_estimated_price"),
-        sa.CheckConstraint(
-            "approved_price IS NULL OR approved_price >= 0", name="ck_quote_item_approved_price"
-        ),
+        sa.CheckConstraint("approved_price IS NULL OR approved_price >= 0", name="ck_quote_item_approved_price"),
     )
     op.create_index(op.f("ix_quote_item_quote_id"), "quote_item", ["quote_id"])
     op.create_index(op.f("ix_quote_item_maintenance_rule_id"), "quote_item", ["maintenance_rule_id"])
@@ -445,8 +407,7 @@ def upgrade() -> None:
         sa.UniqueConstraint("booking_id"),
         sa.CheckConstraint("status = 'pending' OR sent_at IS NOT NULL", name="ck_follow_up_sent_at"),
         sa.CheckConstraint(
-            "status <> 'responded' "
-            "OR (responded_at IS NOT NULL AND customer_response IS NOT NULL)",
+            "status <> 'responded' OR (responded_at IS NOT NULL AND customer_response IS NOT NULL)",
             name="ck_follow_up_responded",
         ),
     )
@@ -472,18 +433,12 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["user_vehicle_id"], ["user_vehicle.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["assigned_to"], ["workshop_owner.id"], ondelete="SET NULL"),
         sa.PrimaryKeyConstraint("id"),
-        sa.CheckConstraint(
-            "status <> 'resolved' OR resolved_at IS NOT NULL", name="ck_support_ticket_resolved_at"
-        ),
-        sa.CheckConstraint(
-            "status = 'open' OR assigned_to IS NOT NULL", name="ck_support_ticket_assigned"
-        ),
+        sa.CheckConstraint("status <> 'resolved' OR resolved_at IS NOT NULL", name="ck_support_ticket_resolved_at"),
+        sa.CheckConstraint("status = 'open' OR assigned_to IS NOT NULL", name="ck_support_ticket_assigned"),
     )
     op.create_index(op.f("ix_support_ticket_follow_up_id"), "support_ticket", ["follow_up_id"])
     op.create_index(op.f("ix_support_ticket_user_vehicle_id"), "support_ticket", ["user_vehicle_id"])
-    op.create_index(
-        "ix_support_ticket_assignee_status", "support_ticket", ["assigned_to", "status"]
-    )
+    op.create_index("ix_support_ticket_assignee_status", "support_ticket", ["assigned_to", "status"])
 
     # Supabase: block PostgREST access with the anon key (no policies).
     for table in _NEW_TABLES:

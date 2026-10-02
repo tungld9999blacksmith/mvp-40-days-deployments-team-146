@@ -5,10 +5,10 @@ Bộ tiện ích Redis dùng chung, toàn bộ là **async** (`redis.asyncio`). 
 ```python
 from src.infrastructure.redis import get_redis_toolkit
 
-toolkit = get_redis_toolkit()   # singleton, an toàn khi gọi lúc import (chưa kết nối cho tới lần dùng đầu)
-toolkit.cache       # CacheFacade    — cache strategies + decorators
-toolkit.locks       # LockManager    — distributed lock
-toolkit.pubsub      # PubSubBroker   — pub/sub có kiểu
+toolkit = get_redis_toolkit()  # singleton, an toàn khi gọi lúc import (chưa kết nối cho tới lần dùng đầu)
+toolkit.cache  # CacheFacade    — cache strategies + decorators
+toolkit.locks  # LockManager    — distributed lock
+toolkit.pubsub  # PubSubBroker   — pub/sub có kiểu
 toolkit.queue(...)  # DistributedQueue[T]
 toolkit.bloom_filter(...), toolkit.sorted_set(...), toolkit.geo(...)
 ```
@@ -51,24 +51,24 @@ from src.infrastructure.redis import get_cache
 
 cache = get_cache()
 
+
 class VehicleRepository:
     @cache.cached("vehicle:{vehicle_id}", ttl=600, tags=["vehicles"], stampede_lock=True)
-    async def get(self, vehicle_id: int) -> Vehicle | None:          # kiểu trả về -> serializer tự suy ra
+    async def get(self, vehicle_id: int) -> Vehicle | None:  # kiểu trả về -> serializer tự suy ra
         ...
 
     @cache.cached("user:{user_id}:vehicles", tags=["vehicles"], ttl_jitter=0.1)
-    async def list_by_user(self, user_id: int) -> list[Vehicle]:
-        ...
+    async def list_by_user(self, user_id: int) -> list[Vehicle]: ...
 
     @cache.cache_write("vehicle:{vehicle.id}", strategy="write_through", cache_writer_result=True)
-    async def save(self, vehicle: Vehicle) -> Vehicle:                # cache giá trị DB trả về
+    async def save(self, vehicle: Vehicle) -> Vehicle:  # cache giá trị DB trả về
         ...
 
     @cache.cache_evict("vehicle:{vehicle_id}", tags=["vehicles"])
-    async def delete(self, vehicle_id: int) -> None:
-        ...
+    async def delete(self, vehicle_id: int) -> None: ...
 
-await repo.get.invalidate(repo, 42)   # helper của @cached: invalidate / refresh / key_for
+
+await repo.get.invalidate(repo, 42)  # helper của @cached: invalidate / refresh / key_for
 ```
 
 - Template key là `str.format` trên tham số: `"{vehicle.id}"`, `"{filters[page]}"`. Có thể truyền `key=callable`, hoặc bỏ trống để tự sinh từ tham số (bỏ qua `self`, `session`, `db`).
@@ -83,7 +83,8 @@ v = await cache.read("vehicle:42", lambda: repo.get(42), strategy="cache_aside",
 await cache.write("vehicle:42", v, repo.save, strategy="write_through")
 vehicles = cache.read_through(lambda key: repo.get(int(key)), Vehicle | None, namespace="vehicle")
 await vehicles.get("42")
-await cache.invalidate_tags("vehicles"); await cache.invalidate_pattern("user:7:*")
+await cache.invalidate_tags("vehicles")
+await cache.invalidate_pattern("user:7:*")
 ```
 
 ## 2. Distributed lock
@@ -121,14 +122,16 @@ await locks.holder(LockKey(data_type="wallet", data_id=a))       # -> tx.transac
 ## 3. Pub/Sub (generic)
 
 ```python
-events = toolkit.pubsub.topic("vehicle.updated", VehicleEvent)          # Topic[VehicleEvent]
+events = toolkit.pubsub.topic("vehicle.updated", VehicleEvent)  # Topic[VehicleEvent]
 await events.publish(VehicleEvent(...), headers={"trace": "..."})
 
-async for msg in events.subscribe():        # msg: Message[VehicleEvent], msg.data đã decode
+async for msg in events.subscribe():  # msg: Message[VehicleEvent], msg.data đã decode
     ...
 
-@events.on                                   # handler nền, chạy sau toolkit.start()
+
+@events.on  # handler nền, chạy sau toolkit.start()
 async def on_update(msg: Message[VehicleEvent]): ...
+
 
 all_vehicle = toolkit.pubsub.topic("vehicle.*", VehicleEvent, pattern=True)
 ```
@@ -141,13 +144,18 @@ At-least-once, tự reclaim message của worker chết (`visibility_timeout`), 
 
 ```python
 jobs = toolkit.queue("vehicle-sync", VehicleEvent, max_attempts=5, visibility_timeout=60)
-await jobs.enqueue(event); await jobs.enqueue(event, delay=30)
+await jobs.enqueue(event)
+await jobs.enqueue(event, delay=30)
 
-async def handle(msg: QueueMessage[VehicleEvent]): ...     # phải idempotent
+
+async def handle(msg: QueueMessage[VehicleEvent]): ...  # phải idempotent
+
+
 await jobs.consume(handle, concurrency=4, retry_delay=exponential_backoff(1, 300))
 # hoặc: async with running_consumer(jobs, handle): ...
 
-await jobs.dead_letters(); await jobs.requeue_dead()
+await jobs.dead_letters()
+await jobs.requeue_dead()
 ```
 
 ## 5. Bloom filter
@@ -156,7 +164,9 @@ Bitmap trên Redis thường (không cần module RedisBloom). `contains` = Fals
 
 ```python
 seen = toolkit.bloom_filter("vehicle-ids", capacity=1_000_000, error_rate=0.01)
-await seen.add(42); await seen.contains(42); await seen.add_many(ids)
+await seen.add(42)
+await seen.contains(42)
+await seen.add_many(ids)
 ```
 
 ## 6. Sorted set
@@ -164,8 +174,11 @@ await seen.add(42); await seen.contains(42); await seen.add_many(ids)
 ```python
 board = toolkit.sorted_set("leaderboard:weekly", member_type=int)
 await board.incr(user_id, 10)
-await board.top(10); await board.rank(user_id, reverse=True); await board.around(user_id, 2)
-await board.range_by_score(100, "+inf", limit=20); await board.trim(1000)
+await board.top(10)
+await board.rank(user_id, reverse=True)
+await board.around(user_id, 2)
+await board.range_by_score(100, "+inf", limit=20)
+await board.trim(1000)
 ```
 
 ## 7. Geospatial
@@ -174,7 +187,8 @@ await board.range_by_score(100, "+inf", limit=20); await board.trim(1000)
 stations = toolkit.geo("charging-stations", member_type=int)
 await stations.add(17, GeoPoint(longitude=105.8342, latitude=21.0278))
 await stations.nearby(GeoPoint(longitude=105.85, latitude=21.03), radius=5, unit=GeoUnit.KM, limit=10)
-await stations.within_box(center, width=10, height=10); await stations.distance(1, 2)
+await stations.within_box(center, width=10, height=10)
+await stations.distance(1, 2)
 ```
 
 ## Test

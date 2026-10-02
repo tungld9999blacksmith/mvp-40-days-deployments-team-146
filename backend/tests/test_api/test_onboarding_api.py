@@ -54,9 +54,7 @@ class _Api:
 
 @pytest_asyncio.fixture
 async def api():
-    engine = create_engine(
-        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
-    )
+    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
     SQLModel.metadata.create_all(engine, tables=_ONBOARDING_TABLES)
     session = Session(engine)
     gateway = StubOemGateway()

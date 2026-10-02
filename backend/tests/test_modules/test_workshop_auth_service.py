@@ -67,9 +67,7 @@ def test_sign_in_writes_login_event_with_request_context(session):
     owner = session.exec(select(WorkshopOwner)).one()
     assert event.owner_id == owner.id
     assert (event.event_type, event.result) == (AuthEventType.LOGIN, AuthEventResult.SUCCESS)
-    assert (event.ip_address, event.user_agent, event.trace_id) == (
-        "113.190.1.10", "Mozilla/5.0 Chrome", "req-1"
-    )
+    assert (event.ip_address, event.user_agent, event.trace_id) == ("113.190.1.10", "Mozilla/5.0 Chrome", "req-1")
     assert event.auth_provider == "google.com"
 
 
@@ -97,7 +95,9 @@ def test_locked_sign_in_is_denied_and_logged(session, status, reason):
 
     denied = _events(session)[-1]
     assert (denied.event_type, denied.result, denied.reason) == (
-        AuthEventType.LOGIN_DENIED, AuthEventResult.DENIED, reason
+        AuthEventType.LOGIN_DENIED,
+        AuthEventResult.DENIED,
+        reason,
     )
 
 
@@ -170,7 +170,9 @@ def test_record_revoke_result(session):
 
     failed, revoked = _events(session)[-2:]
     assert (failed.event_type, failed.result, failed.reason) == (
-        AuthEventType.SESSION_REVOKE_FAILED, AuthEventResult.FAILED, "UnavailableError"
+        AuthEventType.SESSION_REVOKE_FAILED,
+        AuthEventResult.FAILED,
+        "UnavailableError",
     )
     assert (revoked.event_type, revoked.result) == (AuthEventType.SESSION_REVOKED, AuthEventResult.SUCCESS)
     assert len(_events(session)) == 3

@@ -50,9 +50,7 @@ def _record(owner_id: str | None, *, success: bool, reason: str | None, trace_id
     default_retry_delay=_RETRY_BACKOFF_SECONDS,
     acks_late=True,
 )
-def revoke_workshop_session_task(
-    self, uid: str, owner_id: str | None, trace_id: str | None = None
-) -> None:
+def revoke_workshop_session_task(self, uid: str, owner_id: str | None, trace_id: str | None = None) -> None:
     # Lazy: importing this module must not require Firebase credentials.
     from firebase_admin import auth
 

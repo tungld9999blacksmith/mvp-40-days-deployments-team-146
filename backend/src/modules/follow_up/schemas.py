@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, time
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -186,17 +186,17 @@ class WorkshopTicketEnvelope(CamelModel):
     data: WorkshopTicketOut
 
 
-class TicketAction(str, Enum):
+class TicketAction(StrEnum):
     START = "START"
     RESOLVE = "RESOLVE"
 
 
-class TicketPriorityIn(str, Enum):
+class TicketPriorityIn(StrEnum):
     HIGH = "HIGH"
     NORMAL = "NORMAL"
 
 
-class TicketStatusIn(str, Enum):
+class TicketStatusIn(StrEnum):
     OPEN = "OPEN"
     IN_PROGRESS = "IN_PROGRESS"
     RESOLVED = "RESOLVED"

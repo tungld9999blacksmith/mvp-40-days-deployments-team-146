@@ -6,7 +6,7 @@ notifications only read it to find the recipient (FEAT-NOTI-001 BR-507).
 """
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum, StrEnum
 
 from sqlalchemy import (
     CheckConstraint,
@@ -25,7 +25,7 @@ from sqlmodel import Field, SQLModel
 from src.common.data_access import SQLModelRepository
 
 
-class DiscordLinkStatus(str, Enum):
+class DiscordLinkStatus(StrEnum):
     PENDING = "pending"
     ACTIVE = "active"
     REVOKED = "revoked"
@@ -65,38 +65,22 @@ class UserDiscordLink(SQLModel, table=True):
         )
     )
     discord_user_id: str = Field(sa_column=Column(String(32), nullable=False))
-    discord_username: str | None = Field(
-        default=None, sa_column=Column(String(64), nullable=True)
-    )
-    discord_channel_id: str | None = Field(
-        default=None, sa_column=Column(String(32), unique=True, nullable=True)
-    )
+    discord_username: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
+    discord_channel_id: str | None = Field(default=None, sa_column=Column(String(32), unique=True, nullable=True))
     status: DiscordLinkStatus = Field(
         default=DiscordLinkStatus.PENDING,
         sa_column=Column(
-            SQLEnum(
-                DiscordLinkStatus, name="discord_link_status_enum", values_callable=_enum_values
-            ),
+            SQLEnum(DiscordLinkStatus, name="discord_link_status_enum", values_callable=_enum_values),
             nullable=False,
             server_default="pending",
         ),
     )
-    revoked_reason: str | None = Field(
-        default=None, sa_column=Column(String(64), nullable=True)
-    )
-    linked_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
-    last_delivered_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    revoked_reason: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
+    linked_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
+    last_delivered_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 

@@ -8,7 +8,7 @@ session store and never holds tokens (BR-ENT-302).
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
+from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import CheckConstraint, Column, DateTime, ForeignKey, String, func
@@ -20,7 +20,7 @@ from src.common.request_context import RequestContext
 __all__ = ["AuthEventType", "AuthEventResult", "WorkshopAuthEvent", "RequestContext"]
 
 
-class AuthEventType(str, Enum):
+class AuthEventType(StrEnum):
     """Same values as the shared PG type ``auth_event_type_enum`` (ENT-101)."""
 
     LOGIN = "login"
@@ -30,7 +30,7 @@ class AuthEventType(str, Enum):
     LOGIN_DENIED = "login_denied"
 
 
-class AuthEventResult(str, Enum):
+class AuthEventResult(StrEnum):
     """Same values as the shared PG type ``auth_event_result_enum`` (ENT-101)."""
 
     SUCCESS = "success"
@@ -55,9 +55,7 @@ class WorkshopAuthEvent(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     owner_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("workshop_owner.id", ondelete="CASCADE"), nullable=False, index=True
-        )
+        sa_column=Column(ForeignKey("workshop_owner.id", ondelete="CASCADE"), nullable=False, index=True)
     )
     event_type: AuthEventType = Field(
         sa_column=Column(

@@ -11,9 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class CeleryWorkshopSessionRevoker:
-    def enqueue_revoke(
-        self, *, uid: str, owner_id: UUID | None, trace_id: str | None = None
-    ) -> None:
+    def enqueue_revoke(self, *, uid: str, owner_id: UUID | None, trace_id: str | None = None) -> None:
         # Lazy import: the API process must not need the broker at import time.
         from src.infrastructure.celery.tasks.workshop_auth_tasks import revoke_workshop_session_task
 

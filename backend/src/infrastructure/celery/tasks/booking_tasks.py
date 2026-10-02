@@ -29,9 +29,7 @@ def _service():
 
     session = next(get_session())
     try:
-        yield BookingService(
-            session, get_redis_toolkit(), get_location_finder(), config=get_booking_config()
-        )
+        yield BookingService(session, get_redis_toolkit(), get_location_finder(), config=get_booking_config())
     finally:
         session.close()
 

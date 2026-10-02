@@ -17,9 +17,7 @@ logger = logging.getLogger(__name__)
 class CelerySessionRevoker:
     """Enqueue the revoke via Celery (Redis broker)."""
 
-    def enqueue_revoke(
-        self, *, uid: str, user_id: int, trace_id: str | None = None
-    ) -> None:
+    def enqueue_revoke(self, *, uid: str, user_id: int, trace_id: str | None = None) -> None:
         # Imported lazily to avoid a hard Celery/broker dependency at import time.
         from src.infrastructure.celery.tasks.auth_tasks import revoke_session_task
 

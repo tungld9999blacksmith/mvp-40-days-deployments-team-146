@@ -19,24 +19,16 @@ from .vehicle_odometer_reading import OemSyncTrigger, _enum_values
 
 class VehicleOemSync(SQLModel, table=True):
     __tablename__ = "vehicle_oem_sync"
-    __table_args__ = (
-        CheckConstraint("consecutive_failures >= 0", name="ck_oem_sync_failures"),
-    )
+    __table_args__ = (CheckConstraint("consecutive_failures >= 0", name="ck_oem_sync_failures"),)
 
     user_vehicle_id: UUID = Field(
-        sa_column=Column(
-            ForeignKey("user_vehicle.id", ondelete="CASCADE"), primary_key=True, nullable=False
-        )
+        sa_column=Column(ForeignKey("user_vehicle.id", ondelete="CASCADE"), primary_key=True, nullable=False)
     )
-    usage_synced_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
+    usage_synced_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
     service_history_synced_at: datetime | None = Field(
         default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
     )
-    last_attempt_at: datetime | None = Field(
-        default=None, sa_column=Column(DateTime(timezone=True), nullable=True)
-    )
+    last_attempt_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
     last_trigger: OemSyncTrigger | None = Field(
         default=None,
         sa_column=Column(
@@ -50,16 +42,10 @@ class VehicleOemSync(SQLModel, table=True):
         ),
     )
     last_error_code: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
-    consecutive_failures: int = Field(
-        default=0, sa_column=Column(Integer, nullable=False, server_default="0")
-    )
-    created_at: datetime = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-    )
+    consecutive_failures: int = Field(default=0, sa_column=Column(Integer, nullable=False, server_default="0"))
+    created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
-        sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
-        )
+        sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     )
 
 

@@ -149,9 +149,7 @@ class MessageService:
     ) -> list[AppendResult]:
         for item in items:
             _validate(item)
-        results: list[AppendResult] = await anyio.to_thread.run_sync(
-            self._persist_many, conversation_id, list(items)
-        )
+        results: list[AppendResult] = await anyio.to_thread.run_sync(self._persist_many, conversation_id, list(items))
 
         for result in results:
             if not result.created:
@@ -166,9 +164,7 @@ class MessageService:
                 self._safe_dispatch_index(message)
         return results
 
-    def _persist_many(
-        self, conversation_id: UUID, items: list[NewMessage]
-    ) -> list[AppendResult]:
+    def _persist_many(self, conversation_id: UUID, items: list[NewMessage]) -> list[AppendResult]:
         with Session(self._db_engine) as session:
             conv_repo = ConversationRepository(session)
             conversation = conv_repo.get(conversation_id)
@@ -185,11 +181,7 @@ class MessageService:
                     continue
                 message = msg_repo.create(_to_values(item, conversation_id))
                 results.append(AppendResult(message, created=True))
-                if (
-                    not title_set
-                    and item.role == MessageRole.USER
-                    and item.content
-                ):
+                if not title_set and item.role == MessageRole.USER and item.content:
                     conversation.title = item.content[:_TITLE_MAX]
                     title_set = True
 
@@ -203,9 +195,7 @@ class MessageService:
             return results
 
     @staticmethod
-    def _find_duplicate(
-        repo: ChatMessageRepository, conversation_id: UUID, item: NewMessage
-    ) -> ChatMessage | None:
+    def _find_duplicate(repo: ChatMessageRepository, conversation_id: UUID, item: NewMessage) -> ChatMessage | None:
         if item.role != MessageRole.USER or item.client_message_id is None:
             return None
         return repo.find_one(

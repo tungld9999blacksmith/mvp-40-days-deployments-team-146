@@ -33,9 +33,7 @@ def _service():
 
     session = next(get_session())
     try:
-        yield build_workshop_onboarding_service(
-            session, get_service_center_gateway(), get_retry_scheduler()
-        )
+        yield build_workshop_onboarding_service(session, get_service_center_gateway(), get_retry_scheduler())
     finally:
         session.close()
 

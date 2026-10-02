@@ -16,7 +16,6 @@ from __future__ import annotations
 import logging
 import time
 from collections.abc import AsyncIterator, Awaitable, Callable
-from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 from sqlalchemy import func, select
@@ -72,9 +71,7 @@ class ChatService:
         self._settings = settings
 
     # -- conversations ----------------------------------------------------
-    def create_conversation(
-        self, user_id: int, user_vehicle_id: UUID, title: str | None
-    ) -> Conversation:
+    def create_conversation(self, user_id: int, user_vehicle_id: UUID, title: str | None) -> Conversation:
         with Session(self._engine) as session:
             vehicle = session.get(UserVehicle, user_vehicle_id)
             if vehicle is None or vehicle.user_id != user_id:
@@ -82,9 +79,7 @@ class ChatService:
             if vehicle.link_status != VehicleLinkStatus.ACTIVE:
                 raise errors.VehicleNotActive()
             repo = ConversationRepository(session)
-            conversation = repo.create(
-                {"user_id": user_id, "user_vehicle_id": user_vehicle_id, "title": title}
-            )
+            conversation = repo.create({"user_id": user_id, "user_vehicle_id": user_vehicle_id, "title": title})
             session.commit()
             session.refresh(conversation)
             return conversation
@@ -147,9 +142,7 @@ class ChatService:
             filters.append(lt("seq", before))
         order_by = ("seq",) if ascending else ("-seq",)
         with Session(self._engine) as session:
-            rows = ChatMessageRepository(session).search(
-                filters=filters, order_by=order_by, limit=limit + 1
-            )
+            rows = ChatMessageRepository(session).search(filters=filters, order_by=order_by, limit=limit + 1)
         has_more = len(rows) > limit
         rows = rows[:limit]
         next_cursor = str(rows[-1].seq) if has_more and rows else None
@@ -193,9 +186,7 @@ class ChatService:
         next_cursor = int(hits[-1][0].seq) if has_more and hits else None
         return hits, next_cursor, has_more
 
-    def semantic_search(
-        self, conversation_id: UUID, query: str, k: int
-    ) -> list[tuple[ChatMessage, float]]:
+    def semantic_search(self, conversation_id: UUID, query: str, k: int) -> list[tuple[ChatMessage, float]]:
         if not self._settings.conversation_semantic_index_enabled:
             raise errors.SemanticSearchDisabled()
         results = self._vectors.similarity_search(
@@ -264,9 +255,7 @@ class ChatService:
             raise errors.ConversationBusy()
 
         try:
-            async for frame in self._run_turn(
-                conversation_id, client_message_id, content, trace_id, is_disconnected
-            ):
+            async for frame in self._run_turn(conversation_id, client_message_id, content, trace_id, is_disconnected):
                 yield frame
         finally:
             try:
@@ -298,7 +287,10 @@ class ChatService:
         if replay is not None:
             yield SseFrame(
                 event="message.accepted",
-                data={"userMessage": MessageDto.from_message(user_result.message).model_dump(mode="json"), "replayed": True},
+                data={
+                    "userMessage": MessageDto.from_message(user_result.message).model_dump(mode="json"),
+                    "replayed": True,
+                },
             )
             yield SseFrame(
                 event="message.completed",
@@ -308,7 +300,10 @@ class ChatService:
 
         yield SseFrame(
             event="message.accepted",
-            data={"userMessage": MessageDto.from_message(user_result.message).model_dump(mode="json"), "replayed": False},
+            data={
+                "userMessage": MessageDto.from_message(user_result.message).model_dump(mode="json"),
+                "replayed": False,
+            },
         )
 
         yield SseFrame(event="status", data={"stage": "retrieving"})
@@ -347,9 +342,7 @@ class ChatService:
             data={"message": MessageDto.from_message(assistant.message).model_dump(mode="json")},
         )
 
-    def _replay_if_answered(
-        self, conversation_id: UUID, user_result: AppendResult
-    ) -> ChatMessage | None:
+    def _replay_if_answered(self, conversation_id: UUID, user_result: AppendResult) -> ChatMessage | None:
         """On an idempotent resend, return the assistant reply if one already exists."""
         if user_result.created:
             return None
@@ -382,9 +375,7 @@ class ChatService:
         context = "\n\n".join(f"[{i + 1}] {h.content}" for i, h in enumerate(hits))
         return citations, context
 
-    def _build_prompt(
-        self, conversation_id: UUID, user_content: str, context: str
-    ) -> list[LlmMessage]:
+    def _build_prompt(self, conversation_id: UUID, user_content: str, context: str) -> list[LlmMessage]:
         messages: list[LlmMessage] = [LlmMessage(role="system", content=_SYSTEM_PROMPT)]
         with Session(self._engine) as session:
             history = ChatMessageRepository(session).search(
@@ -398,20 +389,14 @@ class ChatService:
         for msg in reversed(history):
             messages.append(LlmMessage(role=msg.role.value, content=msg.content))
         if context:
-            messages.append(
-                LlmMessage(role="system", content=f"Tài liệu chính hãng liên quan:\n{context}")
-            )
+            messages.append(LlmMessage(role="system", content=f"Tài liệu chính hãng liên quan:\n{context}"))
         return messages
 
     # -- rate limit -------------------------------------------------------
     async def _check_rate_limit(self, user_id: int) -> None:
         now = time.time()
-        await self._enforce_window(
-            f"chat:rl:{user_id}:min", now, 60, self._settings.chat_rate_limit_per_minute
-        )
-        await self._enforce_window(
-            f"chat:rl:{user_id}:day", now, 86400, self._settings.chat_rate_limit_per_day
-        )
+        await self._enforce_window(f"chat:rl:{user_id}:min", now, 60, self._settings.chat_rate_limit_per_minute)
+        await self._enforce_window(f"chat:rl:{user_id}:day", now, 86400, self._settings.chat_rate_limit_per_day)
 
     async def _enforce_window(self, key: str, now: float, window: int, limit: int) -> None:
         zset = self._toolkit.sorted_set(key, str, ttl=window)

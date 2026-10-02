@@ -28,10 +28,15 @@ def _generate(monkeypatch, emails: str, vehicles: int = 2, extra_owner: bool = F
     with Session(engine) as session:
         seed_all(session)
         if extra_owner:
-            session.add(Owner(
-                owner_id="OWN-999", full_name="Extra", phone="0900000000",
-                email="extra@example.com", national_id="079299999999",
-            ))
+            session.add(
+                Owner(
+                    owner_id="OWN-999",
+                    full_name="Extra",
+                    phone="0900000000",
+                    email="extra@example.com",
+                    national_id="079299999999",
+                )
+            )
             session.commit()
         ensure_dev_owners(session)
 

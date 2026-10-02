@@ -45,9 +45,7 @@ def get_trace_id() -> str | None:
 
 
 def _headers(scope: Scope) -> dict[str, str]:
-    return {
-        k.decode("latin-1").lower(): v.decode("latin-1") for k, v in scope.get("headers", [])
-    }
+    return {k.decode("latin-1").lower(): v.decode("latin-1") for k, v in scope.get("headers", [])}
 
 
 def _extract_request_id(headers: dict[str, str]) -> str | None:

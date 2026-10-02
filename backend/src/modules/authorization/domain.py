@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from enum import Enum
+from datetime import UTC, datetime
+from enum import StrEnum
 from uuid import UUID, uuid4
 
-from sqlalchemy import Column, DateTime, Enum as SQLEnum, String
+from sqlalchemy import Column, DateTime, String
+from sqlalchemy import Enum as SQLEnum
 from sqlmodel import Field, SQLModel
 
 
-class RoleCode(str, Enum):
+class RoleCode(StrEnum):
     VEHICLE_USER = "vehicle_user"
     WORKSHOP_OWNER = "workshop_owner"
     MAINTENANCE_STAFF = "maintenance_staff"
@@ -28,9 +29,7 @@ class Role(SQLModel, table=True):
         )
     )
 
-    name: str = Field(
-        sa_column=Column(String(100), nullable=False)
-    )
+    name: str = Field(sa_column=Column(String(100), nullable=False))
 
     description: str | None = Field(
         default=None,
@@ -40,6 +39,6 @@ class Role(SQLModel, table=True):
     is_system: bool = Field(default=True)
 
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(UTC),
         sa_column=Column(DateTime(timezone=True), nullable=False),
     )
