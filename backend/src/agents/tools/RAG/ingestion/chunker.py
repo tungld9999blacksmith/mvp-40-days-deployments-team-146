@@ -37,21 +37,17 @@ class DocumentChunker:
             prefix = f"[{doc.metadata.title} > {header}]\n" if header else f"[{doc.metadata.title}]\n"
 
             if len(content) + len(prefix) <= self.chunk_size:
-                raw_chunks.append(
-                    {
-                        "text": prefix + content,
-                        "section_header": header,
-                    }
-                )
+                raw_chunks.append({
+                    "text": prefix + content,
+                    "section_header": header,
+                })
             else:
                 sub_chunks = self._recursive_split(content, self.chunk_size - len(prefix), self.chunk_overlap)
                 for sc in sub_chunks:
-                    raw_chunks.append(
-                        {
-                            "text": prefix + sc,
-                            "section_header": header,
-                        }
-                    )
+                    raw_chunks.append({
+                        "text": prefix + sc,
+                        "section_header": header,
+                    })
 
         # 3. Đóng gói thành DocumentChunk với metadata
         total_chunks = len(raw_chunks)
@@ -64,16 +60,14 @@ class DocumentChunker:
             # Trích xuất metadata bổ sung từ nội dung chunk (vd: có nhắc tới mốc km hay model cụ thể)
             chunk_meta = self._enrich_chunk_metadata(doc, chunk_text, item["section_header"], idx, total_chunks)
 
-            chunks.append(
-                DocumentChunk(
-                    chunk_id=chunk_id,
-                    doc_id=doc.doc_id,
-                    content=chunk_text,
-                    metadata=chunk_meta,
-                    chunk_index=idx,
-                    total_chunks=total_chunks,
-                )
-            )
+            chunks.append(DocumentChunk(
+                chunk_id=chunk_id,
+                doc_id=doc.doc_id,
+                content=chunk_text,
+                metadata=chunk_meta,
+                chunk_index=idx,
+                total_chunks=total_chunks,
+            ))
 
         logger.info(f"Tạo {len(chunks)} chunks cho tài liệu: {doc.doc_id}")
         return chunks
@@ -89,7 +83,9 @@ class DocumentChunker:
         # Heading Markdown: # , ## , ###
         md_header = re.compile(r"^(#{1,3})\s+(.+)$")
         # Heading Roman numeral từ PDF: "I.", "II.", "III.", "IV.", "V." ... ở đầu dòng
-        roman_header = re.compile(r"^(I{1,3}V?|IV|VI{0,3}|IX|XI{0,3}|XX?)[\.\)]\s+(.+)$")
+        roman_header = re.compile(
+            r"^(I{1,3}V?|IV|VI{0,3}|IX|XI{0,3}|XX?)[\.\)]\s+(.+)$"
+        )
         # ALL-CAPS heading ngắn (< 80 ký tự, không phải số trang đơn lẻ)
         allcaps_header = re.compile(r"^([A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝĐ\s]{8,79})$")
 
@@ -114,12 +110,10 @@ class DocumentChunker:
                 if current_lines:
                     content_str = "\n".join(current_lines).strip()
                     if content_str:
-                        sections.append(
-                            {
-                                "header": current_header,
-                                "content": content_str,
-                            }
-                        )
+                        sections.append({
+                            "header": current_header,
+                            "content": content_str,
+                        })
                 current_header = header_text
                 current_lines = [line]
             else:
@@ -128,12 +122,10 @@ class DocumentChunker:
         if current_lines:
             content_str = "\n".join(current_lines).strip()
             if content_str:
-                sections.append(
-                    {
-                        "header": current_header,
-                        "content": content_str,
-                    }
-                )
+                sections.append({
+                    "header": current_header,
+                    "content": content_str,
+                })
 
         if not sections:
             sections = [{"header": "", "content": text}]
@@ -216,11 +208,23 @@ class DocumentChunker:
             "model": doc.metadata.model,
             "milestone_km": doc.metadata.milestone_km or 0,
         }
+        source_url = doc.metadata.extra.get("source_url")
+        if source_url:
+            meta["source_url"] = source_url
 
         # Bổ sung model nếu trong đoạn nhắc đến cụ thể một model duy nhất
         lower = chunk_text.lower()
-        all_known_models = ["VFe34", "VFMPV7", "VF3", "VF5", "VF6", "VF7", "VF8", "VF9"]
-        found_models = [m for m in all_known_models if m.lower() in lower]
+        model_patterns = {
+            "VFe34": r"\bvf\s*e\s*34\b",
+            "VFMPV7": r"\bvf\s*mpv\s*7\b",
+            "VF3": r"\bvf\s*3\b",
+            "VF5": r"\bvf\s*5(?:\s*plus)?\b",
+            "VF6": r"\bvf\s*6\b",
+            "VF7": r"\bvf\s*7\b",
+            "VF8": r"\bvf\s*8\b",
+            "VF9": r"\bvf\s*9\b",
+        }
+        found_models = [m for m, pattern in model_patterns.items() if re.search(pattern, lower)]
         if len(found_models) == 1:
             meta["model"] = found_models[0]
         elif len(found_models) > 1 or doc.metadata.model == "ALL":
@@ -228,41 +232,55 @@ class DocumentChunker:
         else:
             meta["model"] = doc.metadata.model
 
-        # Giữ category của tài liệu gốc, chỉ cập nhật nếu section header đặc thù
+        # Gán category theo section. FAQ là tài liệu đa chủ đề nên
+        # không thể dùng category của phần mở đầu cho hàng trăm section.
         cat = doc.metadata.category
         header_lower = section_header.lower()
 
         # Các section rõ ràng là nhật ký bảo dưỡng → override sang maintenance
         maintenance_headers = [
-            "nhật ký bảo dưỡng",
-            "lịch bảo dưỡng",
-            "bảo dưỡng định kỳ",
-            "bảo dưỡng cấp",
-            "hạng mục bảo dưỡng",
-            "mốc bảo dưỡng",
+            "nhật ký bảo dưỡng", "lịch bảo dưỡng", "bảo dưỡng định kỳ",
+            "bảo dưỡng cấp", "hạng mục bảo dưỡng", "mốc bảo dưỡng",
         ]
         warranty_headers = [
-            "chính sách bảo hành",
-            "điều kiện bảo hành",
-            "phạm vi bảo hành",
-            "thời hạn bảo hành",
-            "trường hợp không bảo hành",
-            "quy trình bảo hành",
+            "chính sách bảo hành", "điều kiện bảo hành", "phạm vi bảo hành",
+            "thời hạn bảo hành", "trường hợp không bảo hành", "quy trình bảo hành",
+            "bảo hành",
         ]
-        pricing_headers = ["bảng giá", "giá dịch vụ", "chi phí"]
-        procedure_headers = ["quy trình", "hitl"]
-        battery_headers = ["an toàn pin", "sạc pin"]
+        pricing_headers = [
+            "bảng giá", "giá dịch vụ", "chi phí", "giá sạc",
+            "phí sạc", "phí thuê pin", "thanh toán phí",
+        ]
+        procedure_headers = [
+            "quy trình", "hitl", "đặt lịch", "các bước", "làm thế nào",
+            "cách kiểm tra", "cách cài đặt", "hướng dẫn thêm",
+            "chuyển quyền", "cập nhật phần mềm", "lịch sử dịch vụ",
+        ]
+        battery_headers = [
+            "an toàn pin", "pin ô tô", "pin cao áp", "cứu hộ pin",
+            "sạc pin", "trạm sạc", "bộ sạc", "súng sạc", "hốc sạc",
+            "công suất sạc", "thời gian nạp pin", "quãng đường di chuyển 1 lần sạc",
+        ]
 
-        if any(h in header_lower for h in pricing_headers):
+        # Pricing catalogues may contain headings such as "bộ sạc", "pin cao áp"
+        # or "quy trình nhận báo giá". Those phrases describe the priced item
+        # or quote workflow, not a change of document intent. Keeping the
+        # document-level category prevents category-filtered retrieval from
+        # hiding official price chunks.
+        if doc.metadata.category == "pricing":
             cat = "pricing"
-        elif any(h in header_lower for h in procedure_headers):
-            cat = "procedure"
+        elif "mốc bảo dưỡng" in header_lower:
+            cat = "maintenance"
+        elif any(h in header_lower for h in pricing_headers):
+            cat = "pricing"
+        elif any(h in header_lower for h in warranty_headers):
+            cat = "warranty"
         elif any(h in header_lower for h in battery_headers):
             cat = "battery"
         elif any(h in header_lower for h in maintenance_headers):
             cat = "maintenance"
-        elif any(h in header_lower for h in warranty_headers):
-            cat = "warranty"
+        elif any(h in header_lower for h in procedure_headers):
+            cat = "procedure"
         # Không có header đặc thù → giữ category tài liệu gốc (không override bằng nội dung chunk)
         meta["category"] = cat
 

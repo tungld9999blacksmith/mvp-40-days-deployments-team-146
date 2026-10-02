@@ -1,0 +1,4492 @@
+{
+  "backend": "qdrant_production_pipeline",
+  "collection": "ev_care_knowledge_base_staging",
+  "golden_set": "golden_set.jsonl",
+  "pipeline": {
+    "dense_enabled": true,
+    "query_embeddings": "Gemini/Qdrant dense",
+    "dense_disabled_after_quota": false,
+    "rewriter": "QueryRewriter",
+    "rewriter_mode": "heuristic_fallback",
+    "reranker": "HeuristicReranker",
+    "generator": "GroundedAnswerGenerator",
+    "top_k": 3,
+    "generation_model": "gemini-3.5-flash-lite"
+  },
+  "retrieval_metrics": {
+    "total": 100,
+    "pass_rate": 0.89,
+    "hit_at_1": 0.85,
+    "hit_at_3": 0.96,
+    "hit_at_5": 0.96,
+    "mrr": 0.9017,
+    "avg_top_score": 0.8291,
+    "avg_kw_ratio": 0.8875,
+    "avg_latency_ms": 2811.6,
+    "p95_latency_ms": 3281.2,
+    "context_precision": 0.63,
+    "context_recall": 0.8283,
+    "category_stats": {
+      "maintenance": {
+        "total": 26,
+        "pass": 24,
+        "pass_rate": 0.9230769230769231,
+        "avg_score": 0.8097,
+        "hit_at_3": 1.0
+      },
+      "pricing": {
+        "total": 16,
+        "pass": 16,
+        "pass_rate": 1.0,
+        "avg_score": 0.844925,
+        "hit_at_3": 1.0
+      },
+      "warranty": {
+        "total": 20,
+        "pass": 15,
+        "pass_rate": 0.75,
+        "avg_score": 0.81677,
+        "hit_at_3": 0.85
+      },
+      "battery": {
+        "total": 20,
+        "pass": 18,
+        "pass_rate": 0.9,
+        "avg_score": 0.857405,
+        "hit_at_3": 1.0
+      },
+      "procedure": {
+        "total": 14,
+        "pass": 12,
+        "pass_rate": 0.8571428571428571,
+        "avg_score": 0.8160928571428572,
+        "hit_at_3": 0.9285714285714286
+      },
+      "general": {
+        "total": 4,
+        "pass": 4,
+        "pass_rate": 1.0,
+        "avg_score": 0.8563000000000001,
+        "hit_at_3": 1.0
+      }
+    }
+  },
+  "answer_metrics": {
+    "evaluated": 18,
+    "coverage": 1.0,
+    "correctness": 0.6833,
+    "completeness": 0.8333,
+    "relevancy": 0.8514,
+    "coherence": 1.0,
+    "citation_correctness": 0.6944,
+    "citation_support": 0.7222
+  },
+  "results": [
+    {
+      "id": "M01",
+      "query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+      "model": "VF8",
+      "category": "maintenance",
+      "top_score": 0.7751,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2934.2,
+      "retrieved_docs": [
+        "toi_uu_moc_bao_duong_ALL",
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VF8"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "Hiện tại, các tài liệu chính hãng được cung cấp chưa có thông tin chi tiết về các hạng mục cụ thể trong danh mục bảo dưỡng định kỳ ở mốc 15.000 km cho dòng xe VF8. Tài liệu chỉ ghi nhận mốc bảo dưỡng định kỳ cho ô tô điện VinFast là 15.000 km hoặc 1 năm (tùy điều kiện nào đến trước) [Tài liệu 1], và có trang nhật ký bảo dưỡng định kỳ trong sổ bảo hành của xe VF8 [Tài liệu 2]. Để biết chính xác các hạng mục kiểm tra/thay thế chi tiết cho xe VF8 tại mốc này, Quý khách vui lòng liên hệ trực tiếp với xưởng dịch vụ hoặc nhà phân phối chính hãng của VinFast để được hỗ trợ kiểm tra.",
+      "cited_docs": [
+        "toi_uu_moc_bao_duong_ALL",
+        "warranty_maintenance_VF8"
+      ],
+      "analysis": {
+        "original_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "rewritten_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "keywords": [
+          "bảo",
+          "dưỡng",
+          "định",
+          "kỳ",
+          "mốc",
+          "15",
+          "000",
+          "km",
+          "xe",
+          "vf8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "source_cited_doc_indexes": [
+          1,
+          3
+        ]
+      }
+    },
+    {
+      "id": "M02",
+      "query": "Pin chìa khóa điều khiển VF e34 thay theo chu kỳ nào?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.8015,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2587.8,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "battery_sac_VFe34",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "Pin chìa khóa điều khiển xe VinFast VF e34 được thay mới theo chu kỳ cứ 24 tháng hoặc sau 24.000 km, tùy điều kiện nào đến trước [Tài liệu 1].",
+      "cited_docs": [
+        "lich_bao_duong_ALL"
+      ],
+      "analysis": {
+        "original_query": "Pin chìa khóa điều khiển VF e34 thay theo chu kỳ nào?",
+        "rewritten_query": "Pin chìa khóa điều khiển VF e34 thay theo chu kỳ nào? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "pin",
+          "chìa",
+          "khóa",
+          "điều",
+          "khiển",
+          "vf",
+          "e34",
+          "thay",
+          "theo",
+          "chu"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Pin chìa khóa điều khiển VF e34 thay theo chu kỳ nào? (áp dụng cho xe VinFast VFe34)",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "M03",
+      "query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu?",
+      "model": null,
+      "category": "maintenance",
+      "top_score": 0.8639,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 3054.6,
+      "retrieved_docs": [
+        "toi_uu_moc_bao_duong_ALL",
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "Từ ngày 01/01/2026, chu kỳ bảo dưỡng định kỳ cho các dòng ô tô điện VinFast (trừ phiên bản Lạc Hồng chống đạn) là 15.000 km hoặc 1 năm, tùy theo điều kiện nào đến trước [Tài liệu 1].",
+      "cited_docs": [
+        "toi_uu_moc_bao_duong_ALL"
+      ],
+      "analysis": {
+        "original_query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu?",
+        "rewritten_query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu?",
+        "keywords": [
+          "từ",
+          "năm",
+          "2026",
+          "chu",
+          "kỳ",
+          "bảo",
+          "dưỡng",
+          "định",
+          "tô",
+          "điện"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "M04",
+      "query": "Pin bộ T-box VF e34 thay ở những mốc nào?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.8144,
+      "keyword_ratio": 1.0,
+      "rr": 0.5,
+      "pass": true,
+      "latency_ms": 9675.6,
+      "retrieved_docs": [
+        "warranty_maintenance_VFe34",
+        "lich_bao_duong_ALL",
+        "lich_bao_duong_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Pin bộ T-box VF e34 thay ở những mốc nào?",
+        "rewritten_query": "Pin bộ T-box VF e34 thay ở những mốc nào? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "pin",
+          "bộ",
+          "box",
+          "vf",
+          "e34",
+          "thay",
+          "mốc"
+        ],
+        "model": "VFe34",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M05",
+      "query": "Theo lịch mới, xe đang ở mốc ODO 36.000 đến 45.000 km được quy đổi mốc nhắc bảo dưỡng nào?",
+      "model": null,
+      "category": "maintenance",
+      "top_score": 0.7931,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 3216.5,
+      "retrieved_docs": [
+        "toi_uu_moc_bao_duong_ALL",
+        "lich_bao_duong_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Theo lịch mới, xe đang ở mốc ODO 36.000 đến 45.000 km được quy đổi mốc nhắc bảo dưỡng nào?",
+        "rewritten_query": "Theo lịch mới, xe đang ở mốc ODO 36.000 đến 45.000 km được quy đổi mốc nhắc bảo dưỡng nào?",
+        "keywords": [
+          "theo",
+          "lịch",
+          "mới",
+          "xe",
+          "mốc",
+          "odo",
+          "36",
+          "000",
+          "đến",
+          "45"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": 45000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M06",
+      "query": "Xe VF3 cần bảo dưỡng lần đầu tiên sau bao nhiêu km?",
+      "model": "VF3",
+      "category": "maintenance",
+      "top_score": 0.7457,
+      "keyword_ratio": 0.667,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2571.8,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VF3",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [
+        "15.000"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe VF3 cần bảo dưỡng lần đầu tiên sau bao nhiêu km?",
+        "rewritten_query": "Xe VF3 cần bảo dưỡng lần đầu tiên sau bao nhiêu km?",
+        "keywords": [
+          "xe",
+          "vf3",
+          "bảo",
+          "dưỡng",
+          "lần",
+          "đầu",
+          "tiên",
+          "sau",
+          "bao",
+          "km"
+        ],
+        "model": "VF3",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M07",
+      "query": "Nước làm mát pin và động cơ điện VF e34 cần thay hay kiểm tra định kỳ?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.8414,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2653.6,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Nước làm mát pin và động cơ điện VF e34 cần thay hay kiểm tra định kỳ?",
+        "rewritten_query": "Nước làm mát pin và động cơ điện VF e34 cần thay hay kiểm tra định kỳ? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "nước",
+          "mát",
+          "pin",
+          "động",
+          "cơ",
+          "điện",
+          "vf",
+          "e34",
+          "thay",
+          "kiểm"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M08",
+      "query": "Dầu phanh VF e34 được kiểm tra và thay mới thế nào trong từng kỳ bảo dưỡng?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.8497,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2570.8,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Dầu phanh VF e34 được kiểm tra và thay mới thế nào trong từng kỳ bảo dưỡng?",
+        "rewritten_query": "Dầu phanh VF e34 được kiểm tra và thay mới thế nào trong từng kỳ bảo dưỡng? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "dầu",
+          "phanh",
+          "vf",
+          "e34",
+          "kiểm",
+          "tra",
+          "thay",
+          "mới",
+          "trong",
+          "từng"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M09",
+      "query": "Bảo dưỡng xe VF8 mốc 60.000 km có kiểm tra SOH pin không?",
+      "model": "VF8",
+      "category": "maintenance",
+      "top_score": 0.7486,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2737.3,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "warranty_policy_vi",
+        "toi_uu_moc_bao_duong_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Bảo dưỡng xe VF8 mốc 60.000 km có kiểm tra SOH pin không?",
+        "rewritten_query": "Bảo dưỡng xe VF8 mốc 60.000 km có kiểm tra SOH pin không?",
+        "keywords": [
+          "bảo",
+          "dưỡng",
+          "xe",
+          "vf8",
+          "mốc",
+          "60",
+          "000",
+          "km",
+          "kiểm",
+          "tra"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 60000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M10",
+      "query": "Vì sao lịch bảo dưỡng ô tô điện VinFast dài hơn xe xăng?",
+      "model": null,
+      "category": "maintenance",
+      "top_score": 0.8482,
+      "keyword_ratio": 0.333,
+      "rr": 1.0,
+      "pass": false,
+      "latency_ms": 2575.5,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL"
+      ],
+      "keywords_missing": [
+        "dài hơn",
+        "truyền động đơn giản"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Vì sao lịch bảo dưỡng ô tô điện VinFast dài hơn xe xăng?",
+        "rewritten_query": "Vì sao lịch bảo dưỡng ô tô điện VinFast dài hơn xe xăng?",
+        "keywords": [
+          "lịch",
+          "bảo",
+          "dưỡng",
+          "tô",
+          "điện",
+          "vinfast",
+          "dài",
+          "hơn",
+          "xe",
+          "xăng"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M11",
+      "query": "Lọc gió điều hòa VF e34 là hạng mục kiểm tra hay thay mới?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.8309,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2632.5,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Lọc gió điều hòa VF e34 là hạng mục kiểm tra hay thay mới?",
+        "rewritten_query": "Lọc gió điều hòa VF e34 là hạng mục kiểm tra hay thay mới? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "lọc",
+          "gió",
+          "điều",
+          "hòa",
+          "vf",
+          "e34",
+          "hạng",
+          "mục",
+          "kiểm",
+          "tra"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M12",
+      "query": "Khi tư vấn bảo dưỡng VF e34, những hạng mục phanh nào cần được kiểm tra?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.8572,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2573.7,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Khi tư vấn bảo dưỡng VF e34, những hạng mục phanh nào cần được kiểm tra?",
+        "rewritten_query": "Khi tư vấn bảo dưỡng VF e34, những hạng mục phanh nào cần được kiểm tra? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "tư",
+          "vấn",
+          "bảo",
+          "dưỡng",
+          "vf",
+          "e34",
+          "hạng",
+          "mục",
+          "phanh",
+          "kiểm"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M13",
+      "query": "Kiểm tra má phanh xe VF8 định kỳ như thế nào?",
+      "model": "VF8",
+      "category": "maintenance",
+      "top_score": 0.7342,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2637.6,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VF8"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Kiểm tra má phanh xe VF8 định kỳ như thế nào?",
+        "rewritten_query": "Kiểm tra má phanh xe VF8 định kỳ như thế nào?",
+        "keywords": [
+          "kiểm",
+          "tra",
+          "má",
+          "phanh",
+          "xe",
+          "vf8",
+          "định",
+          "kỳ"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M14",
+      "query": "Bảo dưỡng VF MPV 7 mốc 15.000 km cần làm gì?",
+      "model": "VFMPV7",
+      "category": "maintenance",
+      "top_score": 0.7607,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2774.6,
+      "retrieved_docs": [
+        "toi_uu_moc_bao_duong_ALL",
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VFMPV7"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Bảo dưỡng VF MPV 7 mốc 15.000 km cần làm gì?",
+        "rewritten_query": "Bảo dưỡng VF MPV 7 mốc 15.000 km cần làm gì? (áp dụng cho xe VinFast VFMPV7)",
+        "keywords": [
+          "bảo",
+          "dưỡng",
+          "vf",
+          "mpv",
+          "mốc",
+          "15",
+          "000",
+          "km"
+        ],
+        "model": "VFMPV7",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M15",
+      "query": "Từ 01/01/2026 mốc bảo dưỡng xe điện VinFast thay đổi như thế nào?",
+      "model": null,
+      "category": "maintenance",
+      "top_score": 0.8827,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2753.0,
+      "retrieved_docs": [
+        "toi_uu_moc_bao_duong_ALL",
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VF6"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Từ 01/01/2026 mốc bảo dưỡng xe điện VinFast thay đổi như thế nào?",
+        "rewritten_query": "Từ 01/01/2026 mốc bảo dưỡng xe điện VinFast thay đổi như thế nào?",
+        "keywords": [
+          "từ",
+          "01",
+          "2026",
+          "mốc",
+          "bảo",
+          "dưỡng",
+          "xe",
+          "điện",
+          "vinfast",
+          "thay"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M16",
+      "query": "Xưởng dịch vụ VinFast có dùng phụ tùng chính hãng khi bảo dưỡng không?",
+      "model": null,
+      "category": "maintenance",
+      "top_score": 0.8364,
+      "keyword_ratio": 1.0,
+      "rr": 0.5,
+      "pass": true,
+      "latency_ms": 2698.2,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "dich_vu_bao_duong_ALL",
+        "warranty_maintenance_VF7"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xưởng dịch vụ VinFast có dùng phụ tùng chính hãng khi bảo dưỡng không?",
+        "rewritten_query": "Xưởng dịch vụ VinFast có dùng phụ tùng chính hãng khi bảo dưỡng không?",
+        "keywords": [
+          "xưởng",
+          "dịch",
+          "vụ",
+          "vinfast",
+          "dùng",
+          "phụ",
+          "tùng",
+          "chính",
+          "hãng",
+          "bảo"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M17",
+      "query": "Cần gạt nước và nước rửa kính VF e34 có nằm trong danh sách bảo dưỡng chung không?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.8211,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2596.3,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Cần gạt nước và nước rửa kính VF e34 có nằm trong danh sách bảo dưỡng chung không?",
+        "rewritten_query": "Cần gạt nước và nước rửa kính VF e34 có nằm trong danh sách bảo dưỡng chung không? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "gạt",
+          "nước",
+          "rửa",
+          "kính",
+          "vf",
+          "e34",
+          "nằm",
+          "trong",
+          "danh",
+          "sách"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M18",
+      "query": "Trong bảo dưỡng VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.8183,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2629.0,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Trong bảo dưỡng VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc?",
+        "rewritten_query": "Trong bảo dưỡng VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "trong",
+          "bảo",
+          "dưỡng",
+          "vf",
+          "e34",
+          "hạng",
+          "mục",
+          "liên",
+          "quan",
+          "đến"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M19",
+      "query": "Khi tư vấn bảo dưỡng gầm VF e34, những bộ phận nào thuộc nhóm cần kiểm tra?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.826,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2617.2,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Khi tư vấn bảo dưỡng gầm VF e34, những bộ phận nào thuộc nhóm cần kiểm tra?",
+        "rewritten_query": "Khi tư vấn bảo dưỡng gầm VF e34, những bộ phận nào thuộc nhóm cần kiểm tra? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "tư",
+          "vấn",
+          "bảo",
+          "dưỡng",
+          "gầm",
+          "vf",
+          "e34",
+          "bộ",
+          "phận",
+          "thuộc"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M20",
+      "query": "Để tư vấn chăm sóc lốp VF e34, cần kiểm tra những gì và theo chu kỳ nào?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.819,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2569.9,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Để tư vấn chăm sóc lốp VF e34, cần kiểm tra những gì và theo chu kỳ nào?",
+        "rewritten_query": "Để tư vấn chăm sóc lốp VF e34, cần kiểm tra những gì và theo chu kỳ nào? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "để",
+          "tư",
+          "vấn",
+          "chăm",
+          "sóc",
+          "lốp",
+          "vf",
+          "e34",
+          "kiểm",
+          "tra"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M21",
+      "query": "Nếu cần báo giá phụ tùng mà lịch bảo dưỡng không nêu giá, chủ xe nên liên hệ đâu?",
+      "model": null,
+      "category": "pricing",
+      "top_score": 0.8023,
+      "keyword_ratio": 1.0,
+      "rr": 0.5,
+      "pass": true,
+      "latency_ms": 2595.1,
+      "retrieved_docs": [
+        "pricing_bao_gia_dich_vu_ALL",
+        "lich_bao_duong_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "Khi cần nhận báo giá chi tiết về phụ tùng và chi phí bảo dưỡng nhưng lịch bảo dưỡng không nêu giá, chủ xe nên liên hệ với:\n\n- Hotline Xưởng Dịch vụ gần nhất [Tài liệu 1, Tài liệu 2].\n- Hotline VinFast: 1900 23 23 89 [Tài liệu 1, Tài liệu 2].\n\nHiện chưa thể xác thực trích dẫn trực tiếp cho câu trả lời này; vui lòng liên hệ Xưởng Dịch vụ VinFast để kiểm tra.",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Nếu cần báo giá phụ tùng mà lịch bảo dưỡng không nêu giá, chủ xe nên liên hệ đâu?",
+        "rewritten_query": "Nếu cần báo giá phụ tùng mà lịch bảo dưỡng không nêu giá, chủ xe nên liên hệ đâu?",
+        "keywords": [
+          "báo",
+          "giá",
+          "phụ",
+          "tùng",
+          "lịch",
+          "bảo",
+          "dưỡng",
+          "nêu",
+          "chủ",
+          "xe"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Nếu cần báo giá phụ tùng mà lịch bảo dưỡng không nêu giá, chủ xe nên liên hệ đâu?",
+        "source_cited_doc_indexes": []
+      }
+    },
+    {
+      "id": "M22",
+      "query": "Cổng sạc VF e34 có thuộc hạng mục bảo dưỡng chung cần được kiểm tra không?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.8171,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2595.6,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Cổng sạc VF e34 có thuộc hạng mục bảo dưỡng chung cần được kiểm tra không?",
+        "rewritten_query": "Cổng sạc VF e34 có thuộc hạng mục bảo dưỡng chung cần được kiểm tra không? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "cổng",
+          "sạc",
+          "vf",
+          "e34",
+          "thuộc",
+          "hạng",
+          "mục",
+          "bảo",
+          "dưỡng",
+          "chung"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M23",
+      "query": "Xe VF e34 đến 40.000 km cần thay những phụ tùng gì?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.8306,
+      "keyword_ratio": 0.667,
+      "rr": 0.5,
+      "pass": true,
+      "latency_ms": 2567.8,
+      "retrieved_docs": [
+        "warranty_policy_vi",
+        "warranty_maintenance_VFe34",
+        "lich_bao_duong_ALL"
+      ],
+      "keywords_missing": [
+        "dung dịch làm mát"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe VF e34 đến 40.000 km cần thay những phụ tùng gì?",
+        "rewritten_query": "Xe VF e34 đến 40.000 km cần thay những phụ tùng gì? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "xe",
+          "vf",
+          "e34",
+          "đến",
+          "40",
+          "000",
+          "km",
+          "thay",
+          "phụ",
+          "tùng"
+        ],
+        "model": "VFe34",
+        "category": "pricing",
+        "milestone_km": 40000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M24",
+      "query": "Động cơ điện và hộp số VF e34 nằm trong hạng mục bảo dưỡng nào?",
+      "model": "VFe34",
+      "category": "maintenance",
+      "top_score": 0.8478,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2727.6,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Động cơ điện và hộp số VF e34 nằm trong hạng mục bảo dưỡng nào?",
+        "rewritten_query": "Động cơ điện và hộp số VF e34 nằm trong hạng mục bảo dưỡng nào? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "động",
+          "cơ",
+          "điện",
+          "hộp",
+          "số",
+          "vf",
+          "e34",
+          "nằm",
+          "trong",
+          "hạng"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "M25",
+      "query": "Không bảo dưỡng định kỳ có ảnh hưởng đến bảo hành không?",
+      "model": null,
+      "category": "maintenance",
+      "top_score": 0.7432,
+      "keyword_ratio": 1.0,
+      "rr": 0.5,
+      "pass": true,
+      "latency_ms": 2604.7,
+      "retrieved_docs": [
+        "warranty_maintenance_VF8",
+        "warranty_maintenance_VF3",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Không bảo dưỡng định kỳ có ảnh hưởng đến bảo hành không?",
+        "rewritten_query": "Không bảo dưỡng định kỳ có ảnh hưởng đến bảo hành không?",
+        "keywords": [
+          "bảo",
+          "dưỡng",
+          "định",
+          "kỳ",
+          "ảnh",
+          "hưởng",
+          "đến",
+          "hành"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W01",
+      "query": "Chính sách bảo hành xe VF8 là bao nhiêu năm?",
+      "model": "VF8",
+      "category": "warranty",
+      "top_score": 0.8453,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2602.2,
+      "retrieved_docs": [
+        "warranty_maintenance_VF8",
+        "warranty_maintenance_VFe34",
+        "warranty_policy_vi"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "Thời hạn bảo hành chung đối với xe VinFast VF8 là 10 năm hoặc 200.000 km (tùy điều kiện nào đến trước) kể từ ngày bán lẻ tới khách hàng ghi trên hóa đơn [Tài liệu 1]. Đối với xe sử dụng cho mục đích thương mại, thời hạn bảo hành xe mới (bao gồm hệ truyền động) là 5 năm hoặc 100.000 km tùy điều kiện nào đến trước [Tài liệu 1].",
+      "cited_docs": [
+        "warranty_maintenance_VF8"
+      ],
+      "analysis": {
+        "original_query": "Chính sách bảo hành xe VF8 là bao nhiêu năm?",
+        "rewritten_query": "Chính sách bảo hành xe VF8 là bao nhiêu năm?",
+        "keywords": [
+          "chính",
+          "sách",
+          "bảo",
+          "hành",
+          "xe",
+          "vf8",
+          "bao",
+          "năm"
+        ],
+        "model": "VF8",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Chính sách bảo hành xe VF8 là bao nhiêu năm?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "W02",
+      "query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+      "model": "VF6",
+      "category": "warranty",
+      "top_score": 0.859,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2573.5,
+      "retrieved_docs": [
+        "warranty_maintenance_VF6",
+        "warranty_policy_vi",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "Pin cao áp xe VinFast VF 6 được bảo hành trong 8 năm hoặc 160.000 km, tùy điều kiện nào đến trước [Tài liệu 1, Tài liệu 2].\n\nHiện chưa thể xác thực trích dẫn trực tiếp cho câu trả lời này; vui lòng liên hệ Xưởng Dịch vụ VinFast để kiểm tra.",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "rewritten_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "keywords": [
+          "pin",
+          "cao",
+          "áp",
+          "xe",
+          "vf6",
+          "bảo",
+          "hành",
+          "trong",
+          "bao",
+          "lâu"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "source_cited_doc_indexes": []
+      }
+    },
+    {
+      "id": "W03",
+      "query": "Hệ truyền động xe mới VF3 được bảo hành bao lâu?",
+      "model": "VF3",
+      "category": "warranty",
+      "top_score": 0.8537,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2727.5,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "warranty_maintenance_VF3",
+        "warranty_policy_vi"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "Hệ thống truyền động của xe mới VinFast VF 3 được bảo hành 7 năm hoặc 160.000 km (tùy theo điều kiện nào đến trước) đối với điều kiện sử dụng tiêu chuẩn [Tài liệu 1, Tài liệu 3]. Trường hợp xe sử dụng với mục đích dịch vụ thương mại, thời hạn bảo hành là 3 năm hoặc 100.000 km [Tài liệu 1].",
+      "cited_docs": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "analysis": {
+        "original_query": "Hệ truyền động xe mới VF3 được bảo hành bao lâu?",
+        "rewritten_query": "Hệ truyền động xe mới VF3 được bảo hành bao lâu?",
+        "keywords": [
+          "hệ",
+          "truyền",
+          "động",
+          "xe",
+          "mới",
+          "vf3",
+          "bảo",
+          "hành",
+          "bao",
+          "lâu"
+        ],
+        "model": "VF3",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Hệ truyền động xe mới VF3 được bảo hành bao lâu?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "W04",
+      "query": "Điều kiện để xe VinFast được bảo hành là gì?",
+      "model": null,
+      "category": "warranty",
+      "top_score": 0.5679,
+      "keyword_ratio": 0.667,
+      "rr": 1.0,
+      "pass": false,
+      "latency_ms": 2143.7,
+      "retrieved_docs": [
+        "warranty_policy_vi",
+        "warranty_maintenance_VF3",
+        "warranty_maintenance_VF5"
+      ],
+      "keywords_missing": [
+        "xưởng dịch vụ"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Điều kiện để xe VinFast được bảo hành là gì?",
+        "rewritten_query": "Điều kiện để xe VinFast được bảo hành là gì?",
+        "keywords": [
+          "điều",
+          "kiện",
+          "để",
+          "xe",
+          "vinfast",
+          "bảo",
+          "hành"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W05",
+      "query": "Xe ngập nước có được bảo hành không?",
+      "model": null,
+      "category": "warranty",
+      "top_score": 0.7959,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2716.4,
+      "retrieved_docs": [
+        "warranty_policy_vi",
+        "warranty_maintenance_VF3",
+        "warranty_maintenance_VF7"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe ngập nước có được bảo hành không?",
+        "rewritten_query": "Xe ngập nước có được bảo hành không?",
+        "keywords": [
+          "xe",
+          "ngập",
+          "nước",
+          "bảo",
+          "hành"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W06",
+      "query": "Tự sửa xe VF8 ở garage ngoài có mất bảo hành không?",
+      "model": "VF8",
+      "category": "warranty",
+      "top_score": 0.7776,
+      "keyword_ratio": 0.333,
+      "rr": 1.0,
+      "pass": false,
+      "latency_ms": 2553.9,
+      "retrieved_docs": [
+        "warranty_maintenance_VF8"
+      ],
+      "keywords_missing": [
+        "xưởng dịch vụ",
+        "ủy quyền"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Tự sửa xe VF8 ở garage ngoài có mất bảo hành không?",
+        "rewritten_query": "Tự sửa xe VF8 ở garage ngoài có mất bảo hành không?",
+        "keywords": [
+          "tự",
+          "sửa",
+          "xe",
+          "vf8",
+          "garage",
+          "ngoài",
+          "mất",
+          "bảo",
+          "hành"
+        ],
+        "model": "VF8",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W07",
+      "query": "Bảo hành pin SOH giảm dưới bao nhiêu % thì được thay?",
+      "model": null,
+      "category": "warranty",
+      "top_score": 0.7125,
+      "keyword_ratio": 0.5,
+      "rr": 0.0,
+      "pass": false,
+      "latency_ms": 2631.3,
+      "retrieved_docs": [
+        "warranty_maintenance_VFe34",
+        "warranty_maintenance_VFMPV7",
+        "warranty_maintenance_VF6"
+      ],
+      "keywords_missing": [
+        "70%"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Bảo hành pin SOH giảm dưới bao nhiêu % thì được thay?",
+        "rewritten_query": "Bảo hành pin SOH giảm dưới bao nhiêu % thì được thay?",
+        "keywords": [
+          "bảo",
+          "hành",
+          "pin",
+          "soh",
+          "giảm",
+          "dưới",
+          "bao",
+          "thay"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W08",
+      "query": "Tai nạn hoặc va chạm có thuộc trường hợp loại trừ bảo hành VinFast không?",
+      "model": null,
+      "category": "warranty",
+      "top_score": 0.8882,
+      "keyword_ratio": 0.667,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 3631.0,
+      "retrieved_docs": [
+        "warranty_policy_vi",
+        "warranty_maintenance_VF3",
+        "warranty_maintenance_VF5"
+      ],
+      "keywords_missing": [
+        "va chạm"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Tai nạn hoặc va chạm có thuộc trường hợp loại trừ bảo hành VinFast không?",
+        "rewritten_query": "Tai nạn hoặc va chạm có thuộc trường hợp loại trừ bảo hành VinFast không?",
+        "keywords": [
+          "tai",
+          "nạn",
+          "va",
+          "chạm",
+          "thuộc",
+          "trường",
+          "hợp",
+          "loại",
+          "trừ",
+          "bảo"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W09",
+      "query": "Thời hạn bảo hành xe VF MPV 7 là bao nhiêu?",
+      "model": "VFMPV7",
+      "category": "warranty",
+      "top_score": 0.8578,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2714.5,
+      "retrieved_docs": [
+        "warranty_maintenance_VFMPV7",
+        "faq_baoduong_baohanh_ALL",
+        "warranty_policy_vi"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Thời hạn bảo hành xe VF MPV 7 là bao nhiêu?",
+        "rewritten_query": "Thời hạn bảo hành xe VF MPV 7 là bao nhiêu? (áp dụng cho xe VinFast VFMPV7)",
+        "keywords": [
+          "thời",
+          "hạn",
+          "bảo",
+          "hành",
+          "xe",
+          "vf",
+          "mpv",
+          "bao"
+        ],
+        "model": "VFMPV7",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W10",
+      "query": "Bảo hành ắc quy 12V phụ trợ xe VinFast bao lâu?",
+      "model": null,
+      "category": "warranty",
+      "top_score": 0.8518,
+      "keyword_ratio": 0.667,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2583.9,
+      "retrieved_docs": [
+        "warranty_policy_vi",
+        "faq_baoduong_baohanh_ALL",
+        "warranty_maintenance_VF3"
+      ],
+      "keywords_missing": [
+        "20.000"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Bảo hành ắc quy 12V phụ trợ xe VinFast bao lâu?",
+        "rewritten_query": "Bảo hành ắc quy 12V phụ trợ xe VinFast bao lâu?",
+        "keywords": [
+          "bảo",
+          "hành",
+          "ắc",
+          "quy",
+          "12v",
+          "phụ",
+          "trợ",
+          "xe",
+          "vinfast",
+          "bao"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W11",
+      "query": "Xe VF7 dùng cho mục đích thương mại được bảo hành bao lâu?",
+      "model": "VF7",
+      "category": "warranty",
+      "top_score": 0.851,
+      "keyword_ratio": 1.0,
+      "rr": 0.333,
+      "pass": true,
+      "latency_ms": 2788.3,
+      "retrieved_docs": [
+        "warranty_policy_vi",
+        "warranty_maintenance_VF7",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe VF7 dùng cho mục đích thương mại được bảo hành bao lâu?",
+        "rewritten_query": "Xe VF7 dùng cho mục đích thương mại được bảo hành bao lâu?",
+        "keywords": [
+          "xe",
+          "vf7",
+          "dùng",
+          "mục",
+          "đích",
+          "thương",
+          "mại",
+          "bảo",
+          "hành",
+          "bao"
+        ],
+        "model": "VF7",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W12",
+      "query": "Xe VinFast từng dùng thương mại sau khi chuyển chủ áp dụng bảo hành nào?",
+      "model": null,
+      "category": "warranty",
+      "top_score": 0.8203,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2624.2,
+      "retrieved_docs": [
+        "warranty_policy_vi",
+        "warranty_maintenance_VF7",
+        "warranty_maintenance_VF3"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe VinFast từng dùng thương mại sau khi chuyển chủ áp dụng bảo hành nào?",
+        "rewritten_query": "Xe VinFast từng dùng thương mại sau khi chuyển chủ áp dụng bảo hành nào?",
+        "keywords": [
+          "xe",
+          "vinfast",
+          "từng",
+          "dùng",
+          "thương",
+          "mại",
+          "sau",
+          "chuyển",
+          "chủ",
+          "áp"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W13",
+      "query": "Sạc pin bằng thiết bị không chính hãng có mất bảo hành không?",
+      "model": null,
+      "category": "warranty",
+      "top_score": 0.6944,
+      "keyword_ratio": 0.5,
+      "rr": 0.0,
+      "pass": false,
+      "latency_ms": 2637.0,
+      "retrieved_docs": [
+        "warranty_maintenance_VF5",
+        "warranty_maintenance_VF8",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [
+        "loại trừ"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Sạc pin bằng thiết bị không chính hãng có mất bảo hành không?",
+        "rewritten_query": "Sạc pin bằng thiết bị không chính hãng có mất bảo hành không?",
+        "keywords": [
+          "sạc",
+          "pin",
+          "bằng",
+          "thiết",
+          "chính",
+          "hãng",
+          "mất",
+          "bảo",
+          "hành"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W14",
+      "query": "Xe VF e34 bảo hành bao nhiêu năm hoặc bao nhiêu km?",
+      "model": "VFe34",
+      "category": "warranty",
+      "top_score": 0.8407,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2572.3,
+      "retrieved_docs": [
+        "warranty_maintenance_VFe34",
+        "warranty_policy_vi",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe VF e34 bảo hành bao nhiêu năm hoặc bao nhiêu km?",
+        "rewritten_query": "Xe VF e34 bảo hành bao nhiêu năm hoặc bao nhiêu km? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "xe",
+          "vf",
+          "e34",
+          "bảo",
+          "hành",
+          "bao",
+          "năm",
+          "km"
+        ],
+        "model": "VFe34",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W15",
+      "query": "Thời hạn bảo hành xe mới VF8 trong điều kiện sử dụng tiêu chuẩn là bao lâu?",
+      "model": "VF8",
+      "category": "warranty",
+      "top_score": 0.8912,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 3175.0,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "warranty_maintenance_VF8",
+        "warranty_policy_vi"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Thời hạn bảo hành xe mới VF8 trong điều kiện sử dụng tiêu chuẩn là bao lâu?",
+        "rewritten_query": "Thời hạn bảo hành xe mới VF8 trong điều kiện sử dụng tiêu chuẩn là bao lâu?",
+        "keywords": [
+          "thời",
+          "hạn",
+          "bảo",
+          "hành",
+          "xe",
+          "mới",
+          "vf8",
+          "trong",
+          "điều",
+          "kiện"
+        ],
+        "model": "VF8",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W16",
+      "query": "Xe mới VF6 được bảo hành bao lâu?",
+      "model": "VF6",
+      "category": "warranty",
+      "top_score": 0.8852,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2765.1,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "warranty_maintenance_VF6",
+        "warranty_policy_vi"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe mới VF6 được bảo hành bao lâu?",
+        "rewritten_query": "Xe mới VF6 được bảo hành bao lâu?",
+        "keywords": [
+          "xe",
+          "mới",
+          "vf6",
+          "bảo",
+          "hành",
+          "bao",
+          "lâu"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W17",
+      "query": "Khách hàng cần liên hệ đâu khi xe VinFast có hư hỏng cần kiểm tra bảo hành?",
+      "model": null,
+      "category": "warranty",
+      "top_score": 0.8313,
+      "keyword_ratio": 0.667,
+      "rr": 0.0,
+      "pass": false,
+      "latency_ms": 2596.0,
+      "retrieved_docs": [
+        "warranty_maintenance_VF8",
+        "warranty_maintenance_VFMPV7",
+        "warranty_maintenance_VF7"
+      ],
+      "keywords_missing": [
+        "xưởng dịch vụ"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Khách hàng cần liên hệ đâu khi xe VinFast có hư hỏng cần kiểm tra bảo hành?",
+        "rewritten_query": "Khách hàng cần liên hệ đâu khi xe VinFast có hư hỏng cần kiểm tra bảo hành?",
+        "keywords": [
+          "khách",
+          "hàng",
+          "liên",
+          "hệ",
+          "xe",
+          "vinfast",
+          "hư",
+          "hỏng",
+          "kiểm",
+          "tra"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W18",
+      "query": "Bảo hành thương mại xe VF8 khác bảo hành thông thường thế nào?",
+      "model": "VF8",
+      "category": "warranty",
+      "top_score": 0.8061,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2570.5,
+      "retrieved_docs": [
+        "warranty_maintenance_VF8",
+        "warranty_policy_vi",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Bảo hành thương mại xe VF8 khác bảo hành thông thường thế nào?",
+        "rewritten_query": "Bảo hành thương mại xe VF8 khác bảo hành thông thường thế nào?",
+        "keywords": [
+          "bảo",
+          "hành",
+          "thương",
+          "mại",
+          "xe",
+          "vf8",
+          "khác",
+          "thông",
+          "thường"
+        ],
+        "model": "VF8",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W19",
+      "query": "Xe mới VF5 và hệ truyền động được bảo hành bao lâu?",
+      "model": "VF5",
+      "category": "warranty",
+      "top_score": 0.8636,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2761.8,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "warranty_maintenance_VF5",
+        "warranty_policy_vi"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe mới VF5 và hệ truyền động được bảo hành bao lâu?",
+        "rewritten_query": "Xe mới VF5 và hệ truyền động được bảo hành bao lâu?",
+        "keywords": [
+          "xe",
+          "mới",
+          "vf5",
+          "hệ",
+          "truyền",
+          "động",
+          "bảo",
+          "hành",
+          "bao",
+          "lâu"
+        ],
+        "model": "VF5",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "W20",
+      "query": "Xe VF3 dùng 7 năm vẫn còn trong bảo hành không?",
+      "model": "VF3",
+      "category": "warranty",
+      "top_score": 0.8419,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 4236.7,
+      "retrieved_docs": [
+        "warranty_maintenance_VF3",
+        "warranty_policy_vi",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe VF3 dùng 7 năm vẫn còn trong bảo hành không?",
+        "rewritten_query": "Xe VF3 dùng 7 năm vẫn còn trong bảo hành không?",
+        "keywords": [
+          "xe",
+          "vf3",
+          "dùng",
+          "năm",
+          "vẫn",
+          "còn",
+          "trong",
+          "bảo",
+          "hành"
+        ],
+        "model": "VF3",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B01",
+      "query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+      "model": null,
+      "category": "battery",
+      "top_score": 0.8334,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 3009.1,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "battery_quy_dinh_su_dung_ALL",
+        "warranty_maintenance_VF7"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "VinFast khuyến cáo người dùng tránh để xe tiếp xúc với nhiệt độ môi trường trên 55°C hoặc dưới -20°C quá 24 giờ tại một điểm để không làm giảm vĩnh viễn hiệu suất vận hành của pin [Tài liệu 1].",
+      "cited_docs": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "analysis": {
+        "original_query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+        "rewritten_query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+        "keywords": [
+          "vinfast",
+          "khuyến",
+          "cáo",
+          "giới",
+          "hạn",
+          "nhiệt",
+          "độ",
+          "bảo",
+          "quản",
+          "tô"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "B02",
+      "query": "Phanh tái sinh trên VF8 hỗ trợ pin như thế nào?",
+      "model": "VF8",
+      "category": "battery",
+      "top_score": 0.9118,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2766.4,
+      "retrieved_docs": [
+        "battery_sac_VF8",
+        "faq_baoduong_baohanh_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "Trên xe VinFast VF 8, hệ thống phanh tái sinh ba cấp độ hỗ trợ thu hồi một phần động năng khi phanh nhằm bổ sung điện năng cho pin [Tài liệu 1].",
+      "cited_docs": [
+        "battery_sac_VF8"
+      ],
+      "analysis": {
+        "original_query": "Phanh tái sinh trên VF8 hỗ trợ pin như thế nào?",
+        "rewritten_query": "Phanh tái sinh trên VF8 hỗ trợ pin như thế nào?",
+        "keywords": [
+          "phanh",
+          "tái",
+          "sinh",
+          "trên",
+          "vf8",
+          "hỗ",
+          "trợ",
+          "pin"
+        ],
+        "model": "VF8",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Phanh tái sinh trên VF8 hỗ trợ pin như thế nào?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "B03",
+      "query": "Xe VF6 hết pin giữa đường phải làm gì?",
+      "model": "VF6",
+      "category": "battery",
+      "top_score": 0.7658,
+      "keyword_ratio": 0.0,
+      "rr": 1.0,
+      "pass": false,
+      "latency_ms": 2756.2,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "battery_sac_VF6",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [
+        "1900 23 23 89",
+        "50.000 VNĐ",
+        "15 phút"
+      ],
+      "error": null,
+      "actual_answer": "Hiện tài liệu chính hãng chưa có thông tin chi tiết về nội dung này. Xin vui lòng liên hệ xưởng dịch vụ hoặc gọi hotline để được kỹ thuật viên hỗ trợ trực tiếp khi xe hết pin dọc đường.",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe VF6 hết pin giữa đường phải làm gì?",
+        "rewritten_query": "Xe VF6 hết pin giữa đường phải làm gì?",
+        "keywords": [
+          "xe",
+          "vf6",
+          "hết",
+          "pin",
+          "giữa",
+          "đường"
+        ],
+        "model": "VF6",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Xe VF6 hết pin giữa đường phải làm gì?",
+        "source_cited_doc_indexes": []
+      }
+    },
+    {
+      "id": "B04",
+      "query": "VinFast khuyến cáo gì về việc lạm dụng sạc siêu nhanh trên VF e34?",
+      "model": "VFe34",
+      "category": "battery",
+      "top_score": 0.8975,
+      "keyword_ratio": 0.667,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2587.9,
+      "retrieved_docs": [
+        "battery_sac_VFe34",
+        "battery_sac_VFe34",
+        "warranty_maintenance_VFe34"
+      ],
+      "keywords_missing": [
+        "không lạm dụng"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "VinFast khuyến cáo gì về việc lạm dụng sạc siêu nhanh trên VF e34?",
+        "rewritten_query": "VinFast khuyến cáo gì về việc lạm dụng sạc siêu nhanh trên VF e34? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "vinfast",
+          "khuyến",
+          "cáo",
+          "về",
+          "việc",
+          "lạm",
+          "dụng",
+          "sạc",
+          "siêu",
+          "nhanh"
+        ],
+        "model": "VFe34",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B05",
+      "query": "VinFast khuyến cáo thế nào về việc để ô tô điện ở nơi ngập lụt?",
+      "model": null,
+      "category": "battery",
+      "top_score": 0.8528,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2842.4,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "battery_quy_dinh_su_dung_ALL",
+        "lich_bao_duong_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "VinFast khuyến cáo thế nào về việc để ô tô điện ở nơi ngập lụt?",
+        "rewritten_query": "VinFast khuyến cáo thế nào về việc để ô tô điện ở nơi ngập lụt?",
+        "keywords": [
+          "vinfast",
+          "khuyến",
+          "cáo",
+          "về",
+          "việc",
+          "để",
+          "tô",
+          "điện",
+          "nơi",
+          "ngập"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B06",
+      "query": "Sau tai nạn có khả năng ảnh hưởng đến pin, chủ xe VinFast cần làm gì?",
+      "model": null,
+      "category": "battery",
+      "top_score": 0.9142,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2882.7,
+      "retrieved_docs": [
+        "battery_quy_dinh_su_dung_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Sau tai nạn có khả năng ảnh hưởng đến pin, chủ xe VinFast cần làm gì?",
+        "rewritten_query": "Sau tai nạn có khả năng ảnh hưởng đến pin, chủ xe VinFast cần làm gì?",
+        "keywords": [
+          "sau",
+          "tai",
+          "nạn",
+          "khả",
+          "năng",
+          "ảnh",
+          "hưởng",
+          "đến",
+          "pin",
+          "chủ"
+        ],
+        "model": "ALL",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B07",
+      "query": "Bảo quản xe VF5 không dùng lâu ngày cần lưu ý gì về pin?",
+      "model": "VF5",
+      "category": "battery",
+      "top_score": 0.7719,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2733.3,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "battery_quy_dinh_su_dung_ALL",
+        "battery_sac_VF5"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Bảo quản xe VF5 không dùng lâu ngày cần lưu ý gì về pin?",
+        "rewritten_query": "Bảo quản xe VF5 không dùng lâu ngày cần lưu ý gì về pin?",
+        "keywords": [
+          "bảo",
+          "quản",
+          "xe",
+          "vf5",
+          "dùng",
+          "lâu",
+          "ngày",
+          "lưu",
+          "về",
+          "pin"
+        ],
+        "model": "VF5",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B08",
+      "query": "Nhiệt độ ảnh hưởng thế nào đến phạm vi di chuyển xe VF7?",
+      "model": "VF7",
+      "category": "battery",
+      "top_score": 0.7104,
+      "keyword_ratio": 0.5,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2552.8,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "battery_sac_VF7"
+      ],
+      "keywords_missing": [
+        "nhiệt độ"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Nhiệt độ ảnh hưởng thế nào đến phạm vi di chuyển xe VF7?",
+        "rewritten_query": "Nhiệt độ ảnh hưởng thế nào đến phạm vi di chuyển xe VF7?",
+        "keywords": [
+          "nhiệt",
+          "độ",
+          "ảnh",
+          "hưởng",
+          "đến",
+          "phạm",
+          "vi",
+          "di",
+          "chuyển",
+          "xe"
+        ],
+        "model": "VF7",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B09",
+      "query": "VF3 sạc nhanh DC tối đa bao nhiêu và sạc từ 10% đến 70% mất bao lâu?",
+      "model": "VF3",
+      "category": "battery",
+      "top_score": 0.9065,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2637.9,
+      "retrieved_docs": [
+        "battery_sac_VF3",
+        "faq_baoduong_baohanh_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "VF3 sạc nhanh DC tối đa bao nhiêu và sạc từ 10% đến 70% mất bao lâu?",
+        "rewritten_query": "VF3 sạc nhanh DC tối đa bao nhiêu và sạc từ 10% đến 70% mất bao lâu?",
+        "keywords": [
+          "vf3",
+          "sạc",
+          "nhanh",
+          "dc",
+          "tối",
+          "đa",
+          "bao",
+          "từ",
+          "10",
+          "đến"
+        ],
+        "model": "VF3",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B10",
+      "query": "Giá sạc tại trạm sạc VinFast là bao nhiêu?",
+      "model": null,
+      "category": "battery",
+      "top_score": 0.8894,
+      "keyword_ratio": 1.0,
+      "rr": 0.333,
+      "pass": true,
+      "latency_ms": 2685.3,
+      "retrieved_docs": [
+        "pricing_tram_sac_ALL",
+        "pricing_thiet_bi_sac_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Giá sạc tại trạm sạc VinFast là bao nhiêu?",
+        "rewritten_query": "Giá sạc tại trạm sạc VinFast là bao nhiêu?",
+        "keywords": [
+          "giá",
+          "sạc",
+          "tại",
+          "trạm",
+          "vinfast",
+          "bao"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B11",
+      "query": "Cứu hộ pin xe điện VinFast hoạt động như thế nào?",
+      "model": null,
+      "category": "battery",
+      "top_score": 0.8731,
+      "keyword_ratio": 0.333,
+      "rr": 1.0,
+      "pass": false,
+      "latency_ms": 2639.7,
+      "retrieved_docs": [
+        "battery_cuu_ho_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [
+        "24/7",
+        "50.000"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Cứu hộ pin xe điện VinFast hoạt động như thế nào?",
+        "rewritten_query": "Cứu hộ pin xe điện VinFast hoạt động như thế nào?",
+        "keywords": [
+          "cứu",
+          "hộ",
+          "pin",
+          "xe",
+          "điện",
+          "vinfast",
+          "hoạt",
+          "động"
+        ],
+        "model": "ALL",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B12",
+      "query": "VinFast quy định nguồn sạc và việc tự sửa chữa pin cao áp thế nào?",
+      "model": null,
+      "category": "battery",
+      "top_score": 0.896,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2596.5,
+      "retrieved_docs": [
+        "battery_quy_dinh_su_dung_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "battery_quy_dinh_su_dung_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "VinFast quy định nguồn sạc và việc tự sửa chữa pin cao áp thế nào?",
+        "rewritten_query": "VinFast quy định nguồn sạc và việc tự sửa chữa pin cao áp thế nào?",
+        "keywords": [
+          "vinfast",
+          "quy",
+          "định",
+          "nguồn",
+          "sạc",
+          "việc",
+          "tự",
+          "sửa",
+          "chữa",
+          "pin"
+        ],
+        "model": "ALL",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B13",
+      "query": "Xe VF3 đang sạc thì bị mưa có sao không?",
+      "model": "VF3",
+      "category": "battery",
+      "top_score": 0.7585,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2587.8,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "warranty_maintenance_VF3"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe VF3 đang sạc thì bị mưa có sao không?",
+        "rewritten_query": "Xe VF3 đang sạc thì bị mưa có sao không?",
+        "keywords": [
+          "xe",
+          "vf3",
+          "sạc",
+          "mưa"
+        ],
+        "model": "VF3",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B14",
+      "query": "Công suất sạc tối đa của xe VF8 là bao nhiêu kW?",
+      "model": "VF8",
+      "category": "battery",
+      "top_score": 0.8694,
+      "keyword_ratio": 0.75,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2595.8,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "battery_sac_VF8"
+      ],
+      "keywords_missing": [
+        "31 phút"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Công suất sạc tối đa của xe VF8 là bao nhiêu kW?",
+        "rewritten_query": "Công suất sạc tối đa của xe VF8 là bao nhiêu kW?",
+        "keywords": [
+          "công",
+          "suất",
+          "sạc",
+          "tối",
+          "đa",
+          "xe",
+          "vf8",
+          "bao",
+          "kw"
+        ],
+        "model": "VF8",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B15",
+      "query": "Nên mua đứt pin hay thuê pin xe VinFast có lợi hơn?",
+      "model": null,
+      "category": "battery",
+      "top_score": 0.9504,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2912.6,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "battery_quy_dinh_su_dung_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Nên mua đứt pin hay thuê pin xe VinFast có lợi hơn?",
+        "rewritten_query": "Nên mua đứt pin hay thuê pin xe VinFast có lợi hơn?",
+        "keywords": [
+          "nên",
+          "mua",
+          "đứt",
+          "pin",
+          "thuê",
+          "xe",
+          "vinfast",
+          "lợi",
+          "hơn"
+        ],
+        "model": "ALL",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B16",
+      "query": "Xe VF e34 sạc đầy bằng chế độ sạc thường mất bao lâu?",
+      "model": "VFe34",
+      "category": "battery",
+      "top_score": 0.877,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2605.0,
+      "retrieved_docs": [
+        "battery_sac_VFe34",
+        "battery_sac_VFe34",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe VF e34 sạc đầy bằng chế độ sạc thường mất bao lâu?",
+        "rewritten_query": "Xe VF e34 sạc đầy bằng chế độ sạc thường mất bao lâu? (áp dụng cho xe VinFast VFe34)",
+        "keywords": [
+          "xe",
+          "vf",
+          "e34",
+          "sạc",
+          "đầy",
+          "bằng",
+          "chế",
+          "độ",
+          "thường",
+          "mất"
+        ],
+        "model": "VFe34",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B17",
+      "query": "Để pin xe VF6 xuống 0% có hỏng pin không?",
+      "model": "VF6",
+      "category": "battery",
+      "top_score": 0.7666,
+      "keyword_ratio": 0.5,
+      "rr": 0.5,
+      "pass": true,
+      "latency_ms": 2736.4,
+      "retrieved_docs": [
+        "battery_sac_VF6",
+        "faq_baoduong_baohanh_ALL",
+        "warranty_maintenance_VF6"
+      ],
+      "keywords_missing": [
+        "0%"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Để pin xe VF6 xuống 0% có hỏng pin không?",
+        "rewritten_query": "Để pin xe VF6 xuống 0% có hỏng pin không?",
+        "keywords": [
+          "để",
+          "pin",
+          "xe",
+          "vf6",
+          "xuống",
+          "hỏng"
+        ],
+        "model": "VF6",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B18",
+      "query": "Bộ sạc di động VinFast có dùng được nguồn điện gia dụng 220V không?",
+      "model": null,
+      "category": "battery",
+      "top_score": 0.8607,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2557.0,
+      "retrieved_docs": [
+        "battery_sac_tai_nha_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Bộ sạc di động VinFast có dùng được nguồn điện gia dụng 220V không?",
+        "rewritten_query": "Bộ sạc di động VinFast có dùng được nguồn điện gia dụng 220V không?",
+        "keywords": [
+          "bộ",
+          "sạc",
+          "di",
+          "động",
+          "vinfast",
+          "dùng",
+          "nguồn",
+          "điện",
+          "gia",
+          "dụng"
+        ],
+        "model": "ALL",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B19",
+      "query": "Khi dung lượng pin ô tô điện VinFast dưới 5% và hiển thị màu đỏ thì cần làm gì?",
+      "model": null,
+      "category": "battery",
+      "top_score": 0.9229,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2619.5,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "battery_quy_dinh_su_dung_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Khi dung lượng pin ô tô điện VinFast dưới 5% và hiển thị màu đỏ thì cần làm gì?",
+        "rewritten_query": "Khi dung lượng pin ô tô điện VinFast dưới 5% và hiển thị màu đỏ thì cần làm gì?",
+        "keywords": [
+          "dung",
+          "lượng",
+          "pin",
+          "tô",
+          "điện",
+          "vinfast",
+          "dưới",
+          "hiển",
+          "thị",
+          "màu"
+        ],
+        "model": "ALL",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "B20",
+      "query": "Công suất sạc AC và DC tối đa của VinFast VF7 là bao nhiêu?",
+      "model": "VF7",
+      "category": "battery",
+      "top_score": 0.9198,
+      "keyword_ratio": 1.0,
+      "rr": 0.5,
+      "pass": true,
+      "latency_ms": 2653.0,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "battery_sac_VF7",
+        "pricing_tram_sac_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Công suất sạc AC và DC tối đa của VinFast VF7 là bao nhiêu?",
+        "rewritten_query": "Công suất sạc AC và DC tối đa của VinFast VF7 là bao nhiêu?",
+        "keywords": [
+          "công",
+          "suất",
+          "sạc",
+          "ac",
+          "dc",
+          "tối",
+          "đa",
+          "vinfast",
+          "vf7",
+          "bao"
+        ],
+        "model": "VF7",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P01",
+      "query": "Sạc tại nhà VinFast 3 kW có giá bao nhiêu?",
+      "model": null,
+      "category": "pricing",
+      "top_score": 0.8612,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2552.6,
+      "retrieved_docs": [
+        "pricing_thiet_bi_sac_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "Giá niêm yết của thiết bị sạc tại nhà VinFast 3 kW là 8.836.365 VNĐ [Tài liệu 1].",
+      "cited_docs": [
+        "pricing_thiet_bi_sac_ALL"
+      ],
+      "analysis": {
+        "original_query": "Sạc tại nhà VinFast 3 kW có giá bao nhiêu?",
+        "rewritten_query": "Sạc tại nhà VinFast 3 kW có giá bao nhiêu?",
+        "keywords": [
+          "sạc",
+          "tại",
+          "nhà",
+          "vinfast",
+          "kw",
+          "giá",
+          "bao"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Sạc tại nhà VinFast 3 kW có giá bao nhiêu?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "P02",
+      "query": "Bộ sạc treo tường VinFast AC 11 kW giá bao nhiêu?",
+      "model": null,
+      "category": "pricing",
+      "top_score": 0.8575,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2663.8,
+      "retrieved_docs": [
+        "pricing_thiet_bi_sac_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "Bộ sạc treo tường VinFast AC 11 kW có giá niêm yết là 11.781.818 VNĐ [Tài liệu 1].",
+      "cited_docs": [
+        "pricing_thiet_bi_sac_ALL"
+      ],
+      "analysis": {
+        "original_query": "Bộ sạc treo tường VinFast AC 11 kW giá bao nhiêu?",
+        "rewritten_query": "Bộ sạc treo tường VinFast AC 11 kW giá bao nhiêu?",
+        "keywords": [
+          "bộ",
+          "sạc",
+          "treo",
+          "tường",
+          "vinfast",
+          "ac",
+          "11",
+          "kw",
+          "giá",
+          "bao"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Bộ sạc treo tường VinFast AC 11 kW giá bao nhiêu?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "P03",
+      "query": "Bộ sạc di động ô tô điện VinFast 2,2 kW giá bao nhiêu?",
+      "model": null,
+      "category": "pricing",
+      "top_score": 0.8516,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2580.8,
+      "retrieved_docs": [
+        "pricing_thiet_bi_sac_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Bộ sạc di động ô tô điện VinFast 2,2 kW giá bao nhiêu?",
+        "rewritten_query": "Bộ sạc di động ô tô điện VinFast 2,2 kW giá bao nhiêu?",
+        "keywords": [
+          "bộ",
+          "sạc",
+          "di",
+          "động",
+          "tô",
+          "điện",
+          "vinfast",
+          "kw",
+          "giá",
+          "bao"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P04",
+      "query": "Bộ sạc treo tường VinFast AC 7,4 kW giá bao nhiêu?",
+      "model": null,
+      "category": "pricing",
+      "top_score": 0.9406,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2594.9,
+      "retrieved_docs": [
+        "pricing_tram_sac_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Bộ sạc treo tường VinFast AC 7,4 kW giá bao nhiêu?",
+        "rewritten_query": "Bộ sạc treo tường VinFast AC 7,4 kW giá bao nhiêu?",
+        "keywords": [
+          "bộ",
+          "sạc",
+          "treo",
+          "tường",
+          "vinfast",
+          "ac",
+          "kw",
+          "giá",
+          "bao"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P05",
+      "query": "Tấm che pin cao áp VF5 chính hãng giá bao nhiêu?",
+      "model": "VF5",
+      "category": "pricing",
+      "top_score": 0.7676,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2703.7,
+      "retrieved_docs": [
+        "pricing_phu_kien_VF5"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Tấm che pin cao áp VF5 chính hãng giá bao nhiêu?",
+        "rewritten_query": "Tấm che pin cao áp VF5 chính hãng giá bao nhiêu?",
+        "keywords": [
+          "tấm",
+          "che",
+          "pin",
+          "cao",
+          "áp",
+          "vf5",
+          "chính",
+          "hãng",
+          "giá",
+          "bao"
+        ],
+        "model": "VF5",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P06",
+      "query": "Gói dán film cách nhiệt VinFast VF5 giá bao nhiêu?",
+      "model": "VF5",
+      "category": "pricing",
+      "top_score": 0.8539,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2666.3,
+      "retrieved_docs": [
+        "pricing_phu_kien_VF5"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Gói dán film cách nhiệt VinFast VF5 giá bao nhiêu?",
+        "rewritten_query": "Gói dán film cách nhiệt VinFast VF5 giá bao nhiêu?",
+        "keywords": [
+          "gói",
+          "dán",
+          "film",
+          "cách",
+          "nhiệt",
+          "vinfast",
+          "vf5",
+          "giá",
+          "bao"
+        ],
+        "model": "VF5",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P07",
+      "query": "Thảm cốp 3D VF5 giá bao nhiêu?",
+      "model": "VF5",
+      "category": "pricing",
+      "top_score": 0.8065,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2552.7,
+      "retrieved_docs": [
+        "pricing_phu_kien_VF5"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Thảm cốp 3D VF5 giá bao nhiêu?",
+        "rewritten_query": "Thảm cốp 3D VF5 giá bao nhiêu?",
+        "keywords": [
+          "thảm",
+          "cốp",
+          "3d",
+          "vf5",
+          "giá",
+          "bao"
+        ],
+        "model": "VF5",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P08",
+      "query": "Thảm sàn nhựa 2D VF5 giá bao nhiêu?",
+      "model": "VF5",
+      "category": "pricing",
+      "top_score": 0.7578,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2644.8,
+      "retrieved_docs": [
+        "pricing_phu_kien_VF5"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Thảm sàn nhựa 2D VF5 giá bao nhiêu?",
+        "rewritten_query": "Thảm sàn nhựa 2D VF5 giá bao nhiêu?",
+        "keywords": [
+          "thảm",
+          "sàn",
+          "nhựa",
+          "2d",
+          "vf5",
+          "giá",
+          "bao"
+        ],
+        "model": "VF5",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P09",
+      "query": "Tấm che nắng cửa VinFast VF5 giá bao nhiêu?",
+      "model": "VF5",
+      "category": "pricing",
+      "top_score": 0.8582,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2594.5,
+      "retrieved_docs": [
+        "pricing_phu_kien_VF5"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Tấm che nắng cửa VinFast VF5 giá bao nhiêu?",
+        "rewritten_query": "Tấm che nắng cửa VinFast VF5 giá bao nhiêu?",
+        "keywords": [
+          "tấm",
+          "che",
+          "nắng",
+          "cửa",
+          "vinfast",
+          "vf5",
+          "giá",
+          "bao"
+        ],
+        "model": "VF5",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P10",
+      "query": "Tấm che pin cao áp VF8 chính hãng giá bao nhiêu?",
+      "model": "VF8",
+      "category": "pricing",
+      "top_score": 0.8124,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2607.0,
+      "retrieved_docs": [
+        "pricing_phu_kien_VF8"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Tấm che pin cao áp VF8 chính hãng giá bao nhiêu?",
+        "rewritten_query": "Tấm che pin cao áp VF8 chính hãng giá bao nhiêu?",
+        "keywords": [
+          "tấm",
+          "che",
+          "pin",
+          "cao",
+          "áp",
+          "vf8",
+          "chính",
+          "hãng",
+          "giá",
+          "bao"
+        ],
+        "model": "VF8",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P11",
+      "query": "Dịch vụ cứu hộ pin xe điện VinFast có mất tiền không?",
+      "model": null,
+      "category": "pricing",
+      "top_score": 0.9042,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2609.5,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Dịch vụ cứu hộ pin xe điện VinFast có mất tiền không?",
+        "rewritten_query": "Dịch vụ cứu hộ pin xe điện VinFast có mất tiền không?",
+        "keywords": [
+          "dịch",
+          "vụ",
+          "cứu",
+          "hộ",
+          "pin",
+          "xe",
+          "điện",
+          "vinfast",
+          "mất",
+          "tiền"
+        ],
+        "model": "ALL",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P12",
+      "query": "Thanh ngang giá nóc VinFast VF8 giá bao nhiêu?",
+      "model": "VF8",
+      "category": "pricing",
+      "top_score": 0.8654,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 3281.2,
+      "retrieved_docs": [
+        "pricing_phu_kien_VF8"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Thanh ngang giá nóc VinFast VF8 giá bao nhiêu?",
+        "rewritten_query": "Thanh ngang giá nóc VinFast VF8 giá bao nhiêu?",
+        "keywords": [
+          "thanh",
+          "ngang",
+          "giá",
+          "nóc",
+          "vinfast",
+          "vf8",
+          "bao"
+        ],
+        "model": "VF8",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P13",
+      "query": "Cốp nóc phi thuyền ô tô VinFast VF8 giá bao nhiêu?",
+      "model": "VF8",
+      "category": "pricing",
+      "top_score": 0.849,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2806.8,
+      "retrieved_docs": [
+        "pricing_phu_kien_VF8"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Cốp nóc phi thuyền ô tô VinFast VF8 giá bao nhiêu?",
+        "rewritten_query": "Cốp nóc phi thuyền ô tô VinFast VF8 giá bao nhiêu?",
+        "keywords": [
+          "cốp",
+          "nóc",
+          "phi",
+          "thuyền",
+          "tô",
+          "vinfast",
+          "vf8",
+          "giá",
+          "bao"
+        ],
+        "model": "VF8",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P14",
+      "query": "Tấm che nắng cửa VinFast VF8 giá bao nhiêu?",
+      "model": "VF8",
+      "category": "pricing",
+      "top_score": 0.8535,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2597.9,
+      "retrieved_docs": [
+        "pricing_phu_kien_VF8"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Tấm che nắng cửa VinFast VF8 giá bao nhiêu?",
+        "rewritten_query": "Tấm che nắng cửa VinFast VF8 giá bao nhiêu?",
+        "keywords": [
+          "tấm",
+          "che",
+          "nắng",
+          "cửa",
+          "vinfast",
+          "vf8",
+          "giá",
+          "bao"
+        ],
+        "model": "VF8",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "P15",
+      "query": "Nếu website không có giá phụ tùng bảo dưỡng thì tôi lấy báo giá VinFast ở đâu?",
+      "model": null,
+      "category": "pricing",
+      "top_score": 0.8771,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2589.9,
+      "retrieved_docs": [
+        "pricing_bao_gia_dich_vu_ALL",
+        "lich_bao_duong_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Nếu website không có giá phụ tùng bảo dưỡng thì tôi lấy báo giá VinFast ở đâu?",
+        "rewritten_query": "Nếu website không có giá phụ tùng bảo dưỡng thì tôi lấy báo giá VinFast ở đâu?",
+        "keywords": [
+          "website",
+          "giá",
+          "phụ",
+          "tùng",
+          "bảo",
+          "dưỡng",
+          "lấy",
+          "báo",
+          "vinfast"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "PR01",
+      "query": "Đặt lịch bảo dưỡng xe VinFast qua app như thế nào?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.8388,
+      "keyword_ratio": 0.667,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2642.8,
+      "retrieved_docs": [
+        "quy_trinh_ung_dung_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "lich_bao_duong_ALL"
+      ],
+      "keywords_missing": [
+        "app"
+      ],
+      "error": null,
+      "actual_answer": "Hiện tại, các tài liệu chính hãng cung cấp thông tin về việc theo dõi và quản lý lịch hẹn trong mục **Dịch vụ** chọn **Đặt dịch vụ** trên ứng dụng [Tài liệu 1], cũng như chương trình tặng 50 điểm VPoint khi đặt lịch trước qua App/Website và đến đúng hẹn [Tài liệu 2]. Tuy nhiên, tài liệu hiện chưa có hướng dẫn chi tiết từng bước cụ thể về thao tác tạo mới lịch đặt dịch vụ bảo dưỡng qua app. Quý khách vui lòng liên hệ trực tiếp xưởng dịch vụ hoặc hotline VinFast để được hỗ trợ đặt lịch.",
+      "cited_docs": [
+        "quy_trinh_ung_dung_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "analysis": {
+        "original_query": "Đặt lịch bảo dưỡng xe VinFast qua app như thế nào?",
+        "rewritten_query": "Đặt lịch bảo dưỡng xe VinFast qua app như thế nào?",
+        "keywords": [
+          "đặt",
+          "lịch",
+          "bảo",
+          "dưỡng",
+          "xe",
+          "vinfast",
+          "qua",
+          "app"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Đặt lịch bảo dưỡng xe VinFast qua app như thế nào?",
+        "source_cited_doc_indexes": [
+          1,
+          3
+        ]
+      }
+    },
+    {
+      "id": "PR02",
+      "query": "Kỹ thuật viên duyệt báo giá HITL là gì?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.6072,
+      "keyword_ratio": 0.667,
+      "rr": 0.5,
+      "pass": true,
+      "latency_ms": 3136.2,
+      "retrieved_docs": [
+        "pricing_bao_gia_dich_vu_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL"
+      ],
+      "keywords_missing": [
+        "phê duyệt"
+      ],
+      "error": null,
+      "actual_answer": "Hiện tài liệu chính hãng chưa có thông tin chi tiết về nội dung \"Kỹ thuật viên duyệt báo giá HITL\". Khách hàng vui lòng liên hệ xưởng dịch vụ hoặc hotline VinFast để được kỹ thuật viên kiểm tra và hỗ trợ trực tiếp.",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Kỹ thuật viên duyệt báo giá HITL là gì?",
+        "rewritten_query": "Kỹ thuật viên duyệt báo giá HITL là gì?",
+        "keywords": [
+          "kỹ",
+          "thuật",
+          "viên",
+          "duyệt",
+          "báo",
+          "giá",
+          "hitl"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Kỹ thuật viên duyệt báo giá HITL là gì?",
+        "source_cited_doc_indexes": []
+      }
+    },
+    {
+      "id": "PR03",
+      "query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast như thế nào?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.8857,
+      "keyword_ratio": 0.667,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2623.4,
+      "retrieved_docs": [
+        "quy_trinh_ung_dung_ALL",
+        "lich_bao_duong_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "keywords_missing": [
+        "lỗi"
+      ],
+      "error": null,
+      "actual_answer": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast được thực hiện theo các bước sau:\n\n- Khách hàng được nhận biết và hướng dẫn đỗ xe ngay khi tới xưởng dịch vụ [Tài liệu 1].\n- Khách hàng được chào đón, ghi nhận yêu cầu hoặc hướng dẫn chờ tiếp nhận ngay khi ra khỏi xe [Tài liệu 1]. Những khách hàng có lịch hẹn trước sẽ được ưu tiên tiếp nhận [Tài liệu 1].\n- Xe được phủ ghế, sàn, đặt mũ trạng thái trước mặt khách hàng và duy trì trong suốt thời gian làm dịch vụ [Tài liệu 1].\n- Nhân viên tiến hành kiểm tra xe, cung cấp đầy đủ thông tin báo giá các chi tiết bảo dưỡng, sửa chữa (nếu có) và xin chữ ký xác nhận của khách hàng [Tài liệu 2, Tài liệu 3].",
+      "cited_docs": [
+        "dich_vu_bao_duong_ALL"
+      ],
+      "analysis": {
+        "original_query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast như thế nào?",
+        "rewritten_query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast như thế nào?",
+        "keywords": [
+          "quy",
+          "trình",
+          "tiếp",
+          "nhận",
+          "xe",
+          "bảo",
+          "dưỡng",
+          "tại",
+          "xưởng",
+          "vinfast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast như thế nào?",
+        "source_cited_doc_indexes": [
+          3
+        ]
+      }
+    },
+    {
+      "id": "PR04",
+      "query": "Xác nhận đặt lịch bảo dưỡng VinFast được gửi như thế nào?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.7976,
+      "keyword_ratio": 0.0,
+      "rr": 1.0,
+      "pass": false,
+      "latency_ms": 2749.4,
+      "retrieved_docs": [
+        "quy_trinh_ung_dung_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "lich_bao_duong_ALL"
+      ],
+      "keywords_missing": [
+        "email",
+        "nhắc nhở"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xác nhận đặt lịch bảo dưỡng VinFast được gửi như thế nào?",
+        "rewritten_query": "Xác nhận đặt lịch bảo dưỡng VinFast được gửi như thế nào?",
+        "keywords": [
+          "xác",
+          "nhận",
+          "đặt",
+          "lịch",
+          "bảo",
+          "dưỡng",
+          "vinfast",
+          "gửi"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "PR05",
+      "query": "Sửa chữa lưu động Mobile Service của VinFast hoạt động thế nào?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.8343,
+      "keyword_ratio": 0.667,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2775.1,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "lich_bao_duong_ALL"
+      ],
+      "keywords_missing": [
+        "tận nơi"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Sửa chữa lưu động Mobile Service của VinFast hoạt động thế nào?",
+        "rewritten_query": "Sửa chữa lưu động Mobile Service của VinFast hoạt động thế nào?",
+        "keywords": [
+          "sửa",
+          "chữa",
+          "lưu",
+          "động",
+          "mobile",
+          "service",
+          "vinfast",
+          "hoạt"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "PR06",
+      "query": "Có thể hủy hoặc đổi lịch dịch vụ VinFast trên ứng dụng khi nào?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.7713,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 3034.6,
+      "retrieved_docs": [
+        "quy_trinh_ung_dung_ALL",
+        "faq_baoduong_baohanh_ALL",
+        "lich_bao_duong_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Có thể hủy hoặc đổi lịch dịch vụ VinFast trên ứng dụng khi nào?",
+        "rewritten_query": "Có thể hủy hoặc đổi lịch dịch vụ VinFast trên ứng dụng khi nào?",
+        "keywords": [
+          "thể",
+          "hủy",
+          "đổi",
+          "lịch",
+          "dịch",
+          "vụ",
+          "vinfast",
+          "trên",
+          "ứng",
+          "dụng"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "PR07",
+      "query": "Xưởng dịch vụ VinFast có hotline nào để liên hệ?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.8348,
+      "keyword_ratio": 0.667,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2941.0,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "warranty_maintenance_VF8",
+        "warranty_maintenance_VF5"
+      ],
+      "keywords_missing": [
+        "24/7"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xưởng dịch vụ VinFast có hotline nào để liên hệ?",
+        "rewritten_query": "Xưởng dịch vụ VinFast có hotline nào để liên hệ?",
+        "keywords": [
+          "xưởng",
+          "dịch",
+          "vụ",
+          "vinfast",
+          "hotline",
+          "để",
+          "liên",
+          "hệ"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "PR08",
+      "query": "AI Agent có thể tự đặt lịch bảo dưỡng giúp tôi không?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.6966,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2774.4,
+      "retrieved_docs": [
+        "quy_trinh_ung_dung_ALL",
+        "lich_bao_duong_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "AI Agent có thể tự đặt lịch bảo dưỡng giúp tôi không?",
+        "rewritten_query": "AI Agent có thể tự đặt lịch bảo dưỡng giúp tôi không?",
+        "keywords": [
+          "ai",
+          "agent",
+          "thể",
+          "tự",
+          "đặt",
+          "lịch",
+          "bảo",
+          "dưỡng",
+          "giúp"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "PR09",
+      "query": "Khi xe sửa xong, có thể xem hóa đơn và thanh toán trên ứng dụng VinFast không?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.9036,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2725.4,
+      "retrieved_docs": [
+        "quy_trinh_ung_dung_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Khi xe sửa xong, có thể xem hóa đơn và thanh toán trên ứng dụng VinFast không?",
+        "rewritten_query": "Khi xe sửa xong, có thể xem hóa đơn và thanh toán trên ứng dụng VinFast không?",
+        "keywords": [
+          "xe",
+          "sửa",
+          "xong",
+          "thể",
+          "xem",
+          "hóa",
+          "đơn",
+          "thanh",
+          "toán",
+          "trên"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "PR10",
+      "query": "Nhận xe lại sau bảo dưỡng tại xưởng VinFast cần kiểm tra gì không?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.822,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2878.0,
+      "retrieved_docs": [
+        "quy_trinh_ung_dung_ALL",
+        "lich_bao_duong_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Nhận xe lại sau bảo dưỡng tại xưởng VinFast cần kiểm tra gì không?",
+        "rewritten_query": "Nhận xe lại sau bảo dưỡng tại xưởng VinFast cần kiểm tra gì không?",
+        "keywords": [
+          "nhận",
+          "xe",
+          "lại",
+          "sau",
+          "bảo",
+          "dưỡng",
+          "tại",
+          "xưởng",
+          "vinfast",
+          "kiểm"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "PR11",
+      "query": "Cứu hộ 24/7 xe VinFast có phạm vi toàn quốc không?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.8691,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 3135.1,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Cứu hộ 24/7 xe VinFast có phạm vi toàn quốc không?",
+        "rewritten_query": "Cứu hộ 24/7 xe VinFast có phạm vi toàn quốc không?",
+        "keywords": [
+          "cứu",
+          "hộ",
+          "24",
+          "xe",
+          "vinfast",
+          "phạm",
+          "vi",
+          "toàn",
+          "quốc"
+        ],
+        "model": "ALL",
+        "category": "safety",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "PR12",
+      "query": "Xem lại lịch hẹn dịch vụ VinFast ở đâu trên ứng dụng?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.8428,
+      "keyword_ratio": 1.0,
+      "rr": 0.5,
+      "pass": true,
+      "latency_ms": 2931.6,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xem lại lịch hẹn dịch vụ VinFast ở đâu trên ứng dụng?",
+        "rewritten_query": "Xem lại lịch hẹn dịch vụ VinFast ở đâu trên ứng dụng?",
+        "keywords": [
+          "xem",
+          "lại",
+          "lịch",
+          "hẹn",
+          "dịch",
+          "vụ",
+          "vinfast",
+          "trên",
+          "ứng",
+          "dụng"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "G01",
+      "query": "Xe tôi sắp đến mốc bảo dưỡng rồi phải làm gì?",
+      "model": null,
+      "category": "maintenance",
+      "top_score": 0.777,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2938.1,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL",
+        "dich_vu_bao_duong_ALL",
+        "warranty_maintenance_VF7"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Xe tôi sắp đến mốc bảo dưỡng rồi phải làm gì?",
+        "rewritten_query": "Xe tôi sắp đến mốc bảo dưỡng rồi phải làm gì?",
+        "keywords": [
+          "xe",
+          "sắp",
+          "đến",
+          "mốc",
+          "bảo",
+          "dưỡng",
+          "rồi"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "G02",
+      "query": "VinFast có ứng dụng di động để theo dõi xe không?",
+      "model": null,
+      "category": "general",
+      "top_score": 0.8449,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2716.7,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "VinFast có ứng dụng di động được phát triển để giúp người lái kết nối và điều khiển xe từ xa thông qua thiết bị di động [Tài liệu 1]. Thông qua ứng dụng này, khách hàng sử dụng xe ô tô điện có thể thực hiện các tính năng như:\n\n- Đăng ký, đăng nhập tài khoản [Tài liệu 1].\n- Cài đặt nâng cao, quản lý phần mềm và thay đổi vai trò của người lái trên xe [Tài liệu 1].\n- Theo dõi tình trạng pin và trạng thái sạc [Tài liệu 1].\n- Lên lịch hành trình và chuyển đến xe [Tài liệu 1].\n- Theo dõi tình trạng xe [Tài liệu 1].\n- Ngoài ra, ứng dụng còn hỗ trợ đặt dịch vụ, theo dõi quá trình sửa chữa hoặc bảo dưỡng và thanh toán chi phí dịch vụ [Tài liệu 2].",
+      "cited_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL"
+      ],
+      "analysis": {
+        "original_query": "VinFast có ứng dụng di động để theo dõi xe không?",
+        "rewritten_query": "VinFast có ứng dụng di động để theo dõi xe không?",
+        "keywords": [
+          "vinfast",
+          "ứng",
+          "dụng",
+          "di",
+          "động",
+          "để",
+          "theo",
+          "dõi",
+          "xe"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "VinFast có ứng dụng di động để theo dõi xe không?",
+        "source_cited_doc_indexes": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "id": "G03",
+      "query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ trước và đến đúng hẹn?",
+      "model": null,
+      "category": "general",
+      "top_score": 0.7604,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 3641.0,
+      "retrieved_docs": [
+        "dich_vu_bao_duong_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "lich_bao_duong_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "Khách hàng được tặng 50 điểm VPoint khi đặt lịch dịch vụ trước qua App/Website và đến làm dịch vụ đúng hẹn (trong vòng 30 phút) [Tài liệu 1].",
+      "cited_docs": [
+        "dich_vu_bao_duong_ALL"
+      ],
+      "analysis": {
+        "original_query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ trước và đến đúng hẹn?",
+        "rewritten_query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ trước và đến đúng hẹn?",
+        "keywords": [
+          "khách",
+          "hàng",
+          "tặng",
+          "bao",
+          "vpoint",
+          "đặt",
+          "lịch",
+          "dịch",
+          "vụ",
+          "trước"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ trước và đến đúng hẹn?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      }
+    },
+    {
+      "id": "G04",
+      "query": "Quãng đường một lần sạc của VF8 Eco và VF8 Plus là bao nhiêu?",
+      "model": "VF8",
+      "category": "general",
+      "top_score": 0.9018,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2813.9,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "battery_sac_VF8",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "Quãng đường di chuyển một lần sạc đầy của các phiên bản xe VF 8 như sau:\n\n* VF 8 Eco: 562 km theo tiêu chuẩn NEDC [Tài liệu 1, Tài liệu 2].\n* VF 8 Plus: 457 km theo tiêu chuẩn WLTP [Tài liệu 1, Tài liệu 2].\n\nLưu ý rằng quãng đường thực tế có thể thay đổi tùy thuộc vào tốc độ lái xe, thời tiết, địa hình, tải trọng, thói quen sử dụng và các điều kiện vận hành khác [Tài liệu 1, Tài liệu 2].\n\nHiện chưa thể xác thực trích dẫn trực tiếp cho câu trả lời này; vui lòng liên hệ Xưởng Dịch vụ VinFast để kiểm tra.",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Quãng đường một lần sạc của VF8 Eco và VF8 Plus là bao nhiêu?",
+        "rewritten_query": "Quãng đường một lần sạc của VF8 Eco và VF8 Plus là bao nhiêu?",
+        "keywords": [
+          "quãng",
+          "đường",
+          "một",
+          "lần",
+          "sạc",
+          "vf8",
+          "eco",
+          "plus",
+          "bao"
+        ],
+        "model": "VF8",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "model": "gemini-3.5-flash-lite",
+        "rewritten_query": "Quãng đường một lần sạc của VF8 Eco và VF8 Plus là bao nhiêu?",
+        "source_cited_doc_indexes": []
+      }
+    },
+    {
+      "id": "G05",
+      "query": "Vì sao lịch bảo dưỡng ô tô điện dài hơn xe xăng?",
+      "model": null,
+      "category": "maintenance",
+      "top_score": 0.7684,
+      "keyword_ratio": 0.333,
+      "rr": 1.0,
+      "pass": false,
+      "latency_ms": 2714.3,
+      "retrieved_docs": [
+        "lich_bao_duong_ALL"
+      ],
+      "keywords_missing": [
+        "dài hơn",
+        "truyền động đơn giản"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Vì sao lịch bảo dưỡng ô tô điện dài hơn xe xăng?",
+        "rewritten_query": "Vì sao lịch bảo dưỡng ô tô điện dài hơn xe xăng?",
+        "keywords": [
+          "lịch",
+          "bảo",
+          "dưỡng",
+          "tô",
+          "điện",
+          "dài",
+          "hơn",
+          "xe",
+          "xăng"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "G06",
+      "query": "Ứng dụng VinFast có giúp tìm xưởng dịch vụ gần nhất không?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.8099,
+      "keyword_ratio": 1.0,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2778.9,
+      "retrieved_docs": [
+        "quy_trinh_ung_dung_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Ứng dụng VinFast có giúp tìm xưởng dịch vụ gần nhất không?",
+        "rewritten_query": "Ứng dụng VinFast có giúp tìm xưởng dịch vụ gần nhất không?",
+        "keywords": [
+          "ứng",
+          "dụng",
+          "vinfast",
+          "giúp",
+          "tìm",
+          "xưởng",
+          "dịch",
+          "vụ",
+          "gần",
+          "nhất"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "G07",
+      "query": "Có thể xem những thông tin gì trong lịch sử sạc trên ứng dụng VinFast?",
+      "model": null,
+      "category": "procedure",
+      "top_score": 0.9116,
+      "keyword_ratio": 1.0,
+      "rr": 0.0,
+      "pass": false,
+      "latency_ms": 2706.1,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "keywords_missing": [],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Có thể xem những thông tin gì trong lịch sử sạc trên ứng dụng VinFast?",
+        "rewritten_query": "Có thể xem những thông tin gì trong lịch sử sạc trên ứng dụng VinFast?",
+        "keywords": [
+          "thể",
+          "xem",
+          "thông",
+          "tin",
+          "trong",
+          "lịch",
+          "sử",
+          "sạc",
+          "trên",
+          "ứng"
+        ],
+        "model": "ALL",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    },
+    {
+      "id": "G08",
+      "query": "Sổ bảo hành xe VinFast xem ở đâu?",
+      "model": null,
+      "category": "general",
+      "top_score": 0.9181,
+      "keyword_ratio": 0.667,
+      "rr": 1.0,
+      "pass": true,
+      "latency_ms": 2749.2,
+      "retrieved_docs": [
+        "faq_baoduong_baohanh_ALL",
+        "warranty_maintenance_VF5",
+        "warranty_maintenance_VF8"
+      ],
+      "keywords_missing": [
+        "app"
+      ],
+      "error": null,
+      "actual_answer": "",
+      "cited_docs": [],
+      "analysis": {
+        "original_query": "Sổ bảo hành xe VinFast xem ở đâu?",
+        "rewritten_query": "Sổ bảo hành xe VinFast xem ở đâu?",
+        "keywords": [
+          "sổ",
+          "bảo",
+          "hành",
+          "xe",
+          "vinfast",
+          "xem"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "generation_metadata": {
+        "mode": "not_evaluated_in_latest_generation_run"
+      }
+    }
+  ],
+  "answer_evaluation": {
+    "attempted": 18,
+    "generated": 18,
+    "sample_per_category": 3,
+    "mode": "generation_only_sparse_retrieval_sample",
+    "status": "completed"
+  }
+}

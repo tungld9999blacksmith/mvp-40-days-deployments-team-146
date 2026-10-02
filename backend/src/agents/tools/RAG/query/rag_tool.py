@@ -14,12 +14,16 @@ def _get_rag_pipeline() -> Any:
     """Khởi tạo lazy singleton RAGPipeline kết nối Qdrant Cloud + BM25 + FlashRank + Gemini."""
     global _rag_pipeline
     if _rag_pipeline is None:
-        from src.agents.tools.RAG.ingestion.qdrant_store import QdrantVectorStore
-        from src.agents.tools.RAG.query.hybrid import HybridRetriever
-        from src.agents.tools.RAG.query.rag_pipeline import RAGPipeline
-        from src.agents.tools.RAG.query.reranker import RerankerService
-        from src.agents.tools.RAG.query.rewriter import QueryRewriter
-        from src.infrastructure.llm.dependency import get_llm_provider
+        from ..ingestion.qdrant_store import QdrantVectorStore
+        from .hybrid import HybridRetriever
+        from .rag_pipeline import RAGPipeline
+        from .reranker import RerankerService
+        from .rewriter import QueryRewriter
+
+        try:
+            from src.infrastructure.llm.dependency import get_llm_provider  # type: ignore
+        except ImportError:
+            from infrastructure.llm.dependency import get_llm_provider  # type: ignore
 
         try:
             vs = QdrantVectorStore()
@@ -68,7 +72,7 @@ def search_ev_knowledge(
         Câu trả lời chính xác có nguồn dẫn chính hãng
     """
     pipeline = _get_rag_pipeline()
-    from src.agents.tools.RAG.query.schemas import UserVehicleContext
+    from .schemas import UserVehicleContext
 
     clean_model = model.strip().upper() if model else None
     vehicle_context = UserVehicleContext(model=clean_model) if clean_model else None
@@ -95,7 +99,7 @@ def get_maintenance_schedule_rag(model: str, km: int) -> str:
     clean_model = model.strip().upper()
     query = f"Hạng mục bảo dưỡng định kỳ mốc {km} km xe {clean_model}"
     pipeline = _get_rag_pipeline()
-    from src.agents.tools.RAG.query.schemas import UserVehicleContext
+    from .schemas import UserVehicleContext
 
     vehicle_context = UserVehicleContext(model=clean_model, current_odometer_km=km)
     response = pipeline.query_sync(
@@ -121,7 +125,7 @@ def get_warranty_policy_rag(model: str, component: str = "") -> str:
     comp_text = f" {component}" if component else ""
     query = f"Chính sách điều kiện bảo hành{comp_text} cho xe {clean_model}"
     pipeline = _get_rag_pipeline()
-    from src.agents.tools.RAG.query.schemas import UserVehicleContext
+    from .schemas import UserVehicleContext
 
     vehicle_context = UserVehicleContext(model=clean_model)
     response = pipeline.query_sync(

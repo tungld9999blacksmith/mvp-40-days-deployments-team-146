@@ -7,7 +7,7 @@
       "description": "Ghi mỗi prompt người dùng nhắn trong Kiro vào .ai-log/session.jsonl cùng format với Antigravity log",
       "action": {
         "type": "command",
-        "command": "USER_PROMPT=\"$USER_PROMPT\" bash scripts/_pyrun.sh scripts/log_kiro.py",
+        "command": "bash scripts/_pyrun.sh scripts/log_kiro.py",
         "timeout": 10
       }
     }

@@ -78,8 +78,14 @@ class RAGPipeline:
         reranked_chunks = self.reranker.rerank(
             query=query_analysis.rewritten_query,
             candidates=fused_candidates,
+            top_k=max(top_k * 3, top_k),
+        )
+        reranked_chunks = self.hybrid_retriever.select_context(
+            candidates=reranked_chunks,
+            analysis=query_analysis,
             top_k=top_k,
         )
+        reranked_chunks = self.hybrid_retriever.expand_neighbors(reranked_chunks)
         logger.debug(f"Sau Rerank còn lại: {len(reranked_chunks)} chunks")
 
         # BƯỚC 4: Đóng gói Context & Trích dẫn có cấu trúc

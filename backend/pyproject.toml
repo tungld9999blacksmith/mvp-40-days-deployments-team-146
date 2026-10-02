@@ -77,3 +77,15 @@ members = ["mock-ev-system", "shared/*"]
 
 [tool.uv.sources]
 ev-contracts = { workspace = true }
+
+[tool.pyright]
+include = ["src", "tests"]
+extraPaths = [
+    ".",
+    "src",
+    "shared/ev-contracts/src",
+]
+venvPath = ".."
+venv = ".venv"
+pythonVersion = "3.11"
+

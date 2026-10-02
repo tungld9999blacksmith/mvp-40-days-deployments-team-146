@@ -18,7 +18,7 @@ from qdrant_client.http.models import (
 )
 
 from .embedding import BaseEmbeddingProvider, get_embedding_provider
-from .metadata import DocumentChunk, SearchResult
+from .metadata import DocumentChunk, SearchResult, canonicalize_vehicle_model
 
 load_dotenv()
 
@@ -53,8 +53,16 @@ class QdrantVectorStore:
         from src.config import get_settings
 
         cfg = get_settings()
-        self.url = (url or cfg.qdrant_url or os.getenv("QDRANT_URL", "")).strip()
-        self.api_key = (api_key or cfg.qdrant_api_key or os.getenv("QDRANT_API_KEY", "")).strip()
+        self.url = (
+            url
+            or cfg.qdrant_url
+            or os.getenv("QDRANT_URL", "")
+        ).strip()
+        self.api_key = (
+            api_key
+            or cfg.qdrant_api_key
+            or os.getenv("QDRANT_API_KEY", "")
+        ).strip()
         self.collection_name = (
             collection_name
             or cfg.qdrant_collection_name
@@ -63,8 +71,8 @@ class QdrantVectorStore:
         self.embedding_provider = embedding_provider or get_embedding_provider()
 
         # Xác định kích thước vector theo provider
-        self.vector_size = 3072
-        if hasattr(self.embedding_provider, "model"):
+        self.vector_size = int(getattr(self.embedding_provider, "dimensions", 3072))
+        if not hasattr(self.embedding_provider, "dimensions") and hasattr(self.embedding_provider, "model"):
             m = str(getattr(self.embedding_provider, "model", "")).lower()
             if "gemini" in m:
                 self.vector_size = 3072
@@ -74,9 +82,23 @@ class QdrantVectorStore:
                 self.vector_size = 3072
 
         # Kết nối tới Qdrant
-        from src.infrastructure.qdrant.dependency import get_qdrant_service
+        if self.url and self.api_key:
+            self._client = QdrantClient(
+                url=self.url,
+                api_key=self.api_key,
+                prefer_grpc=prefer_grpc,
+            )
+            logger.info(f"Kết nối Qdrant Cloud thành công: {self.url.split('?')[0]}")
+        elif self.url:
+            self._client = QdrantClient(url=self.url, prefer_grpc=prefer_grpc)
+            logger.info(f"Kết nối Qdrant Server nội bộ tại: {self.url}")
+        else:
+            local_path = "./data/qdrant_local"
+            os.makedirs(local_path, exist_ok=True)
+            self._client = QdrantClient(path=local_path)
+            logger.info(f"Chưa có QDRANT_URL. Sử dụng Qdrant Local Storage tại {local_path}")
 
-        self._client = get_qdrant_service(self.url, self.api_key, prefer_grpc).client
+        # Khởi tạo collection & payload indexes
         self._ensure_collection()
 
     @property
@@ -97,18 +119,6 @@ class QdrantVectorStore:
                 vectors_config=VectorParams(size=self.vector_size, distance=Distance.COSINE),
             )
             self._create_payload_indexes()
-        else:
-            vectors = self._client.get_collection(self.collection_name).config.params.vectors
-            if (
-                not isinstance(vectors, VectorParams)
-                or vectors.size != self.vector_size
-                or vectors.distance != Distance.COSINE
-            ):
-                raise ValueError(
-                    f"Qdrant collection {self.collection_name!r} does not match "
-                    f"the embedding provider ({self.vector_size} cosine dimensions). "
-                    "Existing data was not changed."
-                )
 
     def _create_payload_indexes(self) -> None:
         """Đánh chỉ mục cho các trường metadata quan trọng để tối ưu hóa lọc < 5ms."""
@@ -159,7 +169,10 @@ class QdrantVectorStore:
             except Exception:
                 existing_ids = set()
 
-            missing_chunks = [c for c in batch if str(uuid.uuid5(uuid.NAMESPACE_DNS, c.chunk_id)) not in existing_ids]
+            missing_chunks = [
+                c for c in batch
+                if str(uuid.uuid5(uuid.NAMESPACE_DNS, c.chunk_id)) not in existing_ids
+            ]
 
             if not missing_chunks:
                 logger.info(f"Batch {i // batch_size + 1}: Toàn bộ {len(batch)} chunks đã có trong Qdrant. Bỏ qua.")
@@ -221,6 +234,7 @@ class QdrantVectorStore:
         """Truy vấn tìm kiếm Dense Vector kết hợp bộ lọc Metadata trên Qdrant."""
         if not query.strip():
             return []
+        model = canonicalize_vehicle_model(model)
 
         # 1. Sinh vector cho câu truy vấn bằng Embedding API
         query_vector = self.embedding_provider.embed_query(query)
@@ -241,7 +255,9 @@ class QdrantVectorStore:
 
         # Lọc danh mục dịch vụ
         if category and category not in ["all", "general"]:
-            must_conditions.append(FieldCondition(key="category", match=MatchValue(value=category)))
+            must_conditions.append(
+                FieldCondition(key="category", match=MatchValue(value=category))
+            )
 
         query_filter = Filter(must=must_conditions) if must_conditions else None
 
@@ -298,14 +314,12 @@ class QdrantVectorStore:
 
             for record in records:
                 payload = record.payload or {}
-                all_chunks.append(
-                    {
-                        "chunk_id": payload.get("chunk_id", str(record.id)),
-                        "doc_id": payload.get("document_id", ""),
-                        "content": payload.get("content", ""),
-                        "metadata": payload.get("metadata", payload),
-                    }
-                )
+                all_chunks.append({
+                    "chunk_id": payload.get("chunk_id", str(record.id)),
+                    "doc_id": payload.get("document_id", ""),
+                    "content": payload.get("content", ""),
+                    "metadata": payload.get("metadata", payload),
+                })
 
             if next_page_offset is None:
                 break
