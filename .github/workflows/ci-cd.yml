@@ -49,8 +49,9 @@ jobs:
           cache: pip
           cache-dependency-path: backend/requirements.txt
       - run: pip install -r ./backend/requirements.txt
-      # ev-contracts là package nội bộ (uv workspace), không có trong requirements.txt
-      - run: pip install ./backend/shared/ev-contracts
+      # Package nội bộ (uv workspace), không có trong requirements.txt:
+      # ev-contracts (src import) + mock-ev-system (test_infrastructure/test_mock_*, test_oem_verify*)
+      - run: pip install ./backend/shared/ev-contracts ./backend/mock-ev-system
       - run: pytest ./backend/tests/ -v --tb=short
         env:
           APP_ENV: test
