@@ -76,6 +76,7 @@ def find_workshops(
     # Thử truy vấn qua DB nếu có kết nối
     try:
         from sqlmodel import Session, select
+
         try:
             from common.core.workshop import Workshop, WorkshopStatus
         except ImportError:

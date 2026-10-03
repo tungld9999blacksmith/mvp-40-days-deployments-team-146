@@ -117,7 +117,7 @@ class QueryRewriter:
             return self._heuristic_fallback(cleaned_query, vehicle_context)
 
         # Xây dựng prompt người dùng kèm ngữ cảnh xe
-        user_prompt_lines = [f"Câu hỏi của người dùng: \"{cleaned_query}\""]
+        user_prompt_lines = [f'Câu hỏi của người dùng: "{cleaned_query}"']
         if vehicle_context:
             context_desc = []
             if vehicle_context.model:
@@ -213,40 +213,113 @@ class QueryRewriter:
             found_model = canonicalize_vehicle_model(vehicle_context.model)
 
         # 2. Phát hiện Category — mở rộng keyword set để bắt được nhiều câu hỏi thực tế hơn
-        if any(w in lower for w in [
-            "giá", "bảng giá", "chi phí", "tiền công", "hết bao nhiêu",
-            "bao nhiêu tiền", "giá tiền", "vnđ", "vnd", "đồng", "phí dịch vụ",
-            "phụ tùng", "giá phụ tùng", "tiền thay", "giá thay",
-        ]):
+        if any(
+            w in lower
+            for w in [
+                "giá",
+                "bảng giá",
+                "chi phí",
+                "tiền công",
+                "hết bao nhiêu",
+                "bao nhiêu tiền",
+                "giá tiền",
+                "vnđ",
+                "vnd",
+                "đồng",
+                "phí dịch vụ",
+                "phụ tùng",
+                "giá phụ tùng",
+                "tiền thay",
+                "giá thay",
+            ]
+        ):
             category = "pricing"
-        elif any(w in lower for w in [
-            "bảo hành", "sổ bảo hành", "hư hỏng", "đổi trả",
-            "thời hạn bảo hành", "điều kiện bảo hành", "hết bảo hành",
-            "mất bảo hành", "còn bảo hành", "chính sách bảo hành",
-            "năm bảo hành", "warranty",
-        ]):
+        elif any(
+            w in lower
+            for w in [
+                "bảo hành",
+                "sổ bảo hành",
+                "hư hỏng",
+                "đổi trả",
+                "thời hạn bảo hành",
+                "điều kiện bảo hành",
+                "hết bảo hành",
+                "mất bảo hành",
+                "còn bảo hành",
+                "chính sách bảo hành",
+                "năm bảo hành",
+                "warranty",
+            ]
+        ):
             category = "warranty"
-        elif any(w in lower for w in [
-            "đặt lịch", "quy trình", "xưởng", "hẹn", "xác nhận đặt lịch",
-            "mobile service", "lưu động", "hitl", "báo giá", "tiếp nhận",
-            "bàn giao", "nhận xe", "hóa đơn", "thanh toán",
-            "lịch sử dịch vụ", "hủy lịch", "đổi lịch",
-        ]):
+        elif any(
+            w in lower
+            for w in [
+                "đặt lịch",
+                "quy trình",
+                "xưởng",
+                "hẹn",
+                "xác nhận đặt lịch",
+                "mobile service",
+                "lưu động",
+                "hitl",
+                "báo giá",
+                "tiếp nhận",
+                "bàn giao",
+                "nhận xe",
+                "hóa đơn",
+                "thanh toán",
+                "lịch sử dịch vụ",
+                "hủy lịch",
+                "đổi lịch",
+            ]
+        ):
             # Procedure phải được xét trước maintenance: phần lớn câu thủ tục
             # có chứa cụm "đặt lịch bảo dưỡng" nhưng intent chính là thao tác.
             category = "procedure"
-        elif any(w in lower for w in [
-            "bảo dưỡng", "thay dầu", "thay lọc", "bảo trì", "kiểm tra xe",
-            "định kỳ", "mốc km", "chu kỳ", "hạng mục", "bảo dưỡng cấp",
-            "thay thế", "vệ sinh", "đảo lốp", "cân bằng",
-        ]):
+        elif any(
+            w in lower
+            for w in [
+                "bảo dưỡng",
+                "thay dầu",
+                "thay lọc",
+                "bảo trì",
+                "kiểm tra xe",
+                "định kỳ",
+                "mốc km",
+                "chu kỳ",
+                "hạng mục",
+                "bảo dưỡng cấp",
+                "thay thế",
+                "vệ sinh",
+                "đảo lốp",
+                "cân bằng",
+            ]
+        ):
             category = "maintenance"
-        elif any(w in lower for w in [
-            "pin", "sạc", "dung lượng", "soh", "bms", "chai pin",
-            "turtle mode", "sạc nhanh", "sạc chậm", "trạm sạc",
-            "ip67", "ngập nước", "cứu hộ pin", "tuổi thọ pin",
-            "sạc dc", "sạc ac", "kw", "kwh",
-        ]):
+        elif any(
+            w in lower
+            for w in [
+                "pin",
+                "sạc",
+                "dung lượng",
+                "soh",
+                "bms",
+                "chai pin",
+                "turtle mode",
+                "sạc nhanh",
+                "sạc chậm",
+                "trạm sạc",
+                "ip67",
+                "ngập nước",
+                "cứu hộ pin",
+                "tuổi thọ pin",
+                "sạc dc",
+                "sạc ac",
+                "kw",
+                "kwh",
+            ]
+        ):
             category = "battery"
         elif any(w in lower for w in ["an toàn", "cháy nổ", "nguy hiểm", "cứu hộ"]):
             category = "safety"
@@ -286,17 +359,43 @@ class QueryRewriter:
         Giữ lại "xe" và các từ kỹ thuật xe điện quan trọng.
         """
         stop_words = {
-            "tôi", "hỏi", "của", "và", "là", "có", "không", "thì",
-            "những", "gì", "như", "thế", "nào", "ở", "đâu", "với", "được",
-            "nhiêu", "cần", "phải", "làm", "sao", "bị", "đã", "đang",
-            "cho", "mà", "hay", "hoặc", "nếu", "khi", "thì", "vì",
+            "tôi",
+            "hỏi",
+            "của",
+            "và",
+            "là",
+            "có",
+            "không",
+            "thì",
+            "những",
+            "gì",
+            "như",
+            "thế",
+            "nào",
+            "ở",
+            "đâu",
+            "với",
+            "được",
+            "nhiêu",
+            "cần",
+            "phải",
+            "làm",
+            "sao",
+            "bị",
+            "đã",
+            "đang",
+            "cho",
+            "mà",
+            "hay",
+            "hoặc",
+            "nếu",
+            "khi",
+            "thì",
+            "vì",
         }
         # Giữ lại "xe" — đây là từ khóa quan trọng trong ngữ cảnh xe điện
         # Giữ lại "km", "pin", "vf" vì chúng quan trọng cho domain xe điện
         domain_keep = {"xe", "km", "pin", "vf", "bm", "dc", "ac", "kw"}
         words = re.findall(r"\b[\w\d]+\b", query.lower())
-        keywords = [
-            w for w in words
-            if (w not in stop_words and len(w) >= 2) or w in domain_keep
-        ]
+        keywords = [w for w in words if (w not in stop_words and len(w) >= 2) or w in domain_keep]
         return list(dict.fromkeys(keywords))[:10]

@@ -24,6 +24,7 @@ async def fetch_vehicle_context(vehicle_id: str | UUID | None) -> dict[str, Any]
 
     try:
         from sqlmodel import Session
+
         try:
             from src.common.core.vehicle import UserVehicle
         except ImportError:

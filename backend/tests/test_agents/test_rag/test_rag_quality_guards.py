@@ -85,28 +85,28 @@ class ContextSelectionTests(unittest.TestCase):
             candidate("vf8_chk_0001", "vf8", "Bảo dưỡng VF8", model="VF8"),
         ]
 
-        selected = HybridRetriever(vector_store=object()).select_context(
-            candidates, analysis, top_k=2
-        )
+        selected = HybridRetriever(vector_store=object()).select_context(candidates, analysis, top_k=2)
 
         self.assertEqual([item.doc_id for item in selected], ["mpv"])
 
     def test_bm25_model_filter_accepts_spaced_model_alias(self) -> None:
         searcher = BM25Searcher()
-        searcher.fit([
-            {
-                "chunk_id": "mpv_chk_0001",
-                "doc_id": "mpv",
-                "content": "VF MPV 7 maintenance service schedule",
-                "metadata": {"model": "VFMPV7", "category": "maintenance"},
-            },
-            {
-                "chunk_id": "vf8_chk_0001",
-                "doc_id": "vf8",
-                "content": "VF8 maintenance service schedule",
-                "metadata": {"model": "VF8", "category": "maintenance"},
-            },
-        ])
+        searcher.fit(
+            [
+                {
+                    "chunk_id": "mpv_chk_0001",
+                    "doc_id": "mpv",
+                    "content": "VF MPV 7 maintenance service schedule",
+                    "metadata": {"model": "VFMPV7", "category": "maintenance"},
+                },
+                {
+                    "chunk_id": "vf8_chk_0001",
+                    "doc_id": "vf8",
+                    "content": "VF8 maintenance service schedule",
+                    "metadata": {"model": "VF8", "category": "maintenance"},
+                },
+            ]
+        )
 
         results = searcher.search(
             query="maintenance service schedule",
@@ -124,29 +124,31 @@ class ContextSelectionTests(unittest.TestCase):
             category="battery",
         )
         candidates = [
-            candidate("faq_chk_0001", "faq", "Quy trình cứu hộ pin", category="battery", section="Quy trình", score=0.9),
-            candidate("faq_chk_0002", "faq", "Giá cứu hộ pin 50.000 VNĐ", category="battery", section="Chi phí", score=0.85),
+            candidate(
+                "faq_chk_0001", "faq", "Quy trình cứu hộ pin", category="battery", section="Quy trình", score=0.9
+            ),
+            candidate(
+                "faq_chk_0002", "faq", "Giá cứu hộ pin 50.000 VNĐ", category="battery", section="Chi phí", score=0.85
+            ),
             candidate("other_chk_0001", "other", "Pin ô tô", category="battery", score=0.5),
         ]
 
-        selected = HybridRetriever(vector_store=object()).select_context(
-            candidates, analysis, top_k=3
-        )
+        selected = HybridRetriever(vector_store=object()).select_context(candidates, analysis, top_k=3)
 
         self.assertEqual([item.chunk_id for item in selected[:2]], ["faq_chk_0001", "faq_chk_0002"])
 
     def test_neighbor_is_merged_only_within_same_section(self) -> None:
         searcher = BM25Searcher()
-        searcher.fit([
-            candidate("a_chk_0001", "a", "phần trước", section="Bảng").model_dump(),
-            candidate("a_chk_0002", "a", "phần chính", section="Bảng").model_dump(),
-            candidate("a_chk_0003", "a", "phần khác", section="Phụ lục").model_dump(),
-        ])
+        searcher.fit(
+            [
+                candidate("a_chk_0001", "a", "phần trước", section="Bảng").model_dump(),
+                candidate("a_chk_0002", "a", "phần chính", section="Bảng").model_dump(),
+                candidate("a_chk_0003", "a", "phần khác", section="Phụ lục").model_dump(),
+            ]
+        )
         retriever = HybridRetriever(vector_store=object(), bm25_searcher=searcher)
 
-        expanded = retriever.expand_neighbors([
-            candidate("a_chk_0002", "a", "phần chính", section="Bảng")
-        ])
+        expanded = retriever.expand_neighbors([candidate("a_chk_0002", "a", "phần chính", section="Bảng")])
 
         self.assertEqual(len(expanded), 1)
         self.assertIn("phần trước", expanded[0].content)
@@ -183,9 +185,7 @@ class ContextSelectionTests(unittest.TestCase):
             for i in range(4)
         ]
 
-        selected = HybridRetriever(vector_store=object()).select_context(
-            candidates, analysis, top_k=5
-        )
+        selected = HybridRetriever(vector_store=object()).select_context(candidates, analysis, top_k=5)
 
         self.assertEqual(len(selected), 1)
 
@@ -205,9 +205,7 @@ class ContextSelectionTests(unittest.TestCase):
             ),
         ]
 
-        ranked = HeuristicReranker().rerank(
-            "Bộ sạc AC 11 kW giá bao nhiêu?", candidates, top_k=2
-        )
+        ranked = HeuristicReranker().rerank("Bộ sạc AC 11 kW giá bao nhiêu?", candidates, top_k=2)
 
         self.assertEqual(ranked[0].doc_id, "pricing_thiet_bi_sac_ALL")
 
@@ -227,9 +225,7 @@ class ContextSelectionTests(unittest.TestCase):
             ),
         ]
 
-        ranked = HeuristicReranker().rerank(
-            "Dịch vụ cứu hộ pin có mất tiền không?", candidates, top_k=2
-        )
+        ranked = HeuristicReranker().rerank("Dịch vụ cứu hộ pin có mất tiền không?", candidates, top_k=2)
 
         self.assertEqual(ranked[0].doc_id, "faq_baoduong_baohanh_ALL")
 
@@ -261,10 +257,7 @@ class ContextSelectionTests(unittest.TestCase):
 
 class CitationTests(unittest.TestCase):
     def test_only_declared_and_rendered_citations_are_returned(self) -> None:
-        citations = [
-            CitationItem(document_id=f"doc{i}", title=f"Doc {i}", chunk_id=f"c{i}")
-            for i in range(1, 4)
-        ]
+        citations = [CitationItem(document_id=f"doc{i}", title=f"Doc {i}", chunk_id=f"c{i}") for i in range(1, 4)]
         resolved, indexes = GroundedAnswerGenerator()._resolve_citations(
             answer="Thông tin A [Tài liệu 2]. Thông tin B [Tài liệu 3].",
             cited_indexes=[1, 2, 99],
@@ -274,10 +267,7 @@ class CitationTests(unittest.TestCase):
         self.assertEqual([item.document_id for item in resolved], ["doc2"])
 
     def test_offline_response_only_returns_citations_rendered_in_answer(self) -> None:
-        citations = [
-            CitationItem(document_id=f"doc{i}", title=f"Doc {i}", chunk_id=f"c{i}")
-            for i in range(1, 5)
-        ]
+        citations = [CitationItem(document_id=f"doc{i}", title=f"Doc {i}", chunk_id=f"c{i}") for i in range(1, 5)]
 
         response = GroundedAnswerGenerator()._build_offline_response(citations)
 

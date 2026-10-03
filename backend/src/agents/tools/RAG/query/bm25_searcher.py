@@ -103,11 +103,7 @@ class BM25Searcher:
             search_text += " " + " ".join(keywords)
         folded_query = query.casefold()
         requested_model = canonicalize_vehicle_model(model)
-        expansions = [
-            english
-            for vietnamese, english in DOMAIN_QUERY_EXPANSIONS.items()
-            if vietnamese in folded_query
-        ]
+        expansions = [english for vietnamese, english in DOMAIN_QUERY_EXPANSIONS.items() if vietnamese in folded_query]
         if expansions:
             search_text += " " + " ".join(expansions)
 
