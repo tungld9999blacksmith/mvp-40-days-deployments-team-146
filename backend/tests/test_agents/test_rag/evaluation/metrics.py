@@ -264,11 +264,11 @@ def compute_metrics(results: list[QueryResult]) -> EvalMetrics:
 
 def format_metrics_report(m: EvalMetrics) -> str:
     """Định dạng báo cáo metrics dạng text có thể in ra terminal hoặc ghi file."""
-    SEP = "=" * 65
+    separator = "=" * 65
     lines = [
-        SEP,
+        separator,
         "  RAG EVALUATION METRICS REPORT",
-        SEP,
+        separator,
         f"  Total queries    : {m.total}",
         "",
         "  RETRIEVAL QUALITY",
@@ -316,5 +316,5 @@ def format_metrics_report(m: EvalMetrics) -> str:
         lines.append("  ⚠️   Đánh giá: RAG TRUNG BÌNH — cần bổ sung tài liệu")
     else:
         lines.append("  ❌  Đánh giá: RAG CẦN CẢI THIỆN — thiếu tài liệu hoặc embedding yếu")
-    lines.append(SEP)
+    lines.append(separator)
     return "\n".join(lines)
