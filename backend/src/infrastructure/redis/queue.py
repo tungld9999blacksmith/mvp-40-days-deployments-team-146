@@ -141,7 +141,7 @@ class DistributedQueue(Generic[T]):
         if delay and delay > 0:
             delayed_id = uuid.uuid4().hex
             async with self._redis.pipeline(transaction=True) as pipe:
-                pipe.hset(self.delayed_data_key, delayed_id, raw)
+                pipe.hset(self.delayed_data_key, delayed_id, raw) # type: ignore
                 pipe.zadd(self.delayed_key, {delayed_id: time.time() + delay})
                 await pipe.execute()
             return f"delayed:{delayed_id}"

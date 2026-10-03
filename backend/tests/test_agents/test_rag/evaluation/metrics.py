@@ -22,7 +22,7 @@ class QueryResult:
     """Kết quả retrieval cho một câu query."""
     id: str
     query: str
-    model: Optional[str]
+    model: str | None
     category: str
     # Retrieval output
     retrieved_doc_ids: list[str] = field(default_factory=list)
@@ -45,7 +45,7 @@ class QueryResult:
     # Timing
     latency_ms: float = 0.0
     # Error
-    error: Optional[str] = None
+    error: str | None = None
 
 
 @dataclass
