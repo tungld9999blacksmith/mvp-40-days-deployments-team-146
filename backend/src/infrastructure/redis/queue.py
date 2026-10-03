@@ -309,6 +309,10 @@ class DistributedQueue(Generic[T]):
                 continue
             if messages:
                 await asyncio.gather(*(run_one(m) for m in messages))
+            else:
+                # Always yield to the event loop: a receive that completes without suspending
+                # (e.g. fakeredis ignoring `block`) would otherwise starve every other task.
+                await asyncio.sleep(0)
 
     # --------------------------------------------------------------- inspect
     async def size(self) -> int:

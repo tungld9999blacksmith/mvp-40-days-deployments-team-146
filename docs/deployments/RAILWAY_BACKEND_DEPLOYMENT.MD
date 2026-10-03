@@ -137,11 +137,10 @@ pytest backend/tests -v
 2. **Settings** → **Deploy** → **Custom Start Command**:
 
    ```
-   celery -A src.celery_tasks worker -B -l info -s /tmp/celerybeat-schedule
+   celery -A src.celery_tasks worker -B -l info
    ```
 
    - `-B` chạy luôn Celery beat trong worker để các job định kỳ (OEM sync, reminder, purge onboarding...) hoạt động.
-   - `-s` đặt file schedule của beat vào chỗ user `app` ghi được. **Không gắn Volume** cho worker: Railway mount volume với owner root nên user `app` không ghi được (`Permission denied`). Mất file này khi redeploy không sao — các job đều idempotent, crontab vẫn chạy đúng giờ kế tiếp.
    - **Chỉ để 1 replica** — nhiều replica cùng `-B` sẽ chạy trùng job định kỳ.
 3. Không Generate Domain, không đặt Healthcheck (worker không phục vụ HTTP).
 
@@ -662,7 +661,6 @@ Kết hợp với Bước 12 (environment chỉ cho nhánh `staging`), luồng c
 | Build báo không tìm thấy Dockerfile, hoặc `Railpack could not determine how to build the app` | Service thiếu `RAILWAY_DOCKERFILE_PATH=dockerfiles/Dockerfile.railway` (Dockerfile không nằm ở gốc repo nên Railway chuyển sang Railpack). Đặt biến cho **cả** `backend` và `worker` (Bước 6.4) |
 | Build lỗi kiểu *cache mount ID* | Service đang trỏ vào `dockerfiles/Dockerfile` (có `--mount=type=cache`, Railway không nhận). Đổi `RAILWAY_DOCKERFILE_PATH` về `dockerfiles/Dockerfile.railway` |
 | App crash `PermissionError: [Errno 13] Permission denied: 'logs'`, healthcheck fail | Container chạy bằng user `app`, `/app` thuộc root nên không tạo được `LOG_DIR`. `Dockerfile.railway` đã tạo sẵn `/app/logs`; nếu đổi `LOG_DIR` thì trỏ vào thư mục ghi được (vd `/app/data/logs`), hoặc đặt `LOG_FILE_FORMATS=` (rỗng) để chỉ log ra stdout. Không cần volume |
-| Worker log `ERROR/Beat] Removing corrupted schedule file '...celerybeat-schedule': error(13, 'Permission denied')`, job định kỳ không chạy | File schedule của beat nằm ở chỗ user `app` không ghi được — thường do gắn Railway Volume (mount với owner root) hoặc trỏ `-s` vào thư mục không tồn tại trong `/app`. Đổi Custom Start Command sang `-s /tmp/celerybeat-schedule` (hoặc `/app/data/celerybeat-schedule`) và gỡ volume (Bước 5). Nếu buộc phải giữ volume thì đặt `RAILWAY_RUN_UID=0` cho `worker` |
 | Deploy xong nhưng domain trả 502 | Thiếu `PORT=8000` hoặc Target Port ≠ 8000 |
 | App crash: `app_env` validation error | `APP_ENV` phải là `production` (không phải `staging`) |
 | `Firebase credential not found` | Thiếu `FIREBASE_CREDENTIAL_JSON`, hoặc JSON bị cắt khi dán |
