@@ -47,7 +47,7 @@ class Settings(BaseSettings):
         default="",
         validation_alias=AliasChoices("gemini_api_key", "GEMINI_API_KEY", "google_api_key", "GOOGLE_API_KEY"),
     )
-    gemini_model: str = "gemini-flash-latest"
+    gemini_model: str = "gemini-3.5-flash-lite"
     grok_api_key: str = ""
     grok_model: str = "grok-4"
     grok_base_url: str = "https://api.x.ai/v1"

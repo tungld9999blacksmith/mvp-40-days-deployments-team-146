@@ -132,29 +132,126 @@ class HeuristicReranker(BaseReranker):
         if not candidates:
             return []
 
-        query_terms = [t.lower() for t in re.findall(r"\b[\w\d]+\b", query) if len(t) > 1]
+        query_lower = query.casefold()
+        # Giữ token >= 2 ký tự VÀ bảo toàn từ domain quan trọng (xe, km, pin, vf)
+        domain_keep = {"xe", "km", "pin", "vf", "bm", "dc", "ac", "kw"}
+        query_terms = {t for t in re.findall(r"\b[\w\d]+\b", query_lower) if len(t) >= 2 or t in domain_keep}
         if not query_terms:
             return candidates[:top_k]
+        query_numbers = set(re.findall(r"\d+(?:[.,]\d+)*", query_lower))
+        warranty_intent = any(term in query_lower for term in ("bảo hành", "warranty"))
+        maintenance_intent = any(term in query_lower for term in ("bảo dưỡng", "định kỳ", "mốc", "hạng mục"))
+        pricing_intent = any(term in query_lower for term in ("giá", "bao nhiêu", "chi phí", "mất tiền", "báo giá"))
+        procedure_intent = any(
+            term in query_lower
+            for term in (
+                "đặt lịch",
+                "quy trình",
+                "tiếp nhận",
+                "bàn giao",
+                "nhận xe",
+                "hóa đơn",
+                "thanh toán",
+                "mobile service",
+                "lịch sử dịch vụ",
+                "hủy lịch",
+                "đổi lịch",
+            )
+        )
+        battery_intent = any(term in query_lower for term in ("pin", "sạc", "soh", "bms", "turtle"))
 
         scored: list[tuple[RetrievalCandidate, float]] = []
 
         for cand in candidates:
-            content_lower = cand.content.lower()
-            matched_terms = sum(1 for t in query_terms if t in content_lower)
+            content_lower = cand.content.casefold()
+            content_terms = set(re.findall(r"\b[\w\d]+\b", content_lower))
+            matched_terms = len(query_terms & content_terms)
             coverage_ratio = matched_terms / len(query_terms)
 
             # Khớp nguyên cụm từ hoặc số km
-            phrase_bonus = 0.2 if query.lower() in content_lower else 0.0
+            phrase_bonus = 0.2 if query_lower in content_lower else 0.0
 
             # Mốc km nếu có
             km_bonus = 0.0
-            km_match = re.search(r"\b\d+(?:\.000|000)\s*km\b", query.lower())
+            km_match = re.search(r"\b\d+(?:\.000|000)\s*km\b", query_lower)
             if km_match and km_match.group(0) in content_lower:
                 km_bonus = 0.3
+            measurement_bonus = 0.0
+            query_measurements = re.findall(r"\b\d+(?:[.,]\d+)?\s*(?:kw|kwh|km|v|a)\b", query_lower)
+            if query_measurements and all(
+                re.search(re.escape(value).replace(r"\ ", r"\s*"), content_lower) for value in query_measurements
+            ):
+                measurement_bonus = 0.20
+            number_penalty = 0.0
+            if query_numbers and not all(number in content_lower for number in query_numbers):
+                number_penalty = 0.12
 
-            # Điểm kết hợp: 50% Coverage + 30% RRF Score + Bonuses
             rrf_contrib = (cand.rrf_score or 0.0) * 10.0
-            final_score = (coverage_ratio * 0.5) + (rrf_contrib * 0.3) + phrase_bonus + km_bonus
+            dense_contrib = cand.dense_score or 0.0
+            sparse_raw = cand.sparse_score or 0.0
+            sparse_contrib = sparse_raw / (sparse_raw + 10.0) if sparse_raw > 0 else 0.0
+            doc_id = cand.doc_id.lower()
+
+            # Authority bonus — mở rộng cho maintenance và battery
+            authority_bonus = 0.0
+            if procedure_intent:
+                if "quy_trinh_ung_dung" in doc_id:
+                    authority_bonus = 0.30
+                elif "dich_vu_bao_duong" in doc_id or "lich_bao_duong" in doc_id:
+                    authority_bonus = 0.18
+                elif "faq_baoduong" in doc_id:
+                    authority_bonus = 0.10
+            elif pricing_intent:
+                if "cứu hộ" in query_lower and "faq_baoduong" in doc_id:
+                    authority_bonus = 0.35
+                elif "báo giá" in query_lower:
+                    if "pricing_bao_gia" in doc_id:
+                        authority_bonus = 0.30
+                    elif any(name in doc_id for name in ("dich_vu_bao_duong", "lich_bao_duong", "faq_baoduong")):
+                        authority_bonus = 0.25
+                elif doc_id.startswith("pricing_"):
+                    authority_bonus = 0.27
+                elif "bang_gia" in doc_id:
+                    authority_bonus = 0.20
+            elif warranty_intent:
+                if "warranty_policy_vi" in doc_id:
+                    authority_bonus = 0.30
+                elif "warranty_policy" in doc_id:
+                    authority_bonus = 0.25
+                elif "faq_baoduong" in doc_id and any(
+                    term in query_lower for term in ("bao lâu", "thời hạn", "năm", "km")
+                ):
+                    authority_bonus = 0.18
+                elif "warranty_maintenance" in doc_id:
+                    authority_bonus = 0.10
+            elif maintenance_intent:
+                if "warranty_maintenance" in doc_id:
+                    authority_bonus = 0.20
+                elif "lich_bao_duong" in doc_id or "dich_vu_bao_duong" in doc_id:
+                    authority_bonus = 0.15
+                elif "toi_uu_moc" in doc_id:
+                    authority_bonus = 0.10
+            elif battery_intent:
+                if "cứu hộ" in query_lower and "battery_cuu_ho" in doc_id:
+                    authority_bonus = 0.35
+                elif doc_id.startswith("battery_sac_") or "battery_quy_dinh" in doc_id:
+                    authority_bonus = 0.25
+                elif "faq_baoduong" in doc_id:
+                    authority_bonus = 0.20
+                elif "warranty_maintenance" in doc_id:
+                    authority_bonus = 0.05
+
+            final_score = (
+                (coverage_ratio * 0.25)
+                + (dense_contrib * 0.35)
+                + (sparse_contrib * 0.15)
+                + (rrf_contrib * 0.10)
+                + phrase_bonus
+                + km_bonus
+                + measurement_bonus
+                + authority_bonus
+                - number_penalty
+            )
 
             cand.rerank_score = round(final_score, 4)
             scored.append((cand, final_score))

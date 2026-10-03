@@ -154,6 +154,7 @@ class IngestionEngine:
         category, model, milestone_km = self._infer_metadata(title + "\n" + content[:1000], filename=path.name)
 
         file_type = "md" if path.suffix.lower() in [".md", ".markdown"] else "txt"
+        source_url_match = re.search(r"https://(?:www\.)?(?:vinfastauto|shop\.vinfastauto)\.com/[^\s)>]+", content)
         metadata = DocumentMetadata(
             source=str(path.name),
             doc_id=doc_id,
@@ -162,7 +163,10 @@ class IngestionEngine:
             model=model,
             category=category,
             milestone_km=milestone_km,
-            extra={"file_path": str(path)},
+            extra={
+                "file_path": str(path),
+                "source_url": source_url_match.group(0).rstrip(".,") if source_url_match else None,
+            },
         )
         return RawDocument(doc_id=doc_id, content=content, metadata=metadata)
 
@@ -220,6 +224,14 @@ class IngestionEngine:
         # Chọn category chính: nếu file có cả hai thì dùng "warranty" (bao trùm hơn)
         if "bang_gia" in file_lower or "pricing" in file_lower:
             category = "pricing"
+        elif "warranty_policy" in file_lower:
+            category = "warranty"
+        elif "toi_uu_moc_bao_duong" in file_lower or "lich_bao_duong" in file_lower:
+            category = "maintenance"
+        elif "faq" in file_lower:
+            # FAQ la tai lieu da chu de. Category se duoc gan lai theo tung
+            # section trong DocumentChunker; khong suy dien tu 1.000 ky tu dau.
+            category = "general"
         elif "quy_trinh" in file_lower or "hitl" in file_lower:
             category = "procedure"
         elif "battery" in file_lower or "an_toan_pin" in file_lower:
@@ -247,20 +259,31 @@ class IngestionEngine:
             category = "general"
 
         # 2. Infer model — mở rộng thêm VFe34, VFMPV7, VF9
-        all_known_models = ["VFe34", "VFMPV7", "VF3", "VF5", "VF6", "VF7", "VF8", "VF9"]
+        model_patterns = {
+            "VFe34": r"\bvf\s*e\s*34\b",
+            "VFMPV7": r"\bvf\s*mpv\s*7\b",
+            "VF3": r"\bvf\s*3\b",
+            "VF5": r"\bvf\s*5(?:\s*plus)?\b",
+            "VF6": r"\bvf\s*6\b",
+            "VF7": r"\bvf\s*7\b",
+            "VF8": r"\bvf\s*8\b",
+            "VF9": r"\bvf\s*9\b",
+        }
 
         # Ưu tiên tên file trước (chính xác nhất)
         model_from_file = ""
-        for m in all_known_models:
-            if m.lower() in file_lower:
+        for m, pattern in model_patterns.items():
+            if re.search(pattern, file_lower):
                 model_from_file = m
                 break
 
-        if model_from_file:
+        if "_all" in file_lower or file_lower.startswith("faq_"):
+            model = "ALL"
+        elif model_from_file:
             model = model_from_file
         else:
             # Tìm trong nội dung
-            found_models = [m for m in all_known_models if m.lower() in lower]
+            found_models = [m for m, pattern in model_patterns.items() if re.search(pattern, lower)]
             if len(found_models) > 1 or "tất cả" in lower or "toàn bộ" in lower or "all" in lower:
                 model = "ALL"
             elif len(found_models) == 1:

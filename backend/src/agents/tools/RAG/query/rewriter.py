@@ -8,6 +8,7 @@ from typing import Any
 
 from src.infrastructure.llm.base import ChatMessage, GenerationConfig, LLMProvider
 
+from ..ingestion.metadata import canonicalize_vehicle_model
 from .schemas import QueryAnalysis, UserVehicleContext
 
 logger = logging.getLogger(__name__)
@@ -58,20 +59,37 @@ ALL_KNOWN_MODELS = [
     "Theon",
 ]
 
+MODEL_PATTERNS = {
+    "VFe34": r"\bvf\s*e\s*34\b",
+    "VFMPV7": r"\bvf\s*mpv\s*7\b",
+    "VF3": r"\bvf\s*3\b",
+    "VF5": r"\bvf\s*5(?:\s*plus)?\b",
+    "VF6": r"\bvf\s*6\b",
+    "VF7": r"\bvf\s*7\b",
+    "VF8": r"\bvf\s*8\b",
+    "VF9": r"\bvf\s*9\b",
+    "Evo200": r"\bevo\s*200\b",
+    "Feliz": r"\bfeliz\b",
+    "Klara": r"\bklara\b",
+    "Vento": r"\bvento\b",
+    "Theon": r"\btheon\b",
+}
+
 
 class QueryRewriter:
     """Module Bước 1: Viết lại query và trích xuất bộ lọc metadata bằng LLM."""
 
     def __init__(self, llm_provider: LLMProvider | None = None) -> None:
         self._llm_provider = llm_provider
+        self._llm_disabled_after_quota = False
 
     @property
     def llm_provider(self) -> LLMProvider | None:
         if self._llm_provider is None:
             try:
-                from src.infrastructure.llm.dependency import get_llm_provider
+                from src.infrastructure.llm.dependency import get_llm_provider_for_stage
 
-                self._llm_provider = get_llm_provider()
+                self._llm_provider = get_llm_provider_for_stage("rewrite")
             except Exception as e:
                 logger.debug(f"Không thể khởi tạo LLMProvider tự động: {e}. Sẽ dùng fallback nếu cần.")
                 return None
@@ -95,7 +113,7 @@ class QueryRewriter:
             )
 
         provider = self.llm_provider
-        if provider is None:
+        if provider is None or self._llm_disabled_after_quota:
             return self._heuristic_fallback(cleaned_query, vehicle_context)
 
         # Xây dựng prompt người dùng kèm ngữ cảnh xe
@@ -128,13 +146,20 @@ class QueryRewriter:
                 original_query=cleaned_query,
                 rewritten_query=parsed_json.get("rewritten_query") or cleaned_query,
                 keywords=parsed_json.get("keywords") or self._fallback_keywords(cleaned_query),
-                model=parsed_json.get("model") or (vehicle_context.model if vehicle_context else None),
+                model=canonicalize_vehicle_model(
+                    parsed_json.get("model") or (vehicle_context.model if vehicle_context else None)
+                ),
                 category=parsed_json.get("category"),
                 milestone_km=parsed_json.get("milestone_km"),
                 subsystem=parsed_json.get("subsystem"),
                 is_out_of_scope=bool(parsed_json.get("is_out_of_scope", False)),
             )
         except Exception as e:
+            error_text = str(e).casefold()
+            if any(marker in error_text for marker in ("resource_exhausted", "quota", "429", "rate limit")):
+                self._llm_disabled_after_quota = True
+                logger.warning("Tạm tắt LLM query rewriting do quota/rate limit; chuyển sang heuristic fallback.")
+                return self._heuristic_fallback(cleaned_query, vehicle_context)
             logger.warning(f"Lỗi khi gọi LLM QueryRewriter: {e}. Áp dụng fallback heuristic.")
             return self._heuristic_fallback(cleaned_query, vehicle_context)
 
@@ -180,24 +205,122 @@ class QueryRewriter:
 
         # 1. Phát hiện Model
         found_model = None
-        for m in ALL_KNOWN_MODELS:
-            if m.lower() in lower:
+        for m, pattern in MODEL_PATTERNS.items():
+            if re.search(pattern, lower):
                 found_model = m
                 break
         if not found_model and vehicle_context and vehicle_context.model:
-            found_model = vehicle_context.model
+            found_model = canonicalize_vehicle_model(vehicle_context.model)
 
-        # 2. Phát hiện Category
-        if any(w in lower for w in ["giá", "bảng giá", "chi phí", "tiền công", "hết bao nhiêu"]):
+        # 2. Phát hiện Category — mở rộng keyword set để bắt được nhiều câu hỏi thực tế hơn
+        if any(
+            w in lower
+            for w in [
+                "giá",
+                "bảng giá",
+                "chi phí",
+                "tiền công",
+                "hết bao nhiêu",
+                "bao nhiêu tiền",
+                "giá tiền",
+                "vnđ",
+                "vnd",
+                "đồng",
+                "phí dịch vụ",
+                "phụ tùng",
+                "giá phụ tùng",
+                "tiền thay",
+                "giá thay",
+            ]
+        ):
             category = "pricing"
-        elif any(w in lower for w in ["bảo hành", "sổ bảo hành", "hư hỏng", "đổi trả"]):
+        elif any(
+            w in lower
+            for w in [
+                "bảo hành",
+                "sổ bảo hành",
+                "hư hỏng",
+                "đổi trả",
+                "thời hạn bảo hành",
+                "điều kiện bảo hành",
+                "hết bảo hành",
+                "mất bảo hành",
+                "còn bảo hành",
+                "chính sách bảo hành",
+                "năm bảo hành",
+                "warranty",
+            ]
+        ):
             category = "warranty"
-        elif any(w in lower for w in ["bảo dưỡng", "thay dầu", "thay lọc", "bảo trì", "kiểm tra xe"]):
-            category = "maintenance"
-        elif any(w in lower for w in ["pin", "sạc", "dung lượng", "soh", "bms", "chai pin"]):
-            category = "battery"
-        elif any(w in lower for w in ["đặt lịch", "quy trình", "xưởng", "hẹn"]):
+        elif any(
+            w in lower
+            for w in [
+                "đặt lịch",
+                "quy trình",
+                "xưởng",
+                "hẹn",
+                "xác nhận đặt lịch",
+                "mobile service",
+                "lưu động",
+                "hitl",
+                "báo giá",
+                "tiếp nhận",
+                "bàn giao",
+                "nhận xe",
+                "hóa đơn",
+                "thanh toán",
+                "lịch sử dịch vụ",
+                "hủy lịch",
+                "đổi lịch",
+            ]
+        ):
+            # Procedure phải được xét trước maintenance: phần lớn câu thủ tục
+            # có chứa cụm "đặt lịch bảo dưỡng" nhưng intent chính là thao tác.
             category = "procedure"
+        elif any(
+            w in lower
+            for w in [
+                "bảo dưỡng",
+                "thay dầu",
+                "thay lọc",
+                "bảo trì",
+                "kiểm tra xe",
+                "định kỳ",
+                "mốc km",
+                "chu kỳ",
+                "hạng mục",
+                "bảo dưỡng cấp",
+                "thay thế",
+                "vệ sinh",
+                "đảo lốp",
+                "cân bằng",
+            ]
+        ):
+            category = "maintenance"
+        elif any(
+            w in lower
+            for w in [
+                "pin",
+                "sạc",
+                "dung lượng",
+                "soh",
+                "bms",
+                "chai pin",
+                "turtle mode",
+                "sạc nhanh",
+                "sạc chậm",
+                "trạm sạc",
+                "ip67",
+                "ngập nước",
+                "cứu hộ pin",
+                "tuổi thọ pin",
+                "sạc dc",
+                "sạc ac",
+                "kw",
+                "kwh",
+            ]
+        ):
+            category = "battery"
         elif any(w in lower for w in ["an toàn", "cháy nổ", "nguy hiểm", "cứu hộ"]):
             category = "safety"
         else:
@@ -231,12 +354,13 @@ class QueryRewriter:
         )
 
     def _fallback_keywords(self, query: str) -> list[str]:
-        """Trích xuất từ khóa đơn giản theo token loại bỏ stop-words cơ bản."""
+        """Trích xuất từ khóa đơn giản theo token loại bỏ stop-words cơ bản.
+
+        Giữ lại "xe" và các từ kỹ thuật xe điện quan trọng.
+        """
         stop_words = {
-            "cho",
             "tôi",
             "hỏi",
-            "xe",
             "của",
             "và",
             "là",
@@ -252,7 +376,6 @@ class QueryRewriter:
             "đâu",
             "với",
             "được",
-            "bao",
             "nhiêu",
             "cần",
             "phải",
@@ -260,9 +383,19 @@ class QueryRewriter:
             "sao",
             "bị",
             "đã",
-            "đi",
             "đang",
+            "cho",
+            "mà",
+            "hay",
+            "hoặc",
+            "nếu",
+            "khi",
+            "thì",
+            "vì",
         }
+        # Giữ lại "xe" — đây là từ khóa quan trọng trong ngữ cảnh xe điện
+        # Giữ lại "km", "pin", "vf" vì chúng quan trọng cho domain xe điện
+        domain_keep = {"xe", "km", "pin", "vf", "bm", "dc", "ac", "kw"}
         words = re.findall(r"\b[\w\d]+\b", query.lower())
-        keywords = [w for w in words if w not in stop_words and len(w) > 1]
-        return list(dict.fromkeys(keywords))[:7]
+        keywords = [w for w in words if (w not in stop_words and len(w) >= 2) or w in domain_keep]
+        return list(dict.fromkeys(keywords))[:10]

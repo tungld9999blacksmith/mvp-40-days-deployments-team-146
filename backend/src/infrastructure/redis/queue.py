@@ -141,7 +141,7 @@ class DistributedQueue(Generic[T]):
         if delay and delay > 0:
             delayed_id = uuid.uuid4().hex
             async with self._redis.pipeline(transaction=True) as pipe:
-                pipe.hset(self.delayed_data_key, delayed_id, raw)
+                pipe.hset(self.delayed_data_key, delayed_id, raw)  # type: ignore
                 pipe.zadd(self.delayed_key, {delayed_id: time.time() + delay})
                 await pipe.execute()
             return f"delayed:{delayed_id}"
@@ -309,6 +309,10 @@ class DistributedQueue(Generic[T]):
                 continue
             if messages:
                 await asyncio.gather(*(run_one(m) for m in messages))
+            else:
+                # Always yield to the event loop: a receive that completes without suspending
+                # (e.g. fakeredis ignoring `block`) would otherwise starve every other task.
+                await asyncio.sleep(0)
 
     # --------------------------------------------------------------- inspect
     async def size(self) -> int:

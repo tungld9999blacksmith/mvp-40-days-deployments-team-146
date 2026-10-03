@@ -18,6 +18,7 @@ import time
 from collections.abc import AsyncIterator, Awaitable, Callable
 from uuid import UUID, uuid4
 
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from sqlalchemy import func, select
 from sqlmodel import Session
 
@@ -32,7 +33,7 @@ from src.common.core.vehicle import UserVehicle, VehicleLinkStatus
 from src.common.data_access import eq, ge, gt, in_, lt
 from src.config import Settings
 from src.infrastructure.llm.base import ChatMessage as LlmMessage
-from src.infrastructure.llm.base import LLMProvider, LLMProviderError
+from src.infrastructure.llm.base import LLMProvider
 from src.infrastructure.messaging import AppendResult, ConversationNotFoundError, MessageService
 from src.infrastructure.redis import RedisToolkit
 from src.infrastructure.vectorstore import CONVERSATION_MESSAGES, VectorStore
@@ -255,7 +256,15 @@ class ChatService:
             raise errors.ConversationBusy()
 
         try:
-            async for frame in self._run_turn(conversation_id, client_message_id, content, trace_id, is_disconnected):
+            async for frame in self._run_turn(
+                conversation_id=conversation_id,
+                user_id=user_id,
+                vehicle=vehicle,
+                client_message_id=client_message_id,
+                content=content,
+                trace_id=trace_id,
+                is_disconnected=is_disconnected,
+            ):
                 yield frame
         finally:
             try:
@@ -266,11 +275,14 @@ class ChatService:
     async def _run_turn(
         self,
         conversation_id: UUID,
+        user_id: int,
+        vehicle: UserVehicle,
         client_message_id: UUID,
         content: str,
         trace_id: str | None,
         is_disconnected: Callable[[], Awaitable[bool]] | None,
     ) -> AsyncIterator[SseFrame]:
+        from src.agents.orchestrator import run_agent_turn
         from src.infrastructure.messaging import MessageDto
 
         try:
@@ -306,25 +318,59 @@ class ChatService:
             },
         )
 
-        yield SseFrame(event="status", data={"stage": "retrieving"})
-        citations, context = await self._retrieve(content)
-
-        yield SseFrame(event="status", data={"stage": "generating"})
+        # Seam tích hợp LangGraph Agent Orchestrator (Mục 6 README)
+        yield SseFrame(event="status", data={"stage": "analyzing"})
         agent_run_id = uuid4()
         pieces: list[str] = []
+        collected_citations: list[dict] = []
+
+        vehicle_context = {
+            "vehicle_id": str(vehicle.id),
+            "model": vehicle.external_model_id or vehicle.declared_model_id or "VinFast",
+            "license_plate": vehicle.license_plate,
+            "current_odo": getattr(vehicle, "odometer_km", 0) or 0,
+            "last_service_odo": getattr(vehicle, "last_service_odometer_km", None),
+            "months_since_last": getattr(vehicle, "months_since_last_service", 0) or 0,
+        }
+
+        history_messages = self._build_history_messages(conversation_id, exclude_seq=user_result.message.seq)
+
         try:
-            async for delta in self._llm.chat_stream(self._build_prompt(conversation_id, content, context)):
-                pieces.append(delta)
-                yield SseFrame(event="token", data={"delta": delta})
-                if is_disconnected is not None and await is_disconnected():
-                    logger.info("Client disconnected mid-stream for %s; discarding turn", conversation_id)
-                    return
-        except LLMProviderError as exc:
+            async for event in run_agent_turn(
+                conversation_id=str(conversation_id),
+                user_id=user_id,
+                vehicle_id=vehicle.id,
+                message=content,
+                vehicle_context=vehicle_context,
+                history_messages=history_messages,
+            ):
+                event_type = event.get("type")
+                if event_type == "token":
+                    delta = event.get("delta", "")
+                    pieces.append(delta)
+                    yield SseFrame(event="token", data={"delta": delta})
+                    if is_disconnected is not None and await is_disconnected():
+                        logger.info("Client disconnected mid-stream for %s; discarding turn", conversation_id)
+                        return
+
+                elif event_type == "tool_start":
+                    tool_name = event.get("tool", "")
+                    yield SseFrame(
+                        event="status",
+                        data={"stage": f"Đang tra cứu {tool_name}...", "tool": tool_name},
+                    )
+
+                elif event_type == "completed":
+                    msg_data = event.get("message_data", {})
+                    if "citations" in msg_data and isinstance(msg_data["citations"], list):
+                        collected_citations = msg_data["citations"]
+
+        except Exception as exc:
             yield SseFrame(
                 event="error",
-                data={"code": "LLM_UNAVAILABLE", "message": "Trợ lý tạm thời không trả lời được.", "traceId": trace_id},
+                data={"code": "AGENT_ERROR", "message": "Trợ lý tạm thời không trả lời được.", "traceId": trace_id},
             )
-            logger.warning("LLM error for %s: %s", conversation_id, exc)
+            logger.warning("Agent error for %s: %s", conversation_id, exc, exc_info=True)
             return
 
         answer = "".join(pieces).strip()
@@ -332,7 +378,7 @@ class ChatService:
             conversation_id,
             MessageRole.ASSISTANT,
             answer,
-            citations=citations,
+            citations=collected_citations,
             intent=None,
             agent_run_id=agent_run_id,
             trace_id=trace_id,
@@ -391,6 +437,27 @@ class ChatService:
         if context:
             messages.append(LlmMessage(role="system", content=f"Tài liệu chính hãng liên quan:\n{context}"))
         return messages
+
+    def _build_history_messages(self, conversation_id: UUID, exclude_seq: int | None = None) -> list[BaseMessage]:
+        """Chuyển đổi lịch sử chat thành định dạng BaseMessage cho LangGraph Agent."""
+        with Session(self._engine) as session:
+            history = ChatMessageRepository(session).search(
+                filters=[
+                    eq("conversation_id", conversation_id),
+                    in_("role", [MessageRole.USER, MessageRole.ASSISTANT]),
+                ],
+                order_by=("-seq",),
+                limit=_HISTORY_TURNS,
+            )
+        msgs: list[BaseMessage] = []
+        for msg in reversed(history):
+            if exclude_seq is not None and msg.seq is not None and msg.seq >= exclude_seq:
+                continue
+            if msg.role == MessageRole.USER:
+                msgs.append(HumanMessage(content=msg.content))
+            elif msg.role == MessageRole.ASSISTANT:
+                msgs.append(AIMessage(content=msg.content))
+        return msgs
 
     # -- rate limit -------------------------------------------------------
     async def _check_rate_limit(self, user_id: int) -> None:

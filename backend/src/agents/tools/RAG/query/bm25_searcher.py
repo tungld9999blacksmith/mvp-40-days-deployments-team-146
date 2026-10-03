@@ -5,9 +5,30 @@ import math
 import re
 from typing import Any
 
+from ..ingestion.metadata import canonicalize_vehicle_model
 from .schemas import RetrievalCandidate
 
 logger = logging.getLogger(__name__)
+
+
+# Các thuật ngữ song ngữ xuất hiện trong policy chính hãng. Mở
+# rộng query thay vì dịch/chỉnh sửa tài liệu raw, nhờ đó BM25 có
+# thể tìm nguồn tiếng Anh từ câu hỏi tiếng Việt.
+DOMAIN_QUERY_EXPANSIONS: dict[str, str] = {
+    "bảo hành": "warranty",
+    "pin cao áp": "high voltage battery",
+    "ắc quy 12v": "12v battery",
+    "không giới hạn": "unlimited mileage",
+    "hệ thống treo": "suspension components",
+    "phụ tùng thay thế": "replacement parts",
+    "phụ tùng": "parts",
+    "xưởng dịch vụ": "authorized service center",
+    "không thuộc": "not covered",
+    "không được bảo hành": "not covered warranty exclusions",
+    "ngập nước": "flooded conditions floods",
+    "thương mại": "commercial use",
+    "năm": "years",
+}
 
 
 def default_tokenizer(text: str) -> list[str]:
@@ -80,6 +101,11 @@ class BM25Searcher:
         search_text = query
         if keywords:
             search_text += " " + " ".join(keywords)
+        folded_query = query.casefold()
+        requested_model = canonicalize_vehicle_model(model)
+        expansions = [english for vietnamese, english in DOMAIN_QUERY_EXPANSIONS.items() if vietnamese in folded_query]
+        if expansions:
+            search_text += " " + " ".join(expansions)
 
         query_tokens = self.tokenizer(search_text)
         if not query_tokens:
@@ -93,9 +119,9 @@ class BM25Searcher:
             meta = chunk_data.get("metadata", {})
 
             # Lọc theo Model
-            if model and model != "ALL":
-                doc_model = meta.get("model", "ALL")
-                if doc_model not in [model, "ALL"]:
+            if requested_model and requested_model != "ALL":
+                doc_model = canonicalize_vehicle_model(meta.get("model", "ALL"))
+                if doc_model not in [requested_model, "ALL"]:
                     continue
 
             # Lọc theo Category

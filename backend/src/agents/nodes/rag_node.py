@@ -3,9 +3,14 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from src.agents.state import AgentState
-from src.agents.tools.RAG.query.rag_tool import _get_rag_pipeline
-from src.agents.tools.RAG.query.schemas import UserVehicleContext
+try:
+    from src.agents.state import AgentState
+    from src.agents.tools.RAG.query.rag_tool import _get_rag_pipeline
+    from src.agents.tools.RAG.query.schemas import UserVehicleContext
+except ImportError:
+    from ..state import AgentState  # type: ignore
+    from ..tools.RAG.query.rag_tool import _get_rag_pipeline  # type: ignore
+    from ..tools.RAG.query.schemas import UserVehicleContext  # type: ignore
 
 logger = logging.getLogger(__name__)
 

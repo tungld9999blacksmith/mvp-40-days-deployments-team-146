@@ -9,6 +9,7 @@
 3. [Tra cứu dữ liệu mock theo định danh (`find`)](#3-tra-cứu-dữ-liệu-mock-theo-định-danh-find)
 4. [Quy trình test onboarding chủ xe bằng Gmail thật](#4-quy-trình-test-onboarding-chủ-xe-bằng-gmail-thật)
 5. [Đồng bộ schema API sang TypeScript & sinh dữ liệu mẫu (`api_sync`)](#5-đồng-bộ-schema-api-sang-typescript--sinh-dữ-liệu-mẫu-api_sync)
+6. [Nguồn tài liệu RAG (`data/knowledge/raw`)](#6-nguồn-tài-liệu-rag-dataknowledgeraw)
 
 ---
 
@@ -268,3 +269,39 @@ python tools/api_sync/api_sync.py mock ProfileUpdateRequest -n 20 --seed 42
 - Commit cả `<out>/.api-sync/` (manifest, lịch sử, snapshot) để team dùng chung mốc so sánh — [README §4](tools/api_sync/README.md#4-version-lịch-sử-snapshot).
 - CI: `python tools/api_sync/api_sync.py check --source app` báo lỗi khi TypeScript chưa sync theo backend.
 - Dữ liệu `mock` chỉ theo schema, **không** khớp dữ liệu mock hãng; để test xác thực với hãng dùng [§2](#2-mock-hãng-xe-tạo-dữ-liệu-cho-gmail-của-bạn) + [§3](#3-tra-cứu-dữ-liệu-mock-theo-định-danh-find). Giới hạn khác: [README §6](tools/api_sync/README.md#6-giới-hạn).
+
+---
+
+## 6. Nguồn tài liệu RAG (`data/knowledge/raw`)
+
+Các liên kết dưới đây là nguồn chính thức tương ứng với 27 tài liệu đang dùng cho RAG. Danh sách được đối chiếu ngày 02/10/2026; file hệ thống `.DS_Store` không được tính là tài liệu.
+
+| Tài liệu cục bộ | Nguồn chính thức |
+|---|---|
+| [`battery_cuu_ho_ALL.md`](data/knowledge/raw/battery_cuu_ho_ALL.md) | [Câu hỏi thường gặp VinFast — Dịch vụ cứu hộ pin](https://vinfastauto.com/vn_vi/cau-hoi-thuong-gap) |
+| [`battery_quy_dinh_su_dung_ALL.md`](data/knowledge/raw/battery_quy_dinh_su_dung_ALL.md) | [Dịch vụ pin ô tô điện VinFast](https://vinfastauto.com/vn_vi/dich-vu-pin-oto-dien) |
+| [`battery_sac_VF3.md`](data/knowledge/raw/battery_sac_VF3.md), [`battery_sac_VF5.md`](data/knowledge/raw/battery_sac_VF5.md), [`battery_sac_VF6.md`](data/knowledge/raw/battery_sac_VF6.md) | [FAQ thông tin sản phẩm ô tô VinFast](https://vinfastauto.com/vn_vi/cau-hoi-thuong-gap/cau-hoi-xe-o-to/san-pham) |
+| [`battery_sac_VF7.md`](data/knowledge/raw/battery_sac_VF7.md) | [Câu hỏi thường gặp về xe ô tô VinFast](https://vinfastauto.com/vn_vi/cau-hoi-thuong-gap/cau-hoi-xe-o-to) |
+| [`battery_sac_VF8.md`](data/knowledge/raw/battery_sac_VF8.md) | [FAQ thông tin sản phẩm](https://vinfastauto.com/vn_vi/cau-hoi-thuong-gap/cau-hoi-xe-o-to/san-pham) · [Trang sản phẩm VF 8](https://vinfastauto.com/vn_vi/dat-coc-xe-vf8) |
+| [`battery_sac_VFe34.md`](data/knowledge/raw/battery_sac_VFe34.md) | [Thời gian sạc VF e34 đầy pin trong bao lâu?](https://vinfastauto.com/vn_vi/thoi-gian-sac-vf-e34-day-pin-trong-bao-lau) |
+| [`battery_sac_tai_nha_ALL.md`](data/knowledge/raw/battery_sac_tai_nha_ALL.md) | [Những cách sạc pin ô tô điện VinFast](https://vinfastauto.com/vn_vi/cach-sac-pin-o-to-dien-VinFast) |
+| [`dich_vu_bao_duong_ALL.md`](data/knowledge/raw/dich_vu_bao_duong_ALL.md) | [Dịch vụ bảo dưỡng ô tô VinFast](https://vinfastauto.com/vn_vi/dich-vu-bao-duong-oto) |
+| [`faq_baoduong_baohanh_ALL.md`](data/knowledge/raw/faq_baoduong_baohanh_ALL.md) | [Câu hỏi thường gặp VinFast](https://vinfastauto.com/vn_vi/cau-hoi-thuong-gap) |
+| [`lich_bao_duong_ALL.md`](data/knowledge/raw/lich_bao_duong_ALL.md) | [Lịch bảo dưỡng xe VinFast định kỳ](https://vinfastauto.com/vn_vi/lich-bao-duong-xe-vinfast) |
+| [`pricing_bao_gia_dich_vu_ALL.md`](data/knowledge/raw/pricing_bao_gia_dich_vu_ALL.md) | [Dịch vụ bảo dưỡng ô tô](https://vinfastauto.com/vn_vi/dich-vu-bao-duong-oto) · [Đặt lịch dịch vụ bảo dưỡng](https://shop.vinfastauto.com/vn_vi/dat-lich-dich-vu-bao-duong.html) |
+| [`pricing_phu_kien_VF5.md`](data/knowledge/raw/pricing_phu_kien_VF5.md) | [VinFast eStore — Phụ kiện VF 5](https://shop.vinfastauto.com/vn_vi/5006) |
+| [`pricing_phu_kien_VF8.md`](data/knowledge/raw/pricing_phu_kien_VF8.md) | [VinFast eStore — Phụ kiện VF 8](https://shop.vinfastauto.com/vn_vi/5001) |
+| [`pricing_thiet_bi_sac_ALL.md`](data/knowledge/raw/pricing_thiet_bi_sac_ALL.md) | [VinFast eStore — Thiết bị sạc ô tô điện](https://shop.vinfastauto.com/vn_vi/5004) |
+| [`pricing_tram_sac_ALL.md`](data/knowledge/raw/pricing_tram_sac_ALL.md) | [Dịch vụ pin ô tô điện](https://vinfastauto.com/vn_vi/dich-vu-pin-oto-dien) · [FAQ hệ thống trạm sạc](https://vinfastauto.com/vn_vi/cau-hoi-thuong-gap/cau-hoi-xe-o-to/he-thong-tram-sac) · [Thiết bị sạc trên eStore](https://shop.vinfastauto.com/vn_vi/5004) |
+| [`quy_trinh_ung_dung_ALL.md`](data/knowledge/raw/quy_trinh_ung_dung_ALL.md) | [Hướng dẫn sử dụng ứng dụng VinFast cho ô tô](https://vinfastauto.com/vn_vi/huong-dan-su-dung-ung-dung-vinfast) |
+| [`toi_uu_moc_bao_duong_ALL.md`](data/knowledge/raw/toi_uu_moc_bao_duong_ALL.md) | [VinFast tối ưu mốc bảo dưỡng, giảm chi phí vận hành](https://vinfastauto.com/vn_vi/vinfast-toi-uu-moc-bao-duong-giam-chi-phi-van-hanh-cho-khach-hang) |
+| [`warranty_policy_ALL.md`](data/knowledge/raw/warranty_policy_ALL.md) | [Car Warranty Policy — VinFast](https://vinfastauto.com/vn_en/car-warranty-policy) |
+| [`warranty_maintenance_VF3.pdf`](data/knowledge/raw/warranty_maintenance_VF3.pdf) | [Sổ bảo hành VF 3 — P/N SVC69000164AA, Version 1.5 (PDF)](https://static-cms-prod.vinfastauto.com/250618_vf3_vn_vi_1.5_svc69000164aa.pdf) |
+| [`warranty_maintenance_VF5.pdf`](data/knowledge/raw/warranty_maintenance_VF5.pdf) | [Sổ bảo hành VF 5 — P/N SVC73000155AA, Version 2.1 (PDF)](https://static-cms-prod.vinfastauto.com/250401_vf5_vn_vn_2.1_svc73000155aa.pdf) |
+| [`warranty_maintenance_VF6.pdf`](data/knowledge/raw/warranty_maintenance_VF6.pdf) | [Sổ bảo hành VF 6 — P/N SVC70001295AA, Version 1.5 (PDF)](https://static-cms-prod.vinfastauto.com/250618_vf6_vn_vi_1.5_svc70001295aa_1.pdf) |
+| [`warranty_maintenance_VF7.pdf`](data/knowledge/raw/warranty_maintenance_VF7.pdf) | [Sổ bảo hành VF 7 — P/N SVC71001180AA, Version 1.5 (PDF)](https://static-cms-prod.vinfastauto.com/250618_vf7_vn_vn_1.5_svc71001180aa.pdf) |
+| [`warranty_maintenance_VF8.pdf`](data/knowledge/raw/warranty_maintenance_VF8.pdf) | [Sổ bảo hành VF 8 — P/N SVC30000403, Version 1.6 (PDF)](https://static-cms-prod.vinfastauto.com/20241206_VF8_VN_1.6_SVC30000403.pdf) |
+| [`warranty_maintenance_VFMPV7.pdf`](data/knowledge/raw/warranty_maintenance_VFMPV7.pdf) | [Sổ bảo hành VF MPV 7 — Version 1.0 (PDF)](https://static-cms-prod.vinfastauto.com/260325_wb_mpv7_vn_vi_1.0.pdf) |
+| [`warranty_maintenance_VFe34.pdf`](data/knowledge/raw/warranty_maintenance_VFe34.pdf) | [Sổ bảo hành VF e34 — P/N SVC20000252, Version 1.4 (PDF)](https://static-cms-prod.vinfastauto.com/20241202_VFe34_VN_VN_1.5_SVC20000252_0.pdf) |
+
+> Nội dung và giá trên website có thể được VinFast cập nhật. Khi tái lập chỉ mục RAG, cần kiểm tra ngày hiệu lực và phiên bản mới nhất của nguồn trước khi thay thế tài liệu cục bộ.

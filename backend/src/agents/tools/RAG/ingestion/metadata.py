@@ -1,7 +1,35 @@
+import re
 from datetime import UTC, datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
+
+_CANONICAL_MODELS = {
+    "all": "ALL",
+    "vf3": "VF3",
+    "vf5": "VF5",
+    "vf5plus": "VF5",
+    "vf6": "VF6",
+    "vf7": "VF7",
+    "vf8": "VF8",
+    "vf9": "VF9",
+    "vfe34": "VFe34",
+    "vfmpv7": "VFMPV7",
+    "evo200": "Evo200",
+    "feliz": "Feliz",
+    "klara": "Klara",
+    "vento": "Vento",
+    "theon": "Theon",
+}
+
+
+def canonicalize_vehicle_model(model: str | None) -> str | None:
+    """Normalize common spacing/casing variants to the indexed model label."""
+    if model is None:
+        return None
+    value = model.strip()
+    key = re.sub(r"[^a-z0-9]", "", value.casefold())
+    return _CANONICAL_MODELS.get(key, value)
 
 
 class DocumentMetadata(BaseModel):
