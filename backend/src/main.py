@@ -115,10 +115,14 @@ configure_logging(
 )
 # httpx (used by the Qdrant client) logs every request at INFO.
 logging.getLogger("httpx").setLevel(logging.WARNING)
-origins = [os.getenv("FRONTEND_URL", "")]
+frontend_url = os.getenv("FRONTEND_URL", "")
+# FRONTEND_URL=* disables the CORS restriction (any origin is echoed back, so
+# credentialed requests still work - a literal "*" is rejected by browsers).
+allow_all_origins = frontend_url.strip() == "*"
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=[] if allow_all_origins else [frontend_url],
+    allow_origin_regex=".*" if allow_all_origins else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,10 +1,7 @@
 from __future__ import annotations
 
 from ...config import Settings
-from .anthropic_provider import AnthropicProvider
 from .base import LLMProvider
-from .gemini_provider import GeminiProvider
-from .openai_compatible_provider import OpenAICompatibleProvider
 
 
 def create_llm_provider(settings: Settings, provider: str | None = None) -> LLMProvider:
@@ -16,22 +13,30 @@ def create_llm_provider(settings: Settings, provider: str | None = None) -> LLMP
         name = "gemini"
 
     if name == "openai":
+        from .openai_compatible_provider import OpenAICompatibleProvider
+
         return OpenAICompatibleProvider(
             api_key=settings.openai_api_key,
             model=settings.model_name,
             provider_name="openai",
         )
     if name == "anthropic":
+        from .anthropic_provider import AnthropicProvider
+
         return AnthropicProvider(
             api_key=settings.anthropic_api_key,
             model=settings.anthropic_model,
         )
     if name == "gemini":
+        from .gemini_provider import GeminiProvider
+
         return GeminiProvider(
             api_key=settings.gemini_api_key,
             model=settings.gemini_model,
         )
     if name == "grok":
+        from .openai_compatible_provider import OpenAICompatibleProvider
+
         return OpenAICompatibleProvider(
             api_key=settings.grok_api_key,
             model=settings.grok_model,
@@ -39,6 +44,8 @@ def create_llm_provider(settings: Settings, provider: str | None = None) -> LLMP
             base_url=settings.grok_base_url,
         )
     if name == "deepseek":
+        from .openai_compatible_provider import OpenAICompatibleProvider
+
         return OpenAICompatibleProvider(
             api_key=settings.deepseek_api_key,
             model=settings.deepseek_model,

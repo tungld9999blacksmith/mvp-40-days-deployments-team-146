@@ -74,6 +74,7 @@ Database Postgres: Supabase (bên ngoài Railway)
 | [`.github/workflows/ci-cd.yml`](../../.github/workflows/ci-cd.yml) | Workflow CI/CD |
 | [`dockerfiles/Dockerfile.railway`](../../dockerfiles/Dockerfile.railway) | Image deploy lên Railway, dùng chung cho `backend` và `worker` (không cache mount, nghe trên `$PORT`) |
 | [`backend/mock-ev-system/Dockerfile.railway`](../../backend/mock-ev-system/Dockerfile.railway) | Image deploy `mock-ev-system` lên Railway (build context là `backend/`) |
+| [`scripts/railway-deploy.ps1`](../../scripts/railway-deploy.ps1) / [`.sh`](../../scripts/railway-deploy.sh) | Deploy từ local: kiểm tra biến, đẩy `.railway.env`, `railway up`, smoke test — xem [RAILWAY_LOCAL_DEPLOY.md](RAILWAY_LOCAL_DEPLOY.md) |
 | [`scripts/build-backend-railway.ps1`](../../scripts/build-backend-railway.ps1) / [`.sh`](../../scripts/build-backend-railway.sh) | Build / chạy / smoke test 2 image Railway ở local |
 | [`dockerfiles/Dockerfile`](../../dockerfiles/Dockerfile) | Image cho docker compose ở local (có cache mount của uv) |
 | [`backend/src/config.py`](../../backend/src/config.py) | Đọc cấu hình: **biến môi trường > file `.env` > giá trị mặc định** |
@@ -309,6 +310,8 @@ Tên service phải khớp chính xác (phân biệt hoa thường) với tên t
 ## Bước 9 — Deploy thử từ local
 
 Deploy tay 1 lần để chắc Railway build được trước khi giao cho CI. Chạy ở **thư mục gốc repo**:
+
+> Có script làm sẵn các bước dưới (kèm kiểm tra biến môi trường): `./scripts/railway-deploy.ps1 check` rồi `./scripts/railway-deploy.ps1 deploy all`. Xem [RAILWAY_LOCAL_DEPLOY.md](RAILWAY_LOCAL_DEPLOY.md).
 
 ```bash
 railway login

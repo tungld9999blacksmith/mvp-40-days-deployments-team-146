@@ -1,0 +1,21 @@
+{
+  "include": [
+    "src",
+    "tests"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/.venv",
+    "deprecated"
+  ],
+  "extraPaths": [
+    ".",
+    "src",
+    "shared/ev-contracts/src",
+    "mock-ev-system/src"
+  ],
+  "venvPath": "..",
+  "venv": ".venv",
+  "pythonVersion": "3.11"
+}

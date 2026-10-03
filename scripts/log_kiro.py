@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 """
 Kiro prompt logger.
-Called by Kiro promptSubmit hook via USER_PROMPT env var.
+Called by Kiro UserPromptSubmit hook — Kiro pipes JSON on stdin.
+
+Stdin payload shape:
+  {"userPrompt": "...", "sessionId": "...", ...}
+
 Appends a timestamped entry to .ai-log/session.jsonl.
 """
 import json
 import os
+import select
 import subprocess
 import sys
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 VN_TZ = timezone(timedelta(hours=7))
@@ -24,25 +29,43 @@ def git(cmd):
 
 
 def read_prompt_from_stdin() -> str:
-    """Kiro UserPromptSubmit hook sends JSON on stdin with field 'userPrompt'."""
+    """
+    Đọc JSON từ stdin do Kiro hook gửi vào.
+    Dùng select() để không block nếu stdin rỗng.
+    """
     try:
+        # Kiểm tra stdin có data không (non-blocking, timeout 0.5s)
+        if hasattr(select, "select"):
+            ready, _, _ = select.select([sys.stdin], [], [], 0.5)
+            if not ready:
+                return ""
         raw = sys.stdin.read().strip()
-        if raw:
-            data = json.loads(raw)
-            if isinstance(data, dict) and data.get("userPrompt"):
-                return str(data["userPrompt"])[:2000]
+        if not raw:
+            return ""
+        data = json.loads(raw)
+        if isinstance(data, dict):
+            # Thử các field phổ biến mà Kiro có thể dùng
+            for field in ("userPrompt", "prompt", "message", "text", "content"):
+                val = data.get(field)
+                if val and isinstance(val, str) and val.strip():
+                    return val.strip()[:2000]
     except Exception:
         pass
     return ""
 
 
 def main():
-    # Kiro passes prompt via stdin JSON (userPrompt field); fallback to env var
+    # Ưu tiên: stdin JSON → env var USER_PROMPT → fallback
     prompt = (
         read_prompt_from_stdin()
-        or os.environ.get("USER_PROMPT", "")
-        or "(kiro session active)"
-    )[:2000]
+        or os.environ.get("USER_PROMPT", "").strip()
+    )
+
+    # Nếu vẫn trống — không ghi log vô nghĩa
+    if not prompt:
+        sys.exit(0)
+
+    prompt = prompt[:2000]
 
     origin = git("git remote get-url origin")
     if not origin:
@@ -52,19 +75,19 @@ def main():
         repo = repo[:-4]
 
     entry = {
-        "ts": datetime.now(VN_TZ).isoformat(),
-        "tool": "kiro",
-        "event": "promptSubmit",
+        "ts":         datetime.now(VN_TZ).isoformat(),
+        "tool":       "kiro",
+        "event":      "promptSubmit",
         "session_id": "",
-        "model": "kiro",
-        "repo": repo,
-        "branch": git("git rev-parse --abbrev-ref HEAD"),
-        "commit": git("git rev-parse --short HEAD"),
-        "student": git("git config user.email"),
-        "prompt": prompt,
+        "model":      "kiro",
+        "repo":       repo,
+        "branch":     git("git rev-parse --abbrev-ref HEAD"),
+        "commit":     git("git rev-parse --short HEAD"),
+        "student":    git("git config user.email"),
+        "prompt":     prompt,
     }
 
-    log_dir = Path(os.environ.get("AI_LOG_DIR", ".ai-log"))
+    log_dir  = Path(os.environ.get("AI_LOG_DIR", ".ai-log"))
     log_dir.mkdir(exist_ok=True)
     log_file = log_dir / "session.jsonl"
 
