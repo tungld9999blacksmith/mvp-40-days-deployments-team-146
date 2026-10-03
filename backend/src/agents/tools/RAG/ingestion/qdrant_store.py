@@ -53,16 +53,8 @@ class QdrantVectorStore:
         from src.config import get_settings
 
         cfg = get_settings()
-        self.url = (
-            url
-            or cfg.qdrant_url
-            or os.getenv("QDRANT_URL", "")
-        ).strip()
-        self.api_key = (
-            api_key
-            or cfg.qdrant_api_key
-            or os.getenv("QDRANT_API_KEY", "")
-        ).strip()
+        self.url = (url or cfg.qdrant_url or os.getenv("QDRANT_URL", "")).strip()
+        self.api_key = (api_key or cfg.qdrant_api_key or os.getenv("QDRANT_API_KEY", "")).strip()
         self.collection_name = (
             collection_name
             or cfg.qdrant_collection_name
@@ -169,10 +161,7 @@ class QdrantVectorStore:
             except Exception:
                 existing_ids = set()
 
-            missing_chunks = [
-                c for c in batch
-                if str(uuid.uuid5(uuid.NAMESPACE_DNS, c.chunk_id)) not in existing_ids
-            ]
+            missing_chunks = [c for c in batch if str(uuid.uuid5(uuid.NAMESPACE_DNS, c.chunk_id)) not in existing_ids]
 
             if not missing_chunks:
                 logger.info(f"Batch {i // batch_size + 1}: Toàn bộ {len(batch)} chunks đã có trong Qdrant. Bỏ qua.")
@@ -255,9 +244,7 @@ class QdrantVectorStore:
 
         # Lọc danh mục dịch vụ
         if category and category not in ["all", "general"]:
-            must_conditions.append(
-                FieldCondition(key="category", match=MatchValue(value=category))
-            )
+            must_conditions.append(FieldCondition(key="category", match=MatchValue(value=category)))
 
         query_filter = Filter(must=must_conditions) if must_conditions else None
 
@@ -314,12 +301,14 @@ class QdrantVectorStore:
 
             for record in records:
                 payload = record.payload or {}
-                all_chunks.append({
-                    "chunk_id": payload.get("chunk_id", str(record.id)),
-                    "doc_id": payload.get("document_id", ""),
-                    "content": payload.get("content", ""),
-                    "metadata": payload.get("metadata", payload),
-                })
+                all_chunks.append(
+                    {
+                        "chunk_id": payload.get("chunk_id", str(record.id)),
+                        "doc_id": payload.get("document_id", ""),
+                        "content": payload.get("content", ""),
+                        "metadata": payload.get("metadata", payload),
+                    }
+                )
 
             if next_page_offset is None:
                 break

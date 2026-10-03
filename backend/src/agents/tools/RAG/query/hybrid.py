@@ -42,10 +42,7 @@ class HybridRetriever:
         if window <= 0 or not candidates or not self.bm25_searcher.corpus_chunks:
             return candidates
 
-        corpus = {
-            str(item.get("chunk_id", "")): item
-            for item in self.bm25_searcher.corpus_chunks
-        }
+        corpus = {str(item.get("chunk_id", "")): item for item in self.bm25_searcher.corpus_chunks}
         expanded: list[RetrievalCandidate] = []
         for candidate in candidates:
             prefix, marker, number = candidate.chunk_id.rpartition("_chk_")
@@ -94,9 +91,7 @@ class HybridRetriever:
             return []
 
         query_terms = {
-            token
-            for token in re.findall(r"\b[\w\d]+\b", analysis.original_query.casefold())
-            if len(token) >= 2
+            token for token in re.findall(r"\b[\w\d]+\b", analysis.original_query.casefold()) if len(token) >= 2
         }
         query_numbers = set(re.findall(r"\d+(?:[.,]\d+)*", analysis.original_query.casefold()))
 
@@ -173,9 +168,11 @@ class HybridRetriever:
 
             if has_qdrant:
                 from src.agents.tools.RAG.ingestion import QdrantVectorStore
+
                 self.vector_store = QdrantVectorStore()
             else:
                 from src.agents.tools.RAG.ingestion import QdrantVectorStore
+
                 self.vector_store = QdrantVectorStore()
 
         return self.vector_store
@@ -316,7 +313,9 @@ class HybridRetriever:
                         doc_id=meta.get("doc_id", ""),
                         content=r.content,
                         metadata=meta,
-                        dense_score=getattr(r, "score", None) if getattr(r, "score", None) is not None else getattr(r, "dense_score", None),
+                        dense_score=getattr(r, "score", None)
+                        if getattr(r, "score", None) is not None
+                        else getattr(r, "dense_score", None),
                     )
                 )
             return candidates

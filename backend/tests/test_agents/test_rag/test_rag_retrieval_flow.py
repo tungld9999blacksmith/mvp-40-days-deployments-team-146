@@ -5,6 +5,7 @@ Kiểm tra toàn bộ luồng RAG Retrieval & Serving Engine:
 Chạy kiểm thử từ root project:
     python backend/tests/test_agents/test_rag_retrieval_flow.py
 """
+
 from __future__ import annotations
 
 import logging
@@ -130,17 +131,45 @@ from src.agents.tools.RAG.query.schemas import RetrievalCandidate
 hybrid = HybridRetriever(bm25_searcher=bm25)
 
 dense_cands = [
-    RetrievalCandidate(chunk_id="c1", doc_id="vf8_manual", content=sample_corpus[0]["content"], metadata=sample_corpus[0]["metadata"], dense_score=0.92),
-    RetrievalCandidate(chunk_id="c4", doc_id="general_policy", content=sample_corpus[3]["content"], metadata=sample_corpus[3]["metadata"], dense_score=0.75),
+    RetrievalCandidate(
+        chunk_id="c1",
+        doc_id="vf8_manual",
+        content=sample_corpus[0]["content"],
+        metadata=sample_corpus[0]["metadata"],
+        dense_score=0.92,
+    ),
+    RetrievalCandidate(
+        chunk_id="c4",
+        doc_id="general_policy",
+        content=sample_corpus[3]["content"],
+        metadata=sample_corpus[3]["metadata"],
+        dense_score=0.75,
+    ),
 ]
 sparse_cands = [
-    RetrievalCandidate(chunk_id="c2", doc_id="vf8_warranty", content=sample_corpus[1]["content"], metadata=sample_corpus[1]["metadata"], sparse_score=1.5),
-    RetrievalCandidate(chunk_id="c1", doc_id="vf8_manual", content=sample_corpus[0]["content"], metadata=sample_corpus[0]["metadata"], sparse_score=1.2),
+    RetrievalCandidate(
+        chunk_id="c2",
+        doc_id="vf8_warranty",
+        content=sample_corpus[1]["content"],
+        metadata=sample_corpus[1]["metadata"],
+        sparse_score=1.5,
+    ),
+    RetrievalCandidate(
+        chunk_id="c1",
+        doc_id="vf8_manual",
+        content=sample_corpus[0]["content"],
+        metadata=sample_corpus[0]["metadata"],
+        sparse_score=1.2,
+    ),
 ]
 
 fused = hybrid._reciprocal_rank_fusion(dense_cands, sparse_cands, top_n=3)
 check("RRF hợp nhất thành công", len(fused) > 0)
-check("Chunk c1 xuất hiện ở cả 2 nhánh có điểm RRF cao nhất", fused[0].chunk_id == "c1", f"top={fused[0].chunk_id}, score={fused[0].rrf_score}")
+check(
+    "Chunk c1 xuất hiện ở cả 2 nhánh có điểm RRF cao nhất",
+    fused[0].chunk_id == "c1",
+    f"top={fused[0].chunk_id}, score={fused[0].rrf_score}",
+)
 
 # ─────────────────────────────────────────────────────────────────────────────
 section("BƯỚC 4: RERANKER (CROSS-ENCODER)")

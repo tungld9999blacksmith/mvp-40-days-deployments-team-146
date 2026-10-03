@@ -140,33 +140,42 @@ def build_graph(llm: Any | None = None, tools: list[Any] | None = None) -> Any:
                                 sec = ""
                                 if " - Mục:" in title_part:
                                     title_part, sec = title_part.split(" - Mục:", 1)
-                                collected_citations.append({
-                                    "title": title_part.strip(),
-                                    "section": sec.strip(),
-                                    "document_id": "DOC-VINFAST-OFFICIAL",
-                                })
+                                collected_citations.append(
+                                    {
+                                        "title": title_part.strip(),
+                                        "section": sec.strip(),
+                                        "document_id": "DOC-VINFAST-OFFICIAL",
+                                    }
+                                )
                 elif name == "get_due_maintenance":
                     try:
                         import ast
+
                         data = ast.literal_eval(content) if isinstance(content, str) and content.startswith("{") else {}
                         model_name = data.get("model") or (vehicle_ctx.get("model") if vehicle_ctx else "VinFast")
                         m_km = data.get("milestone_km") or (vehicle_ctx.get("current_odo") if vehicle_ctx else "")
-                        sec_info = f"Mốc bảo dưỡng {m_km:,} km" if isinstance(m_km, (int, float)) else f"Mốc bảo dưỡng {m_km}"
-                        collected_citations.append({
-                            "title": f"Sổ tay bảo dưỡng định kỳ VinFast {model_name}",
-                            "section": sec_info,
-                            "document_id": f"DOC-{str(model_name).upper()}-MAINTENANCE",
-                        })
+                        sec_info = (
+                            f"Mốc bảo dưỡng {m_km:,} km" if isinstance(m_km, (int, float)) else f"Mốc bảo dưỡng {m_km}"
+                        )
+                        collected_citations.append(
+                            {
+                                "title": f"Sổ tay bảo dưỡng định kỳ VinFast {model_name}",
+                                "section": sec_info,
+                                "document_id": f"DOC-{str(model_name).upper()}-MAINTENANCE",
+                            }
+                        )
                     except Exception:
                         pass
 
             if not collected_citations:
                 model_name = vehicle_ctx.get("model") if vehicle_ctx else "VinFast"
-                collected_citations.append({
-                    "title": f"Cẩm nang hướng dẫn sử dụng và bảo dưỡng xe {model_name}",
-                    "section": "Quy trình bảo dưỡng tiêu chuẩn chính hãng",
-                    "document_id": f"DOC-{str(model_name).upper()}-MANUAL",
-                })
+                collected_citations.append(
+                    {
+                        "title": f"Cẩm nang hướng dẫn sử dụng và bảo dưỡng xe {model_name}",
+                        "section": "Quy trình bảo dưỡng tiêu chuẩn chính hãng",
+                        "document_id": f"DOC-{str(model_name).upper()}-MANUAL",
+                    }
+                )
 
             result["citations"] = collected_citations
             result["confidence"] = "high"

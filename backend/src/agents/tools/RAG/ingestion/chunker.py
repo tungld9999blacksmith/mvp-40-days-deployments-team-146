@@ -37,17 +37,21 @@ class DocumentChunker:
             prefix = f"[{doc.metadata.title} > {header}]\n" if header else f"[{doc.metadata.title}]\n"
 
             if len(content) + len(prefix) <= self.chunk_size:
-                raw_chunks.append({
-                    "text": prefix + content,
-                    "section_header": header,
-                })
+                raw_chunks.append(
+                    {
+                        "text": prefix + content,
+                        "section_header": header,
+                    }
+                )
             else:
                 sub_chunks = self._recursive_split(content, self.chunk_size - len(prefix), self.chunk_overlap)
                 for sc in sub_chunks:
-                    raw_chunks.append({
-                        "text": prefix + sc,
-                        "section_header": header,
-                    })
+                    raw_chunks.append(
+                        {
+                            "text": prefix + sc,
+                            "section_header": header,
+                        }
+                    )
 
         # 3. Đóng gói thành DocumentChunk với metadata
         total_chunks = len(raw_chunks)
@@ -60,14 +64,16 @@ class DocumentChunker:
             # Trích xuất metadata bổ sung từ nội dung chunk (vd: có nhắc tới mốc km hay model cụ thể)
             chunk_meta = self._enrich_chunk_metadata(doc, chunk_text, item["section_header"], idx, total_chunks)
 
-            chunks.append(DocumentChunk(
-                chunk_id=chunk_id,
-                doc_id=doc.doc_id,
-                content=chunk_text,
-                metadata=chunk_meta,
-                chunk_index=idx,
-                total_chunks=total_chunks,
-            ))
+            chunks.append(
+                DocumentChunk(
+                    chunk_id=chunk_id,
+                    doc_id=doc.doc_id,
+                    content=chunk_text,
+                    metadata=chunk_meta,
+                    chunk_index=idx,
+                    total_chunks=total_chunks,
+                )
+            )
 
         logger.info(f"Tạo {len(chunks)} chunks cho tài liệu: {doc.doc_id}")
         return chunks
@@ -83,9 +89,7 @@ class DocumentChunker:
         # Heading Markdown: # , ## , ###
         md_header = re.compile(r"^(#{1,3})\s+(.+)$")
         # Heading Roman numeral từ PDF: "I.", "II.", "III.", "IV.", "V." ... ở đầu dòng
-        roman_header = re.compile(
-            r"^(I{1,3}V?|IV|VI{0,3}|IX|XI{0,3}|XX?)[\.\)]\s+(.+)$"
-        )
+        roman_header = re.compile(r"^(I{1,3}V?|IV|VI{0,3}|IX|XI{0,3}|XX?)[\.\)]\s+(.+)$")
         # ALL-CAPS heading ngắn (< 80 ký tự, không phải số trang đơn lẻ)
         allcaps_header = re.compile(r"^([A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝĐ\s]{8,79})$")
 
@@ -110,10 +114,12 @@ class DocumentChunker:
                 if current_lines:
                     content_str = "\n".join(current_lines).strip()
                     if content_str:
-                        sections.append({
-                            "header": current_header,
-                            "content": content_str,
-                        })
+                        sections.append(
+                            {
+                                "header": current_header,
+                                "content": content_str,
+                            }
+                        )
                 current_header = header_text
                 current_lines = [line]
             else:
@@ -122,10 +128,12 @@ class DocumentChunker:
         if current_lines:
             content_str = "\n".join(current_lines).strip()
             if content_str:
-                sections.append({
-                    "header": current_header,
-                    "content": content_str,
-                })
+                sections.append(
+                    {
+                        "header": current_header,
+                        "content": content_str,
+                    }
+                )
 
         if not sections:
             sections = [{"header": "", "content": text}]
@@ -239,27 +247,57 @@ class DocumentChunker:
 
         # Các section rõ ràng là nhật ký bảo dưỡng → override sang maintenance
         maintenance_headers = [
-            "nhật ký bảo dưỡng", "lịch bảo dưỡng", "bảo dưỡng định kỳ",
-            "bảo dưỡng cấp", "hạng mục bảo dưỡng", "mốc bảo dưỡng",
+            "nhật ký bảo dưỡng",
+            "lịch bảo dưỡng",
+            "bảo dưỡng định kỳ",
+            "bảo dưỡng cấp",
+            "hạng mục bảo dưỡng",
+            "mốc bảo dưỡng",
         ]
         warranty_headers = [
-            "chính sách bảo hành", "điều kiện bảo hành", "phạm vi bảo hành",
-            "thời hạn bảo hành", "trường hợp không bảo hành", "quy trình bảo hành",
+            "chính sách bảo hành",
+            "điều kiện bảo hành",
+            "phạm vi bảo hành",
+            "thời hạn bảo hành",
+            "trường hợp không bảo hành",
+            "quy trình bảo hành",
             "bảo hành",
         ]
         pricing_headers = [
-            "bảng giá", "giá dịch vụ", "chi phí", "giá sạc",
-            "phí sạc", "phí thuê pin", "thanh toán phí",
+            "bảng giá",
+            "giá dịch vụ",
+            "chi phí",
+            "giá sạc",
+            "phí sạc",
+            "phí thuê pin",
+            "thanh toán phí",
         ]
         procedure_headers = [
-            "quy trình", "hitl", "đặt lịch", "các bước", "làm thế nào",
-            "cách kiểm tra", "cách cài đặt", "hướng dẫn thêm",
-            "chuyển quyền", "cập nhật phần mềm", "lịch sử dịch vụ",
+            "quy trình",
+            "hitl",
+            "đặt lịch",
+            "các bước",
+            "làm thế nào",
+            "cách kiểm tra",
+            "cách cài đặt",
+            "hướng dẫn thêm",
+            "chuyển quyền",
+            "cập nhật phần mềm",
+            "lịch sử dịch vụ",
         ]
         battery_headers = [
-            "an toàn pin", "pin ô tô", "pin cao áp", "cứu hộ pin",
-            "sạc pin", "trạm sạc", "bộ sạc", "súng sạc", "hốc sạc",
-            "công suất sạc", "thời gian nạp pin", "quãng đường di chuyển 1 lần sạc",
+            "an toàn pin",
+            "pin ô tô",
+            "pin cao áp",
+            "cứu hộ pin",
+            "sạc pin",
+            "trạm sạc",
+            "bộ sạc",
+            "súng sạc",
+            "hốc sạc",
+            "công suất sạc",
+            "thời gian nạp pin",
+            "quãng đường di chuyển 1 lần sạc",
         ]
 
         # Pricing catalogues may contain headings such as "bộ sạc", "pin cao áp"

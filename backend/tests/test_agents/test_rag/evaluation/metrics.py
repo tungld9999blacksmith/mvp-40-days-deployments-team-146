@@ -9,6 +9,7 @@ Chỉ số được tính:
     - Latency              : thời gian phản hồi mỗi câu truy vấn (ms)
     - Pass Rate            : tỷ lệ câu đạt ngưỡng score + keyword đồng thời
 """
+
 from __future__ import annotations
 
 import re
@@ -20,6 +21,7 @@ from typing import Optional
 @dataclass
 class QueryResult:
     """Kết quả retrieval cho một câu query."""
+
     id: str
     query: str
     model: str | None
@@ -51,17 +53,18 @@ class QueryResult:
 @dataclass
 class EvalMetrics:
     """Tổng hợp các chỉ số đánh giá toàn bộ golden set."""
+
     total: int = 0
     # Hit Rate
-    hit_at_1: float = 0.0    # Có chunk đúng ở vị trí #1
-    hit_at_3: float = 0.0    # Có chunk đúng trong Top-3
-    hit_at_5: float = 0.0    # Có chunk đúng trong Top-5
+    hit_at_1: float = 0.0  # Có chunk đúng ở vị trí #1
+    hit_at_3: float = 0.0  # Có chunk đúng trong Top-3
+    hit_at_5: float = 0.0  # Có chunk đúng trong Top-5
     # Score
     avg_top_score: float = 0.0
-    avg_score_pass_rate: float = 0.0   # % câu có top_score >= min_score
+    avg_score_pass_rate: float = 0.0  # % câu có top_score >= min_score
     # Keyword
     avg_keyword_ratio: float = 0.0
-    keyword_pass_rate: float = 0.0     # % câu có keyword_ratio >= 0.5
+    keyword_pass_rate: float = 0.0  # % câu có keyword_ratio >= 0.5
     # MRR
     mrr: float = 0.0
     # Pass (score AND keyword)
@@ -80,6 +83,7 @@ class EvalMetrics:
 # ---------------------------------------------------------------------------
 # Hàm tính từng chỉ số
 # ---------------------------------------------------------------------------
+
 
 def normalize_doc_id(value: str) -> str:
     """Chuẩn hóa ID file/chunk để so khớp chính xác, không dùng substring."""
@@ -140,16 +144,30 @@ def compute_context_recall(result: QueryResult) -> float:
 
 
 _VI_STOPWORDS = {
-    "có", "không", "là", "gì", "bao", "nhiêu", "như", "thế", "nào",
-    "cho", "của", "và", "với", "tôi", "xe", "được", "cần", "thì",
+    "có",
+    "không",
+    "là",
+    "gì",
+    "bao",
+    "nhiêu",
+    "như",
+    "thế",
+    "nào",
+    "cho",
+    "của",
+    "và",
+    "với",
+    "tôi",
+    "xe",
+    "được",
+    "cần",
+    "thì",
 }
 
 
 def _meaningful_tokens(text: str) -> set[str]:
     return {
-        token
-        for token in re.findall(r"\b[\w\d]+\b", text.casefold())
-        if len(token) >= 2 and token not in _VI_STOPWORDS
+        token for token in re.findall(r"\b[\w\d]+\b", text.casefold()) if len(token) >= 2 and token not in _VI_STOPWORDS
     }
 
 
@@ -179,11 +197,7 @@ def compute_citation_correctness(result: QueryResult) -> float | None:
 
 def is_pass(result: QueryResult) -> bool:
     """Pass khi retrieval đúng nguồn, đủ bằng chứng và đạt score."""
-    return (
-        result.top_score >= result.min_score
-        and compute_keyword_ratio(result) >= 0.5
-        and compute_hit_at_k(result, 5)
-    )
+    return result.top_score >= result.min_score and compute_keyword_ratio(result) >= 0.5 and compute_hit_at_k(result, 5)
 
 
 def compute_metrics(results: list[QueryResult]) -> EvalMetrics:
@@ -194,38 +208,34 @@ def compute_metrics(results: list[QueryResult]) -> EvalMetrics:
     n = len(results)
     m = EvalMetrics(total=n)
 
-    scores       = [r.top_score for r in results]
-    latencies    = [r.latency_ms for r in results]
-    kw_ratios    = [compute_keyword_ratio(r) for r in results]
-    rr_scores    = [compute_reciprocal_rank(r) for r in results]
-    hit1s        = [compute_hit_at_k(r, 1) for r in results]
-    hit3s        = [compute_hit_at_k(r, 3) for r in results]
-    hit5s        = [compute_hit_at_k(r, 5) for r in results]
-    passes       = [is_pass(r) for r in results]
+    scores = [r.top_score for r in results]
+    latencies = [r.latency_ms for r in results]
+    kw_ratios = [compute_keyword_ratio(r) for r in results]
+    rr_scores = [compute_reciprocal_rank(r) for r in results]
+    hit1s = [compute_hit_at_k(r, 1) for r in results]
+    hit3s = [compute_hit_at_k(r, 3) for r in results]
+    hit5s = [compute_hit_at_k(r, 5) for r in results]
+    passes = [is_pass(r) for r in results]
     score_passes = [r.top_score >= r.min_score for r in results]
     context_precisions = [compute_context_precision(r) for r in results]
     context_recalls = [compute_context_recall(r) for r in results]
     answer_relevancies = [score for r in results if (score := compute_answer_relevancy(r)) is not None]
     citation_correctness = [score for r in results if (score := compute_citation_correctness(r)) is not None]
 
-    m.hit_at_1          = sum(hit1s) / n
-    m.hit_at_3          = sum(hit3s) / n
-    m.hit_at_5          = sum(hit5s) / n
-    m.avg_top_score     = sum(scores) / n
+    m.hit_at_1 = sum(hit1s) / n
+    m.hit_at_3 = sum(hit3s) / n
+    m.hit_at_5 = sum(hit5s) / n
+    m.avg_top_score = sum(scores) / n
     m.avg_score_pass_rate = sum(score_passes) / n
     m.avg_keyword_ratio = sum(kw_ratios) / n
     m.keyword_pass_rate = sum(kw >= 0.5 for kw in kw_ratios) / n
-    m.mrr               = sum(rr_scores) / n
-    m.pass_rate         = sum(passes) / n
-    m.avg_latency_ms    = sum(latencies) / n
+    m.mrr = sum(rr_scores) / n
+    m.pass_rate = sum(passes) / n
+    m.avg_latency_ms = sum(latencies) / n
     m.context_precision = sum(context_precisions) / n
     m.context_recall = sum(context_recalls) / n
-    m.answer_relevancy = (
-        sum(answer_relevancies) / len(answer_relevancies) if answer_relevancies else None
-    )
-    m.citation_correctness = (
-        sum(citation_correctness) / len(citation_correctness) if citation_correctness else None
-    )
+    m.answer_relevancy = sum(answer_relevancies) / len(answer_relevancies) if answer_relevancies else None
+    m.citation_correctness = sum(citation_correctness) / len(citation_correctness) if citation_correctness else None
 
     # P95 latency
     sorted_lat = sorted(latencies)
@@ -242,11 +252,11 @@ def compute_metrics(results: list[QueryResult]) -> EvalMetrics:
         cat_passes = [is_pass(r) for r in cat_results]
         cat_scores = [r.top_score for r in cat_results]
         m.category_stats[cat] = {
-            "total"     : cn,
-            "pass"      : sum(cat_passes),
-            "pass_rate" : sum(cat_passes) / cn,
-            "avg_score" : sum(cat_scores) / cn,
-            "hit_at_3"  : sum(compute_hit_at_k(r, 3) for r in cat_results) / cn,
+            "total": cn,
+            "pass": sum(cat_passes),
+            "pass_rate": sum(cat_passes) / cn,
+            "avg_score": sum(cat_scores) / cn,
+            "hit_at_3": sum(compute_hit_at_k(r, 3) for r in cat_results) / cn,
         }
 
     return m
@@ -254,11 +264,11 @@ def compute_metrics(results: list[QueryResult]) -> EvalMetrics:
 
 def format_metrics_report(m: EvalMetrics) -> str:
     """Định dạng báo cáo metrics dạng text có thể in ra terminal hoặc ghi file."""
-    SEP = "=" * 65
+    separator = "=" * 65
     lines = [
-        SEP,
+        separator,
         "  RAG EVALUATION METRICS REPORT",
-        SEP,
+        separator,
         f"  Total queries    : {m.total}",
         "",
         "  RETRIEVAL QUALITY",
@@ -276,8 +286,12 @@ def format_metrics_report(m: EvalMetrics) -> str:
         f"  Context recall    : {m.context_recall:.1%}",
         f"  Coverage Pass Rate: {m.keyword_pass_rate:.1%}",
         f"  Grounded Pass Rate: {m.pass_rate:.1%}",
-        f"  Answer relevancy  : {m.answer_relevancy:.1%}" if m.answer_relevancy is not None else "  Answer relevancy  : N/A (retrieval-only run)",
-        f"  Citation correctness: {m.citation_correctness:.1%}" if m.citation_correctness is not None else "  Citation correctness: N/A (retrieval-only run)",
+        f"  Answer relevancy  : {m.answer_relevancy:.1%}"
+        if m.answer_relevancy is not None
+        else "  Answer relevancy  : N/A (retrieval-only run)",
+        f"  Citation correctness: {m.citation_correctness:.1%}"
+        if m.citation_correctness is not None
+        else "  Citation correctness: N/A (retrieval-only run)",
         "",
         "  LATENCY",
         f"  Avg Latency      : {m.avg_latency_ms:.1f}ms",
@@ -285,7 +299,7 @@ def format_metrics_report(m: EvalMetrics) -> str:
         "",
         "  PER-CATEGORY BREAKDOWN",
         f"  {'Category':<14} {'Pass/Total':<12} {'Pass%':>6}  {'AvgScore':>9}  {'Hit@3':>6}",
-        f"  {'-'*14} {'-'*12} {'-'*6}  {'-'*9}  {'-'*6}",
+        f"  {'-' * 14} {'-' * 12} {'-' * 6}  {'-' * 9}  {'-' * 6}",
     ]
     for cat, s in sorted(m.category_stats.items()):
         grade = "✅" if s["pass_rate"] >= 0.70 else ("⚠️ " if s["pass_rate"] >= 0.50 else "❌")
@@ -302,5 +316,5 @@ def format_metrics_report(m: EvalMetrics) -> str:
         lines.append("  ⚠️   Đánh giá: RAG TRUNG BÌNH — cần bổ sung tài liệu")
     else:
         lines.append("  ❌  Đánh giá: RAG CẦN CẢI THIỆN — thiếu tài liệu hoặc embedding yếu")
-    lines.append(SEP)
+    lines.append(separator)
     return "\n".join(lines)

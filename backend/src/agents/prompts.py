@@ -64,8 +64,17 @@ Chưa có xe nào được chọn hoặc tài khoản chưa liên kết xe. Nế
         plate = vehicle_context.get("license_plate") or vehicle_context.get("plate_number", "")
         vehicle_id = vehicle_context.get("id") or vehicle_context.get("vehicle_id", "")
 
-        odo_str = f"{int(odo):,} km" if isinstance(odo, (int, float)) or (isinstance(odo, str) and odo.isdigit()) else f"{odo} km" if odo else "0 km"
-        if last_service_odo is not None and (isinstance(last_service_odo, (int, float)) or (isinstance(last_service_odo, str) and last_service_odo.isdigit())):
+        odo_str = (
+            f"{int(odo):,} km"
+            if isinstance(odo, (int, float)) or (isinstance(odo, str) and odo.isdigit())
+            else f"{odo} km"
+            if odo
+            else "0 km"
+        )
+        if last_service_odo is not None and (
+            isinstance(last_service_odo, (int, float))
+            or (isinstance(last_service_odo, str) and last_service_odo.isdigit())
+        ):
             last_service_str = f"{int(last_service_odo):,} km (cách đây {months_since_last or 0} tháng)"
         elif last_service_odo:
             last_service_str = f"{last_service_odo} km (cách đây {months_since_last or 0} tháng)"
@@ -82,4 +91,3 @@ Chưa có xe nào được chọn hoặc tài khoản chưa liên kết xe. Nế
 """
 
     return f"{EV_CARE_BASE_PROMPT}\n{context_str}"
-

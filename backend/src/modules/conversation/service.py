@@ -333,9 +333,7 @@ class ChatService:
             "months_since_last": getattr(vehicle, "months_since_last_service", 0) or 0,
         }
 
-        history_messages = self._build_history_messages(
-            conversation_id, exclude_seq=user_result.message.seq
-        )
+        history_messages = self._build_history_messages(conversation_id, exclude_seq=user_result.message.seq)
 
         try:
             async for event in run_agent_turn(
@@ -440,9 +438,7 @@ class ChatService:
             messages.append(LlmMessage(role="system", content=f"Tài liệu chính hãng liên quan:\n{context}"))
         return messages
 
-    def _build_history_messages(
-        self, conversation_id: UUID, exclude_seq: int | None = None
-    ) -> list[BaseMessage]:
+    def _build_history_messages(self, conversation_id: UUID, exclude_seq: int | None = None) -> list[BaseMessage]:
         """Chuyển đổi lịch sử chat thành định dạng BaseMessage cho LangGraph Agent."""
         with Session(self._engine) as session:
             history = ChatMessageRepository(session).search(
