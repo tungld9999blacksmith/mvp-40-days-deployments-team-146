@@ -32,12 +32,13 @@ load_dotenv(ROOT / ".env")
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(message)s")
 
 from metrics import QueryResult, compute_metrics, format_metrics_report  # noqa: E402
-from src.agents.tools.RAG.ingestion.qdrant_store import QdrantVectorStore  # noqa: E402
+
 from src.agents.tools.RAG.ingestion.embedding import BaseEmbeddingProvider  # noqa: E402
+from src.agents.tools.RAG.ingestion.qdrant_store import QdrantVectorStore  # noqa: E402
 from src.agents.tools.RAG.query.bm25_searcher import BM25Searcher  # noqa: E402
-from src.agents.tools.RAG.query.hybrid import HybridRetriever  # noqa: E402
 from src.agents.tools.RAG.query.citation_builder import CitationBuilder  # noqa: E402
 from src.agents.tools.RAG.query.generator import GroundedAnswerGenerator  # noqa: E402
+from src.agents.tools.RAG.query.hybrid import HybridRetriever  # noqa: E402
 from src.agents.tools.RAG.query.reranker import RerankerService  # noqa: E402
 from src.agents.tools.RAG.query.rewriter import QueryRewriter  # noqa: E402
 from src.agents.tools.RAG.query.schemas import UserVehicleContext  # noqa: E402

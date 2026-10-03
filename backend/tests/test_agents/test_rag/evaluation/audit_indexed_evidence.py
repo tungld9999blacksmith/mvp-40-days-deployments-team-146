@@ -19,7 +19,6 @@ load_dotenv(ROOT / ".env")
 
 from src.agents.tools.RAG.ingestion.qdrant_store import QdrantVectorStore  # noqa: E402
 
-
 STOPWORDS = {
     "có", "không", "là", "và", "của", "cho", "được", "trong", "khi",
     "với", "một", "các", "thì", "tại", "theo", "này", "đó", "để",

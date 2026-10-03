@@ -5,17 +5,16 @@ import sys
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[4]
 sys.path[:0] = [str(ROOT / "backend"), str(ROOT / "backend" / "src")]
 
+from src.agents.tools.RAG.ingestion import DocumentChunker, IngestionEngine, TextCleaner
 from src.agents.tools.RAG.query.bm25_searcher import BM25Searcher
 from src.agents.tools.RAG.query.generator import GroundedAnswerGenerator
 from src.agents.tools.RAG.query.hybrid import HybridRetriever
 from src.agents.tools.RAG.query.reranker import HeuristicReranker
 from src.agents.tools.RAG.query.rewriter import QueryRewriter
 from src.agents.tools.RAG.query.schemas import CitationItem, QueryAnalysis, RetrievalCandidate
-from src.agents.tools.RAG.ingestion import DocumentChunker, IngestionEngine, TextCleaner
 
 EVAL_DIR = Path(__file__).resolve().parent / "evaluation"
 sys.path.insert(0, str(EVAL_DIR))

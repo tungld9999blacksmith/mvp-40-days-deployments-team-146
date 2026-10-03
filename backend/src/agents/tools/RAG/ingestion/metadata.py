@@ -1,9 +1,8 @@
-from datetime import UTC, datetime
 import re
+from datetime import UTC, datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
-
 
 _CANONICAL_MODELS = {
     "all": "ALL",
