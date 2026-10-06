@@ -1,7 +1,8 @@
 """Notification module - channel abstraction (FEAT-NOTI-001 BR-506).
 
-``NotificationService`` routes a message to the adapter registered for a
-channel. Adding a channel means writing an adapter and registering it; the
+``NotificationService`` routes a message to the adapter registered for an
+external channel. No adapter exists yet (reminders are shown in the in-app
+feed only). Adding a channel means writing an adapter and registering it; the
 reminder job, the rules and the API do not change.
 """
 

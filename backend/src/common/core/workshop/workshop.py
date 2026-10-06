@@ -2,7 +2,7 @@
 
 Columns follow ``docs/specs/entity/workshop/workshop.entity.md``; the columns
 marked "FEAT-AUTH-003" were added for workshop-owner onboarding. Kept in
-``common/core`` because bookings, quotes, prices and vehicle owners reference
+``common/core`` because bookings, prices and vehicle owners reference
 workshops too.
 """
 

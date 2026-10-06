@@ -23,7 +23,7 @@ function BookingHeader() {
   const milestone = useBookingMilestone()
   const segment = pathname.split('/').filter(Boolean)[1] ?? ''
   const step = STEP_BY_PATH[segment]
-  // With a workshop from the query (estimate / quote), step 1 is skipped (FF AF-003).
+  // With a workshop from the query (estimate), step 1 is skipped (FF AF-003).
   const skippedWorkshop = Boolean(params.workshopId) && segment !== 'workshops'
 
   return (
@@ -55,7 +55,7 @@ function BookingHeader() {
 /** `/booking/*` — resolves the owner's vehicle, then hosts the wizard steps (US-029 FE §3). */
 export default function BookingLayout() {
   return (
-    <div className="p-6 xl:p-8">
+    <div className="p-4 sm:p-6 xl:p-8">
       <VehicleGate
         loading={
           <div className="space-y-4 max-w-3xl">

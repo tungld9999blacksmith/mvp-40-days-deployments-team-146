@@ -1,5 +1,9 @@
 # API Technical Specification — Tiến độ dịch vụ chi tiết 6 bước
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > Backend cho Feature `FEAT-PROG-001` — PRD F8b (US-057 → US-059).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-057-sprint-4-spec.ff.md). **Entity:** [Entity Spec](../entity/us-057-sprint-4-spec.entity.md) — `service_progress` (ENT-403, mở rộng cột người ghi).

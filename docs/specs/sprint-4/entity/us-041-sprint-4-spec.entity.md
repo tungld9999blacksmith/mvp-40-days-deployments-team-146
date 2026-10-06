@@ -1,5 +1,10 @@
 # Entity Specification — Hỏi thăm sau dịch vụ & phiếu hỗ trợ
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Phiếu hỗ trợ (`support_ticket`): **đã bỏ**. Phản hồi hỏi thăm có vấn đề chỉ được phân loại và ghi trên `follow_up` (`has_issue`); app hiện lời khuyên an toàn và hotline xưởng, không tạo phiếu, không có màn phiếu cho chủ xe hay xưởng.
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > Đặc tả các entity phục vụ Feature `FEAT-CRM-001` — F9 (US-041 → US-044).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-041-sprint-4-spec.ff.md). Tài liệu này **không định nghĩa lại nghiệp vụ**; mọi rule trỏ về `BR-9xx` / `EF-9xx` / `EDGE-9xx`.

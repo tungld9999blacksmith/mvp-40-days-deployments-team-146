@@ -10,8 +10,9 @@ import { AlertCircle } from 'lucide-react'
 import { cn } from './cn'
 
 const controlBase =
-  'w-full bg-card border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted ' +
-  'focus:outline-none focus:ring-1 focus:ring-emerald/40 transition-colors disabled:opacity-60 disabled:cursor-not-allowed'
+  'w-full bg-card border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted elevation-sm ' +
+  'hover:border-foreground/20 focus:outline-none focus:border-emerald/60 focus:ring-4 focus:ring-emerald/15 ' +
+  'transition-[border-color,box-shadow] duration-200 disabled:opacity-60 disabled:cursor-not-allowed'
 
 function controlClass(error: string | undefined, className?: string) {
   return cn(controlBase, error ? 'border-error' : 'border-border', className)

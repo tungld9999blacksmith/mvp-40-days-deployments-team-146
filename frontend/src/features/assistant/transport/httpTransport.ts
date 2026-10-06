@@ -1,6 +1,6 @@
 import { ApiError, apiGetPaged, apiRequest, rawRequest, toApiError } from '@/shared/api/client'
 import { readSseStream, StreamIdleTimeoutError } from '../sse'
-import type { ConversationDto, ConversationExcerpt, MessageDto, StreamErrorPayload } from '../types'
+import type { ConfirmProposalResult, ConversationDto, ConversationExcerpt, MessageDto, StreamErrorPayload } from '../types'
 import type { ChatTransport } from './ChatTransport'
 
 const STREAM_IDLE_TIMEOUT_MS = 45_000
@@ -93,12 +93,49 @@ export function createHttpTransport(): ChatTransport {
       await apiRequest<void>(`/conversations/${encodeURIComponent(conversationId)}`, { method: 'DELETE', timeoutMs: 10_000 })
     },
 
-    getConversationExcerpt: async ({ type, id }) =>
+    getConversationExcerpt: async ({ id }) =>
       (
         await apiRequest<ConversationExcerpt>(
-          `/workshop/${type === 'booking' ? 'bookings' : 'quotes'}/${encodeURIComponent(id)}/conversation-excerpt`,
+          `/workshop/bookings/${encodeURIComponent(id)}/conversation-excerpt`,
           { timeoutMs: 10_000 },
         )
       ).data,
+
+    quickBooking: async (conversationId, body) =>
+      (
+        await apiRequest<{ userMessage: MessageDto; assistantMessage: MessageDto; replayed: boolean }>(
+          `/conversations/${encodeURIComponent(conversationId)}/quick-booking`,
+          // Builds the proposal from several services (slots of up to 5 workshops): generous timeout.
+          { method: 'POST', body, timeoutMs: 30_000 },
+        )
+      ).data,
+
+    confirmProposal: async (conversationId, proposalId) =>
+      (
+        await apiRequest<ConfirmProposalResult>(
+          `${proposalPath(conversationId, proposalId)}/confirm`,
+          { method: 'POST', timeoutMs: 20_000 },
+        )
+      ).data,
+
+    reviseProposal: async (conversationId, proposalId, body) =>
+      (
+        await apiRequest<{ proposalId: string; message: MessageDto }>(
+          `${proposalPath(conversationId, proposalId)}/revise`,
+          { method: 'POST', body, timeoutMs: 20_000 },
+        )
+      ).data,
+
+    cancelProposal: async (conversationId, proposalId) =>
+      (
+        await apiRequest<{ proposalId: string; status: 'CANCELLED' }>(
+          `${proposalPath(conversationId, proposalId)}/cancel`,
+          { method: 'POST', timeoutMs: 10_000 },
+        )
+      ).data,
   }
+}
+
+function proposalPath(conversationId: string, proposalId: string): string {
+  return `/conversations/${encodeURIComponent(conversationId)}/booking-proposals/${encodeURIComponent(proposalId)}`
 }

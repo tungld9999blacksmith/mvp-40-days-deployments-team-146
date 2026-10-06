@@ -28,8 +28,6 @@ from src.common.core.maintenance.booking_status_event import (
     BookingStatusEvent,
 )
 from src.common.core.maintenance.maintenance_rule import MaintenanceRule
-from src.common.core.maintenance.quote import Quote, QuoteStatus
-from src.common.core.maintenance.quote_item import QuoteItem
 from src.common.core.vehicle import UserVehicle
 from src.common.core.workshop import Workshop
 from src.modules.oem_integration.service import as_utc
@@ -134,7 +132,6 @@ class BookingTicketService:
         now = self._clock()
         workshop = self._db.get(Workshop, booking.workshop_id)
         vehicle = self._db.get(UserVehicle, booking.user_vehicle_id)
-        quote = self._attached_quote(booking.id)
         actions, block = self._actions(booking, now)
         confirmed = booking.status == S.CONFIRMED
         appt = appointment_at(booking.booking_date, booking.time_slot)
@@ -160,8 +157,8 @@ class BookingTicketService:
             reschedule_mode="F6B" if self._config.reschedule_enabled else "GUIDE",
             reschedule_blocked_reason=block,
             odo_milestone=booking.odo_milestone,
-            items=self._items(booking, vehicle, quote),
-            cost=self._cost(booking, quote),
+            items=self._items(booking, vehicle),
+            cost=self._cost(booking),
             documents_to_bring=list(self._config.documents_to_bring),
             reschedule_count=booking.reschedule_count,
             reschedule_deadline=(appt - lead).astimezone(UTC) if confirmed else None,
@@ -180,18 +177,8 @@ class BookingTicketService:
             phone=workshop.hotline if workshop and with_contact else None,
         )
 
-    def _attached_quote(self, booking_id: UUID) -> Quote | None:
-        return self._db.exec(
-            select(Quote).where(Quote.booking_id == booking_id, Quote.status == QuoteStatus.APPROVED)
-        ).first()
-
-    def _items(self, booking: Booking, vehicle: UserVehicle | None, quote: Quote | None) -> list[schemas.TicketItemOut]:
-        """BR-1202 — quote lines if a quote is attached, else the milestone's schedule."""
-        if quote is not None:
-            rows = self._db.exec(
-                select(QuoteItem).where(QuoteItem.quote_id == quote.id).order_by(QuoteItem.item_name)
-            ).all()
-            return [schemas.TicketItemOut(item_name=r.item_name, covered=r.is_covered_by_warranty) for r in rows]
+    def _items(self, booking: Booking, vehicle: UserVehicle | None) -> list[schemas.TicketItemOut]:
+        """BR-1202 — the items of the milestone's maintenance schedule."""
         if booking.odo_milestone is None or vehicle is None or not vehicle.external_model_id:
             return []
         rules = self._db.exec(
@@ -205,9 +192,7 @@ class BookingTicketService:
         return [schemas.TicketItemOut(item_name=r.item_name, covered=r.is_covered_by_warranty) for r in rules]
 
     @staticmethod
-    def _cost(booking: Booking, quote: Quote | None) -> schemas.TicketCostOut:
-        if quote is not None and quote.approved_total is not None:
-            return schemas.TicketCostOut(amount=quote.approved_total, label="APPROVED_QUOTE", quote_id=quote.id)
+    def _cost(booking: Booking) -> schemas.TicketCostOut:
         if booking.estimated_cost is not None:
             return schemas.TicketCostOut(amount=booking.estimated_cost, label="ESTIMATE")
         return schemas.TicketCostOut(label="NONE")
@@ -297,7 +282,7 @@ class BookingTicketService:
                     booking_date=b.booking_date,
                     time_slot=b.time_slot,
                     workshop=self._workshop_out(workshops.get(b.workshop_id), b.workshop_id, with_contact=False),
-                    cost=self._cost(b, self._attached_quote(b.id)),
+                    cost=self._cost(b),
                     allowed_actions=actions,
                 )
             )

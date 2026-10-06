@@ -1,7 +1,7 @@
 """Service tests for the sprint 3-4 APIs (in-memory SQLite, no Redis / Firebase).
 
-us-033/us-053 booking ticket, us-037 Workshop Board, us-049 quotes,
-us-041 follow-up + support tickets, us-057 service progress.
+us-033/us-053 booking ticket, us-037 Workshop Board, us-041 follow-up,
+us-057 service progress.
 """
 
 from __future__ import annotations
@@ -13,28 +13,21 @@ import pytest
 from sqlmodel import select
 
 from src.common.core.crm.follow_up import FollowUp, FollowUpStatus
-from src.common.core.crm.support_ticket import SupportTicket, SupportTicketPriority
 from src.common.core.maintenance.booking import BookingStatus
 from src.common.core.maintenance.booking_status_event import BookingStatusEvent
-from src.common.core.maintenance.quote import QuoteStatus
 from src.common.core.maintenance.service_progress import ServiceStage
 from src.common.core.vehicle import VehicleServiceRecord
 from src.modules.booking import errors as booking_errors
-from src.modules.booking.location import SimpleTextLocationFinder
 from src.modules.booking.ticket import BookingTicketService, mask_plate
-from src.modules.cost_estimate.service import CostEstimationService
 from src.modules.follow_up import errors as fu_errors
-from src.modules.follow_up.service import FollowUpService, WorkshopTicketService
-from src.modules.quote import errors as quote_errors
-from src.modules.quote import schemas as quote_schemas
-from src.modules.quote.service import QuoteService
+from src.modules.follow_up.service import FollowUpService
 from src.modules.service_progress import errors as progress_errors
 from src.modules.service_progress.service import ServiceProgressService
 from src.modules.workshop_board import errors as board_errors
 from src.modules.workshop_board import schemas as board_schemas
 from src.modules.workshop_board.service import WorkshopBoardService
 from tests._maintenance import add_booking, add_hours, add_workshop, add_workshop_owner, make_session
-from tests._user_vehicle import add_owner, add_rules, add_vehicle
+from tests._user_vehicle import add_owner, add_vehicle
 
 # 2026-10-03 09:00 VN.
 NOW = datetime(2026, 10, 3, 2, 0, tzinfo=UTC)
@@ -187,86 +180,7 @@ async def test_board_capacity_and_slot_block(world):
     assert (nine.occupied, nine.blocked, nine.remaining) == (1, 3, 0)
 
 
-# ── us-049 quotes ───────────────────────────────────────────────────────────
-def _quotes(session, now=NOW):
-    estimator = CostEstimationService(session, SimpleTextLocationFinder(), lambda _v: 12_000, clock=lambda: now)
-    return QuoteService(session, estimator, clock=lambda: now)
-
-
-def test_quote_draft_submit_approve(world):
-    session, user, vehicle, owner, workshop = world
-    add_rules(session)
-    quotes = _quotes(session)
-    draft = quotes.create(
-        user,
-        quote_schemas.CreateQuoteRequest(user_vehicle_id=vehicle.id, workshop_id=workshop.id, odo_milestone=12_000),
-    )
-    assert draft.status == "DRAFT" and draft.estimated_total == Decimal(100_000)
-
-    submitted = quotes.submit(user, draft.quote_id)
-    assert submitted.display_status == "PENDING_APPROVAL"
-    with pytest.raises(quote_errors.QuoteNotDraftError):
-        quotes.submit(user, draft.quote_id)
-
-    twin = quotes.create(
-        user,
-        quote_schemas.CreateQuoteRequest(user_vehicle_id=vehicle.id, workshop_id=workshop.id, odo_milestone=12_000),
-    )
-    with pytest.raises(quote_errors.QuoteAlreadyPendingError):
-        quotes.submit(user, twin.quote_id)
-
-    covered = next(i for i in submitted.items if i.covered)
-    with pytest.raises(quote_errors.CoveredItemLockedError):
-        quotes.approve(
-            owner,
-            workshop.id,
-            draft.quote_id,
-            quote_schemas.ApproveQuoteRequest(
-                items=[quote_schemas.ApproveItemIn(quote_item_id=covered.quote_item_id, approved_price=5)]
-            ),
-        )
-    paid = next(i for i in submitted.items if not i.covered)
-    approved = quotes.approve(
-        owner,
-        workshop.id,
-        draft.quote_id,
-        quote_schemas.ApproveQuoteRequest(
-            items=[quote_schemas.ApproveItemIn(quote_item_id=paid.quote_item_id, approved_price=90_000)]
-        ),
-    )
-    assert approved.display_status == "MODIFIED" and approved.approved_total == Decimal(90_000)
-    assert approved.can_attach_to_booking
-    with pytest.raises(quote_errors.QuoteAlreadyReviewedError):
-        quotes.reject(owner, workshop.id, draft.quote_id, "Too late to reject now")
-
-    mine = quotes.get_for_owner(user, draft.quote_id)  # marks the result as seen
-    assert mine.status == "APPROVED"
-    unseen = quotes.list_for_owner(user, user_vehicle_id=None, statuses=None, unseen_result=True, limit=10, cursor=None)
-    assert unseen.items == []
-
-
-def test_quote_workshop_scope_and_reject_note(world):
-    session, user, vehicle, owner, workshop = world
-    add_rules(session)
-    quotes = _quotes(session)
-    draft = quotes.create(
-        user,
-        quote_schemas.CreateQuoteRequest(user_vehicle_id=vehicle.id, workshop_id=workshop.id, odo_milestone=24_000),
-    )
-    with pytest.raises(quote_errors.QuoteNotFoundError):  # drafts are invisible to the workshop
-        quotes.get_for_workshop(workshop.id, draft.quote_id)
-    quotes.submit(user, draft.quote_id)
-    with pytest.raises(quote_errors.ReviewerNoteRequiredError):
-        quotes.reject(owner, workshop.id, draft.quote_id, "short")
-    rejected = quotes.reject(owner, workshop.id, draft.quote_id, "Needs a battery check first.")
-    assert rejected.status == "REJECTED"
-    listed = quotes.list_for_workshop(
-        workshop.id, statuses=[QuoteStatus.REJECTED], date_from=None, date_to=None, limit=5, cursor=None
-    )
-    assert [q.quote_id for q in listed.items] == [draft.quote_id]
-
-
-# ── us-041 follow-up + tickets ──────────────────────────────────────────────
+# ── us-041 follow-up ───────────────────────────────────────────────────────
 def _sent_follow_up(session, booking, sent_at=NOW - timedelta(hours=1)):
     follow_up = FollowUp(
         booking_id=booking.id,
@@ -281,37 +195,22 @@ def _sent_follow_up(session, booking, sent_at=NOW - timedelta(hours=1)):
 
 
 @pytest.mark.asyncio
-async def test_follow_up_issue_creates_high_priority_ticket(world):
-    session, user, vehicle, owner, workshop = world
+async def test_follow_up_issue_is_recorded_with_safety_advice(world):
+    session, user, vehicle, _, workshop = world
     booking = add_booking(session, user, vehicle, workshop, d=TODAY, status=BookingStatus.COMPLETED)
     follow_up = _sent_follow_up(session, booking)
     service = FollowUpService(session, clock=lambda: NOW)
 
     out = await service.respond(user, follow_up.id, 2, "Về nhà thấy phanh trước kêu khi dừng")
     assert out.outcome.has_issue and out.outcome.safety_advice
-    ticket = session.exec(select(SupportTicket)).one()
-    assert ticket.priority == SupportTicketPriority.HIGH and ticket.assigned_to == owner.id
+    session.refresh(follow_up)
+    assert follow_up.has_issue and follow_up.feedback_intent == "ISSUE_REPORTED"
     with pytest.raises(fu_errors.FollowUpAlreadyRespondedError):
         await service.respond(user, follow_up.id, 5, None)
 
-    tickets = WorkshopTicketService(session, clock=lambda: NOW)
-    listed = tickets.list(owner, workshop.id, statuses=None, priority=None, limit=10, cursor=None)
-    assert listed.summary["highOpen"] == 1
-    with pytest.raises(fu_errors.ResolutionNoteRequiredError):
-        await tickets.transition(
-            owner, workshop.id, ticket.id, action="RESOLVE", expected_status="OPEN", resolution_note=" "
-        )
-    done = await tickets.transition(
-        owner,
-        workshop.id,
-        ticket.id,
-        action="RESOLVE",
-        expected_status="OPEN",
-        resolution_note="Called the owner; free brake check on 06/10.",
-    )
-    assert done.status == "RESOLVED" and done.allowed_actions == []
-    mine = service.get_ticket(user, ticket.id)
-    assert mine.resolution_note.startswith("Called")
+    again = service.get(user, follow_up.id)
+    assert again.closed_reason == "PROCESSED"
+    assert again.outcome.has_issue and again.outcome.safety_advice
 
 
 @pytest.mark.asyncio
@@ -321,7 +220,7 @@ async def test_follow_up_satisfied_and_window(world):
     happy = _sent_follow_up(session, booking)
     service = FollowUpService(session, clock=lambda: NOW)
     out = await service.respond(user, happy.id, 5, None)
-    assert not out.outcome.has_issue and out.outcome.ticket is None
+    assert not out.outcome.has_issue and not out.outcome.safety_advice
     assert service.get(user, happy.id).closed_reason == "PROCESSED"
 
     other = add_booking(session, user, vehicle, workshop, d=TODAY, status=BookingStatus.COMPLETED, code="EVC-0002")

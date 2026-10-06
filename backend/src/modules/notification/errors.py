@@ -37,18 +37,10 @@ class ChannelNotAvailableError(NotificationError):
         super().__init__(f"The channel {channel} is not available yet.")
 
 
-class NoChannelEnabledError(NotificationError):
-    code = "NO_CHANNEL_ENABLED"
-
-    def __init__(self) -> None:
-        super().__init__("Reminders are on but no notification channel is enabled.")
-
-
 ERROR_STATUS: dict[str, int] = {
     "INVALID_REQUEST": 400,
     "INVALID_LEAD_DAYS": 422,
     "CHANNEL_NOT_AVAILABLE": 422,
-    "NO_CHANNEL_ENABLED": 422,
 }
 
 

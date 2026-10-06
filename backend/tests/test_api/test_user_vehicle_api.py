@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from datetime import date, timedelta
+from decimal import Decimal
 from uuid import uuid4
 
 import pytest
@@ -17,6 +18,7 @@ from httpx import ASGITransport, AsyncClient
 
 from src.common.core.identity.vehicle_user import OnboardingStatus, VehicleUser
 from src.common.core.identity.workshop_owner import WorkshopOwner
+from src.common.core.maintenance.booking import BookingStatus
 from src.common.core.vehicle import (
     OemSyncTrigger,
     ServiceRecordSource,
@@ -31,6 +33,7 @@ from src.modules.oem_integration.dependency import get_sync_scheduler, get_webho
 from src.modules.oem_integration.service import OemWebhookService
 from src.modules.user_vehicle.dependency import get_user_vehicle_service
 from src.modules.user_vehicle.service import UserVehicleService
+from tests._maintenance import add_booking, add_workshop
 from tests._user_vehicle import (
     NOW,
     MemoryEventStore,
@@ -310,6 +313,81 @@ async def test_status_ignores_non_periodic_repair_q304(api: _Api, ready_vehicle)
     assert data["dueStatus"] == "DUE_SOON"
 
 
+# ── API-VEH-005 service history ────────────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_service_records_merge_oem_and_ev_care_newest_first(api: _Api, ready_vehicle):
+    user = api.session.get(VehicleUser, ready_vehicle.user_id)
+    oem_center = add_workshop(api.session, name="VinFast Ha Noi")
+    board_workshop = add_workshop(api.session, name="VinFast Smart City")
+    booking = add_booking(
+        api.session,
+        user,
+        ready_vehicle,
+        board_workshop,
+        d=date(2026, 9, 20),
+        status=BookingStatus.COMPLETED,
+        code="EVC-DONE",
+    )
+    booking.actual_cost = Decimal("1250000")
+    api.session.add_all(
+        [
+            VehicleServiceRecord(
+                user_vehicle_id=ready_vehicle.id,
+                source=ServiceRecordSource.OEM,
+                external_order_id="SH-001",
+                service_date=date(2026, 4, 12),
+                odo_km=10_000,
+                external_center_id=oem_center.external_center_id,
+                items_done="Thay lọc gió, kiểm tra phanh",
+            ),
+            VehicleServiceRecord(
+                user_vehicle_id=ready_vehicle.id,
+                source=ServiceRecordSource.EV_CARE,
+                booking_id=booking.id,
+                service_date=date(2026, 9, 20),
+                odo_km=12_050,
+                workshop_id=board_workshop.id,
+            ),
+            VehicleServiceRecord(
+                user_vehicle_id=ready_vehicle.id,
+                source=ServiceRecordSource.OEM,
+                external_order_id="SH-UNKNOWN",
+                service_date=date(2025, 12, 1),
+                external_center_id="C-NOT-IN-EV-CARE",
+                is_periodic=False,
+            ),
+        ]
+    )
+    api.session.commit()
+
+    r = await api.client.get(f"/api/v1/user-vehicles/{ready_vehicle.id}/service-records", headers=AUTH)
+
+    assert r.status_code == 200
+    items = r.json()["data"]["items"]
+    assert [i["serviceDate"] for i in items] == ["2026-09-20", "2026-04-12", "2025-12-01"]
+    ev_care, oem, unknown_center = items
+    assert ev_care["source"] == "EV_CARE"
+    assert ev_care["workshop"] == {"workshopId": str(board_workshop.id), "name": "VinFast Smart City"}
+    assert ev_care["bookingCode"] == "EVC-DONE"
+    assert float(ev_care["actualCost"]) == 1_250_000
+    assert oem["source"] == "OEM"
+    assert oem["workshop"]["name"] == "VinFast Ha Noi"  # matched by external_center_id
+    assert oem["itemsDone"] == "Thay lọc gió, kiểm tra phanh"
+    assert oem["bookingCode"] is None and oem["actualCost"] is None
+    assert unknown_center["workshop"] is None
+    assert unknown_center["isPeriodic"] is False
+
+
+@pytest.mark.asyncio
+async def test_service_records_empty_before_any_service(api: _Api, ready_vehicle):
+    r = await api.client.get(f"/api/v1/user-vehicles/{ready_vehicle.id}/service-records", headers=AUTH)
+
+    assert r.status_code == 200
+    assert r.json()["data"]["items"] == []
+
+
 # ── Guards (API spec §C.2) ─────────────────────────────────────────────────
 
 
@@ -318,7 +396,7 @@ async def test_other_owners_vehicle_is_not_found_ac008(api: _Api, ready_vehicle)
     add_owner(api.session, uid="uid-2", email="owner2@example.com")
     api.sign_in_as("uid-2")
 
-    for path in ("", "/maintenance-status"):
+    for path in ("", "/maintenance-status", "/service-records"):
         r = await api.client.get(f"/api/v1/user-vehicles/{ready_vehicle.id}{path}", headers=AUTH)
         assert r.status_code == 404
         assert r.json()["error"]["code"] == "VEHICLE_NOT_FOUND"

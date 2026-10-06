@@ -7,6 +7,7 @@ Concrete adapters: ``infrastructure/oem/gateway.py`` (HTTP), ``scheduler.py``
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass
 from datetime import date, datetime
 from uuid import UUID
@@ -86,9 +87,18 @@ class WebhookEventStore(ABC):
     """Idempotency + debounce state for incoming webhooks."""
 
     @abstractmethod
-    async def claim_event(self, event_id: str) -> bool:
-        """Return ``True`` the first time an event id is seen, ``False`` for duplicates."""
+    def processing(self, key: str) -> AbstractAsyncContextManager[None]:
+        """Serialize intake with an owned, renewable lock; never mark work as done."""
 
     @abstractmethod
-    async def claim_debounce(self, user_vehicle_id: UUID) -> bool:
-        """Return ``True`` when no sync for this vehicle was scheduled in the debounce window."""
+    async def event_processed(self, event_id: str) -> bool: ...
+
+    @abstractmethod
+    async def mark_event_processed(self, event_id: str) -> None: ...
+
+    @abstractmethod
+    async def is_debounced(self, user_vehicle_id: UUID) -> bool: ...
+
+    @abstractmethod
+    async def mark_debounced(self, user_vehicle_id: UUID) -> None:
+        """Record a sync only after the broker has acknowledged scheduling it."""

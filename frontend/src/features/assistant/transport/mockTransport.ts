@@ -1,23 +1,24 @@
 import { ApiError } from '@/shared/api/client'
-import { onSessionEnd } from '@/shared/session/sessionCache'
 import { newId } from '@/shared/utils/id'
-import type { CitationDto, ConversationDto, ConversationExcerpt, MessageDto, SearchResultDto } from '../types'
+import { getCostEstimate } from '@/features/estimate/api'
+import type { CitationDto, ConversationExcerpt, MessageDto, SearchResultDto } from '../types'
 import type { ChatTransport } from './ChatTransport'
+import {
+  cancelProposal,
+  confirmProposal,
+  enrichMessage,
+  excerptForBooking,
+  proposeFromChat,
+  quickBooking,
+  reviseProposal,
+} from './mockQuickBooking'
+import { appendMessage, conversations, getConversation, newMessage, saveMockChat, type MockConversation } from './mockStore'
 
 /**
  * In-memory simulation of the chat contract (same events and payloads as the real
  * API). Answers are canned demo text — they are NOT model output and NOT real data.
+ * Quick booking (us-061) runs on the same slot and booking APIs as the app (mockQuickBooking).
  */
-
-interface MockConversation extends ConversationDto {
-  messages: MessageDto[]
-  clientIds: Map<string, string> // clientMessageId → user message id
-}
-
-const conversations = new Map<string, MockConversation>()
-let seq = 1000
-
-onSessionEnd(() => conversations.clear())
 
 const MANUAL: CitationDto = {
   title: 'Sổ tay bảo dưỡng VF6',
@@ -33,6 +34,13 @@ const WARRANTY: CitationDto = {
   pageNumber: 8,
   snippet: 'Pin cao áp được bảo hành theo thời hạn và giới hạn km ghi trên sổ bảo hành của từng mẫu xe.',
 }
+const OWNER_MANUAL: CitationDto = {
+  title: 'Hướng dẫn sử dụng xe VF6',
+  version: '1.3',
+  documentType: 'owner_manual',
+  pageNumber: 118,
+  snippet: 'Nên duy trì mức sạc trong khoảng 20% đến 80% cho nhu cầu di chuyển hằng ngày để tối ưu tuổi thọ pin.',
+}
 
 const ANSWERS: { keywords: string[]; text: string; citations: CitationDto[] }[] = [
   {
@@ -44,11 +52,25 @@ const ANSWERS: { keywords: string[]; text: string; citations: CitationDto[] }[] 
     citations: [MANUAL, WARRANTY],
   },
   {
-    keywords: ['bảo hành', 'pin', 'miễn phí'],
+    keywords: ['bảo hành', 'miễn phí'],
     text:
       '(Dữ liệu minh hoạ) Pin cao áp được bảo hành theo thời hạn và giới hạn km ghi trên sổ bảo hành của mẫu xe. ' +
       'Bạn có thể xem thời hạn cụ thể của xe mình trong mục **Xe của tôi → Bảo hành**.',
     citations: [WARRANTY],
+  },
+  {
+    keywords: ['sạc', 'pin', 'quãng đường'],
+    text:
+      '(Dữ liệu minh hoạ) Để pin cao áp bền hơn, nên giữ mức sạc hằng ngày trong khoảng **20–80%** và chỉ sạc đầy trước chuyến đi dài. ' +
+      'Hạn chế sạc nhanh DC liên tục khi pin còn nóng. Nếu quãng đường đi được giảm bất thường, bạn nên đặt lịch kiểm tra pin tại xưởng.',
+    citations: [OWNER_MANUAL, WARRANTY],
+  },
+  {
+    keywords: ['phanh', 'lốp', 'tiếng kêu', 'rung'],
+    text:
+      '(Dữ liệu minh hoạ) Hệ thống phanh và lốp được kiểm tra ở mỗi mốc 12.000 km. Nếu nghe tiếng kêu khi phanh, xe rung ở tốc độ thấp ' +
+      'hoặc lốp mòn không đều, bạn nên đưa xe tới xưởng sớm thay vì chờ tới mốc bảo dưỡng.',
+    citations: [MANUAL],
   },
 ]
 
@@ -58,6 +80,11 @@ const REFUSAL =
 
 function normalize(text: string): string {
   return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase()
+}
+
+/** A booking request typed in the chat gets a proposal card (TOOL-QB-01 `propose_booking`). */
+function wantsBooking(question: string): boolean {
+  return /\b(dat|book)\s*(lich|hen)|\bhen lich\b|\bdat lich\b/.test(normalize(question))
 }
 
 function answerFor(question: string) {
@@ -77,19 +104,42 @@ const wait = (ms: number, signal: AbortSignal) =>
     })
   })
 
-function notFound(): ApiError {
-  return new ApiError({ status: 404, code: 'CONVERSATION_NOT_FOUND', message: 'Conversation was not found.' })
-}
-
 function page<T>(items: T[], limit: number, cursorIndex: number) {
   const slice = items.slice(cursorIndex, cursorIndex + limit)
   const hasMore = cursorIndex + limit < items.length
   return { data: slice, page: { nextCursor: hasMore ? String(cursorIndex + limit) : null, hasMore } }
 }
 
-function newMessage(role: 'user' | 'assistant', content: string, citations: CitationDto[] = []): MessageDto {
-  seq += 1
-  return { id: newId(), seq, role, content, citations, refs: {}, card: null, createdAt: new Date().toISOString() }
+/**
+ * Demo of the F5 cards (CARD-EST, us-045 §4.7): a cost question gets the estimate from the same
+ * API-EST-02 the `/estimate` screen uses, so the card and the detail show the same total.
+ */
+async function cardFor(content: string, userVehicleId: string): Promise<MessageDto['card']> {
+  if (!/chi ph[ií]|gi[aá] bao nhi[eê]u|d[uự] to[aá]n/i.test(content)) return null
+  try {
+    const estimate = await getCostEstimate(userVehicleId, { odoMilestone: null, workshopId: null }).catch(async (error: unknown) => {
+      const valid = (error as { details?: { validMilestones?: number[] } }).details?.validMilestones
+      if (!valid?.length) throw error
+      return getCostEstimate(userVehicleId, { odoMilestone: valid[0], workshopId: null })
+    })
+    return estimate.status === 'READY' ? { type: 'ESTIMATE', estimate } : null
+  } catch {
+    return null
+  }
+}
+
+/** Answer of a chat turn: canned text + citations, an estimate card, or a booking proposal. */
+async function replyTo(conversation: MockConversation, content: string) {
+  if (wantsBooking(content)) {
+    try {
+      const proposal = await proposeFromChat(conversation)
+      return { text: proposal.text, citations: [] as CitationDto[], card: proposal.card, refs: proposal.refs, link: proposal.link }
+    } catch {
+      // fall back to a canned answer (e.g. the vehicle data is not reachable)
+    }
+  }
+  const answer = answerFor(content)
+  return { text: answer.text, citations: answer.citations, card: await cardFor(content, conversation.userVehicleId), refs: {}, link: () => {} }
 }
 
 export function createMockTransport(): ChatTransport {
@@ -119,29 +169,27 @@ export function createMockTransport(): ChatTransport {
         clientIds: new Map(),
       }
       conversations.set(conversation.id, conversation)
+      saveMockChat()
       const { messages: _m, clientIds: _c, ...dto } = conversation
       return dto
     },
 
     async getMessages(conversationId, { limit, before, after }) {
-      const conversation = conversations.get(conversationId)
-      if (!conversation) throw notFound()
-      const all = conversation.messages
+      const all = getConversation(conversationId).messages
       if (after !== undefined) {
         const newer = all.filter(m => m.seq > after)
-        const data = newer.slice(0, limit)
+        const data = await Promise.all(newer.slice(0, limit).map(enrichMessage))
         const last = data[data.length - 1]
         return { data, page: { nextCursor: last ? String(last.seq) : null, hasMore: newer.length > limit } }
       }
       const older = all.filter(m => before === undefined || m.seq < before).reverse()
-      const data = older.slice(0, limit)
+      const data = await Promise.all(older.slice(0, limit).map(enrichMessage))
       const last = data[data.length - 1]
       return { data, page: { nextCursor: last ? String(last.seq) : null, hasMore: older.length > limit } }
     },
 
     async sendMessage(conversationId, body, handlers, signal) {
-      const conversation = conversations.get(conversationId)
-      if (!conversation) throw notFound()
+      const conversation = getConversation(conversationId)
 
       // Idempotency on clientMessageId (BR-611).
       const existingId = conversation.clientIds.get(body.clientMessageId)
@@ -150,7 +198,7 @@ export function createMockTransport(): ChatTransport {
         const answer = conversation.messages.find(m => m.role === 'assistant' && m.seq > userMessage.seq)
         if (answer) {
           handlers.onAccepted(userMessage, true)
-          handlers.onCompleted(answer)
+          handlers.onCompleted(await enrichMessage(answer))
           return
         }
       }
@@ -158,26 +206,25 @@ export function createMockTransport(): ChatTransport {
       await wait(150, signal)
       let userMessage = existingId ? conversation.messages.find(m => m.id === existingId) : undefined
       if (!userMessage) {
-        userMessage = newMessage('user', body.content)
-        conversation.messages.push(userMessage)
+        userMessage = appendMessage(conversation, newMessage('user', body.content))
         conversation.clientIds.set(body.clientMessageId, userMessage.id)
         conversation.title ??= body.content.slice(0, 80)
-        conversation.lastMessageAt = userMessage.createdAt
       }
       handlers.onAccepted(userMessage, false)
 
       handlers.onStatus('retrieving')
       await wait(600, signal)
+      const booking = wantsBooking(body.content)
+      if (booking) handlers.onStatus('calling_tool', 'propose_booking')
+      const reply = await replyTo(conversation, body.content)
       handlers.onStatus('generating')
-      const answer = answerFor(body.content)
-      for (let index = 0; index < answer.text.length; index += 6) {
+      for (let index = 0; index < reply.text.length; index += 6) {
         await wait(25, signal)
-        handlers.onToken(answer.text.slice(index, index + 6))
+        handlers.onToken(reply.text.slice(index, index + 6))
       }
-      const assistant = newMessage('assistant', answer.text, answer.citations)
-      conversation.messages.push(assistant)
-      conversation.lastMessageAt = assistant.createdAt
-      handlers.onCompleted(assistant)
+      const assistant = appendMessage(conversation, newMessage('assistant', reply.text, { citations: reply.citations, card: reply.card, refs: reply.refs }))
+      reply.link(assistant)
+      handlers.onCompleted(await enrichMessage(assistant))
     },
 
     async searchMessages({ q, userVehicleId, limit, cursor }) {
@@ -213,20 +260,21 @@ export function createMockTransport(): ChatTransport {
     },
 
     async deleteConversation(conversationId) {
-      if (!conversations.delete(conversationId)) throw notFound()
+      getConversation(conversationId)
+      conversations.delete(conversationId)
+      saveMockChat()
     },
 
-    async getConversationExcerpt({ type, id }): Promise<ConversationExcerpt> {
-      const confirmedMessageId = newId()
-      const at = (minutes: number) => new Date(Date.now() - minutes * 60_000).toISOString()
-      return {
-        source: { type, id, confirmedMessageId },
-        messages: [
-          { id: newId(), seq: 1, role: 'user', content: '(Dữ liệu minh hoạ) Xe tôi sắp đến mốc 12.000 km, chi phí khoảng bao nhiêu?', createdAt: at(12) },
-          { id: newId(), seq: 2, role: 'assistant', content: '(Dữ liệu minh hoạ) Chi phí ước tính cho mốc này đã được gửi để xưởng xác nhận.', createdAt: at(11) },
-          { id: confirmedMessageId, seq: 3, role: 'user', content: 'Xác nhận', createdAt: at(10) },
-        ],
-      }
+    /** Only bookings made from a chat proposal have a conversation; others hide the panel. */
+    async getConversationExcerpt({ id }): Promise<ConversationExcerpt> {
+      const excerpt = excerptForBooking(id)
+      if (!excerpt) throw new ApiError({ status: 404, code: 'BOOKING_NOT_FOUND', message: 'No conversation for this booking.' })
+      return excerpt
     },
+
+    quickBooking,
+    confirmProposal,
+    reviseProposal,
+    cancelProposal,
   }
 }

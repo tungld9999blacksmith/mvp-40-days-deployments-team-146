@@ -1,0 +1,62 @@
+[
+  {
+    "id": "SRC-001",
+    "title": "Chính sách bảo hành xe ô tô điện VinFast chính hãng",
+    "file": "vinfast_chinh_sach_bao_hanh_toan_dien.html",
+    "source_url": "https://vinfastauto.com/vn_vi/dich-vu-hau-mai/chinh-sach-bao-hanh",
+    "format": "html",
+    "models": ["VF3", "VF5", "VF6", "VF7", "VF8", "VF9"],
+    "category": "warranty",
+    "version": "2026.1",
+    "collected_date": "2026-09-27",
+    "scope": "Toàn quốc - Xe mới và pin cao áp"
+  },
+  {
+    "id": "SRC-002",
+    "title": "Cẩm nang lịch bảo dưỡng định kỳ ô tô điện VinFast (VF 3 - VF 9)",
+    "file": "vinfast_cam_nang_bao_duong_dinh_ky.html",
+    "source_url": "https://vinfastauto.com/vn_vi/dich-vu-hau-mai/lich-bao-duong-dinh-ky",
+    "format": "html",
+    "models": ["VF3", "VF5", "VF6", "VF7", "VF8", "VF9"],
+    "category": "maintenance",
+    "version": "2026.1",
+    "collected_date": "2026-09-27",
+    "scope": "Các mốc cấp 1 (10k), cấp 2 (20k), cấp 3 (40k), cấp 4 (80k)"
+  },
+  {
+    "id": "SRC-003",
+    "title": "Bảng giá tham khảo dịch vụ bảo dưỡng và phụ tùng ô tô điện VinFast 2026",
+    "file": "vinfast_bang_gia_dich_vu_va_phu_tung.html",
+    "source_url": "https://vinfastauto.com/vn_vi/bang-gia-dich-vu-phu-tung-2026",
+    "format": "html",
+    "models": ["VF3", "VF5", "VF6", "VF7", "VF8", "VF9"],
+    "category": "pricing",
+    "version": "2026.1",
+    "collected_date": "2026-09-27",
+    "scope": "Bảng giá vật tư tiêu hao, phụ tùng và tiền công thợ toàn quốc"
+  },
+  {
+    "id": "SRC-004",
+    "title": "Sổ tay hướng dẫn vận hành và an toàn pin xe điện VinFast",
+    "file": "so_tay_van_hanh_va_an_toan_pin_ev.pdf",
+    "source_url": "VinFast Technical Publications - Battery Safety Manual",
+    "format": "pdf",
+    "models": ["ALL"],
+    "category": "battery",
+    "version": "2026.2",
+    "collected_date": "2026-09-27",
+    "scope": "An toàn pin cao áp, sạc AC/DC, chuẩn chống nước IP67 và cảnh báo lỗi"
+  },
+  {
+    "id": "SRC-005",
+    "title": "Quy trình điều phối dịch vụ & Duyệt báo giá Human-In-The-Loop (HITL)",
+    "file": "quy_trinh_dich_vu_xep_lich_va_duyet_bao_gia_hitl.html",
+    "source_url": "EV Care Service Standard Operating Procedures",
+    "format": "html",
+    "models": ["ALL"],
+    "category": "procedure",
+    "version": "2026.1",
+    "collected_date": "2026-09-27",
+    "scope": "Quy trình duyệt báo giá giữa AI Agent, kỹ thuật viên và chủ xe"
+  }
+]

@@ -14,6 +14,12 @@ export function useVehicleProfile(userVehicleId: string | null) {
   return useCachedQuery(userVehicleId ? `vehicle:${userVehicleId}` : null, fetcher)
 }
 
+/** API-VEH-005 */
+export function useServiceRecords(userVehicleId: string | null) {
+  const fetcher = useCallback(() => vehiclesApi.listServiceRecords(userVehicleId as string), [userVehicleId])
+  return useCachedQuery(userVehicleId ? `service-records:${userVehicleId}` : null, fetcher)
+}
+
 const PENDING_SYNC_INTERVAL_MS = 5_000
 const PENDING_SYNC_MAX_ATTEMPTS = 6
 

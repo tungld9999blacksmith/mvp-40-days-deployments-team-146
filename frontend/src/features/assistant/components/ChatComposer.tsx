@@ -90,7 +90,7 @@ export default function ChatComposer({
               disabled={Boolean(lockedReason)}
               aria-label="Nhập câu hỏi"
               aria-describedby={message ? helpId : undefined}
-              placeholder="Hỏi về bảo dưỡng, bảo hành, cách dùng xe..."
+              placeholder="Hỏi về bảo dưỡng, bảo hành…"
               className={cn(
                 'w-full resize-none bg-card border rounded-xl px-4 py-3 text-sm leading-5 text-foreground placeholder:text-muted',
                 'focus:outline-none focus:ring-1 focus:ring-emerald/40 disabled:opacity-60',

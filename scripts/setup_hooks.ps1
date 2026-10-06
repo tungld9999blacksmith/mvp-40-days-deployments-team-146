@@ -9,14 +9,15 @@ $HookFile = '.git/hooks/pre-push'
 $HookBody = @'
 #!/usr/bin/env bash
 # Pre-push: sweep recent Antigravity / Gemini prompts, then submit AI logs.
-bash scripts/_pyrun.sh scripts/log_antigravity.py --auto || true
-bash scripts/_pyrun.sh scripts/submit_log.py || true
+if ! bash scripts/pre_push_ai_log.sh; then
+  echo '[ai-log] WARNING: pre-push logger could not start.' >&2
+fi
 exit 0
 '@
 
 # Shell hooks require a clean shebang and LF endings. Windows PowerShell 5.1
 # writes a BOM with Set-Content -Encoding UTF8, which can prevent Git launching it.
-$HookBody = $HookBody.Replace("rn", "n").TrimEnd("r", "n") + "n"
+$HookBody = $HookBody.Replace("`r`n", "`n").TrimEnd([char[]]"`r`n") + "`n"
 $HookEncoding = New-Object System.Text.UTF8Encoding($false)
 [System.IO.File]::WriteAllText([System.IO.Path]::GetFullPath($HookFile), $HookBody, $HookEncoding)
 Write-Host "[ai-log] Git pre-push hook installed."

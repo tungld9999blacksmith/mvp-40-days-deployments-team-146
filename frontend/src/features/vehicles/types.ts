@@ -77,3 +77,22 @@ export interface VehicleProfile {
   lastService: { serviceDate: string; odoKm: number | null; source: string; centerName: string | null } | null
   oemSyncedAt: string | null
 }
+
+/** API-VEH-005 — one service visit, from the manufacturer sync (`OEM`) or the Workshop Board (`EV_CARE`). */
+export interface ServiceRecord {
+  recordId: string
+  source: 'OEM' | 'EV_CARE'
+  serviceDate: string
+  odoKm: number | null
+  isPeriodic: boolean
+  itemsDone: string | null
+  workshop: { workshopId: string | null; name: string } | null
+  bookingId: string | null
+  bookingCode: string | null
+  /** Only for EV Care visits with a recorded final cost. */
+  actualCost: number | string | null
+}
+
+export interface ServiceRecordList {
+  items: ServiceRecord[]
+}

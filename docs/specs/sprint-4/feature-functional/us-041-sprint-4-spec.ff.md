@@ -1,5 +1,10 @@
 # Functional Specification — Hỏi thăm sau dịch vụ & phiếu hỗ trợ
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Phiếu hỗ trợ (`support_ticket`): **đã bỏ**. Phản hồi hỏi thăm có vấn đề chỉ được phân loại và ghi trên `follow_up` (`has_issue`); app hiện lời khuyên an toàn và hotline xưởng, không tạo phiếu, không có màn phiếu cho chủ xe hay xưởng.
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > Tài liệu đặc tả chức năng/nghiệp vụ cho Feature **F9 — Hỏi thăm sau dịch vụ + phiếu hỗ trợ** trong [PRD EV Care MVP](../../../product/PRD_EV_Care_MVP.md#f9--hỏi-thăm-sau-dịch-vụ).
 >
 > **Phạm vi:** sau khi lịch hẹn **hoàn tất** trên Workshop Board (F8), hệ thống gửi chủ xe **một** câu hỏi thăm; chủ xe trả lời trong app (điểm hài lòng + nhận xét); phản hồi **có vấn đề** tạo **phiếu hỗ trợ** giao chủ xưởng; chủ xưởng xử lý phiếu tới khi xong; hỏi thăm không được trả lời sẽ tự đóng sau 72 giờ.

@@ -1,20 +1,22 @@
-import { Bell, FileText, LayoutDashboard, Users } from 'lucide-react'
+import { Bell, CalendarDays, Gauge, LayoutDashboard, QrCode, Settings2, Users } from 'lucide-react'
 import { useWorkshopAuth } from '@/features/workshop-auth/context/WorkshopAuthContext'
 import AppLayout, { type NavItem } from './AppLayout'
-
-const TECHNICIAN_NAV: NavItem[] = [
-  { to: '/technician', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/technician/quotes', label: 'Báo giá', icon: FileText },
-  { to: '/technician/notifications', label: 'Thông báo', icon: Bell },
-  { to: '/customers', label: 'Khách hàng', icon: Users, disabled: true },
-]
 
 /** Workshop Portal shell (guarded by RequireActiveWorkshopOwner). */
 export default function TechnicianLayout() {
   const { displayName, owner, workshop, logout } = useWorkshopAuth()
+  const nav: NavItem[] = [
+    { to: '/technician', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    { to: '/technician/board', label: 'Lịch hẹn', icon: CalendarDays },
+    { to: '/technician/check-in', label: 'Check-in', icon: QrCode },
+    { to: '/technician/capacity', label: 'Sức chứa', icon: Gauge },
+    { to: '/technician/settings/booking', label: 'Cài đặt đặt lịch', icon: Settings2 },
+    { to: '/technician/notifications', label: 'Thông báo', icon: Bell },
+    { to: '/customers', label: 'Khách hàng', icon: Users, disabled: true },
+  ]
   return (
     <AppLayout
-      nav={TECHNICIAN_NAV}
+      nav={nav}
       userName={displayName || 'Chủ xưởng'}
       roleLabel={workshop ? `Chủ xưởng · ${workshop.name}` : 'Chủ xưởng'}
       avatarUrl={owner?.avatarUrl}

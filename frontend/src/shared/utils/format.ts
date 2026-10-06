@@ -29,6 +29,13 @@ export function formatDate(value: string | Date): string {
   }).format(toDate(value))
 }
 
+/** "28/09" — built from parts because ICU's vi-VN day-month pattern prints "28-09". */
+function formatDayMonth(date: Date): string {
+  const parts = new Intl.DateTimeFormat('vi-VN', { timeZone: TIME_ZONE, day: '2-digit', month: '2-digit' }).formatToParts(date)
+  const part = (type: string) => parts.find(item => item.type === type)?.value ?? ''
+  return `${part('day')}/${part('month')}`
+}
+
 /** 09:00 28/09 */
 export function formatTimeDayMonth(value: string | Date): string {
   const date = toDate(value)
@@ -38,8 +45,7 @@ export function formatTimeDayMonth(value: string | Date): string {
     minute: '2-digit',
     hour12: false,
   }).format(date)
-  const day = new Intl.DateTimeFormat('vi-VN', { timeZone: TIME_ZONE, day: '2-digit', month: '2-digit' }).format(date)
-  return `${time} ${day}`
+  return `${time} ${formatDayMonth(date)}`
 }
 
 /** 09:14 */
@@ -64,7 +70,7 @@ export function formatRelativeDay(value: string | Date, now: Date = new Date()):
   const key = dayKey(date)
   if (key === today) return `Hôm nay ${formatTime(date)}`
   if (key === yesterday) return 'Hôm qua'
-  return new Intl.DateTimeFormat('vi-VN', { timeZone: TIME_ZONE, day: '2-digit', month: '2-digit' }).format(date)
+  return formatDayMonth(date)
 }
 
 /** 5400 → "1 giờ 30 phút"; 40 → "1 phút" (rounded up). */

@@ -1,0 +1,2172 @@
+{
+  "summary": {
+    "collection": "ev_care_knowledge_base_staging",
+    "points": 819,
+    "queries": 100,
+    "documents_complete": 100,
+    "keywords_complete": 100,
+    "answers_supported": 100,
+    "model_compatible": 100,
+    "category_compatible": 99
+  },
+  "results": [
+    {
+      "id": "M01",
+      "category": "maintenance",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "warranty_maintenance_VF8",
+        "lich_bao_duong_ALL",
+        "dich_vu_bao_duong_ALL",
+        "toi_uu_moc_bao_duong_ALL"
+      ],
+      "indexed_chunks": 128,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "15.000": true,
+        "bảo dưỡng": true,
+        "kiểm tra": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9231,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M02",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "Pin chìa khóa": true,
+        "24 tháng": true,
+        "24.000km": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M03",
+      "category": "maintenance",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "toi_uu_moc_bao_duong_ALL"
+      ],
+      "indexed_chunks": 12,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "15.000 km": true,
+        "1 năm": true,
+        "01/01/2026": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9565,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M04",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "Pin bộ T-box": true,
+        "72": true,
+        "144": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M05",
+      "category": "maintenance",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "toi_uu_moc_bao_duong_ALL"
+      ],
+      "indexed_chunks": 12,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "36.000 - 45.000": true,
+        "45.000": true,
+        "lịch nhắc bảo dưỡng": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.95,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M06",
+      "category": "maintenance",
+      "model": "VF3",
+      "relevant_doc_ids": [
+        "warranty_maintenance_VF3",
+        "lich_bao_duong_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 69,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "bảo dưỡng": true,
+        "lần đầu": true,
+        "15.000": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9545,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M07",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "nước làm mát pin": true,
+        "thay mới": true,
+        "kiểm tra thường xuyên": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M08",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "dầu phanh": true,
+        "kiểm tra": true,
+        "thay mới xen kẽ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M09",
+      "category": "maintenance",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "warranty_maintenance_VF8",
+        "lich_bao_duong_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 116,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "60.000": true,
+        "pin": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.75,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M10",
+      "category": "maintenance",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "ô tô điện": true,
+        "dài hơn": true,
+        "truyền động đơn giản": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M11",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "lọc gió điều hòa": true,
+        "thay mới": true,
+        "TM": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M12",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "má phanh và đĩa phanh": true,
+        "đường ống": true,
+        "đầu nối hệ thống phanh": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9474,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M13",
+      "category": "maintenance",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "warranty_maintenance_VF8",
+        "lich_bao_duong_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 116,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "má phanh": true,
+        "kiểm tra": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.88,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M14",
+      "category": "maintenance",
+      "model": "VFMPV7",
+      "relevant_doc_ids": [
+        "warranty_maintenance_VFMPV7",
+        "lich_bao_duong_ALL",
+        "dich_vu_bao_duong_ALL",
+        "toi_uu_moc_bao_duong_ALL"
+      ],
+      "indexed_chunks": 78,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "15.000": true,
+        "bảo dưỡng": true,
+        "VF MPV 7": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9286,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M15",
+      "category": "maintenance",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "toi_uu_moc_bao_duong_ALL"
+      ],
+      "indexed_chunks": 12,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "01/01/2026": true,
+        "12.000 km": true,
+        "15.000 km": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9545,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M16",
+      "category": "maintenance",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 14,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "phụ tùng chính hãng": true,
+        "tương thích": true,
+        "an toàn": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M17",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "gạt nước rửa kính": true,
+        "nước rửa kính": true,
+        "bảo dưỡng chung": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.8462,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M18",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "pin": true,
+        "điện áp cao": true,
+        "cổng sạc": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M19",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "hệ thống treo": true,
+        "trục truyền động": true,
+        "khớp cầu": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M20",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "áp suất": true,
+        "độ mòn": true,
+        "đảo": true,
+        "cân bằng lốp": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M21",
+      "category": "pricing",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "giá phụ tùng": true,
+        "xưởng dịch vụ gần nhất": true,
+        "1900 23 23 89": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M22",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "cổng sạc": true,
+        "bảo dưỡng chung": true,
+        "VF e34": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.8182,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M23",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "warranty_maintenance_VFe34",
+        "lich_bao_duong_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 113,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "40.000": true,
+        "thay": true,
+        "dung dịch làm mát": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9032,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M24",
+      "category": "maintenance",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "động cơ điện": true,
+        "hộp số": true,
+        "bộ dẫn động": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.8421,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "M25",
+      "category": "maintenance",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "warranty_maintenance_VF3",
+        "warranty_maintenance_VF5",
+        "warranty_maintenance_VF6"
+      ],
+      "indexed_chunks": 84,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "bảo dưỡng": true,
+        "bảo hành": true,
+        "mất": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W01",
+      "category": "warranty",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VF8",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 522,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "10 năm": true,
+        "200.000": true,
+        "VF8": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W02",
+      "category": "warranty",
+      "model": "VF6",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VF6"
+      ],
+      "indexed_chunks": 53,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "pin": true,
+        "8 năm": true,
+        "160.000": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W03",
+      "category": "warranty",
+      "model": "VF3",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "hệ truyền động": true,
+        "7 năm": true,
+        "160.000 km": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.95,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W04",
+      "category": "warranty",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VF3"
+      ],
+      "indexed_chunks": 56,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "điều kiện": true,
+        "kích hoạt": true,
+        "xưởng dịch vụ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9697,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W05",
+      "category": "warranty",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VF3"
+      ],
+      "indexed_chunks": 56,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "ngập nước": true,
+        "không được": true,
+        "bảo hành": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.8667,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W06",
+      "category": "warranty",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VF8"
+      ],
+      "indexed_chunks": 103,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "xưởng dịch vụ": true,
+        "ủy quyền": true,
+        "bảo hành": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9286,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W07",
+      "category": "warranty",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VF3"
+      ],
+      "indexed_chunks": 56,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "70%": true,
+        "thay thế": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.8214,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W08",
+      "category": "warranty",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 458,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "tai nạn": true,
+        "va chạm": true,
+        "không thuộc phạm vi bảo hành": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W09",
+      "category": "warranty",
+      "model": "VFMPV7",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VFMPV7"
+      ],
+      "indexed_chunks": 53,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "7 năm": true,
+        "160.000": true,
+        "VF MPV 7": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W10",
+      "category": "warranty",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VF3"
+      ],
+      "indexed_chunks": 56,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "ắc quy 12V": true,
+        "1 năm": true,
+        "20.000": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W11",
+      "category": "warranty",
+      "model": "VF7",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "3 năm": true,
+        "100.000 km": true,
+        "Dịch vụ thương mại": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W12",
+      "category": "warranty",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi"
+      ],
+      "indexed_chunks": 39,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "bảo hành thương mại": true,
+        "tiếp tục áp dụng": true,
+        "chuyển nhượng": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W13",
+      "category": "warranty",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VF3"
+      ],
+      "indexed_chunks": 56,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "sạc không chính hãng": true,
+        "loại trừ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.8947,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W14",
+      "category": "warranty",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VFe34"
+      ],
+      "indexed_chunks": 100,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "7 năm": true,
+        "160.000": true,
+        "VF e34": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W15",
+      "category": "warranty",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "10 năm": true,
+        "200.000 km": true,
+        "hệ truyền động": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W16",
+      "category": "warranty",
+      "model": "VF6",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "7 năm": true,
+        "160.000 km": true,
+        "hệ truyền động": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W17",
+      "category": "warranty",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "warranty_policy_vi",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 428,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "xưởng dịch vụ": true,
+        "hotline": true,
+        "bảo hành": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W18",
+      "category": "warranty",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VF8"
+      ],
+      "indexed_chunks": 103,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "thương mại": true,
+        "điều kiện": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9615,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W19",
+      "category": "warranty",
+      "model": "VF5",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "hệ truyền động": true,
+        "7 năm": true,
+        "160.000 km": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "W20",
+      "category": "warranty",
+      "model": "VF3",
+      "relevant_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VF3"
+      ],
+      "indexed_chunks": 56,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "7 năm": true,
+        "160.000": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.875,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B01",
+      "category": "battery",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "battery_quy_dinh_su_dung_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 424,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "55°C": true,
+        "-20°C": true,
+        "24 giờ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B02",
+      "category": "battery",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "battery_sac_VF8",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 424,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "phanh tái sinh": true,
+        "ba cấp độ": true,
+        "bổ sung": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B03",
+      "category": "battery",
+      "model": "VF6",
+      "relevant_doc_ids": [
+        "battery_cuu_ho_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 423,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "1900 23 23 89": true,
+        "50.000 VNĐ": true,
+        "15 phút": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B04",
+      "category": "battery",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "battery_sac_VFe34"
+      ],
+      "indexed_chunks": 5,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "không lạm dụng": true,
+        "sạc siêu nhanh": true,
+        "tuổi thọ pin": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.8889,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B05",
+      "category": "battery",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "battery_quy_dinh_su_dung_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 424,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "Không để xe": true,
+        "ngập lụt": true,
+        "làm hỏng pin": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B06",
+      "category": "battery",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "battery_quy_dinh_su_dung_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 424,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "xưởng dịch vụ": true,
+        "kiểm tra tổng quát": true,
+        "hệ thống pin": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B07",
+      "category": "battery",
+      "model": "VF5",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "bảo quản": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9655,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B08",
+      "category": "battery",
+      "model": "VF7",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "battery_sac_VF7"
+      ],
+      "indexed_chunks": 422,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "nhiệt độ": true,
+        "phạm vi": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B09",
+      "category": "battery",
+      "model": "VF3",
+      "relevant_doc_ids": [
+        "battery_sac_VF3",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 423,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "24 kW": true,
+        "10%": true,
+        "70%": true,
+        "36 phút": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B10",
+      "category": "battery",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "giá sạc": true,
+        "kWh": true,
+        "trạm sạc": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B11",
+      "category": "battery",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "battery_cuu_ho_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 423,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "cứu hộ pin": true,
+        "24/7": true,
+        "50.000": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B12",
+      "category": "battery",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "battery_quy_dinh_su_dung_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 424,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "nguồn sạc": true,
+        "khuyến cáo": true,
+        "không tự ý": true,
+        "điện áp cao": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B13",
+      "category": "battery",
+      "model": "VF3",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "mưa": true,
+        "sạc": true,
+        "an toàn": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9231,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B14",
+      "category": "battery",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "battery_sac_VF8",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 424,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "6,6 kW": true,
+        "11 kW": true,
+        "149 kW": true,
+        "31 phút": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B15",
+      "category": "battery",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "mua đứt": true,
+        "thuê pin": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9429,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B16",
+      "category": "battery",
+      "model": "VFe34",
+      "relevant_doc_ids": [
+        "battery_sac_VFe34",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 424,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "3,3 kW": true,
+        "8-10 giờ": true,
+        "285 km": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B17",
+      "category": "battery",
+      "model": "VF6",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "0%": true,
+        "hư hỏng": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.8889,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B18",
+      "category": "battery",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "battery_sac_tai_nha_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 423,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "220V": true,
+        "2,2 kW": true,
+        "3,5 kW": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B19",
+      "category": "battery",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "battery_quy_dinh_su_dung_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 424,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "thấp hơn 5%": true,
+        "màu đỏ": true,
+        "sạc ngay lập tức": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "B20",
+      "category": "battery",
+      "model": "VF7",
+      "relevant_doc_ids": [
+        "battery_sac_VF7"
+      ],
+      "indexed_chunks": 3,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "7,2 kW": true,
+        "110 kW": true,
+        "VF 7": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9333,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P01",
+      "category": "pricing",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "pricing_thiet_bi_sac_ALL"
+      ],
+      "indexed_chunks": 2,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "3 kW": true,
+        "8.836.365 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P02",
+      "category": "pricing",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "pricing_thiet_bi_sac_ALL"
+      ],
+      "indexed_chunks": 2,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "AC 11 kW": true,
+        "11.781.818 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P03",
+      "category": "pricing",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "pricing_thiet_bi_sac_ALL"
+      ],
+      "indexed_chunks": 2,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "2,2 kW": true,
+        "3.927.273 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P04",
+      "category": "pricing",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "pricing_thiet_bi_sac_ALL",
+        "pricing_tram_sac_ALL"
+      ],
+      "indexed_chunks": 7,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "7,4 kW": true,
+        "10.800.000 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P05",
+      "category": "pricing",
+      "model": "VF5",
+      "relevant_doc_ids": [
+        "pricing_phu_kien_VF5"
+      ],
+      "indexed_chunks": 2,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "tấm che pin cao áp": true,
+        "4.947.002 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P06",
+      "category": "pricing",
+      "model": "VF5",
+      "relevant_doc_ids": [
+        "pricing_phu_kien_VF5"
+      ],
+      "indexed_chunks": 2,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "film cách nhiệt": true,
+        "5.130.000 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P07",
+      "category": "pricing",
+      "model": "VF5",
+      "relevant_doc_ids": [
+        "pricing_phu_kien_VF5"
+      ],
+      "indexed_chunks": 2,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "thảm cốp 3D": true,
+        "891.000 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P08",
+      "category": "pricing",
+      "model": "VF5",
+      "relevant_doc_ids": [
+        "pricing_phu_kien_VF5"
+      ],
+      "indexed_chunks": 2,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "thảm sàn nhựa 2D": true,
+        "1.900.215 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P09",
+      "category": "pricing",
+      "model": "VF5",
+      "relevant_doc_ids": [
+        "pricing_phu_kien_VF5"
+      ],
+      "indexed_chunks": 2,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "tấm che nắng cửa": true,
+        "405.000 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P10",
+      "category": "pricing",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "pricing_phu_kien_VF8"
+      ],
+      "indexed_chunks": 2,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "tấm che pin cao áp": true,
+        "8.140.001 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P11",
+      "category": "pricing",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "cứu hộ pin": true,
+        "50.000": true,
+        "VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P12",
+      "category": "pricing",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "pricing_phu_kien_VF8"
+      ],
+      "indexed_chunks": 2,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "thanh ngang giá nóc": true,
+        "18.360.000 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P13",
+      "category": "pricing",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "pricing_phu_kien_VF8"
+      ],
+      "indexed_chunks": 2,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "cốp nóc phi thuyền": true,
+        "6.390.000 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P14",
+      "category": "pricing",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "pricing_phu_kien_VF8"
+      ],
+      "indexed_chunks": 2,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "tấm che nắng cửa": true,
+        "495.000 VNĐ": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "P15",
+      "category": "pricing",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "pricing_bao_gia_dich_vu_ALL",
+        "dich_vu_bao_duong_ALL",
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 55,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "1900 23 23 89": true,
+        "báo giá": true,
+        "xác nhận": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "PR01",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 439,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "app": true,
+        "đặt lịch": true,
+        "xác nhận": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.96,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "PR02",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 439,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "kỹ thuật viên": true,
+        "phê duyệt": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.8286,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "PR03",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 439,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "tiếp nhận": true,
+        "kỹ thuật viên": true,
+        "lỗi": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9714,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "PR04",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 439,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "email": true,
+        "nhắc nhở": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9231,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "PR05",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 439,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "Mobile Service": true,
+        "tận nơi": true,
+        "kỹ thuật viên": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "PR06",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "quy_trinh_ung_dung_ALL"
+      ],
+      "indexed_chunks": 6,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "hủy": true,
+        "đổi lịch": true,
+        "trước khi lịch hẹn diễn ra": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "PR07",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 439,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "1900 23 23 89": true,
+        "hotline": true,
+        "24/7": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "PR08",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 439,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "hệ thống": true,
+        "đặt lịch": true,
+        "kỹ thuật viên": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.8947,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "PR09",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "quy_trinh_ung_dung_ALL"
+      ],
+      "indexed_chunks": 6,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "xem hóa đơn": true,
+        "thanh toán qua ứng dụng": true,
+        "tại xưởng": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "PR10",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 439,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "nhận xe": true,
+        "hóa đơn": true,
+        "bàn giao": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9706,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "PR11",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 439,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "cứu hộ": true,
+        "24/7": true,
+        "toàn quốc": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.96,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "PR12",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "quy_trinh_ung_dung_ALL"
+      ],
+      "indexed_chunks": 6,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "lịch hẹn": true,
+        "Lịch sử dịch vụ": true,
+        "ứng dụng": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "G01",
+      "category": "maintenance",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "dich_vu_bao_duong_ALL",
+        "lich_bao_duong_ALL",
+        "quy_trinh_ung_dung_ALL"
+      ],
+      "indexed_chunks": 58,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "đặt lịch": true,
+        "nhắc bảo dưỡng": true,
+        "10 ngày": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "G02",
+      "category": "general",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "theo dõi": true,
+        "pin": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "G03",
+      "category": "general",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "dich_vu_bao_duong_ALL"
+      ],
+      "indexed_chunks": 14,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "50 điểm VPoint": true,
+        "App/Website": true,
+        "30 phút": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": false
+    },
+    {
+      "id": "G04",
+      "category": "general",
+      "model": "VF8",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "562 km": true,
+        "457 km": true,
+        "WLTP": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "G05",
+      "category": "maintenance",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "indexed_chunks": 38,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "ô tô điện": true,
+        "dài hơn": true,
+        "truyền động đơn giản": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "G06",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "quy_trinh_ung_dung_ALL"
+      ],
+      "indexed_chunks": 6,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "Bản đồ": true,
+        "xưởng dịch vụ gần nhất": true,
+        "ứng dụng": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "G07",
+      "category": "procedure",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "quy_trinh_ung_dung_ALL"
+      ],
+      "indexed_chunks": 6,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "thời gian": true,
+        "địa điểm sạc": true,
+        "chi phí sạc": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 0.9333,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    },
+    {
+      "id": "G08",
+      "category": "general",
+      "model": "ALL",
+      "relevant_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "indexed_chunks": 419,
+      "missing_doc_ids": [],
+      "keyword_checks": {
+        "sổ bảo hành": true,
+        "app": true,
+        "kích hoạt": true
+      },
+      "candidate_docs_by_missing_keyword": {},
+      "expected_answer_token_coverage": 1.0,
+      "numbers_supported": true,
+      "answer_supported": true,
+      "model_compatible": true,
+      "category_compatible": true
+    }
+  ]
+}

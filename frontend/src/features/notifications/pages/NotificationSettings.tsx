@@ -16,7 +16,6 @@ import { track } from '@/shared/utils/track'
 import { useOnboardingRequiredRedirect } from '@/features/auth/hooks/useOnboardingRequiredRedirect'
 import { NOTIFICATION_SETTINGS_KEY, updateNotificationSettings } from '../api'
 import NotificationChannelList from '../components/NotificationChannelList'
-import DiscordConnectDialog, { trackDiscordConnect } from '../components/DiscordConnectDialog'
 import { useNotificationSettings } from '../hooks/useNotificationSettings'
 import { buildSettingsPatch, isDirty, toForm, validateSettings, type SettingsErrors } from '../settingsForm'
 import type { NotificationSettings as Settings, SettingsForm } from '../types'
@@ -28,7 +27,6 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
   const [form, setForm] = useState<SettingsForm>(() => toForm(saved))
   const [errors, setErrors] = useState<SettingsErrors>({})
   const [saving, setSaving] = useState(false)
-  const [discordOpen, setDiscordOpen] = useState(false)
   const stayRef = useRef<HTMLButtonElement>(null)
   const dirty = isDirty(saved, form)
 
@@ -41,7 +39,7 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
     return () => window.removeEventListener('beforeunload', onBeforeUnload)
   }, [dirty])
 
-  // "#channel-DISCORD" from the Home banner scrolls to the Discord row.
+  // "#channel-<NAME>" in the URL scrolls to that channel row.
   useEffect(() => {
     if (!location.hash) return
     document.getElementById(location.hash.slice(1))?.scrollIntoView({ block: 'center' })
@@ -60,7 +58,7 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
   async function save() {
     const validation = validateSettings(form)
     setErrors(validation)
-    if (validation.reminderLeadDays || validation.channels) return
+    if (validation.reminderLeadDays) return
     const patch = buildSettingsPatch(saved, form)
     if (!Object.keys(patch).length) return
     setSaving(true)
@@ -80,9 +78,6 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
       switch (error.code) {
         case 'INVALID_LEAD_DAYS':
           setErrors(current => ({ ...current, reminderLeadDays: 'Số ngày nhắc trước phải từ 0 đến 30.' }))
-          break
-        case 'NO_CHANNEL_ENABLED':
-          setErrors(current => ({ ...current, channels: 'Chọn ít nhất một kênh nhận thông báo, hoặc tắt nhắc bảo dưỡng.' }))
           break
         case 'CHANNEL_NOT_AVAILABLE':
           toast.show('Kênh này chưa được hỗ trợ.', 'error')
@@ -158,17 +153,13 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
         </Card>
 
         <Card className={cn('p-6 transition-opacity', off && 'opacity-50')}>
-          <p className="text-sm font-semibold text-foreground mb-4">Kênh nhận thông báo</p>
+          <p className="text-sm font-semibold text-foreground">Kênh nhận thông báo</p>
+          <p className="text-sm text-muted mt-1 mb-4">Nhắc bảo dưỡng luôn hiện trong mục Thông báo của ứng dụng. Các kênh bên ngoài dưới đây sẽ được hỗ trợ sau.</p>
           <NotificationChannelList
             channels={saved.channels}
             values={form.channels}
             onChange={(channel, enabled) => change({ ...form, channels: { ...form.channels, [channel]: enabled } })}
             disabled={off || saving}
-            error={errors.channels}
-            onConnectDiscord={() => {
-              trackDiscordConnect('settings')
-              setDiscordOpen(true)
-            }}
           />
         </Card>
 
@@ -184,14 +175,12 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
             className="flex-1 sm:flex-none"
             onClick={() => void save()}
             loading={saving}
-            disabled={!dirty || Boolean(errors.reminderLeadDays || errors.channels)}
+            disabled={!dirty || Boolean(errors.reminderLeadDays)}
           >
             Lưu
           </Button>
         </div>
       </div>
-
-      <DiscordConnectDialog open={discordOpen} onClose={() => setDiscordOpen(false)} />
 
       <Dialog
         open={blocker.state === 'blocked'}

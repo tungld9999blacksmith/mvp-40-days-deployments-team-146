@@ -1,5 +1,10 @@
 # Functional Specification — Chat RAG có trích nguồn & lưu trữ hội thoại
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > Đặc tả nghiệp vụ cho Feature **F4** trong [PRD EV Care MVP](../../../product/PRD_EV_Care_MVP.md#f4--chat-rag-có-trích-nguồn), gồm cả phần **lưu & truy vấn hội thoại** (dùng chung cho F4, F5, F6).
 >
 > **Phạm vi tài liệu này:** trải nghiệm chat của chủ xe, quy tắc lưu/đọc/xoá hội thoại, quyền xem của chủ xưởng. **Không** mô tả cách Agent suy luận, truy hồi tài liệu và viết prompt — xem [AI-001](../../ai-agent/ai-001-sprint-2-spec.agent.md), [AI-002](../../ai-agent/ai-002-sprint-2-spec.agent.md). **Không** gồm dự toán chi phí (F5) và đặt lịch (F6), chỉ gồm phần chúng dùng chung hội thoại.

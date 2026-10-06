@@ -4,8 +4,7 @@ import { ChevronRight, MapPin, MessageSquare } from 'lucide-react'
 import { track } from '@/shared/utils/track'
 import { useBookingWizard, type BookingParams } from '../context/BookingWizardContext'
 
-function entryOf(params: BookingParams): 'HOME' | 'ESTIMATE' | 'QUOTE' | 'MENU' {
-  if (params.quoteId) return 'QUOTE'
+function entryOf(params: BookingParams): 'HOME' | 'ESTIMATE' | 'MENU' {
   if (params.workshopId) return 'ESTIMATE'
   if (params.odoMilestone !== null) return 'HOME'
   return 'MENU'
@@ -26,7 +25,7 @@ function Choice({
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left bg-card border border-border rounded-2xl p-5 flex items-center gap-4 hover:bg-card-hover hover:border-emerald/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald/40"
+      className="w-full text-left bg-card border border-border rounded-2xl p-5 flex items-center gap-4 hover:bg-card-hover hover:border-emerald/40 hover:-translate-y-0.5 hover:elevation-md transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald/40 elevation-sm"
     >
       <span className="w-11 h-11 rounded-xl bg-emerald/10 text-emerald flex items-center justify-center shrink-0">{icon}</span>
       <span className="flex-1 min-w-0">

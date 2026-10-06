@@ -1,5 +1,9 @@
 # API Technical Specification — Dự toán chi phí bảo dưỡng
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Backend cho Feature `FEAT-COST-001` — PRD F5 (US-045 → US-048).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-045-sprint-2-spec.ff.md) là chuẩn; API **không** định nghĩa lại nghiệp vụ, chỉ trỏ `BR-10xx` / `EF-10xx` / `EDGE-10xx`.

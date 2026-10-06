@@ -7,7 +7,7 @@ const saved: NotificationSettings = {
   reminderLeadDays: 2,
   defaultReminderLeadDays: 2,
   channels: [
-    { channel: 'DISCORD', enabled: true, available: true, status: 'NOT_CONNECTED' },
+    { channel: 'ZALO', enabled: false, available: false, status: 'COMING_SOON' },
     { channel: 'SMS', enabled: false, available: false, status: 'COMING_SOON' },
   ],
 }
@@ -21,7 +21,7 @@ describe('notification settings form (US-021 FE)', () => {
   })
 
   it('never enables a channel that is not available (BR-506)', () => {
-    const form = { ...toForm(saved), channels: { DISCORD: true, SMS: true } }
+    const form = { ...toForm(saved), channels: { ZALO: true, SMS: true } }
     expect(buildSettingsPatch(saved, form)).toEqual({})
   })
 
@@ -30,9 +30,8 @@ describe('notification settings form (US-021 FE)', () => {
     expect(validateSettings({ ...toForm(saved), reminderLeadDays: '0' }).reminderLeadDays).toBeUndefined()
   })
 
-  it('reminders on require at least one channel (AC-FE-505)', () => {
-    const form = { ...toForm(saved), channels: { DISCORD: false, SMS: false } }
-    expect(validateSettings(form).channels).toBe('Chọn ít nhất một kênh nhận thông báo, hoặc tắt nhắc bảo dưỡng.')
-    expect(validateSettings({ ...form, remindersEnabled: false }).channels).toBeUndefined()
+  it('reminders can stay on without any external channel (in-app feed only)', () => {
+    const form = { ...toForm(saved), channels: { ZALO: false, SMS: false } }
+    expect(validateSettings(form)).toEqual({})
   })
 })

@@ -6,6 +6,8 @@ manufacturer gateway replaced by test doubles.
 
 from __future__ import annotations
 
+import threading
+
 import pytest
 import pytest_asyncio
 from ev_contracts import OwnershipVerifyFailureReason
@@ -136,6 +138,8 @@ async def test_full_onboarding_flow(api: _Api):
     assert data["vehicle"]["spec"]["modelName"] == "VF6"
     # FEAT-VEH-001 BR-011: odometer + service history are pulled right away.
     assert [(t, d) for _, t, d in api.scheduler.calls] == [(OemSyncTrigger.INITIAL, 0)]
+    # The demo ODO seed writes to the database: it must not run on the event loop thread.
+    assert threading.get_ident() not in api.scheduler.threads
 
     # API-002 read back.
     r = await api.client.get("/api/v1/onboarding")

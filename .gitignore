@@ -62,6 +62,9 @@ out/
 # Frontend (frontend — Vite)
 *.tsbuildinfo
 .vite/
+.cache/
+tools/demo/artifacts/
+tools/demo/.firebase/
 .copilot
 personal/tungld-03005/
 */.env
@@ -79,3 +82,5 @@ prompt.txt
 tools/repo_sync/.state.json
 
 infrastructure/backend/railway/.railway.env
+.vercel
+.env*

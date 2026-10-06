@@ -1,5 +1,9 @@
 # Entity Specification — Hội thoại & tin nhắn chat (F4)
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Đặc tả dữ liệu cho `FEAT-CHAT-001` (PRD F4, US-025 → US-030).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-025-sprint-2-spec.ff.md) · **API:** [API Spec](../api/us-025-sprint-2-spec.api.md) · **Agent:** [AI-001](../../ai-agent/ai-001-sprint-2-spec.agent.md)

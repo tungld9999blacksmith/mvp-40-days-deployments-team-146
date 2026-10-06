@@ -1,5 +1,9 @@
 # Frontend Technical Specification — Đặt lịch bảo dưỡng theo sức chứa & vị trí
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Đặc tả frontend cho Feature `FEAT-BOOK-001` (PRD F6, US-029 → US-032).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-029-sprint-3-spec.ff.md) · **API:** [API Spec](../api/us-029-sprint-3-spec.api.md) (`API-BK-01 → 04`) · **Entity:** [Entity Spec](../entity/us-029-sprint-3-spec.entity.md)
@@ -15,7 +19,7 @@
 | Feature | `FEAT-BOOK-001` — Đặt lịch theo sức chứa & vị trí |
 | Screen | `SCR-401` Bắt đầu · `SCR-402` Gợi ý xưởng gần · `SCR-403` Chọn ngày + khung · `SCR-404` Thẻ tóm tắt · `SCR-405` → us-053 SCR-1201 |
 | Route | `/booking` (query tuỳ chọn: `workshopId`, `odoMilestone`, `quoteId`, `date`) · `/booking/workshops` · `/booking/slots` · `/booking/confirm` |
-| Version | `v1.0` |
+| Version | `v1.1` |
 | Author | Team 4 Người |
 | Status | `Draft` |
 | Related PRD | [PRD §F6](../../../product/PRD_EV_Care_MVP.md) |
@@ -92,7 +96,7 @@ Chủ xe tự đặt lịch trên UI: chọn xưởng (gợi ý theo vị trí),
 
 ## 3.5 SCR-404 Thẻ tóm tắt
 
-- Xưởng + địa chỉ; thời gian (thứ, dd/MM/yyyy, HH:mm); xe; hạng mục của mốc; chi phí:
+- Xưởng + địa chỉ; thời gian (thứ, dd/MM/yyyy, HH:mm); xe (biển số che một phần); hạng mục của mốc; báo giá (mã báo giá hoặc "Không"); chi phí:
   - có `quoteId` hợp lệ ⇒ "Theo báo giá đã duyệt: …"
   - không ⇒ "Chi phí ước tính: …" (từ `API-EST-02` của us-045 với cùng xưởng + mốc) hoặc "Chưa có ước tính".
 - Ô ghi chú (≤ 500).
@@ -135,7 +139,8 @@ Chủ xe tự đặt lịch trên UI: chọn xưởng (gợi ý theo vị trí),
 | `status` trả về | UI |
 |---|---|
 | `CONFIRMED` (xưởng `auto`) | Điều hướng ticket (us-053) — có mã + QR |
-| `PENDING` (xưởng `manual`) | Ticket ở trạng thái "Đã giữ chỗ — chờ xưởng xác nhận"; đồng hồ đếm ngược tới `ownerCancelableUntil` + nút "Huỷ giữ chỗ" (`API-BK-04`) |
+| `PENDING` (xưởng `manual`) | Ticket ở trạng thái "Đã giữ chỗ — chờ xưởng xác nhận"; đồng hồ đếm ngược tới `ownerCancelableUntil` + nút "Huỷ giữ chỗ" (`API-BK-04`). Hết 10' ⇒ ẩn nút, chỉ còn "Đang chờ xưởng xác nhận" (FF BR-010) |
+| `CANCELLED` sau khi chờ xưởng (xưởng từ chối, hoặc quá hạn chót xác nhận — FF BR-015, EF-006) | Ticket "Lịch hẹn đã bị huỷ" kèm lý do do backend trả (nếu có) + nút **"Đặt lịch lại"** ⇒ `/booking?workshopId&odoMilestone` (giữ xưởng, mốc). Không hiện QR. Màn đọc trạng thái này thuộc us-053 SCR-1201; thông báo tới chủ xe do backend gửi |
 
 ---
 
@@ -171,6 +176,7 @@ interface BookingWizardState {
 ```
 
 - Nguồn sự thật cho `workshopId`, `date`, `timeSlot`, `odoMilestone`, `quoteId` là query string (back/forward giữ bước).
+- `quoteId` chỉ hợp lệ với `workshopId` của báo giá: khi chủ xe "Đổi xưởng" (về SCR-402 chọn xưởng khác) FE bỏ `quoteId` khỏi query, thẻ tóm tắt dùng chi phí ước tính của xưởng mới (us-049 FF BR-1108, AF-1105).
 - `confirmationToken` chỉ giữ trong bộ nhớ (không lưu localStorage).
 - Sinh `Idempotency-Key` một lần cho mỗi token; retry dùng lại key.
 
@@ -181,14 +187,16 @@ interface BookingWizardState {
 | Code | Màn | FE |
 |---|---|---|
 | `LOCATION_ANCHOR_REQUIRED` | SCR-402 | Mở LocationAnchorPicker, "Cho mình biết bạn muốn đặt gần đâu" (FF EF-004) |
-| `NO_WORKSHOP_AVAILABLE` / danh sách rỗng | SCR-402 | "Chưa có xưởng khả dụng gần vị trí này" + đổi vị trí |
+| `NO_WORKSHOP_AVAILABLE` / `WORKSHOP_NOT_FOUND` (404 — backend hiện trả mã này khi không có xưởng `active`) / danh sách rỗng | SCR-402 | "Chưa có xưởng khả dụng gần vị trí này" + đổi vị trí (FF EF-004) |
+| `WORKSHOP_NOT_FOUND` ở SCR-403/404 | SCR-403, SCR-404 | Xưởng vừa ngừng hoạt động: toast "Xưởng không còn nhận đặt lịch" + về SCR-402 |
 | `SLOT_OUT_OF_HOURS` | SCR-403 | Hiện giờ hoạt động, chọn lại (FF EF-003) |
 | `SLOT_FULL` | SCR-404 | AlternativesSheet (FF EF-002, AC-003) |
 | `HOLD_EXPIRED` / `INVALID_CONFIRMATION_TOKEN` | SCR-404 | "Thẻ đặt lịch đã hết hiệu lực, mình kiểm tra lại giúp bạn" ⇒ gọi lại `API-BK-02` (FF EF-001) |
 | `QUOTE_EXPIRED` | SCR-404 | "Báo giá đã hết hiệu lực" + lựa chọn "Đặt không kèm báo giá" (bỏ `quoteId`) |
 | `OPEN_BOOKING_EXISTS` | SCR-404 | Hộp thoại dẫn tới lịch đang mở / đổi lịch (FF BR-013) |
 | `HOLD_WINDOW_CLOSED` | Ticket | Ẩn nút huỷ giữ chỗ, hiển thị "Đang chờ xưởng xác nhận" |
-| `FORBIDDEN` (xe) | mọi màn | Về `/dashboard` |
+| `FORBIDDEN` / `VEHICLE_NOT_FOUND` / `VEHICLE_NOT_ACTIVE` | mọi màn | Về `/dashboard`; không tiết lộ xe có tồn tại hay không (FF BR-012, AC-009) |
+| `ONBOARDING_REQUIRED` | mọi màn | Về `/onboarding` |
 | `SERVICE_UNAVAILABLE` | SCR-404 | "Tạm thời chưa đặt được, bạn thử lại giúp mình" + gợi ý kiểm tra "Lịch của tôi" (FF EF-005) |
 
 ---
@@ -270,16 +278,44 @@ interface BookingWizardState {
 - Vite + React 19 + React Router 7 + Tailwind 4.
 - Tách `features/bookings/{api,hooks,components}`; `BookingSummaryCard` export cho `features/assistant` dùng trong chat.
 - Thời gian gửi API: `date` + `timeSlot` theo giờ VN (đúng hợp đồng us-029); hiển thị từ `appointmentAt` UTC.
+- `API-BK-02` không trả thời điểm hết hạn token: FE ước tính `tokenExpiresAt = lúc nhận response + BOOKING_CONFIRMATION_TOKEN_TTL_SECONDS` (mặc định 600 s). Backend tiêu token ngay khi nhận `POST /bookings`, nên sau **mọi** lỗi của BK-03 phải lấy token mới (gọi lại BK-02 cho cùng khung).
+- `status` booking backend trả chữ thường (`pending`, `confirmed`, `cancelled`) — so sánh không phân biệt hoa thường.
+- BK-02 chậm khi nhiều request song song (mỗi khung một truy vấn sức chứa): dải 7 ngày tải **lần lượt** (ngày đang chọn trước); lấy token gọi `withAlternatives=false`, chỉ gọi lại có `alternatives` khi khung đã hết chỗ.
 
-# 16. Open Questions
+# 16. Truy vết FF → FE
+
+Mã trong [FF us-029](../feature-functional/us-029-sprint-3-spec.ff.md) và nơi FE xử lý. "Backend" = không có hành vi UI riêng; FE chỉ hiển thị kết quả API.
+
+| FF | Nội dung | FE |
+|---|---|---|
+| UC-401, AC-001 | Gợi ý xưởng gần theo hồ sơ, ghim xưởng ưa thích | §3.3, §4.1, §4.2 (★) |
+| AF-001, AC-002, EDGE-401 | Địa điểm chỉ định thay hồ sơ | §4.1 (nhập text / vị trí hiện tại) |
+| AF-002, BR-003, BR-004, EDGE-402/412 | Xếp theo khoảng cách hoặc khu vực, không bịa khoảng cách | §3.3 nhãn "Sắp xếp theo khu vực", §4.2 "Cùng khu vực" |
+| UC-402, BR-007, AC-005 | Thẻ tóm tắt chưa tạo booking; Xác nhận mới giữ chỗ | §3.5, §4.4, AC-FE-401 |
+| AF-004, EDGE-409 | Đặt không kèm báo giá / báo giá hết hạn | §3.5 (báo giá "Không"), §6 (bỏ `quoteId` khi đổi xưởng), §7 `QUOTE_EXPIRED` |
+| AF-005, AC-003, AC-004, BR-008, EDGE-404 | Hết chỗ ⇒ 2–3 phương án | §4.5, AC-FE-402 |
+| BR-006, AC-007, EF-003, EDGE-407 | Chỉ khung trong giờ hoạt động | §3.4 (ngày nghỉ disabled), §4.3, §7 `SLOT_OUT_OF_HOURS` |
+| BR-010, AC-006 | Huỷ giữ chỗ trong 10' | §4.6, §5 #6, §7 `HOLD_WINDOW_CLOSED` |
+| BR-014, AC-010, EDGE-413 | Xác nhận tự động / thủ công | §4.6, AC-FE-403 |
+| BR-015, EF-006, AC-011, EDGE-414 | Xưởng thủ công không xác nhận kịp ⇒ huỷ, mời đặt lại | §4.6 dòng `CANCELLED` |
+| BR-012, AC-009, EDGE-410 | Chỉ đặt cho xe của mình | §7 `FORBIDDEN` / `VEHICLE_*` |
+| BR-013, EDGE-411 | Đang có booking mở | §7 `OPEN_BOOKING_EXISTS` |
+| EF-001, EDGE-406 | Token thẻ hết hạn | §3.5, AC-FE-404, §15 |
+| EF-004, EDGE-403 | Không có xưởng / không có mốc vị trí | §7 `LOCATION_ANCHOR_REQUIRED`, `WORKSHOP_NOT_FOUND` |
+| EF-005 | Service sức chứa lỗi | §7 `SERVICE_UNAVAILABLE` |
+| BR-001, BR-005, AC-008, EF-002, EDGE-405/408 | Nguyên tử, công thức sức chứa, chung service Agent/UI | Backend — FE chỉ hiển thị `SLOT_FULL` (§4.5) |
+| BR-011 | Một đường tạo booking duy nhất | §4.4 (thẻ trong chat không gọi BK-03) |
+
+# 17. Open Questions
 
 | ID | Question |
 |---|---|
 | `Q-FE-401` | SCR-401 có cần không, hay vào thẳng SCR-402? `[Đề xuất]` giữ để giới thiệu đặt qua chat |
 | `Q-FE-402` | Có hiển thị bản đồ ở SCR-402? `[Đề xuất]` không trong MVP (Q-401 — chưa geocoding) |
 
-# 17. Change Log
+# 18. Change Log
 
 | Version | Date | Author | Change |
 |---|---|---|---|
 | `v1.0` | `2026-09-30` | Team 4 Người | Bản đầu — FF us-029 ghi "Related Frontend Spec [Chưa có]" |
+| `v1.1` | `2026-10-01` | Team 4 Người | Đối chiếu FF: thêm trạng thái huỷ do xưởng không xác nhận kịp (BR-015, EF-006), dòng báo giá trên thẻ, mã lỗi backend thật (`WORKSHOP_NOT_FOUND`, `VEHICLE_*`, `ONBOARDING_REQUIRED`), ghi chú kỹ thuật token/hiệu năng, bảng truy vết FF → FE |

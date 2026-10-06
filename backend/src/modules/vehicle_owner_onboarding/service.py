@@ -24,6 +24,7 @@ from ev_contracts import (
     normalize_vin,
 )
 from sqlmodel import Session, select
+from starlette.concurrency import run_in_threadpool
 
 from src.common.core.identity.vehicle_user import OnboardingStatus, UserStatus, VehicleUser
 from src.common.core.vehicle import OemSyncTrigger
@@ -354,7 +355,8 @@ class OnboardingService:
         self._db.refresh(vehicle)
         self._db.refresh(attempt)
         if result.verified:
-            self._schedule_initial_sync(vehicle)
+            # The demo ODO seed writes to the database: keep it off the event loop.
+            await run_in_threadpool(self._schedule_initial_sync, vehicle)
 
         data, _ = self._build_verification_result(user, vehicle, attempt)
         return data, 200
@@ -363,7 +365,7 @@ class OnboardingService:
     # Verification outcome helpers
     # ==================================================================
     def _schedule_initial_sync(self, vehicle: UserVehicle) -> None:
-        """Pull odometer + service history right after verification (FEAT-VEH-001 BR-011)."""
+        """Seed the demo ODO or pull from the OEM right after verification (FEAT-VEH-001 BR-011)."""
         if self._sync_scheduler is None:
             return
         try:

@@ -1,5 +1,11 @@
 # Lược đồ Cơ sở dữ liệu cốt lõi (Core Entity) — AI MVP PRD - TEAM 4 NGƯỜI
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+> - Phiếu hỗ trợ (`support_ticket`): **đã bỏ**. Phản hồi hỏi thăm có vấn đề chỉ được phân loại và ghi trên `follow_up` (`has_issue`); app hiện lời khuyên an toàn và hotline xưởng, không tạo phiếu, không có màn phiếu cho chủ xe hay xưởng.
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > **Tài liệu tổng quan.** Mô tả chung lược đồ, quy ước, diagram và danh mục entity. Định nghĩa chi tiết từng bảng nằm trong file riêng theo domain (mục [14.5](#145-danh-mục-entity-theo-domain)).
 >
 > **Nguồn sự thật:**

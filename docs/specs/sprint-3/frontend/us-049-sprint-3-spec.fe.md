@@ -1,5 +1,7 @@
 # Frontend Technical Specification — Báo giá có chủ xưởng duyệt (HITL)
 
+> **Đã loại khỏi phạm vi (02/10/2026).** Chức năng báo giá có chủ xưởng duyệt (F5b, us-049, AI-005) đã bị bỏ khỏi sản phẩm: code backend/frontend đã gỡ, bảng `quote`, `quote_item` được xoá bởi migration `backend/alembic/versions/a3c7e9f1b2d4_drop_quote_support_ticket_discord.py`. Tài liệu giữ lại để tham khảo lịch sử, **không dùng để triển khai**.
+
 > Đặc tả frontend cho Feature `FEAT-QUOTE-001` (PRD F5b, US-049 → US-052).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-049-sprint-3-spec.ff.md) · **API:** [API Spec](../api/us-049-sprint-3-spec.api.md)
@@ -15,7 +17,7 @@
 | Feature | `FEAT-QUOTE-001` — Báo giá HITL |
 | Screen | `SCR-1101` Nháp · `SCR-1102` Chi tiết · `SCR-1103` Báo giá của tôi · `SCR-1111` Chờ duyệt · `SCR-1112` Duyệt · `SCR-1113` Từ chối · `CARD-QUOTE` |
 | Route | App: `/quotes` · `/quotes/new` · `/quotes/:quoteId` · Portal: `/technician/quotes` · `/technician/quote-review?quoteId=…` |
-| Version | `v1.0` |
+| Version | `v1.1` |
 | Author | Team 4 Người |
 | Status | `Draft` |
 | Related PRD | [PRD §F5b](../../../product/PRD_EV_Care_MVP.md) |
@@ -45,7 +47,8 @@
 
 | Condition | Destination |
 |---|---|
-| Chủ xe "Đặt lịch với báo giá này" | `/booking?workshopId&odoMilestone&quoteId` (us-029 FE) |
+| Chủ xe "Đặt lịch với báo giá này" (chỉ khi `canAttachToBooking = true`) | `/booking?workshopId&odoMilestone&quoteId` (us-029 FE) — luôn kèm đúng `workshopId` của báo giá |
+| Chủ xe "Đặt lịch không kèm báo giá" (báo giá `EXPIRED`) | `/booking?workshopId&odoMilestone` (FF AF-1104) |
 | Chủ xe "Lập báo giá mới" (sau từ chối/hết hạn) | `/estimate?odoMilestone` |
 | Chủ xưởng duyệt/từ chối xong | `/technician/quotes` + toast |
 
@@ -73,9 +76,23 @@
 ├─────────────────────────────────────┤
 │ DRAFT:    [Xoá nháp] [Gửi xưởng duyệt]│
 │ APPROVED: [Đặt lịch với báo giá này] │
-│ REJECTED/EXPIRED: [Lập báo giá mới]  │
+│ EXPIRED:  [Đặt lịch không kèm báo giá]│
+│           [Lập báo giá mới]          │
+│ REJECTED: [Lập báo giá mới]          │
 └─────────────────────────────────────┘
 ```
+
+### Quy tắc hiển thị SCR-1102 (FF BR-1106, BR-1108, BR-1111, BR-1112, EF-1103)
+
+| Điều kiện | Hiển thị |
+|---|---|
+| `DRAFT` | Dòng phụ "Nháp chưa gửi sẽ tự xoá sau 7 ngày" (`QUOTE_DRAFT_TTL_DAYS`); nhãn "Chi phí ước tính" |
+| `PENDING_APPROVAL` | "Chờ xưởng duyệt" + thời điểm gửi; nhãn "Chi phí ước tính" |
+| `APPROVED` / `MODIFIED`, `canAttachToBooking = true` | Nút "Đặt lịch với báo giá này"; nhãn "Báo giá đã duyệt — hiệu lực đến {dd/MM}" |
+| `APPROVED` / `MODIFIED`, đã gắn booking đang mở (`bookingId` ≠ null, `canAttachToBooking = false`) | Ẩn nút đặt lịch; dòng "Đã dùng cho lịch hẹn" + link `/bookings/:bookingId` |
+| `EXPIRED` | "Đã hết hiệu lực"; hai nút §3.1 (đặt lịch không kèm / lập mới). Không có lựa chọn gắn vào booking |
+| `REJECTED` | Khối "Lý do từ chối" nguyên văn `reviewerNote` + "Lập báo giá mới" ⇒ `/estimate?odoMilestone` (có thể chọn xưởng khác — FF AF-1103) |
+| Xưởng ngừng hoạt động khi đang chờ | Ghi chú "Xưởng hiện không nhận khách" `[Đề xuất — cần API trả trạng thái xưởng, Q-FE-1102]`; hiện tại chỉ biết qua lỗi `WORKSHOP_INACTIVE` khi gửi |
 
 ## 3.2 SCR-1112 Duyệt (desktop, dựa trên `QuoteReview.tsx`)
 
@@ -249,16 +266,41 @@ interface QuoteReviewForm {
 - Tách `features/quotes/` thành `api/`, `hooks/`, `components/`; xoá kiểu mock `ServiceItem` khi nối API.
 - Tiền tệ: `Intl.NumberFormat('vi-VN')`; ngày: hiển thị theo `Asia/Ho_Chi_Minh`.
 - Tổng duyệt phía FE chỉ là "tạm tính"; sau khi duyệt, hiển thị `approvedTotal` từ response.
+- Nháp được lập hoàn toàn ở backend từ dự toán F5: `POST /quotes` chỉ gửi `userVehicleId`, `workshopId`, `odoMilestone` — **không** gửi dòng/giá (FF BR-1101, AC-1104).
+- Báo giá chỉ dùng được cho **đúng xưởng** của nó (FF BR-1108, AF-1105): trong luồng đặt lịch us-029, nếu chủ xe "Đổi xưởng" khác `workshopId` của báo giá thì FE bỏ `quoteId` khỏi query và thẻ tóm tắt hiển thị "Chi phí ước tính" của xưởng mới.
+- Gửi duyệt qua chat chỉ khi chủ xe bấm nút trên `CARD-QUOTE` (sự kiện xác nhận kèm `confirmation_token`); câu trả lời mơ hồ không gửi (FF BR-1103, AC-1103).
 
-# 14. Open Questions
+# 14. Truy vết FF → FE
+
+| FF | Nội dung | FE |
+|---|---|---|
+| UC-1101, BR-1101, BR-1102, AC-1104 | Lập nháp từ dự toán ở backend | §2.2, §5 #1, §13 |
+| BR-1103, AF-1101, AC-1103 | Gửi duyệt cần xác nhận rõ (UI / chat) | §5 #2, §4.5, §13 |
+| BR-1104, EF-1101, AC-1107 | Không trùng báo giá chờ | §7 `QUOTE_ALREADY_PENDING`, AC-FE-1104 |
+| EF-1104 | Giá đổi giữa lúc lập và lúc gửi | §7 `QUOTE_DRAFT_REFRESHED` |
+| UC-1102, AF-1102, BR-1105, AC-1105 | Duyệt / sửa giá dòng tính phí, tổng do backend tính | §3.2, §4.2, §4.3, §13 |
+| UC-1103, BR-1107, AC-1102 | Từ chối cần lý do, hiển thị nguyên văn | §4.4, §3.1 (quy tắc hiển thị), AC-FE-1103 |
+| BR-1106, AF-1104 | Thời hạn hiệu lực, hết hạn | §3.2 (chọn 1–30 ngày), quy tắc hiển thị `EXPIRED` |
+| UC-1104, BR-1108, AC-1101, AF-1105 | Gắn báo giá vào booking | §2.3, quy tắc hiển thị (`canAttachToBooking`), §13 |
+| AF-1103 | Bị từ chối, lập lại | §2.3, quy tắc hiển thị `REJECTED` |
+| BR-1109 | Thông báo kết quả (badge Home, chat) | §2.2 (badge `unseenResult`), §5 #4 |
+| BR-1110, AC-1106 | Chủ xưởng chỉ thấy xưởng mình | §7 `QUOTE_NOT_FOUND` |
+| BR-1111 | Nhãn chi phí | AC-FE-1101 |
+| BR-1112 | Dọn nháp | Quy tắc hiển thị `DRAFT` |
+| EF-1102 | Hai tab cùng duyệt | §7 `QUOTE_ALREADY_REVIEWED` |
+| EF-1103 | Xưởng ngừng hoạt động | §7 `WORKSHOP_INACTIVE`, quy tắc hiển thị, Q-FE-1102 |
+
+# 15. Open Questions
 
 | ID | Question |
 |---|---|
 | `Q-1102` | Có giữ nút thêm/xoá dịch vụ của mock ở Portal không? `[Đề xuất]` không trong MVP |
 | `Q-FE-1101` | Chủ xe có cần màn so sánh báo giá của nhiều xưởng không? `[Đề xuất]` phase sau |
+| `Q-FE-1102` | `API-QT-03` có trả trạng thái xưởng (`workshopActive`) để hiện "Xưởng hiện không nhận khách" trên báo giá đang chờ (FF EF-1103)? |
 
-# 15. Change Log
+# 16. Change Log
 
 | Version | Date | Author | Change |
 |---|---|---|---|
 | `v1.0` | `2026-09-30` | Team 4 Người | Bản đầu |
+| `v1.1` | `2026-10-01` | Team 4 Người | Đối chiếu FF: quy tắc hiển thị theo trạng thái (đã gắn booking, hết hạn có "Đặt lịch không kèm báo giá", nháp tự xoá, xưởng ngừng hoạt động), chỉ dùng báo giá đúng xưởng, bảng truy vết FF → FE, Q-FE-1102 |

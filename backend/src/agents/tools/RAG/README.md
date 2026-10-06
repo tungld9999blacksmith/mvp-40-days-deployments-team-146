@@ -179,8 +179,8 @@ Mỗi vector point lưu trữ trong Qdrant Cloud tuân thủ đúng 100% schema 
 > [!NOTE]
 > Hiện trạng trên cụm **Qdrant Cloud** chính thức:
 > - **Collection**: `ev_care_knowledge_base`
-> - **Số lượng Vector hiện hữu**: **751 chunks**
-> - **Trạng thái**: `green` (Đầy đủ dữ liệu của VF3, VF5, VF6, VF7, VF8, VFe34, MPV7 và chính sách chung ALL).
+> - **Số lượng Vector hiện hữu**: **810 chunks** từ 27 tài liệu trong `data/knowledge/raw/` (cập nhật 03/10/2026)
+> - **Phạm vi**: sổ bảo hành & bảo dưỡng VF3, VF5, VF6, VF7, VF8, VFe34, MPV7; chính sách bảo hành, lịch bảo dưỡng, FAQ chung (ALL); sạc pin theo dòng xe, sạc tại nhà, cứu hộ pin, quy định sử dụng pin (`battery`); bảng giá dịch vụ, phụ kiện VF5/VF8, thiết bị sạc, trạm sạc (`pricing`); quy trình trên ứng dụng (`procedure`).
 
 ---
 
@@ -241,11 +241,16 @@ QDRANT_COLLECTION_NAME=ev_care_knowledge_base
 
 ### 6.2. Nạp thêm tài liệu mới (Ingestion)
 
-Khi có tài liệu sổ tay xe mới (PDF/DOCX), đặt file vào thư mục `data/knowledge/raw/` và chạy:
+Đặt tài liệu mới (PDF/HTML/MD/TXT) vào `data/knowledge/raw/` (thư mục `data/` ở gốc repo, ngang cấp `backend/`, không commit). Tên file theo dạng `<chủ_đề>_<MODEL|ALL>` để metadata model/category được suy ra đúng, ví dụ `battery_sac_VF5.md`, `pricing_tram_sac_ALL.md`. Sau đó chạy từ gốc repo:
 
 ```powershell
-python backend/scripts/migrate_to_qdrant.py
+python backend/scripts/ingest_knowledge.py --dry-run   # xem tài liệu nào mới/thay đổi, không ghi
+python backend/scripts/ingest_knowledge.py             # embed và upsert phần mới/thay đổi
 ```
+
+Script so nội dung từng chunk với Qdrant: chunk không đổi được giữ nguyên (không tốn lượt gọi Embedding API), chunk mới hoặc sửa nội dung được embed lại, chunk thừa sau khi re-chunk bị xóa. `--prune` xóa thêm tài liệu không còn trong `raw/`, `--force` embed lại toàn bộ. Báo cáo ghi vào `data/knowledge/processed/last_pipeline_run.json`. Khởi động lại backend để BM25 nạp lại corpus từ Qdrant.
+
+`backend/scripts/migrate_to_qdrant.py` chỉ dùng cho lần chuyển dữ liệu cũ từ ChromaDB (`data/chroma`) sang Qdrant.
 
 ### 6.3. Chạy kiểm thử tự động
 

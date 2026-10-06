@@ -16,6 +16,7 @@ from sqlalchemy import func
 from sqlmodel import Session, select
 
 from src.common.core.identity.vehicle_user import VehicleUser
+from src.common.core.maintenance.booking import Booking
 from src.common.core.maintenance.maintenance_rule import MaintenanceRule
 from src.common.core.vehicle import (
     OemSyncTrigger,
@@ -160,13 +161,68 @@ class UserVehicleService:
         )
 
     # ---------------------------------------------------- due status
+    def list_service_records(self, vehicle: UserVehicle) -> schemas.ServiceRecordListOut:
+        """API-VEH-005: every service record of the vehicle, newest first (read-only, BR-003)."""
+        records = self._db.exec(
+            select(VehicleServiceRecord)
+            .where(VehicleServiceRecord.user_vehicle_id == vehicle.id)
+            .order_by(
+                VehicleServiceRecord.service_date.desc(),
+                VehicleServiceRecord.odo_km.desc().nulls_last(),
+            )
+        ).all()
+
+        workshop_ids = {r.workshop_id for r in records if r.workshop_id}
+        center_ids = {r.external_center_id for r in records if r.workshop_id is None and r.external_center_id}
+        workshops = (
+            self._db.exec(
+                select(Workshop).where(Workshop.id.in_(workshop_ids) | Workshop.external_center_id.in_(center_ids))
+            ).all()
+            if workshop_ids or center_ids
+            else []
+        )
+        by_id = {w.id: w for w in workshops}
+        by_center = {w.external_center_id: w for w in workshops}
+        booking_ids = {r.booking_id for r in records if r.booking_id}
+        bookings = (
+            {b.id: b for b in self._db.exec(select(Booking).where(Booking.id.in_(booking_ids))).all()}
+            if booking_ids
+            else {}
+        )
+
+        items = []
+        for r in records:
+            workshop = by_id.get(r.workshop_id) if r.workshop_id else by_center.get(r.external_center_id)
+            booking = bookings.get(r.booking_id) if r.booking_id else None
+            items.append(
+                schemas.ServiceRecordOut(
+                    record_id=r.id,
+                    source=r.source.value.upper(),
+                    service_date=r.service_date,
+                    odo_km=r.odo_km,
+                    is_periodic=r.is_periodic,
+                    items_done=r.items_done,
+                    workshop=(
+                        schemas.ServiceRecordWorkshopOut(workshop_id=workshop.id, name=workshop.name)
+                        if workshop
+                        else None
+                    ),
+                    booking_id=r.booking_id,
+                    booking_code=booking.booking_code if booking else None,
+                    actual_cost=booking.actual_cost if booking else None,
+                )
+            )
+        return schemas.ServiceRecordListOut(items=items)
+
     def get_maintenance_status(self, vehicle: UserVehicle) -> schemas.MaintenanceStatusOut:
         """API-VEH-003 / TOOL-VEH-001."""
         now = self._clock()
         sync = self._db.get(VehicleOemSync, vehicle.id)
         result = self.calculate(vehicle, now=now, sync=sync)
-        if result.unknown_reason == UnknownReason.OEM_DATA_NOT_SYNCED:
-            self._self_heal(vehicle.id, sync, now)
+        if result.unknown_reason == UnknownReason.OEM_DATA_NOT_SYNCED and self._self_heal(vehicle.id, sync, now):
+            # The demo ODO seed completes synchronously: answer with it right away.
+            sync = self._db.get(VehicleOemSync, vehicle.id)
+            result = self.calculate(vehicle, now=now, sync=sync)
         return _status_out(vehicle.id, result, self._config, sync, now)
 
     def calculate(
@@ -260,14 +316,20 @@ class UserVehicleService:
         # Not expected for a verified vehicle; fall back to the link date.
         return today_vn(as_utc(vehicle.verified_at or vehicle.created_at))
 
-    def _self_heal(self, user_vehicle_id: UUID, sync: VehicleOemSync | None, now: datetime) -> None:
+    def _self_heal(self, user_vehicle_id: UUID, sync: VehicleOemSync | None, now: datetime) -> bool:
+        """Schedule (or, in demo mode, seed) the initial sync; ``True`` once it was handed off."""
         if sync is not None and sync.last_attempt_at is not None:
             if now - as_utc(sync.last_attempt_at) < SELF_HEAL_AFTER:
-                return
+                return False
+        if self._db.in_transaction() and not (self._db.new or self._db.dirty or self._db.deleted):
+            # Read-only so far: return this connection before the demo seed takes its own.
+            self._db.rollback()
         try:
             self._scheduler.schedule(user_vehicle_id, OemSyncTrigger.INITIAL)
-        except Exception:  # noqa: BLE001 — a broker outage must not fail a read
-            logger.exception("could not enqueue initial OEM sync for %s", user_vehicle_id)
+        except Exception:  # noqa: BLE001 — a broker/seed failure must not fail a read
+            logger.exception("could not schedule the initial OEM sync for %s", user_vehicle_id)
+            return False
+        return True
 
 
 def _synced_at(sync: VehicleOemSync | None) -> datetime | None:

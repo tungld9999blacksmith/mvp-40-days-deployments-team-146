@@ -48,7 +48,7 @@ export default function WorkshopVerifyingStep() {
 
   if (failed) {
     return (
-      <div className="bg-card border border-border rounded-2xl">
+      <div className="bg-card border border-border rounded-2xl elevation-sm">
         <ErrorState onRetry={restart} description="Không kiểm tra được kết quả xác thực. Vui lòng thử lại." />
       </div>
     )
@@ -67,7 +67,7 @@ export default function WorkshopVerifyingStep() {
   }
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-8 text-center" role="status" aria-live="polite">
+    <div className="bg-card border border-border rounded-2xl p-8 text-center elevation-sm" role="status" aria-live="polite">
       <div
         className={`w-12 h-12 rounded-2xl flex items-center justify-center mx-auto ${slow ? 'bg-warning/10' : 'bg-emerald/10'}`}
       >

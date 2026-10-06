@@ -65,7 +65,11 @@ def _formatter(
 ) -> structlog.stdlib.ProcessorFormatter:
     processors: list[Processor] = [structlog.stdlib.ProcessorFormatter.remove_processors_meta]
     if structured_exc:
-        processors.append(structlog.processors.dict_tracebacks)
+        # Request objects contain entire dependency graphs. Serializing every
+        # local on a client disconnect makes a single traceback enormous.
+        processors.append(
+            structlog.processors.ExceptionRenderer(structlog.tracebacks.ExceptionDictTransformer(show_locals=False))
+        )
     else:
         processors.append(structlog.processors.format_exc_info)
     if redactor is not None:

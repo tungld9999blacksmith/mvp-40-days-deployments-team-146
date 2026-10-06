@@ -1,3 +1,4 @@
+import { API_MOCKS } from '@/shared/config/env'
 import { newId } from '@/shared/utils/id'
 
 const API_BASE = '/api/v1'
@@ -140,16 +141,47 @@ function withTimeout(signal: AbortSignal | undefined, timeoutMs: number | undefi
   }
 }
 
+type MockServer = typeof import('@/mocks/server')
+let mockServer: Promise<MockServer | null> | null = null
+
+/** In-browser mock API for demos without a backend (loaded only when `VITE_API_MOCKS` enables it). */
+function loadMockServer(): Promise<MockServer | null> {
+  const groups = API_MOCKS
+  if (groups === 'off') return Promise.resolve(null)
+  mockServer ??= import('@/mocks/server')
+    .then(server => {
+      server.configure(groups)
+      return server
+    })
+    .catch(error => {
+      console.warn('[mock-api] not loaded', error)
+      return null
+    })
+  return mockServer
+}
+
 /** Builds headers, performs fetch, retries once on 401 with a refreshed token. */
 export async function rawRequest(path: string, options: RequestOptions = {}): Promise<{ response: Response; requestId: string }> {
   const requestId = newId()
   const useAuth = options.auth !== false
+  const method = options.method ?? 'GET'
+  let body = options.body
+
+  const mocks = await loadMockServer()
+  if (mocks) {
+    const info = { method, path, body, headers: new Headers(options.headers) }
+    const mocked = await mocks.handleRequest(info)
+    if (mocked) return { response: mocked, requestId }
+    // Demo mode has no backend: an endpoint the mock does not know fails visibly, never over the network.
+    if (API_MOCKS === 'demo') return { response: mocks.notMocked(info), requestId }
+    body = mocks.rewriteRequest(info)
+  }
 
   const send = async (forceRefresh: boolean) => {
     const headers = new Headers(options.headers)
     headers.set('X-Request-ID', requestId)
     if (!headers.has('Accept')) headers.set('Accept', 'application/json')
-    if (options.body !== undefined && !headers.has('Content-Type')) {
+    if (body !== undefined && !headers.has('Content-Type')) {
       headers.set('Content-Type', 'application/json')
     }
     if (useAuth) {
@@ -160,9 +192,9 @@ export async function rawRequest(path: string, options: RequestOptions = {}): Pr
     const timeout = withTimeout(options.signal, options.timeoutMs)
     try {
       return await fetch(`${API_BASE}${path}`, {
-        method: options.method ?? 'GET',
+        method,
         headers,
-        body: options.body === undefined ? undefined : JSON.stringify(options.body),
+        body: body === undefined ? undefined : JSON.stringify(body),
         signal: timeout.signal,
       })
     } catch (error) {
@@ -194,6 +226,7 @@ export async function rawRequest(path: string, options: RequestOptions = {}): Pr
   if (response.status === 401 && useAuth && !options.skipSessionExpiry) {
     onUnauthorized()
   }
+  if (mocks && response.ok) await mocks.observeRealResponse({ method, path, body, headers: new Headers(options.headers) }, response)
   return { response, requestId }
 }
 

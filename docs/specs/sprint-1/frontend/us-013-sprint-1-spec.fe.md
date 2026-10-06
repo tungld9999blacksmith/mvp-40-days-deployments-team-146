@@ -173,7 +173,7 @@ Giống [US-005 FE §4.6](./us-005-sprint-1-spec.fe.md#46-login-error--account-l
 Giống [US-005 FE §4.7](./us-005-sprint-1-spec.fe.md#47-logout-confirm-modal-scr-104):
 
 1. Gọi `API-301 POST /workshop-owner/oauth/logout` (timeout client 5s).
-2. **Mọi kết quả** → `signOut()` → xoá state (`WorkshopAuthContext`, dữ liệu lịch hẹn, báo giá, khách hàng) → `/workshop/login` (replace).
+2. **Mọi kết quả** → `signOut()` → xoá state (`WorkshopAuthContext`, dữ liệu lịch hẹn, khách hàng) → `/workshop/login` (replace).
 3. `sessionNotice`: `204` / `401` → `logged-out`; `503` / `500` / timeout / offline → `logged-out-offline` (EF-303, EDGE-302).
 
 Tài khoản đang bị khoá vẫn gọi `API-301` bình thường (BR-304, EDGE-303).

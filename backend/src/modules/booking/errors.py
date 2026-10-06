@@ -109,6 +109,13 @@ class InvalidConfirmationTokenError(BookingError):
         super().__init__("The confirmation token is invalid or has already been used.")
 
 
+class IdempotencyConflictError(BookingError):
+    code = "IDEMPOTENCY_CONFLICT"
+
+    def __init__(self) -> None:
+        super().__init__("This request key or confirmation token was already used for a different booking request.")
+
+
 class HoldExpiredError(BookingError):
     code = "HOLD_EXPIRED"
 
@@ -121,13 +128,6 @@ class HoldWindowClosedError(BookingError):
 
     def __init__(self) -> None:
         super().__init__("The hold can no longer be cancelled here; it is awaiting the workshop.")
-
-
-class QuoteExpiredError(BookingError):
-    code = "QUOTE_EXPIRED"
-
-    def __init__(self) -> None:
-        super().__init__("The attached quote is no longer valid.")
 
 
 class ServiceUnavailableError(BookingError):
@@ -222,7 +222,7 @@ ERROR_STATUS: dict[str, int] = {
     "HOLD_EXPIRED": 409,
     "HOLD_WINDOW_CLOSED": 409,
     "INVALID_CONFIRMATION_TOKEN": 409,
-    "QUOTE_EXPIRED": 409,
+    "IDEMPOTENCY_CONFLICT": 409,
     "BOOKING_NOT_CONFIRMED": 409,
     "APPOINTMENT_STARTED": 409,
     "QR_NOT_AVAILABLE": 409,

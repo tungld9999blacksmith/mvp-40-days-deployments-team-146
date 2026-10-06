@@ -1,8 +1,8 @@
 """ENT-419 - UserNotificationChannel: channels an owner turned on or off.
 
 Columns follow ``docs/specs/sprint-2/entity/us-021-sprint-2-spec.entity.md``. No
-rows for an owner means the default: Discord only (BR-ENT-451). Recipient
-addresses are not stored here; Discord comes from ``user_discord_link``.
+rows for an owner means the default: no external channel, reminders are shown
+in the in-app feed only (BR-ENT-451). Recipient addresses are not stored here.
 """
 
 from datetime import datetime

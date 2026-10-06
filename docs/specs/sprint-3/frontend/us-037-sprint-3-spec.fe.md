@@ -1,5 +1,10 @@
 # Frontend Technical Specification — Workshop Board
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+> - Phiếu hỗ trợ (`support_ticket`): **đã bỏ**. Phản hồi hỏi thăm có vấn đề chỉ được phân loại và ghi trên `follow_up` (`has_issue`); app hiện lời khuyên an toàn và hotline xưởng, không tạo phiếu, không có màn phiếu cho chủ xe hay xưởng.
+
 > Đặc tả frontend cho Feature `FEAT-BOARD-001` (PRD F8, US-037 → US-040).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-037-sprint-3-spec.ff.md) · **API:** [API Spec](../api/us-037-sprint-3-spec.api.md) · **Entity:** [Entity Spec](../entity/us-037-sprint-3-spec.entity.md)
@@ -15,7 +20,7 @@
 | Feature | `FEAT-BOARD-001` — Workshop Board |
 | Screen | `SCR-801` Board · `SCR-802` Chi tiết lịch hẹn · `SCR-803` Check-in QR · `SCR-804` Sức chứa & khoá chỗ · `SCR-805` Cài đặt đặt lịch |
 | Route | `/technician/board` · `/technician/board/:bookingId` · `/technician/check-in` · `/technician/capacity` · `/technician/settings/booking` |
-| Version | `v1.0` |
+| Version | `v1.1` |
 | Author | Team 4 Người |
 | FE Owner | Lê Đức Tùng (mảng Dashboard kỹ thuật viên) |
 | Status | `Draft` |
@@ -640,7 +645,31 @@ frontend/src/features/workshop-board/
 
 ---
 
-# 21. Related Documents
+# 21. Truy vết FF → FE
+
+Mã trong [FF us-037](../feature-functional/us-037-sprint-3-spec.ff.md). "Backend" = nghiệp vụ không có UI riêng.
+
+| FF | Nội dung | FE |
+|---|---|---|
+| UC-801, BR-802, AC-802 | Board theo ngày, lọc trạng thái, tìm kiếm | §3.1, §4.1–4.4, §7.1 |
+| BR-801, AC-801 | Chỉ xưởng mình | §11.2 `404 BOOKING_NOT_FOUND`, §14 |
+| UC-802, AF-801, BR-803 | Chấp nhận giữ chỗ (xưởng `manual`) | §4.4 (nhãn hạn xác nhận), §4.5 `ACCEPT` |
+| AF-802, BR-804 | Từ chối kèm lý do | §4.5 `REJECT`, §4.6 ReasonDialog |
+| EF-804 | Chấp nhận khi đã quá hạn | §11.2 `CONFIRM_DEADLINE_PASSED` |
+| UC-803, BR-805, AF-803, EF-803 | Check-in bằng QR / nhập mã, đúng xưởng, đúng ngày | §4.9, §7.3, §11.2 `CHECK_IN_NOT_TODAY` |
+| UC-804, BR-807, AC-808, EF-807 | Bắt đầu, hoàn tất nguyên tử | §4.5 `START` / `COMPLETE`, §4.7 CompleteDialog |
+| UC-805, BR-806, AC-809 | Xưởng huỷ lịch kèm lý do | §4.5 `CANCEL`, §4.6 |
+| AF-804 | Khách không đến | §4.6 (lý do `NO_SHOW`), §11.2 `NO_SHOW_TOO_EARLY` |
+| UC-806, AF-805, AF-806, EF-805, EF-806, AC-803 | Khoá / gỡ khoá chỗ, hiệu lực ngay | §4.10, §7.5, §11.2 `BLOCK_EXCEEDS_FREE_CAPACITY` |
+| UC-807, AF-807 | Đổi chế độ xác nhận | §4.11, §7.6 |
+| EF-801 | Chuyển trạng thái trái quy trình | §4.5 (`expectedStatus`, chỉ nút trong `allowedActions`), §11.2 `INVALID_STATUS_TRANSITION` |
+| EF-802 | Xưởng tạm ngưng | §11.2 `WORKSHOP_INACTIVE` |
+| BR-808, AC-811 | Lịch sử trạng thái đầy đủ | §4.8 StatusTimeline |
+| BR-809, BR-811, BR-812, AC-804–807/810 | Quy tắc hành động theo trạng thái | §4.4, §4.5 (theo `allowedActions`) |
+| BR-813 | Dữ liệu khách xưởng được thấy | §4.4 (SĐT trong chi tiết, biển số đầy đủ); không VIN/CCCD |
+| BR-810 | Thông báo cho chủ xe | Backend |
+
+# 22. Related Documents
 
 - Functional Spec: [us-037-sprint-3-spec.ff.md](../feature-functional/us-037-sprint-3-spec.ff.md)
 - API Spec: [us-037-sprint-3-spec.api.md](../api/us-037-sprint-3-spec.api.md)
@@ -651,8 +680,9 @@ frontend/src/features/workshop-board/
 
 ---
 
-# 22. Change Log
+# 23. Change Log
 
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | `v1.0` | `2026-09-29` | Team 4 Người | Initial version: SCR-801 → SCR-805 |
+| `v1.1` | `2026-10-01` | Team 4 Người | Đối chiếu FF: không có thiếu sót về UI; thêm bảng truy vết FF → FE |

@@ -1,24 +1,172 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500&family=Barlow+Condensed:wght@600;700&display=swap');
 @import 'tailwindcss';
 
+/* Design tokens — DESIGN.md ("Showroom sáng" + cockpit banner). Light is the default theme; dark overrides below. */
 @theme {
-  --color-background: #0B0F0E;
-  --color-surface: #121817;
-  --color-card: #171D1C;
-  --color-card-hover: #1E2625;
-  --color-emerald: #10B981;
-  --color-emerald-bright: #34D399;
-  --color-emerald-dim: #065F46;
-  --color-foreground: #F5F7F6;
-  --color-muted: #8D9995;
-  --color-border: #1F2A28;
-  --color-warning: #F59E0B;
-  --color-warning-dim: #78350F;
-  --color-error: #EF4444;
-  --color-error-dim: #7F1D1D;
+  --color-background: #F5F6F7;
+  --color-surface: #FFFFFF;
+  --color-card: #FFFFFF;
+  --color-card-hover: #F2F4F5;
+  /* Action green: links, icons, solid fills. White text on it (5.38:1). */
+  --color-emerald: #007A52;
+  --color-emerald-bright: #00643F;
+  --color-emerald-dim: #E6F4EE;
+  /* Primary fill (buttons, badges). Pair with text-on-brand. */
+  --color-brand: #007A52;
+  /* Kept for older references; equals the brand fill now that the cyan gradient is retired. */
+  --color-accent: #007A52;
+  --color-on-brand: #FFFFFF;
+  /* The bolt in the EV CARE logo. */
+  --color-logo-bolt: #00A86B;
+  --color-foreground: #111820;
+  --color-muted: #5B6670;
+  --color-border: #E3E6E9;
+  --color-warning: #B45309;
+  --color-warning-dim: #FDF1E3;
+  --color-error: #DC2626;
+  --color-error-dim: #FEE2E2;
+  /* Sidebar: white in light, near-black in dark. */
+  --color-sidebar: #FFFFFF;
+  --color-sidebar-foreground: #111820;
+  --color-sidebar-muted: #5B6670;
+  --color-sidebar-border: #E3E6E9;
+  --color-sidebar-hover: #F2F4F5;
+  --color-sidebar-active: #E6F4EE;
+  --color-sidebar-active-foreground: #007A52;
+  /* Cockpit banner (Home carousel, login brand panel): ink in both themes. */
+  --color-banner: #111820;
+  --color-banner-foreground: #EEF2F5;
+  --color-banner-muted: #94A0AC;
+  --color-banner-border: #2A3642;
+  --color-banner-accent: #19C37D;
+  --color-banner-on-accent: #0A0E13;
 
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Be Vietnam Pro', 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* Licence plates and large instrument-style figures. */
+  --font-plate: 'Barlow Condensed', 'Be Vietnam Pro', ui-sans-serif, sans-serif;
+
+  /* Corners: controls 10px (rounded-xl), cards 14px (rounded-2xl), dialogs 20px (rounded-3xl). */
+  --radius-xl: 0.625rem;
+  --radius-2xl: 0.875rem;
+  --radius-3xl: 1.25rem;
+
+  --animate-fade-in: fade-in 0.3s ease-out both;
+  --animate-pop-in: pop-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* Carousel dot: fills over one autoplay interval (set --carousel-interval on the carousel). */
+  --animate-carousel-fill: carousel-fill var(--carousel-interval, 6s) linear forwards;
+
+  @keyframes carousel-fill {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+:root {
+  color-scheme: light;
+  --app-elevation-sm: 0 1px 2px rgb(17 24 32 / 0.04), 0 8px 24px -16px rgb(17 24 32 / 0.18);
+  --app-elevation-md: 0 2px 6px rgb(17 24 32 / 0.06), 0 24px 48px -20px rgb(17 24 32 / 0.25);
+}
+
+/* Dark theme: same tokens, toggled by data-theme on <html> (see useTheme). */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-background: #0B0F14;
+  --color-surface: #0F151B;
+  --color-card: #131A21;
+  --color-card-hover: #19222B;
+  --color-emerald: #3AD493;
+  --color-emerald-bright: #6EE7B7;
+  --color-emerald-dim: #10291F;
+  --color-brand: #19C37D;
+  --color-accent: #19C37D;
+  --color-on-brand: #0B0F14;
+  --color-logo-bolt: #19C37D;
+  --color-foreground: #EEF2F5;
+  --color-muted: #8B97A4;
+  --color-border: #222C36;
+  --color-warning: #F59E0B;
+  --color-warning-dim: #2A1E0A;
+  --color-error: #F87171;
+  --color-error-dim: #2B1414;
+  --color-sidebar: #0F151B;
+  --color-sidebar-foreground: #EEF2F5;
+  --color-sidebar-muted: #8B97A4;
+  --color-sidebar-border: #1C252E;
+  --color-sidebar-hover: #19222B;
+  --color-sidebar-active: #10291F;
+  --color-sidebar-active-foreground: #3AD493;
+  --color-banner: #10161D;
+  --color-banner-foreground: #E8EDF2;
+  --color-banner-muted: #8B97A4;
+  --color-banner-border: #2A3642;
+  --app-elevation-sm: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 28px -18px rgb(0 0 0 / 0.8);
+  --app-elevation-md: 0 2px 6px rgb(0 0 0 / 0.4), 0 24px 48px -20px rgb(0 0 0 / 0.85);
+}
+
+/* Soft depth for cards and floating panels. */
+@utility elevation-sm {
+  box-shadow: var(--app-elevation-sm);
+}
+
+@utility elevation-md {
+  box-shadow: var(--app-elevation-md);
+}
+
+/* Retired: primary actions no longer carry a coloured halo. Kept as a no-op so existing class lists stay valid. */
+@utility glow-emerald {
+  box-shadow: none;
+}
+
+/* Primary fill: solid logo green (the emerald → cyan gradient is retired). Pair with text-on-brand. */
+@utility bg-brand-gradient {
+  background-color: var(--color-brand);
+}
+
+/* Highlighted phrase: solid text-safe green (gradient text is retired). */
+@utility text-brand-gradient {
+  color: var(--color-emerald);
+}
+
+/* Page backdrop: plain background (the radial glows are retired). */
+@utility bg-app-backdrop {
+  background-image: none;
+}
+
+@layer base {
+  :where(a, button, summary, [tabindex]):focus-visible {
+    outline: 2px solid color-mix(in oklab, var(--color-emerald) 70%, transparent);
+    outline-offset: 2px;
+  }
+
+  /* Tailwind v4 preflight resets buttons to cursor: default; clickable cards need the pointer. */
+  :where(button, [role='button'], summary, label[for], select):not(:disabled, [aria-disabled='true']) {
+    cursor: pointer;
+  }
 }
 
 *,
@@ -29,12 +177,12 @@
 
 html {
   scrollbar-width: thin;
-  scrollbar-color: #1F2A28 transparent;
+  scrollbar-color: var(--color-border) transparent;
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -42,8 +190,12 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1F2A28;
-  border-radius: 4px;
+  background: var(--color-border);
+  border-radius: 999px;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-emerald) 30%, transparent);
 }
 
 body {
@@ -52,9 +204,20 @@ body {
   color: var(--color-foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 input::placeholder,
 textarea::placeholder {
   color: var(--color-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

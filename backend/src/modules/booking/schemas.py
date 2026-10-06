@@ -102,7 +102,6 @@ class AvailabilityEnvelope(CamelModel):
 class HoldRequest(CamelModel):
     confirmation_token: str = Field(..., min_length=1)
     user_vehicle_id: UUID
-    quote_id: str | None = None
     milestone_ref: str | None = Field(default=None, max_length=64)
     note: str | None = Field(default=None, max_length=500)
 
@@ -121,7 +120,6 @@ class BookingOut(CamelModel):
     qr_url: str | None = None
     estimated_cost: Decimal | None = None
     estimate_label: str = "Chi phí ước tính"
-    quote_id: str | None = None
 
 
 class BookingEnvelope(CamelModel):
@@ -159,8 +157,7 @@ class TicketItemOut(CamelModel):
 
 class TicketCostOut(CamelModel):
     amount: Money | None = None
-    label: str  # APPROVED_QUOTE / ESTIMATE / NONE
-    quote_id: UUID | None = None
+    label: str  # ESTIMATE / NONE
 
 
 class TicketHistoryOut(CamelModel):

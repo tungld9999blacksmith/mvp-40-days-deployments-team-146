@@ -5,11 +5,14 @@ import { cn } from '@/shared/ui/cn'
 import { formatTime } from '@/shared/utils/format'
 import type { PendingUserMessage, StreamingState } from '../state/chatReducer'
 import type { CitationDto, MessageDto } from '../types'
+import MessageCard from './MessageCard'
+import { Link } from 'react-router-dom'
 
 const STAGE_TEXT: Record<string, string> = {
   retrieving: 'Đang tra cứu tài liệu chính hãng...',
   calling_tool: 'Đang kiểm tra thông tin xe...',
   generating: 'Đang soạn câu trả lời...',
+  quick_booking: 'Đang tìm xưởng gần bạn và khung giờ trống...',
 }
 
 function AssistantAvatar() {
@@ -29,7 +32,7 @@ function Citations({ citations, onOpen }: { citations: CitationDto[]; onOpen: (c
   if (!citations.length) return null
   return (
     <div className="mt-3">
-      <p className="text-[11px] font-semibold uppercase tracking-widest text-muted mb-1.5">Nguồn chính hãng</p>
+      <p className="text-xs font-semibold text-muted mb-1.5">Nguồn chính hãng</p>
       <div className="flex flex-wrap gap-1.5">
         {citations.map((citation, index) => (
           <button
@@ -70,7 +73,8 @@ export function AssistantMessage({
         >
           <SafeMarkdown text={message.content} />
           <Citations citations={message.citations} onOpen={onOpenCitation} />
-          {/* F5/F6 cards (`message.card`) are rendered by those specs; unknown types render nothing. */}
+          <MessageCard card={message.card} />
+          {message.refs.bookingId && <Link className="block mt-2 text-emerald" to={`/bookings/${encodeURIComponent(message.refs.bookingId)}`}>Xem lịch hẹn</Link>}
         </div>
         <p className="text-[11px] text-muted font-mono mt-1 ml-1">{formatTime(message.createdAt)}</p>
       </div>
@@ -82,7 +86,7 @@ export function StreamingMessage({ streaming }: { streaming: StreamingState }) {
   return (
     <div className="flex gap-3 justify-start" aria-hidden>
       <AssistantAvatar />
-      <div className="max-w-[85%] sm:max-w-2xl min-w-0 rounded-2xl rounded-tl-md bg-card border border-border px-4 py-3 text-sm text-foreground leading-relaxed">
+      <div className="max-w-[85%] sm:max-w-2xl min-w-0 rounded-2xl rounded-tl-md bg-card border border-border px-4 py-3 text-sm text-foreground leading-relaxed elevation-sm">
         {streaming.draft ? (
           <p className="whitespace-pre-wrap">
             {streaming.draft}

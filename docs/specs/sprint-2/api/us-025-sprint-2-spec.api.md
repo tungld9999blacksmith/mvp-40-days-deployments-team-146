@@ -1,5 +1,9 @@
 # API Technical Specification — Chat RAG & hội thoại
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Đặc tả API backend cho Feature `FEAT-CHAT-001` (PRD F4, US-025 → US-030).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-025-sprint-2-spec.ff.md) · **Entity:** [Entity Spec](../entity/us-025-sprint-2-spec.entity.md) · **Agent:** [AI-001](../../ai-agent/ai-001-sprint-2-spec.agent.md), [AI-002](../../ai-agent/ai-002-sprint-2-spec.agent.md)

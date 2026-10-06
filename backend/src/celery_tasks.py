@@ -36,11 +36,6 @@ celery.conf.update(
             "task": "workshop.purge_expired_onboarding",
             "schedule": crontab(hour=2, minute=0),
         },
-        # FEAT-VEH-001 JOB-VEH-001: pull odometer + service history of every vehicle.
-        "oem-sync-all-vehicles": {
-            "task": "oem.sync_all_vehicles",
-            "schedule": float(get_settings().oem_sync_interval_seconds),
-        },
         # FEAT-NOTI-001 JOB-NOTI-001: daily maintenance reminders (Asia/Ho_Chi_Minh).
         "maintenance-reminders": {
             "task": "reminder.send_all",
@@ -71,10 +66,12 @@ celery.conf.update(
             "task": "follow_up.close_expired",
             "schedule": crontab(minute=5),
         },
-        # us-049 JOB-QT-01: purge stale quote drafts daily 03:00 (VN).
-        "quote-purge-stale-drafts": {
-            "task": "quote.purge_stale_drafts",
-            "schedule": crontab(hour=3, minute=0),
-        },
     },
 )
+
+if not get_settings().uses_static_odometer():
+    # FEAT-VEH-001 JOB-VEH-001: pull odometer + service history of every vehicle.
+    celery.conf.beat_schedule["oem-sync-all-vehicles"] = {
+        "task": "oem.sync_all_vehicles",
+        "schedule": float(get_settings().oem_sync_interval_seconds),
+    }

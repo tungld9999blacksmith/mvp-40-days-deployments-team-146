@@ -165,7 +165,7 @@ export default function OwnerProfileStep() {
         <p className="text-sm text-muted mt-1">Gmail và số CCCD dùng để hãng xác nhận bạn là người quản lý xưởng.</p>
       </div>
 
-      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-5">
+      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-5 elevation-sm">
         <TextInput
           label="Email Google"
           value={snapshot.profile.email || owner?.email || ''}

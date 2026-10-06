@@ -36,7 +36,10 @@ export default function CitationDrawer({ citation, onClose }: { citation: Citati
           <blockquote className="border-l-2 border-emerald/40 pl-4 text-sm text-foreground leading-relaxed whitespace-pre-wrap">
             {citation.snippet}
           </blockquote>
-          <p className="text-xs text-muted">Trích từ tài liệu chính hãng tại thời điểm trả lời.</p>
+          <p className="text-xs text-muted">Trích đoạn tài liệu tại thời điểm trả lời; kiểm tra phiên bản trước khi áp dụng.</p>
+          {citation.sourceUrl?.startsWith('/api/v1/demo/documents/') && (
+            <a href={citation.sourceUrl} target="_blank" rel="noreferrer" className="text-sm text-emerald">Mở trích đoạn và thông tin nguồn</a>
+          )}
         </div>
       )}
     </Drawer>

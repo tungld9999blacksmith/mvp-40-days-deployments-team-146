@@ -1,53 +1,93 @@
-import { allRecords } from '@/mocks/service-history'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Search, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { ChevronLeft, ChevronRight, ClipboardList, ExternalLink, Search } from 'lucide-react'
+import { isApiError } from '@/shared/api/client'
+import { SkeletonCard } from '@/shared/ui/Skeleton'
+import { cn } from '@/shared/ui/cn'
+import { EmptyState, ErrorState } from '@/shared/ui/States'
+import { formatDate, formatKm } from '@/shared/utils/format'
+import { formatVnd } from '@/features/estimate/utils'
+import VehicleGate from '@/features/vehicles/components/VehicleGate'
+import { useServiceRecords } from '@/features/vehicles/hooks/useVehicleQueries'
+import type { VehicleSummary } from '@/features/vehicles/types'
+import {
+  matchesServiceRecord,
+  serviceRecordCost,
+  serviceRecordSource,
+  serviceRecordTitle,
+  type ServiceRecordFilter,
+} from '../utils'
 
-const filters = ['Tất cả', 'Bảo dưỡng', 'Sửa chữa', 'Kiểm tra']
+const FILTERS: { value: ServiceRecordFilter; label: string }[] = [
+  { value: 'ALL', label: 'Tất cả' },
+  { value: 'PERIODIC', label: 'Bảo dưỡng định kỳ' },
+  { value: 'OTHER', label: 'Sửa chữa / kiểm tra' },
+]
 
-const statusMap: Record<string, { label: string; cls: string }> = {
-  completed: { label: 'Hoàn thành', cls: 'text-emerald bg-emerald/10' },
-  pending: { label: 'Chờ xử lý', cls: 'text-muted bg-card' },
-}
+const PER_PAGE = 10
+// Below `sm` only date, item and cost stay as columns: km moves under the date,
+// workshop and the booking link under the item.
+const COLUMNS = [
+  { label: 'Ngày', wide: false },
+  { label: 'Số km', wide: true },
+  { label: 'Hạng mục', wide: false },
+  { label: 'Xưởng dịch vụ', wide: true },
+  { label: 'Nguồn', wide: true },
+  { label: 'Chi phí', wide: false },
+  { label: '', wide: true },
+]
 
-export default function ServiceHistory() {
-  const navigate = useNavigate()
-  const [filter, setFilter] = useState('Tất cả')
+function HistoryTable({ vehicle }: { vehicle: VehicleSummary }) {
+  const records = useServiceRecords(vehicle.userVehicleId)
+  const [filter, setFilter] = useState<ServiceRecordFilter>('ALL')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
-  const perPage = 5
 
-  const filtered = allRecords.filter(r => {
-    const matchFilter = filter === 'Tất cả' || r.type.toLowerCase().includes(filter.toLowerCase())
-    const matchSearch = search === '' || r.type.toLowerCase().includes(search.toLowerCase()) || r.center.toLowerCase().includes(search.toLowerCase())
-    return matchFilter && matchSearch
-  })
+  const filtered = useMemo(
+    () => (records.data?.items ?? []).filter(record => matchesServiceRecord(record, filter, search)),
+    [records.data, filter, search],
+  )
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
+  const rows = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage))
-  const rows = filtered.slice((page - 1) * perPage, page * perPage)
+  if (records.error && !records.data) {
+    return (
+      <ErrorState
+        description="Chưa tải được lịch sử dịch vụ."
+        traceId={isApiError(records.error) ? records.error.traceId : null}
+        onRetry={() => void records.refetch()}
+        retrying={records.isFetching}
+      />
+    )
+  }
+  if (!records.data) return <SkeletonCard lines={5} />
+  if (records.data.items.length === 0) {
+    return (
+      <EmptyState
+        icon={<ClipboardList className="w-5 h-5" />}
+        title="Chưa có lịch sử dịch vụ"
+        description="Các lần bảo dưỡng từ hãng và lịch hẹn hoàn thành trên EV Care sẽ hiện ở đây."
+      />
+    )
+  }
 
   return (
-    <div className="p-6 xl:p-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Lịch sử dịch vụ</h1>
-        <p className="text-muted text-sm mt-1">Tất cả các lần bảo dưỡng và sửa chữa của xe</p>
-      </div>
-
-      {/* Filter + Search */}
+    <>
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-5">
         <div className="flex gap-1.5 flex-wrap">
-          {filters.map(f => (
+          {FILTERS.map(item => (
             <button
-              key={f}
-              onClick={() => { setFilter(f); setPage(1) }}
+              key={item.value}
+              onClick={() => {
+                setFilter(item.value)
+                setPage(1)
+              }}
               className={`px-3.5 py-1.5 rounded-xl text-sm font-medium transition-all ${
-                filter === f
-                  ? 'bg-emerald text-background'
-                  : 'text-muted hover:text-foreground'
+                filter === item.value ? 'bg-emerald text-background' : 'text-muted hover:text-foreground'
               }`}
-              style={filter !== f ? { background: '#171D1C', border: '1px solid #1F2A28' } : undefined}
+              style={filter !== item.value ? { background: 'var(--color-card)', border: '1px solid var(--color-border)' } : undefined}
             >
-              {f}
+              {item.label}
             </button>
           ))}
         </div>
@@ -55,98 +95,144 @@ export default function ServiceHistory() {
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
           <input
             value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1) }}
-            placeholder="Tìm hạng mục, xưởng..."
+            onChange={event => {
+              setSearch(event.target.value)
+              setPage(1)
+            }}
+            placeholder="Tìm hạng mục, xưởng, mã lịch hẹn..."
             className="pl-9 pr-4 py-2 rounded-xl text-sm text-foreground bg-card focus:outline-none focus:ring-1 focus:ring-emerald/40 transition-all w-64"
-            style={{ border: '1px solid #1F2A28' }}
+            style={{ border: '1px solid var(--color-border)' }}
           />
         </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: '#171D1C', border: '1px solid #1F2A28' }}>
+      <div className="rounded-2xl overflow-hidden elevation-sm" style={{ background: 'var(--color-card)', border: '1px solid var(--color-border)' }}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ borderBottom: '1px solid #1F2A28' }}>
-                {['Ngày', 'Mileage', 'Hạng mục', 'Service Center', 'Kỹ thuật viên', 'Chi phí', 'Trạng thái', ''].map(h => (
-                  <th key={h} className="px-5 py-3.5 text-left text-xs font-medium text-muted whitespace-nowrap">{h}</th>
+              <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
+                {COLUMNS.map(({ label, wide }, index) => (
+                  <th
+                    key={index}
+                    className={cn('px-3 sm:px-5 py-3.5 text-left text-xs font-medium text-muted whitespace-nowrap', wide && 'hidden sm:table-cell')}
+                  >
+                    {label}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-5 py-10 text-center text-muted text-sm">
+                  <td colSpan={COLUMNS.length} className="px-5 py-10 text-center text-muted text-sm">
                     Không tìm thấy kết quả phù hợp
                   </td>
                 </tr>
-              ) : rows.map((row, i) => {
-                const { label, cls } = statusMap[row.status] ?? statusMap.pending
-                return (
-                  <tr
-                    key={i}
-                    className="hover:bg-card/60 transition-colors"
-                    style={i < rows.length - 1 ? { borderBottom: '1px solid #1F2A28' } : undefined}
-                  >
-                    <td className="px-5 py-3.5 text-foreground text-xs whitespace-nowrap">{row.date}</td>
-                    <td className="px-5 py-3.5 text-muted font-mono text-xs whitespace-nowrap">{row.km} km</td>
-                    <td className="px-5 py-3.5 text-foreground text-xs">{row.type}</td>
-                    <td className="px-5 py-3.5 text-muted text-xs whitespace-nowrap">{row.center}</td>
-                    <td className="px-5 py-3.5 text-muted text-xs whitespace-nowrap">{row.technician}</td>
-                    <td className="px-5 py-3.5 text-foreground font-mono text-xs whitespace-nowrap">{row.cost}</td>
-                    <td className="px-5 py-3.5">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${cls}`}>{label}</span>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      <button className="text-xs text-emerald hover:text-emerald-bright flex items-center gap-1 transition-colors">
-                        Chi tiết <ExternalLink className="w-3 h-3" />
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
+              ) : (
+                rows.map((record, index) => {
+                  const cost = serviceRecordCost(record)
+                  return (
+                    <tr
+                      key={record.recordId}
+                      className="hover:bg-card/60 transition-colors"
+                      style={index < rows.length - 1 ? { borderBottom: '1px solid var(--color-border)' } : undefined}
+                    >
+                      <td className="px-3 sm:px-5 py-3.5 text-foreground text-xs whitespace-nowrap">
+                        {formatDate(record.serviceDate)}
+                        {record.odoKm !== null && (
+                          <span className="sm:hidden block mt-0.5 text-muted font-mono">{formatKm(record.odoKm)}</span>
+                        )}
+                      </td>
+                      <td className="hidden sm:table-cell px-5 py-3.5 text-muted font-mono text-xs whitespace-nowrap">
+                        {record.odoKm !== null ? formatKm(record.odoKm) : '—'}
+                      </td>
+                      <td className="px-3 sm:px-5 py-3.5 text-foreground text-xs">
+                        {serviceRecordTitle(record)}
+                        {record.workshop && <span className="sm:hidden block mt-0.5 text-muted">{record.workshop.name}</span>}
+                        {record.bookingId && (
+                          <Link
+                            to={`/bookings/${encodeURIComponent(record.bookingId)}`}
+                            className="sm:hidden mt-1 inline-flex items-center gap-1 text-emerald"
+                          >
+                            Lịch hẹn <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        )}
+                      </td>
+                      <td className="hidden sm:table-cell px-5 py-3.5 text-muted text-xs whitespace-nowrap">{record.workshop?.name ?? '—'}</td>
+                      <td className="hidden sm:table-cell px-5 py-3.5 text-muted text-xs whitespace-nowrap">{serviceRecordSource(record)}</td>
+                      <td className="px-3 sm:px-5 py-3.5 text-foreground font-mono text-xs whitespace-nowrap">
+                        {cost !== null ? formatVnd(cost) : '—'}
+                      </td>
+                      <td className="hidden sm:table-cell px-5 py-3.5">
+                        {record.bookingId && (
+                          <Link
+                            to={`/bookings/${encodeURIComponent(record.bookingId)}`}
+                            className="text-xs text-emerald hover:text-emerald-bright flex items-center gap-1 transition-colors"
+                          >
+                            Lịch hẹn <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex items-center justify-between px-5 py-3.5" style={{ borderTop: '1px solid #1F2A28' }}>
+        <div className="flex items-center justify-between px-5 py-3.5" style={{ borderTop: '1px solid var(--color-border)' }}>
           <span className="text-xs text-muted">
-            Hiển thị {Math.min((page - 1) * perPage + 1, filtered.length)}–{Math.min(page * perPage, filtered.length)} trong {filtered.length} kết quả
+            Hiển thị {filtered.length === 0 ? 0 : (page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, filtered.length)} trong{' '}
+            {filtered.length} kết quả
           </span>
           <div className="flex gap-1.5">
             <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
+              onClick={() => setPage(current => Math.max(1, current - 1))}
               disabled={page === 1}
+              aria-label="Trang trước"
               className="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-foreground hover:bg-card disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-              style={{ border: '1px solid #1F2A28' }}
+              style={{ border: '1px solid var(--color-border)' }}
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            {Array.from({ length: totalPages }, (_, i) => (
+            {Array.from({ length: totalPages }, (_, index) => (
               <button
-                key={i}
-                onClick={() => setPage(i + 1)}
+                key={index}
+                onClick={() => setPage(index + 1)}
                 className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium transition-all ${
-                  page === i + 1 ? 'bg-emerald text-background' : 'text-muted hover:text-foreground hover:bg-card'
+                  page === index + 1 ? 'bg-emerald text-background' : 'text-muted hover:text-foreground hover:bg-card'
                 }`}
-                style={page !== i + 1 ? { border: '1px solid #1F2A28' } : undefined}
+                style={page !== index + 1 ? { border: '1px solid var(--color-border)' } : undefined}
               >
-                {i + 1}
+                {index + 1}
               </button>
             ))}
             <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              onClick={() => setPage(current => Math.min(totalPages, current + 1))}
               disabled={page === totalPages}
+              aria-label="Trang sau"
               className="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-foreground hover:bg-card disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-              style={{ border: '1px solid #1F2A28' }}
+              style={{ border: '1px solid var(--color-border)' }}
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       </div>
+    </>
+  )
+}
+
+/** Service history (API-VEH-005): manufacturer records + EV Care visits, read-only (BR-003). */
+export default function ServiceHistory() {
+  return (
+    <div className="p-4 sm:p-6 xl:p-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-foreground">Lịch sử dịch vụ</h1>
+        <p className="text-muted text-sm mt-1">Các lần bảo dưỡng và sửa chữa của xe, đồng bộ từ hãng và từ EV Care</p>
+      </div>
+      <VehicleGate loading={<SkeletonCard lines={5} />}>{vehicle => <HistoryTable vehicle={vehicle} />}</VehicleGate>
     </div>
   )
 }

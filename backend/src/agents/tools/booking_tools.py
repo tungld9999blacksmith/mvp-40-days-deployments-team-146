@@ -1,227 +1,190 @@
+"""Booking tools of the customer agent (AI-004): two reads and one proposal.
+
+The reads call ``BookingService``, the same service as the booking endpoints
+(BR-011). No tool creates, cancels or moves a booking (us-061 BR-1514):
+``propose_booking`` only makes a proposal card; the owner books by pressing
+"Xác nhận đặt lịch" on it (API-QB-02).
+"""
+
 from __future__ import annotations
 
-import logging
-import secrets
-from datetime import datetime, timedelta
-from typing import Any
-from uuid import uuid4
+from datetime import date, time
+from typing import TYPE_CHECKING, Any
+from uuid import UUID
 
-from langchain_core.tools import tool
+from langchain_core.runnables import RunnableConfig
+from langchain_core.tools import BaseTool, tool
 
-logger = logging.getLogger(__name__)
+from src.modules.booking import errors as booking_errors
+from src.modules.quick_booking import errors as quick_errors
 
-# Danh sách xưởng dịch vụ VinFast chuẩn mẫu
-MOCK_WORKSHOPS = [
-    {
-        "workshop_id": "ws-thanh-xuan-01",
-        "name": "Xưởng Dịch vụ VinFast Thanh Xuân",
-        "address": "Số 68 Lê Văn Lương, Phường Nhân Chính, Quận Thanh Xuân, Hà Nội",
-        "region": "Thanh Xuân",
-        "latitude": 21.0035,
-        "longitude": 105.8042,
-        "operating_hours": "08:00 - 18:00 (Thứ 2 - Chủ Nhật)",
-        "phone": "1900 23 23 89",
-    },
-    {
-        "workshop_id": "ws-cau-giay-02",
-        "name": "Xưởng Dịch vụ VinFast Cầu Giấy",
-        "address": "Số 122 Xuân Thủy, Phường Dịch Vọng Hậu, Quận Cầu Giấy, Hà Nội",
-        "region": "Cầu Giấy",
-        "latitude": 21.0368,
-        "longitude": 105.7876,
-        "operating_hours": "08:00 - 18:00 (Thứ 2 - Thứ 7)",
-        "phone": "1900 23 23 89",
-    },
-    {
-        "workshop_id": "ws-ha-dong-03",
-        "name": "Xưởng Dịch vụ VinFast Hà Đông",
-        "address": "TTTM Vincom Plaza, Số 104 Quang Trung, Quận Hà Đông, Hà Nội",
-        "region": "Hà Đông",
-        "latitude": 20.9712,
-        "longitude": 105.7734,
-        "operating_hours": "08:00 - 18:00 (Thứ 2 - Chủ Nhật)",
-        "phone": "1900 23 23 89",
-    },
-    {
-        "workshop_id": "ws-hai-ba-trung-04",
-        "name": "Xưởng Dịch vụ VinFast Bà Triệu",
-        "address": "Vincom Center Bà Triệu, 191 Bà Triệu, Quận Hai Bà Trưng, Hà Nội",
-        "region": "Hai Bà Trưng",
-        "latitude": 21.0118,
-        "longitude": 105.8501,
-        "operating_hours": "08:30 - 18:30 (Thứ 2 - Chủ Nhật)",
-        "phone": "1900 23 23 89",
-    },
-]
+from . import _services
+
+if TYPE_CHECKING:
+    from .dependency import AgentToolServices
+
+# Bounds of the ``limit`` query of API-BK-01.
+_MAX_WORKSHOPS = 10
+
+_NEXT_STEP = (
+    'Chủ xe bấm "Xác nhận đặt lịch" trên thẻ để đặt. Lịch CHƯA được tạo; không có tool nào tạo lịch thay chủ xe.'
+)
 
 
-@tool
-def find_workshops(
-    area_or_address: str,
-    limit: int = 3,
-) -> list[dict[str, Any]]:
-    """Tìm kiếm danh sách xưởng dịch vụ xe điện VinFast gần nhất theo quận, huyện, tỉnh thành hoặc địa chỉ.
-
-    (Công cụ Đọc - CQRS Read Tool)
-
-    Args:
-        area_or_address: Tên khu vực, quận huyện, hoặc địa chỉ cần tìm (ví dụ: 'Thanh Xuân', 'Cầu Giấy', 'Hà Đông')
-        limit: Số lượng xưởng tối đa muốn lấy (mặc định: 3)
-
-    Returns:
-        Danh sách xưởng phù hợp kèm khoảng cách ước tính và giờ hoạt động.
-    """
-    clean_area = area_or_address.strip().lower()
-
-    # Thử truy vấn qua DB nếu có kết nối
+def _parse_workshop(workshop_id: str) -> UUID:
     try:
-        from sqlmodel import Session, select
-
-        try:
-            from common.core.workshop import Workshop, WorkshopStatus
-        except ImportError:
-            from src.common.core.workshop import Workshop, WorkshopStatus
-
-        try:
-            from infrastructure.supabase.db import engine
-        except ImportError:
-            from src.infrastructure.supabase.db import engine
-
-        with Session(engine) as session:
-            workshops = session.exec(select(Workshop).where(Workshop.status == WorkshopStatus.ACTIVE)).all()
-            if workshops:
-                matched = [
-                    w
-                    for w in workshops
-                    if clean_area in (w.region or "").lower()
-                    or clean_area in (w.address or "").lower()
-                    or clean_area in (w.name or "").lower()
-                ] or workshops
-                return [
-                    {
-                        "workshop_id": str(w.id),
-                        "name": w.name,
-                        "address": w.address,
-                        "region": w.region,
-                        "distance_km": 1.2 if clean_area in (w.region or "").lower() else 3.5,
-                    }
-                    for w in matched[:limit]
-                ]
-    except Exception as e:
-        logger.debug("Database workshop query skipped (%s), using standard workshop directory.", e)
-
-    # Fallback sử dụng bộ dữ liệu chuẩn mẫu
-    scored = []
-    for w in MOCK_WORKSHOPS:
-        match_score = 0
-        dist = 3.5
-        if clean_area in w["region"].lower() or clean_area in w["address"].lower():
-            match_score = 2
-            dist = 1.2
-        elif any(part in w["address"].lower() for part in clean_area.split()):
-            match_score = 1
-            dist = 2.8
-
-        scored.append((match_score, dist, w))
-
-    # Sắp xếp theo độ khớp và khoảng cách
-    scored.sort(key=lambda x: (-x[0], x[1]))
-
-    results = []
-    for _, dist, w in scored[:limit]:
-        item = dict(w)
-        item["distance_km"] = dist
-        results.append(item)
-
-    return results
+        return UUID(workshop_id)
+    except ValueError as exc:
+        raise booking_errors.WorkshopNotFoundError() from exc
 
 
-@tool
-def get_available_slots(
-    workshop_id: str,
-    target_date: str,
-) -> dict[str, Any]:
-    """Tra cứu các khung giờ (slot) còn chỗ để bảo dưỡng tại xưởng dịch vụ vào một ngày cụ thể.
-
-    (Công cụ Đọc - CQRS Read Tool)
-
-    Args:
-        workshop_id: ID hoặc mã xưởng dịch vụ (ví dụ: 'ws-thanh-xuan-01')
-        target_date: Ngày cần đặt lịch (ví dụ: 'Thứ Bảy', '2026-10-03', 'cuối tuần này')
-
-    Returns:
-        Danh sách các khung giờ sáng/chiều còn nhận xe kèm số lượng chỗ còn trống.
-    """
-    # Tìm tên xưởng
-    ws_name = "Xưởng Dịch vụ VinFast Thanh Xuân"
-    for w in MOCK_WORKSHOPS:
-        if w["workshop_id"] == workshop_id or workshop_id in w["name"]:
-            ws_name = w["name"]
-            break
-
-    return {
-        "workshop_id": workshop_id,
-        "workshop_name": ws_name,
-        "target_date": target_date,
-        "available_slots": [
-            {"time": "08:30", "period": "morning", "status": "FULL", "remaining_capacity": 0},
-            {"time": "10:00", "period": "morning", "status": "AVAILABLE", "remaining_capacity": 2},
-            {"time": "14:00", "period": "afternoon", "status": "AVAILABLE", "remaining_capacity": 3},
-            {"time": "15:30", "period": "afternoon", "status": "AVAILABLE", "remaining_capacity": 2},
-            {"time": "16:30", "period": "afternoon", "status": "AVAILABLE", "remaining_capacity": 1},
-        ],
-        "suggested_afternoon_slots": ["14:00", "15:30", "16:30"],
-        "note": "Khung giờ chiều thứ Bảy còn 3 lựa chọn thuận tiện (14:00, 15:30, 16:30).",
-    }
+def _parse_date(value: str) -> date:
+    try:
+        return date.fromisoformat(value)
+    except ValueError as exc:
+        raise booking_errors.BookingError("Date must be YYYY-MM-DD (e.g. 2026-10-10).", code="INVALID_DATE") from exc
 
 
-@tool
-def create_booking_draft(
-    workshop_id: str,
-    slot_time: str,
-    service_items: list[str],
-    vehicle_id: str | None = None,
-) -> dict[str, Any]:
-    """Tạo bản nháp giữ chỗ lịch hẹn (HOLD trong 10 phút) sau khi chủ xe đã ĐỒNG Ý và CHỌN khung giờ.
+def _parse_time(value: str) -> time:
+    try:
+        return time.fromisoformat(value)
+    except ValueError as exc:
+        raise booking_errors.BookingError("Time slot must be HH:MM (e.g. 14:00).", code="INVALID_TIME") from exc
 
-    ⚠️ QUY TẮC AN TOÀN (CQRS Write Tool):
-    CHỈ ĐƯỢC GỌI KHI CHỦ XE ĐÃ CHỌN RÕ KHUNG GIỜ VÀ XÁC NHẬN MUỐN ĐẶT LỊCH.
-    KHÔNG ĐƯỢC TỰ Ý GỌI KHI CHỈ ĐANG TƯ VẤN HOẶC ĐỀ XUẤT GIỜ.
 
-    Args:
-        workshop_id: Mã xưởng dịch vụ
-        slot_time: Giờ hẹn cụ thể mà khách hàng đã chọn (ví dụ: '14:00 Thứ Bảy 03/10')
-        service_items: Danh sách các hạng mục bảo dưỡng cần thực hiện
-        vehicle_id: Mã định danh xe (tùy chọn)
+def _slot_full(exc: booking_errors.SlotFullError) -> dict[str, Any]:
+    out = _services.tool_error(exc)
+    out["alternatives"] = [a.model_dump(mode="json") for a in exc.alternatives]
+    return out
 
-    Returns:
-        Mã bản nháp lịch hẹn (draft_id, booking_code), thời gian giữ chỗ (HOLD 10 phút).
-    """
-    draft_id = str(uuid4())
-    booking_code = "EVC-" + secrets.token_hex(4).upper()
-    now = datetime.now()
-    hold_expires = now + timedelta(minutes=10)
 
-    # Tìm tên xưởng
-    ws_name = "Xưởng Dịch vụ VinFast"
-    for w in MOCK_WORKSHOPS:
-        if w["workshop_id"] == workshop_id or workshop_id in w["name"]:
-            ws_name = w["name"]
-            break
+def build_booking_tools(services: AgentToolServices | None = None) -> list[BaseTool]:
+    """Create tools bound to these service factories."""
+    provider = services if services is not None else _services
 
-    return {
-        "status": "HOLD",
-        "draft_id": draft_id,
-        "booking_code": booking_code,
-        "workshop_id": workshop_id,
-        "workshop_name": ws_name,
-        "slot_time": slot_time,
-        "service_items": service_items,
-        "hold_expires_at": hold_expires.strftime("%H:%M:%S ngày %d/%m/%Y"),
-        "hold_duration_minutes": 10,
-        "message": (
-            f"Đã tạm giữ chỗ thành công cho xe của bạn vào khung giờ {slot_time} tại {ws_name}. "
-            f"Mã phiếu hẹn tạm thời: {booking_code}. Chỗ này được giữ trong 10 phút. "
-            "Bạn có xác nhận hoàn tất đặt lịch này không?"
-        ),
-    }
+    @tool
+    async def find_workshops(
+        config: RunnableConfig,
+        area_or_address: str | None = None,
+        limit: int = 3,
+    ) -> dict[str, Any]:
+        """Tìm xưởng dịch vụ đang hoạt động gần chủ xe (API-BK-01, UC-401).
+
+        (Công cụ Đọc)
+
+        Args:
+            area_or_address: Khu vực / tỉnh thành chủ xe nêu (ví dụ: 'Hà Nội'). Bỏ trống để
+                tìm quanh vị trí chính trong hồ sơ hoặc xưởng ưu tiên của chủ xe.
+            limit: Số xưởng tối đa (1-10).
+
+        Returns:
+            anchor (cách xếp hạng), workshops: workshop_id (UUID, dùng cho các tool sau), name,
+            address, region, distance_km (có thể null), is_preferred.
+        """
+        with provider.open_session() as session:
+            try:
+                who = _services.caller(session, config)
+                data = await provider.booking_service(session).find_nearby(
+                    who.user,
+                    anchor_source=None,
+                    lat=None,
+                    lng=None,
+                    query=(area_or_address or "").strip() or None,
+                    province=None,
+                    user_vehicle_id=who.user_vehicle_id,
+                    d=None,
+                    time_slot=None,
+                    limit=min(max(limit, 1), _MAX_WORKSHOPS),
+                )
+                return data.model_dump(mode="json")
+            except (_services.MissingCallerError, booking_errors.BookingError) as exc:
+                return _services.tool_error(exc)
+
+    @tool
+    async def get_available_slots(
+        config: RunnableConfig,
+        workshop_id: str,
+        target_date: str,
+    ) -> dict[str, Any]:
+        """Các khung giờ trong ngày của một xưởng và chỗ còn trống (API-BK-02, UC-402).
+
+        (Công cụ Đọc)
+
+        Args:
+            workshop_id: workshop_id (UUID) lấy từ find_workshops.
+            target_date: Ngày cần xem, dạng YYYY-MM-DD. Quy đổi 'thứ Bảy này', 'mai'... theo
+                ngày hôm nay trong ngữ cảnh.
+
+        Returns:
+            workshop_id, date, slots: time_slot, available, remaining (chỗ còn trống).
+            Không có slot nào nghĩa là xưởng nghỉ ngày đó.
+        """
+        with provider.open_session() as session:
+            try:
+                who = _services.caller(session, config)
+                data = await provider.booking_service(session).check_availability(
+                    who.user,
+                    _parse_workshop(workshop_id),
+                    _parse_date(target_date),
+                    None,
+                    with_alternatives=False,
+                )
+                return data.model_dump(mode="json")
+            except (_services.MissingCallerError, booking_errors.BookingError) as exc:
+                return _services.tool_error(exc)
+
+    @tool(response_format="content_and_artifact")
+    async def propose_booking(
+        config: RunnableConfig,
+        workshop_id: str,
+        booking_date: str,
+        time_slot: str,
+        odo_milestone: int | None = None,
+    ) -> tuple[dict[str, Any], dict | None]:
+        """Tạo ĐỀ XUẤT đặt lịch cho xe đang chọn: hiện thẻ có nút "Xác nhận đặt lịch" (us-061 TOOL-QB-01).
+
+        Tool này KHÔNG tạo lịch hẹn và KHÔNG giữ chỗ. Lịch chỉ được tạo khi chủ xe bấm nút
+        "Xác nhận đặt lịch" trên thẻ. Gọi khi chủ xe đã chọn xưởng, ngày và giờ cụ thể.
+        Chủ xe gõ "đồng ý" / "xác nhận" thì nhắc họ bấm nút trên thẻ, không gọi lại tool.
+
+        Args:
+            workshop_id: workshop_id (UUID) lấy từ find_workshops.
+            booking_date: Ngày hẹn, dạng YYYY-MM-DD.
+            time_slot: Giờ bắt đầu khung giờ, dạng HH:MM, phải là một slot available của get_available_slots.
+            odo_milestone: Mốc km bảo dưỡng (next_milestone.odo_milestone_km), nếu đã biết.
+
+        Returns:
+            status PROPOSED, proposal_id, summary, next_step. Lỗi SLOT_FULL kèm alternatives;
+            SLOT_TOO_SOON khi khung giờ bắt đầu quá sớm.
+        """
+        with provider.open_session() as session:
+            try:
+                who = _services.caller(session, config)
+                if who.conversation_id is None:
+                    raise _services.MissingCallerError()
+                proposal, card = await provider.quick_booking_service(session).propose_from_agent(
+                    who.user.user_id,
+                    who.user_vehicle_id,
+                    who.conversation_id,
+                    _parse_workshop(workshop_id),
+                    _parse_date(booking_date),
+                    _parse_time(time_slot),
+                    odo_milestone,
+                )
+            except booking_errors.SlotFullError as exc:
+                return _slot_full(exc), None
+            except (_services.MissingCallerError, booking_errors.BookingError, quick_errors.QuickBookingError) as exc:
+                return _services.tool_error(exc), None
+            primary = card["primary"]
+            summary = f"Đề xuất {primary['workshopName']} lúc {primary['timeSlot']} ngày {primary['date']}."
+            return {
+                "status": "PROPOSED",
+                "proposal_id": str(proposal.id),
+                "summary": summary,
+                "next_step": _NEXT_STEP,
+            }, card
+
+    return [find_workshops, get_available_slots, propose_booking]
+
+
+find_workshops, get_available_slots, propose_booking = build_booking_tools()

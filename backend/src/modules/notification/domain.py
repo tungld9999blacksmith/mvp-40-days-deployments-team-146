@@ -10,15 +10,15 @@ from src.modules.user_vehicle.domain import DueResult, DueStatus
 
 from .channels import NotificationMessage
 
-# Order used everywhere the channel list is shown.
+# External channels, in the order used everywhere the channel list is shown.
+# Reminders are always shown in the in-app feed, whatever is enabled here.
 ALL_CHANNELS: tuple[ReminderChannel, ...] = (
-    ReminderChannel.DISCORD,
     ReminderChannel.ZALO,
     ReminderChannel.TELEGRAM,
     ReminderChannel.SMS,
     ReminderChannel.EMAIL,
 )
-DEFAULT_CHANNELS: frozenset[ReminderChannel] = frozenset({ReminderChannel.DISCORD})
+DEFAULT_CHANNELS: frozenset[ReminderChannel] = frozenset()
 
 MIN_LEAD_DAYS = 0
 MAX_LEAD_DAYS = 30

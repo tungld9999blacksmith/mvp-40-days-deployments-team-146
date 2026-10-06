@@ -77,6 +77,7 @@ export default function OperationsStep() {
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState<{ message: string; traceId: string | null } | null>(null)
   const prefilled = useRef(Boolean(operationsForm))
+  const submitted = useRef(false)
   const refs = useRef<Record<string, HTMLElement | null>>({})
   const hourRefs = useRef<Record<number, HTMLInputElement | null>>({})
 
@@ -100,7 +101,8 @@ export default function OperationsStep() {
     })
   }, [snapshot])
 
-  if (onboarding && (!onboarding.profileCompleted || !['ONBOARDING_IN_PROGRESS', 'VERIFICATION_FAILED'].includes(onboarding.status))) {
+  // `submitted`: the submit itself navigates to its result; the new status must not redirect first.
+  if (!submitted.current && onboarding && (!onboarding.profileCompleted || !['ONBOARDING_IN_PROGRESS', 'VERIFICATION_FAILED'].includes(onboarding.status))) {
     return <Navigate to={resolveWorkshopRoute(onboarding)} replace />
   }
   if (!snapshot) {
@@ -173,6 +175,7 @@ export default function OperationsStep() {
         response = await workshopApi.submitWorkshopVerification(body, key)
       }
       const { data, status } = response
+      submitted.current = true
       setOnboarding(data.onboarding)
       if (data.workshop) setWorkshop(data.workshop)
       setOutcome({
@@ -239,7 +242,7 @@ export default function OperationsStep() {
         </p>
       </div>
 
-      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-5">
+      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-5 elevation-sm">
         <h2 className="text-sm font-semibold text-foreground">Vị trí & liên hệ</h2>
         <TextArea
           ref={refFor('address')}
@@ -290,7 +293,7 @@ export default function OperationsStep() {
         />
       </section>
 
-      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-5">
+      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-5 elevation-sm">
         <h2 className="text-sm font-semibold text-foreground">Công suất</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <TextInput
@@ -323,7 +326,7 @@ export default function OperationsStep() {
         </div>
       </section>
 
-      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6">
+      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 elevation-sm">
         <h2 className="text-sm font-semibold text-foreground mb-4">Giờ hoạt động</h2>
         <OperatingHoursEditor
           value={form.operatingHours}

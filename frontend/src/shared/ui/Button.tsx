@@ -6,10 +6,10 @@ type Variant = 'primary' | 'secondary' | 'danger' | 'ghost'
 type Size = 'sm' | 'md' | 'lg'
 
 const variants: Record<Variant, string> = {
-  primary: 'bg-emerald text-background font-semibold hover:bg-emerald-bright',
-  secondary: 'bg-card border border-border text-muted hover:text-foreground hover:bg-card-hover',
-  danger: 'text-error border border-error/20 hover:bg-error/10',
-  ghost: 'text-muted hover:text-foreground hover:bg-card',
+  primary: 'bg-brand-gradient text-on-brand font-semibold glow-emerald hover:brightness-110',
+  secondary: 'bg-card border border-border text-foreground/80 elevation-sm hover:text-foreground hover:bg-card-hover hover:border-foreground/15',
+  danger: 'text-error border border-error/25 hover:bg-error/10',
+  ghost: 'text-muted hover:text-foreground hover:bg-foreground/5',
 }
 
 const sizes: Record<Size, string> = {
@@ -38,9 +38,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-colors duration-150',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald/50',
-        'disabled:opacity-50 disabled:cursor-not-allowed',
+        'inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200 active:scale-[0.98]',
+        'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald/25',
+        'disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 disabled:hover:brightness-100',
         variants[variant],
         sizes[size],
         fullWidth && 'w-full',

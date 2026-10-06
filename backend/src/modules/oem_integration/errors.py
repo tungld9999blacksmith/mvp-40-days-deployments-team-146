@@ -37,6 +37,13 @@ class InvalidWebhookRequestError(OemWebhookError):
         super().__init__(message)
 
 
+class WebhookProcessingError(OemWebhookError):
+    code = "WEBHOOK_PROCESSING"
+
+    def __init__(self) -> None:
+        super().__init__("Webhook processing is busy. Please retry.")
+
+
 class UnsupportedEventTypeError(OemWebhookError):
     code = "UNSUPPORTED_EVENT_TYPE"
 
@@ -49,6 +56,7 @@ ERROR_STATUS: dict[str, int] = {
     "WEBHOOK_SIGNATURE_INVALID": 401,
     "WEBHOOK_TIMESTAMP_EXPIRED": 401,
     "UNSUPPORTED_EVENT_TYPE": 422,
+    "WEBHOOK_PROCESSING": 503,
 }
 
 

@@ -10,8 +10,9 @@ cat > "$HOOK_FILE" <<'EOF'
 # Pre-push: sweep recent Antigravity / Gemini prompts, then submit AI logs.
 # Uses the cross-platform Python launcher so it works whether the user
 # has python3, python, or only the `py` launcher (Windows).
-bash scripts/_pyrun.sh scripts/log_antigravity.py --auto || true
-bash scripts/_pyrun.sh scripts/submit_log.py || true
+if ! bash scripts/pre_push_ai_log.sh; then
+  echo '[ai-log] WARNING: pre-push logger could not start.' >&2
+fi
 exit 0  # Never block push, even if either step fails
 EOF
 

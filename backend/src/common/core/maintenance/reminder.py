@@ -33,20 +33,22 @@ class ReminderLevel(StrEnum):
 class ReminderChannel(StrEnum):
     """Delivery channel (BR-ENT-408).
 
-    Only DISCORD has an adapter today. ZALO / TELEGRAM / SMS / EMAIL are listed
-    in the channel settings but cannot be enabled yet (FEAT-NOTI-001 BR-506);
-    SLACK is reserved.
-    IN_APP / PUSH / SMS_ZALO are deprecated: kept only because PostgreSQL
-    cannot drop enum values (migration f6c3a8d1b2e4); never write them.
+    IN_APP is what ``reminder.channel`` stores: every reminder is shown in the
+    in-app feed. ZALO / TELEGRAM / SMS / EMAIL are listed in the channel
+    settings but have no adapter yet, so they cannot be enabled
+    (FEAT-NOTI-001 BR-506); SLACK is reserved.
+    DISCORD / PUSH / SMS_ZALO are deprecated: kept only because PostgreSQL
+    cannot drop enum values (migrations f6c3a8d1b2e4, a3c7e9f1b2d4); never
+    write them.
     """
 
-    DISCORD = "discord"
+    IN_APP = "in_app"
     EMAIL = "email"
     SMS = "sms"
     TELEGRAM = "telegram"
     ZALO = "zalo"
     SLACK = "slack"
-    IN_APP = "in_app"
+    DISCORD = "discord"
     PUSH = "push"
     SMS_ZALO = "sms_zalo"
 
@@ -83,11 +85,11 @@ class Reminder(SQLModel, table=True):
         ),
     )
     channel: ReminderChannel = Field(
-        default=ReminderChannel.DISCORD,
+        default=ReminderChannel.IN_APP,
         sa_column=Column(
             SQLEnum(ReminderChannel, name="reminder_channel_enum", values_callable=_enum_values),
             nullable=False,
-            server_default="discord",
+            server_default="in_app",
         ),
     )
     snooze_count: int = Field(default=0, sa_column=Column(Integer, nullable=False, server_default="0"))

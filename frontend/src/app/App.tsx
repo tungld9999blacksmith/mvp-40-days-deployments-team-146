@@ -1,4 +1,4 @@
-import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { Navigate, Outlet, Route, Routes, useParams, useSearchParams } from 'react-router-dom'
 import { AuthProvider } from '@/features/auth/context/AuthContext'
 import RequireActiveUser from '@/features/auth/guards/RequireActiveUser'
 import Login from '@/features/auth/pages/Login'
@@ -15,9 +15,19 @@ import Dashboard from '@/features/dashboard/pages/Dashboard'
 import VehicleDetail from '@/features/vehicles/pages/VehicleDetail'
 import ServiceHistory from '@/features/maintenance/pages/ServiceHistory'
 import AIAssistant from '@/features/assistant/pages/AIAssistant'
-import MaintenanceEstimate from '@/features/quotes/pages/MaintenanceEstimate'
+import Estimate from '@/features/estimate/pages/Estimate'
+import EstimateCompare from '@/features/estimate/pages/EstimateCompare'
+import MyBookings from '@/features/bookings/pages/MyBookings'
+import Reschedule from '@/features/bookings/pages/Reschedule'
+import BookingByCode, { QrEntry } from '@/features/bookings/pages/BookingByCode'
+import FollowUp from '@/features/after-service/pages/FollowUp'
+import WorkshopBoard from '@/features/workshop-board/pages/WorkshopBoard'
+import CheckIn from '@/features/workshop-board/pages/CheckIn'
+import Capacity from '@/features/workshop-board/pages/Capacity'
+import BookingSettingsPage from '@/features/workshop-board/pages/BookingSettingsPage'
 import BookingLayout from '@/features/bookings/pages/BookingLayout'
 import BookingStart from '@/features/bookings/pages/BookingStart'
+import BookingProposal from '@/features/bookings/pages/BookingProposal'
 import BookingWorkshops from '@/features/bookings/pages/BookingWorkshops'
 import BookingSlots from '@/features/bookings/pages/BookingSlots'
 import BookingConfirm from '@/features/bookings/pages/BookingConfirm'
@@ -25,8 +35,6 @@ import BookingTicket from '@/features/bookings/pages/BookingTicket'
 import Notifications from '@/features/notifications/pages/Notifications'
 import NotificationSettings from '@/features/notifications/pages/NotificationSettings'
 import TechnicianDashboard from '@/features/dashboard/pages/TechnicianDashboard'
-import PendingQuotes from '@/features/quotes/pages/PendingQuotes'
-import QuoteReview from '@/features/quotes/pages/QuoteReview'
 import { WorkshopAuthProvider } from '@/features/workshop-auth/context/WorkshopAuthContext'
 import RequireActiveWorkshopOwner from '@/features/workshop-auth/guards/RequireActiveWorkshopOwner'
 import WorkshopLogin from '@/features/workshop-auth/pages/WorkshopLogin'
@@ -37,6 +45,17 @@ import OperationsStep from '@/features/workshop-auth/onboarding/pages/Operations
 import WorkshopVerifyingStep from '@/features/workshop-auth/onboarding/pages/WorkshopVerifyingStep'
 import WorkshopSuccessStep from '@/features/workshop-auth/onboarding/pages/WorkshopSuccessStep'
 import WorkshopFailedStep from '@/features/workshop-auth/onboarding/pages/WorkshopFailedStep'
+
+function WorkshopBookingRedirect() {
+  const { bookingId = '' } = useParams()
+  return <Navigate to={`/technician/board/${encodeURIComponent(bookingId)}`} replace />
+}
+
+/** `/booking-success?bookingId=` (old link) ⇒ the ticket, else "Lịch của tôi" (us-053 §8). */
+function BookingSuccessRedirect() {
+  const bookingId = useSearchParams()[0].get('bookingId')
+  return <Navigate to={bookingId ? `/bookings/${encodeURIComponent(bookingId)}` : '/bookings'} replace />
+}
 
 /** Owner app: every owner route shares one AuthProvider (only mounted on owner routes). */
 function OwnerRoot() {
@@ -57,6 +76,10 @@ function WorkshopRoot() {
 }
 
 export default function App() {
+  return <AppRoutes />
+}
+
+function AppRoutes() {
   return (
     <Routes>
       <Route element={<OwnerRoot />}>
@@ -78,16 +101,22 @@ export default function App() {
             <Route path="/history" element={<ServiceHistory />} />
             <Route path="/ai" element={<AIAssistant />} />
             <Route path="/ai/:conversationId" element={<AIAssistant />} />
-            <Route path="/estimate" element={<MaintenanceEstimate />} />
+            <Route path="/estimate" element={<Estimate />} />
+            <Route path="/estimate/compare" element={<EstimateCompare />} />
             <Route path="/booking" element={<BookingLayout />}>
               <Route index element={<BookingStart />} />
+              <Route path="proposal" element={<BookingProposal />} />
               <Route path="workshops" element={<BookingWorkshops />} />
               <Route path="slots" element={<BookingSlots />} />
               <Route path="confirm" element={<BookingConfirm />} />
             </Route>
+            <Route path="/bookings" element={<MyBookings />} />
+            <Route path="/bookings/by-code/:bookingCode" element={<BookingByCode />} />
             <Route path="/bookings/:bookingId" element={<BookingTicket />} />
-            <Route path="/booking-success" element={<Navigate to="/booking" replace />} />
-            <Route path="/notifications" element={<Notifications showSettings />} />
+            <Route path="/bookings/:bookingId/reschedule" element={<Reschedule />} />
+            <Route path="/booking-success" element={<BookingSuccessRedirect />} />
+            <Route path="/follow-ups/:followUpId" element={<FollowUp />} />
+            <Route path="/notifications" element={<Notifications variant="owner" />} />
             <Route path="/notifications/settings" element={<NotificationSettings />} />
           </Route>
         </Route>
@@ -108,12 +137,19 @@ export default function App() {
         <Route element={<RequireActiveWorkshopOwner />}>
           <Route element={<TechnicianLayout />}>
             <Route path="/technician" element={<TechnicianDashboard />} />
-            <Route path="/technician/quotes" element={<PendingQuotes />} />
-            <Route path="/technician/quote-review" element={<QuoteReview />} />
-            <Route path="/technician/notifications" element={<Notifications />} />
+            <Route path="/technician/bookings/:bookingId" element={<WorkshopBookingRedirect />} />
+            <Route path="/technician/board" element={<WorkshopBoard />} />
+            <Route path="/technician/board/:bookingId" element={<WorkshopBoard />} />
+            <Route path="/technician/check-in" element={<CheckIn />} />
+            <Route path="/technician/capacity" element={<Capacity />} />
+            <Route path="/technician/settings/booking" element={<BookingSettingsPage />} />
+            <Route path="/technician/notifications" element={<Notifications variant="portal" />} />
           </Route>
         </Route>
       </Route>
+
+      {/* Ticket QR (us-053): workshop session ⇒ check-in, otherwise the owner resolver. */}
+      <Route path="/c/:bookingCode" element={<QrEntry />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

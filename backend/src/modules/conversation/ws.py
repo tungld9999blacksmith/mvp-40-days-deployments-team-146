@@ -4,8 +4,8 @@ Receive-only realtime channel: pushes newly-persisted messages of a conversation
 to every connected device (the chatbot-realtime / multi-device backbone). Token
 streaming of a live turn goes over SSE (API-CHAT-004), not here.
 
-TODO(auth Q-621): dev auth — the first ``auth`` frame carries ``userId`` instead
-of a Firebase token. Swap for token verification before prod.
+The first ``auth`` frame carries a Firebase ID ``token``. Identity and account
+status are resolved on the server; client-supplied user ids are never trusted.
 """
 
 from __future__ import annotations
@@ -17,13 +17,14 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Path, WebSocket, WebSocketDisconnect
+from starlette.concurrency import run_in_threadpool
 
 from src.config import get_settings
 from src.infrastructure.messaging import get_message_service
 from src.infrastructure.redis.dependency import get_redis_toolkit
 
 from . import errors
-from .dependency import get_chat_service
+from .dependency import get_chat_service, get_websocket_user_id
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,7 @@ _CLOSE_UNAUTH = 4401
 _CLOSE_NOT_FOUND = 4404
 _CLOSE_TOO_MANY = 4429
 _CLOSE_ERROR = 4500
+_CLOSE_TRY_AGAIN = 1013  # RFC 6455 "Try Again Later": the auth provider is unreachable
 
 
 @ws_router.websocket("/{conversationId}/stream")
@@ -49,24 +51,30 @@ async def stream(
 
     await websocket.accept()
 
-    # 1) Authenticate via the first frame (dev: {"type":"auth","userId":N}).
+    # 1) Authenticate via {"type":"auth","token":"<Firebase ID token>"}.
     try:
         auth = await asyncio.wait_for(websocket.receive_json(), timeout=settings.conversation_ws_auth_timeout_seconds)
-    except (TimeoutError, WebSocketDisconnect):
+    except (TimeoutError, WebSocketDisconnect, ValueError):
         await websocket.close(code=_CLOSE_UNAUTH)
         return
-    if not isinstance(auth, dict) or auth.get("type") != "auth" or "userId" not in auth:
+    if not isinstance(auth, dict) or auth.get("type") != "auth":
         await websocket.close(code=_CLOSE_BAD_FRAME)
         return
     try:
-        user_id = int(auth["userId"])
-    except (TypeError, ValueError):
+        token = auth.get("token")
+        if not isinstance(token, str) or not token.strip():
+            raise errors.Unauthorized()
+        user_id = await run_in_threadpool(get_websocket_user_id, token)
+    except (errors.Unauthorized, errors.Forbidden):
         await websocket.close(code=_CLOSE_UNAUTH)
+        return
+    except errors.AuthProviderUnavailable:
+        await websocket.close(code=_CLOSE_TRY_AGAIN)
         return
 
     # 2) Ownership (never reveal other owners' conversations — AC-605).
     try:
-        service.get_owned_conversation(user_id, conversation_id)
+        await run_in_threadpool(service.get_owned_conversation, user_id, conversation_id)
     except errors.ConversationNotFound:
         await websocket.close(code=_CLOSE_NOT_FOUND)
         return
@@ -81,7 +89,7 @@ async def stream(
         return
 
     try:
-        rows, _, _ = service.list_messages(conversation_id, 1, None, None)
+        rows, _, _ = await run_in_threadpool(service.list_messages, conversation_id, 1, None, None)
         last_seq = rows[0].seq if rows else None
         await websocket.send_json({"type": "ready", "lastSeq": last_seq})
 

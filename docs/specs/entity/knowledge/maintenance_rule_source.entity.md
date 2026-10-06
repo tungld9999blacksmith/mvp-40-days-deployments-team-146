@@ -29,7 +29,7 @@ Bảng nối N–N giữa `maintenance_rule` và `document_chunk`: chunk nào ch
 
 ## 2.2 Business Purpose
 
-AI Agent trích dẫn nguồn chính hãng khi nhắc bảo dưỡng / báo giá; đội vận hành kiểm tra định mức có căn cứ.
+AI Agent trích dẫn nguồn chính hãng khi nhắc bảo dưỡng / dự toán chi phí; đội vận hành kiểm tra định mức có căn cứ.
 
 ---
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { LogOut, Zap } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import Stepper from '@/shared/ui/Stepper'
 import { Notice } from '@/shared/ui/States'
 import { formatDate } from '@/shared/utils/format'
@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext'
 import SplashScreen from '../components/SplashScreen'
 import LogoutConfirmDialog from '../components/LogoutConfirmDialog'
 import { OnboardingProvider, useOnboarding } from './OnboardingContext'
+import Logo from '@/shared/ui/Logo'
 
 const STEPS = ['Thông tin cá nhân', 'Thông tin xe', 'Xác thực']
 
@@ -36,10 +37,7 @@ function OnboardingShell() {
     <div className="min-h-screen bg-background">
       <header className="h-16 bg-surface border-b border-border">
         <div className="max-w-3xl mx-auto h-full px-4 sm:px-6 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-emerald flex items-center justify-center flex-shrink-0">
-            <Zap className="w-4 h-4 text-background" strokeWidth={2.5} />
-          </div>
-          <span className="text-foreground font-bold tracking-tight">EV Care</span>
+          <Logo className="h-8 text-foreground" />
           <span className="hidden sm:inline text-muted text-sm">· Thiết lập tài khoản</span>
           <span className="ml-auto hidden md:inline text-sm text-muted truncate max-w-[220px]">{user?.email}</span>
           <button
@@ -71,8 +69,12 @@ function OnboardingShell() {
 /** Layout of `/onboarding/*` — no sidebar, the main features are locked until ACTIVE (BR-003). */
 export default function OnboardingLayout() {
   const { authStatus, onboarding, bootError, retryBootstrap } = useAuth()
+  const location = useLocation()
   if (authStatus === 'initializing') return <SplashScreen error={bootError} onRetry={retryBootstrap} />
   if (authStatus !== 'signed-in' || !onboarding) return <Navigate to="/" replace />
+  if (onboarding.status === 'ACTIVE' && !['/onboarding/verifying', '/onboarding/success'].includes(location.pathname)) {
+    return <Navigate to="/dashboard" replace />
+  }
   return (
     <OnboardingProvider>
       <OnboardingShell />

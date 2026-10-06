@@ -58,12 +58,15 @@ export function SlotGrid({
   selected,
   pending,
   onSelect,
+  currentSlot = null,
 }: {
   slots: Slot[]
   selected: string | null
   /** Slot whose token is being requested. */
   pending: string | null
   onSelect: (slot: Slot) => void
+  /** Reschedule (us-053 §4.6): the booking's own slot, shown as "Giờ hiện tại" and not selectable. */
+  currentSlot?: string | null
 }) {
   return (
     <div role="radiogroup" aria-label="Khung giờ" className="grid grid-cols-3 lg:grid-cols-6 gap-2">
@@ -71,7 +74,8 @@ export function SlotGrid({
         const label = slotLabel(slot.timeSlot)
         const note = remainingLabel(slot.remaining, slot.available)
         const active = selected === label
-        const disabled = !slot.available || pending !== null
+        const isCurrent = currentSlot === label
+        const disabled = !slot.available || pending !== null || isCurrent
         return (
           <button
             key={slot.timeSlot}
@@ -84,12 +88,21 @@ export function SlotGrid({
             className={cn(
               'rounded-xl border px-2 py-3 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald/40',
               active ? 'border-emerald bg-emerald/10' : 'border-border bg-card hover:bg-card-hover',
-              !slot.available && 'opacity-50 cursor-not-allowed hover:bg-card',
+              !slot.available && !isCurrent && 'opacity-50 cursor-not-allowed hover:bg-card',
+              isCurrent && 'border-dashed border-emerald/50 cursor-not-allowed hover:bg-card',
               pending === label && 'animate-pulse',
             )}
           >
             <span className={cn('block text-sm font-semibold', active ? 'text-emerald' : 'text-foreground')}>{label}</span>
-            <span className={cn('block text-[11px] mt-0.5 h-4', slot.available ? 'text-warning' : 'text-error')}>{note ?? ''}</span>
+            {/* Amber only for the last seat: small workshops hold ~3 per slot, so "Còn 3 chỗ" is normal. */}
+            <span
+              className={cn(
+                'block text-[11px] mt-0.5 h-4',
+                isCurrent ? 'text-emerald' : !slot.available ? 'text-error' : slot.remaining <= 1 ? 'text-warning' : 'text-muted',
+              )}
+            >
+              {isCurrent ? 'Giờ hiện tại' : note ?? ''}
+            </span>
           </button>
         )
       })}

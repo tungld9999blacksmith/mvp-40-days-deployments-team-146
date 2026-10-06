@@ -1,5 +1,9 @@
 # Frontend Technical Specification — Dự toán chi phí bảo dưỡng
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Đặc tả frontend cho Feature `FEAT-COST-001` (PRD F5, US-045 → US-048).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-045-sprint-2-spec.ff.md) · **API:** [API Spec](../api/us-045-sprint-2-spec.api.md)
@@ -15,7 +19,7 @@
 | Feature | `FEAT-COST-001` — Dự toán chi phí |
 | Screen | `SCR-1001` Dự toán · `SCR-1002` Chọn mốc · `SCR-1003` Chọn xưởng · `SCR-1004` So sánh xưởng · `CARD-EST` |
 | Route | `/estimate` (query `odoMilestone`, `workshopId` tuỳ chọn) · `/estimate/compare` · thẻ trong `/ai/:conversationId` |
-| Version | `v1.0` |
+| Version | `v1.1` |
 | Author | Team 4 Người |
 | Status | `Draft` |
 | Related PRD | [PRD §F5](../../../product/PRD_EV_Care_MVP.md) |
@@ -117,7 +121,7 @@ Cho chủ xe xem hạng mục + chi phí ước tính của một mốc tại m�
 - `chargeableTotal`; nếu `= 0` ⇒ "Mốc này không phát sinh chi phí theo định mức" (FF EDGE-1004).
 - Badge cố định `estimateLabel` ("Chi phí ước tính") + câu lưu ý chi phí thực tế (FF BR-1005).
 - `hasReferencePrice` ⇒ chú thích `*`.
-- `warrantyStatus = EXPIRED` ⇒ ghi "Xe đã hết thời hạn bảo hành"; `UNKNOWN` ⇒ "Chưa có dữ liệu bảo hành từ hãng".
+- `warrantyStatus = EXPIRED` ⇒ ghi "Xe đã hết thời hạn bảo hành chung" và bỏ mọi nội dung nói về bảo hành (FF AF-1004); `UNKNOWN` ⇒ "Chưa có dữ liệu bảo hành từ hãng".
 
 ## 4.5 NextActions
 
@@ -289,16 +293,37 @@ GET /api/v1/user-vehicles/{id}/cost-estimate/compare?odoMilestone={k}&workshopId
 - Vite + React 19 + React Router 7 + Tailwind 4 (theo `frontend/package.json`).
 - Tái dùng layout/khối "Thông tin xe" của `MaintenanceEstimate.tsx`; tách `features/estimate/` (api, hooks, components) khỏi `features/quotes/`.
 - Kiểu `CostEstimate` sinh từ schema API; không dùng lại `ServiceItem` mock.
+- Hiện trạng (2026-10-01): FE đã làm theo spec này (`features/estimate/`, `/estimate`, `/estimate/compare`, `CARD-EST`) và gọi đúng `API-EST-01 → 03`; backend **chưa** có các API này nên FE chạy với mock API (`VITE_API_MOCKS`, `frontend/src/mocks/server`). Thẻ tóm tắt đặt lịch (us-029) hiển thị "Chi phí ước tính" lấy từ `API-EST-02`.
+- Dự toán chỉ đọc: FE không lưu dự toán làm bản ghi; muốn giữ con số thì lập báo giá (us-049) — FF BR-1007.
 
-# 18. Open Questions
+# 18. Truy vết FF → FE
+
+| FF | Nội dung | FE |
+|---|---|---|
+| UC-1001, AC-1003 | Xem dự toán mốc tiếp theo, nhãn ước tính + lưu ý | §2.2, §3.1, §4.4 |
+| UC-1002, BR-1002 | Mốc khác / xưởng khác; chỉ mốc có định mức | §4.1, §4.2, §8 |
+| UC-1003 | So sánh xưởng `[Đề xuất]` | §4.6, §7.3 |
+| AF-1001 | Mốc tiếp theo `UNKNOWN` | §4.1 (không chọn sẵn, hướng dẫn chọn) |
+| AF-1002, BR-1003 | Xưởng mặc định (ưa thích → gần nhất) | §4.2 ghi chú `selectedBy = NEAREST`, §10.2 |
+| AF-1003, AC-1001 | Hỏi chi phí trong chat, tổng khớp tool | §4.7, AC-FE-1004 |
+| AF-1004 | Xe hết bảo hành | §4.3, §4.4 |
+| BR-1001, BR-1004, AC-1002, AC-1006 | Công thức tất định, nguồn giá, giá tham khảo `*` | §4.3 (không tự cộng, `*`), §4.4 |
+| BR-1007 | Dự toán không phải bản ghi | §17 |
+| BR-1008, AC-1005 | Chỉ xe của chính chủ | §7.2 `VEHICLE_NOT_FOUND` |
+| BR-1009, AC-1004 | Không định mức thì không có số | §10.1 |
+| EF-1001 | Service lỗi | §11 |
+| EF-1002 | Xưởng không còn `active` | §7.2 `WORKSHOP_NOT_FOUND` |
+
+# 19. Open Questions
 
 | ID | Question |
 |---|---|
 | `Q-1003` | Có làm SCR-1004 trong MVP? |
 | `Q-FE-1001` | Có cần nút chia sẻ dự toán (ảnh/link) không? `[Đề xuất]` không trong MVP |
 
-# 19. Change Log
+# 20. Change Log
 
 | Version | Date | Author | Change |
 |---|---|---|---|
 | `v1.0` | `2026-09-30` | Team 4 Người | Bản đầu |
+| `v1.1` | `2026-10-01` | Team 4 Người | Đối chiếu FF: câu hết bảo hành chung (AF-1004), hiện trạng backend chưa có API-EST, bảng truy vết FF → FE |

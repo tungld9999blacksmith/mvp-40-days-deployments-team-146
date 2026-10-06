@@ -6,7 +6,9 @@ import json
 from datetime import UTC, date, datetime, timedelta
 
 import pytest
+import pytest_asyncio
 from ev_contracts import sign_webhook
+from fakeredis import FakeAsyncRedis
 from sqlmodel import select
 
 from src.common.core.vehicle import (
@@ -16,14 +18,19 @@ from src.common.core.vehicle import (
     VehicleOdometerReading,
     VehicleOemSync,
     VehicleServiceRecord,
+    VehicleVerificationStatus,
 )
 from src.common.core.workshop.workshop import Workshop, WorkshopStatus
 from src.modules.oem_integration import errors
+from src.modules.oem_integration.adapters import RedisWebhookEventStore
 from src.modules.oem_integration.service import (
+    STATIC_ODOMETER_MAX_KM,
+    STATIC_ODOMETER_MIN_KM,
     WEBHOOK_DEBOUNCE_SECONDS,
     OemVehicleSyncService,
     OemWebhookService,
     list_eligible_vehicle_ids,
+    seed_static_odometer,
 )
 from tests._user_vehicle import (
     NOW,
@@ -35,12 +42,23 @@ from tests._user_vehicle import (
     ServiceHistoryEntry,
     StubDataGateway,
     UsageSnapshot,
+    add_odometer,
     add_owner,
     add_vehicle,
     make_session,
 )
 
 SECRET = "test-secret"
+
+
+@pytest_asyncio.fixture(params=["memory", "redis"])
+async def event_store(request):
+    if request.param == "memory":
+        yield MemoryEventStore()
+    else:
+        redis = FakeAsyncRedis()
+        yield RedisWebhookEventStore(redis, key_prefix="webhook-test")
+        await redis.aclose()
 
 
 @pytest.fixture
@@ -266,6 +284,46 @@ async def test_concurrent_sync_is_skipped_by_lock(session, vehicle):
     assert outcome.status == "skipped" and outcome.error_code == "SYNC_IN_PROGRESS"
 
 
+# ── Static ODO (replaces the OEM pull) ─────────────────────────────────────
+
+
+def test_static_odometer_is_random_in_range_and_marks_sync_done(session, vehicle):
+    assert seed_static_odometer(session, vehicle.id, clock=lambda: NOW) is True
+
+    (reading,) = _readings(session, vehicle)
+    assert STATIC_ODOMETER_MIN_KM <= reading.odo_km <= STATIC_ODOMETER_MAX_KM
+    state = session.get(VehicleOemSync, vehicle.id)
+    assert state.usage_synced_at is not None and state.service_history_synced_at is not None
+
+
+def test_static_odometer_never_increases(session, vehicle):
+    seed_static_odometer(session, vehicle.id, clock=lambda: NOW)
+    first = _readings(session, vehicle)[0].odo_km
+
+    later = NOW + timedelta(days=3)
+    assert seed_static_odometer(session, vehicle.id, clock=lambda: later) is False
+
+    assert [r.odo_km for r in _readings(session, vehicle)] == [first]
+
+
+def test_static_odometer_keeps_an_existing_reading(session, vehicle):
+    add_odometer(session, vehicle, 75_232)
+
+    seed_static_odometer(session, vehicle.id, clock=lambda: NOW)
+
+    assert [r.odo_km for r in _readings(session, vehicle)] == [75_232]
+
+
+def test_static_odometer_uses_the_full_range(session, vehicle):
+    class Edge:
+        def randint(self, low, high):
+            return high
+
+    seed_static_odometer(session, vehicle.id, rng=Edge(), clock=lambda: NOW)
+
+    assert _readings(session, vehicle)[0].odo_km == STATIC_ODOMETER_MAX_KM
+
+
 # ── API-VEH-004 service ────────────────────────────────────────────────────
 
 
@@ -308,6 +366,21 @@ async def test_webhook_schedules_debounced_sync(session, vehicle):
 
 
 @pytest.mark.asyncio
+async def test_webhook_releases_db_connection_before_scheduling(session, vehicle):
+    """A webhook burst must not pin pooler connections while Redis/Celery work runs."""
+    open_during_schedule: list[bool] = []
+
+    class Probe(RecordingScheduler):
+        def schedule(self, user_vehicle_id, trigger, *, delay_seconds=0):
+            open_during_schedule.append(session.in_transaction())
+            super().schedule(user_vehicle_id, trigger, delay_seconds=delay_seconds)
+
+    await _webhook(session, Probe()).handle(**_signed(_event()))
+
+    assert open_during_schedule == [False]
+
+
+@pytest.mark.asyncio
 async def test_webhook_duplicate_event_is_not_reprocessed(session, vehicle):
     scheduler = RecordingScheduler()
     service = _webhook(session, scheduler, MemoryEventStore())
@@ -316,6 +389,45 @@ async def test_webhook_duplicate_event_is_not_reprocessed(session, vehicle):
     result = await service.handle(**_signed(_event()))
 
     assert result.duplicate is True
+    assert len(scheduler.calls) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("stage", ["database", "broker"])
+async def test_webhook_retry_after_transient_failure_is_not_dropped(session, vehicle, stage, monkeypatch, event_store):
+    scheduler, store = RecordingScheduler(), event_store
+    service = _webhook(session, scheduler, store)
+    target = service if stage == "database" else scheduler
+    method = "_find_vehicle_id" if stage == "database" else "schedule"
+    original = getattr(target, method)
+
+    def fail(*args, **kwargs):
+        raise RuntimeError("temporarily unavailable")
+
+    monkeypatch.setattr(target, method, fail)
+    with pytest.raises(RuntimeError):
+        await service.handle(**_signed(_event()))
+    assert not await store.event_processed("evt_1")
+    assert not await store.is_debounced(vehicle.id)
+
+    monkeypatch.setattr(target, method, original)
+    result = await service.handle(**_signed(_event()))
+    assert not result.duplicate
+    assert len(scheduler.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_concurrent_webhooks_schedule_vehicle_once(session, vehicle, event_store):
+    import asyncio
+
+    scheduler = RecordingScheduler()
+    service = _webhook(session, scheduler, event_store)
+    results = await asyncio.gather(
+        service.handle(**_signed(_event())),
+        service.handle(**{**_signed(_event()), "event_id": "evt_2"}),
+        service.handle(**_signed(_event())),
+    )
+    assert sum(result.duplicate for result in results) == 1
     assert len(scheduler.calls) == 1
 
 
@@ -401,3 +513,100 @@ def test_list_eligible_vehicle_ids(session, vehicle):
 def test_now_is_timezone_aware():
     assert NOW.tzinfo is UTC
     assert datetime.now(UTC).tzinfo is UTC
+
+
+def test_static_odometer_records_the_trigger(session, vehicle):
+    seed_static_odometer(session, vehicle.id, trigger=OemSyncTrigger.WEBHOOK, clock=lambda: NOW)
+
+    assert session.get(VehicleOemSync, vehicle.id).last_trigger == OemSyncTrigger.WEBHOOK
+
+
+def test_static_odometer_skips_unverified_vehicle(session, vehicle):
+    vehicle.verification_status = VehicleVerificationStatus.PENDING
+    session.add(vehicle)
+    session.commit()
+
+    assert seed_static_odometer(session, vehicle.id, clock=lambda: NOW) is False
+    assert _readings(session, vehicle) == []
+
+
+@pytest.mark.parametrize(
+    ("app_env", "mode", "static"),
+    [
+        ("production", "", False),
+        ("development", "", True),
+        ("development", "oem", False),
+    ],
+)
+def test_static_odometer_is_never_the_production_default(app_env, mode, static):
+    from src.config import Settings
+    from src.modules.oem_integration.adapters import CelerySyncScheduler, StaticOdometerScheduler
+    from src.modules.oem_integration.dependency import sync_scheduler_for
+
+    settings = Settings(app_env=app_env, oem_sync_mode=mode)
+    assert settings.uses_static_odometer() is static
+    expected = StaticOdometerScheduler if static else CelerySyncScheduler
+    assert isinstance(sync_scheduler_for(settings), expected)
+
+
+@pytest.mark.asyncio
+async def test_webhook_lock_contention_returns_processing_error(session, vehicle, monkeypatch):
+    from contextlib import asynccontextmanager
+
+    from src.infrastructure.redis.errors import LockAcquireError
+
+    scheduler, store = RecordingScheduler(), MemoryEventStore()
+
+    @asynccontextmanager
+    async def busy(key):
+        raise LockAcquireError(key)
+        yield
+
+    monkeypatch.setattr(store, "processing", busy)
+    with pytest.raises(errors.WebhookProcessingError):
+        await _webhook(session, scheduler, store).handle(**_signed(_event()))
+    assert not await store.event_processed("evt_1")
+    assert scheduler.calls == []
+    assert errors.ERROR_STATUS["WEBHOOK_PROCESSING"] == 503
+
+
+def test_static_scheduler_seeds_through_its_own_session(session, vehicle, monkeypatch):
+    from src.infrastructure.supabase import db
+    from src.modules.oem_integration.adapters import StaticOdometerScheduler
+
+    monkeypatch.setattr(db, "engine", session.get_bind())
+    StaticOdometerScheduler().schedule(vehicle.id, OemSyncTrigger.WEBHOOK)
+
+    session.expire_all()
+    assert len(_readings(session, vehicle)) == 1
+    assert session.get(VehicleOemSync, vehicle.id).last_trigger == OemSyncTrigger.WEBHOOK
+
+
+def test_production_rejects_static_odometer_mode():
+    from pydantic import ValidationError
+
+    from src.config import Settings
+
+    with pytest.raises(ValidationError, match="OEM_SYNC_MODE=static"):
+        Settings(app_env="production", oem_sync_mode="static")
+
+
+def test_self_heal_seeds_on_one_connection_and_answers_with_the_seed(session, vehicle, monkeypatch):
+    """The first status read seeds the demo ODO and already reflects it (no UNKNOWN round trip)."""
+    from src.infrastructure.supabase import db
+    from src.modules.oem_integration.adapters import StaticOdometerScheduler
+    from src.modules.user_vehicle.domain import DueConfig
+    from src.modules.user_vehicle.service import UserVehicleService
+
+    monkeypatch.setattr(db, "engine", session.get_bind())
+    in_transaction = []
+
+    class Probe(StaticOdometerScheduler):
+        def schedule(self, user_vehicle_id, trigger, *, delay_seconds=0):
+            in_transaction.append(session.in_transaction())
+            super().schedule(user_vehicle_id, trigger, delay_seconds=delay_seconds)
+
+    status = UserVehicleService(session, Probe(), config=DueConfig()).get_maintenance_status(vehicle)
+
+    assert in_transaction == [False]  # the request's read transaction ended before the seed
+    assert status.unknown_reason != "OEM_DATA_NOT_SYNCED"

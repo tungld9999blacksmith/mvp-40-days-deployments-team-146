@@ -64,7 +64,7 @@ export default function LocationAnchorPicker({
   }
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
+    <div className="bg-card border border-border rounded-2xl p-4 space-y-3 elevation-sm">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-foreground font-medium truncate">{describeAnchor(resolved, value)}</p>
         <div className="flex items-center gap-1 shrink-0">

@@ -1,5 +1,9 @@
 # Frontend Technical Specification — Nhắc lịch hẹn 24h & xử lý từ lời nhắc
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > Đặc tả frontend cho Feature `FEAT-NOTI-002` (PRD F7 phần nhắc lịch hẹn, US-033 → US-036).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-033-sprint-3-spec.ff.md) · **API:** [API Spec](../api/us-033-sprint-3-spec.api.md) · **Entity:** [Entity Spec](../entity/us-033-sprint-3-spec.entity.md)
@@ -15,7 +19,7 @@
 | Feature | `FEAT-NOTI-002` — Nhắc lịch hẹn 24h & xử lý từ lời nhắc |
 | Screen | `SCR-701` Chi tiết lịch hẹn · `SCR-702` Hộp thoại xác nhận huỷ |
 | Route | `/bookings/:bookingId` (query tuỳ chọn `src=REMINDER_24H`) |
-| Version | `v1.0` |
+| Version | `v1.1` |
 | Author | Team 4 Người |
 | FE Owner | Nguyễn Lê Phước Tiến `[Đề xuất — cùng mảng Đặt lịch]` |
 | Status | `Draft` |
@@ -581,7 +585,22 @@ frontend/src/features/bookings/
 
 ---
 
-# 21. Related Documents
+# 21. Truy vết FF → FE
+
+Mã trong [FF us-033](../feature-functional/us-033-sprint-3-spec.ff.md). "Backend" = job/nghiệp vụ không có UI riêng; FE chỉ nhận link và hiển thị trạng thái.
+
+| FF | Nội dung | FE |
+|---|---|---|
+| UC-702, AF-702, BR-708, AC-703/704 | Xác nhận sẽ đến từ lời nhắc | §4.3, §7.2 |
+| AF-701, BR-709, AC-705 | Huỷ từ lời nhắc qua hộp xác nhận lần hai, trả chỗ | §4.5 (SCR-702), §7.3 |
+| EF-705 | Huỷ trùng (hai lần / hai thiết bị) | §9.2 (chống bấm hai lần), §11.2 `409 BOOKING_NOT_CONFIRMED` |
+| BR-710, AC-708 | Đổi lịch đi qua F6b, không huỷ lịch cũ | §4.4 (`rescheduleMode`) |
+| BR-706 | Link không chứa token hành động | §2.2, §13 (bắt buộc đăng nhập, quay lại đúng `returnTo`) |
+| EF-704, BR-713, AC-709 | Booking không còn hợp lệ khi mở link | §4.1 (StatusBanner), §11.2 |
+| UC-701, BR-701, BR-702, BR-703, BR-704, BR-707, AF-704, EF-703, AC-701/702/706/707/710 | Lên lịch và gửi nhắc 24h, không nhắc trùng, kiểm tra lại trước khi gửi | Backend |
+| BR-705, BR-711, BR-712, EF-701, EF-702, EF-706, AF-703 | Kênh gửi, thử lại, kết quả, chủ xe không phản hồi | Backend — cấu hình kênh ở us-021 FE |
+
+# 22. Related Documents
 
 - Functional Spec: [us-033-sprint-3-spec.ff.md](../feature-functional/us-033-sprint-3-spec.ff.md)
 - API Spec: [us-033-sprint-3-spec.api.md](../api/us-033-sprint-3-spec.api.md)
@@ -591,8 +610,9 @@ frontend/src/features/bookings/
 
 ---
 
-# 22. Change Log
+# 23. Change Log
 
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | `v1.0` | `2026-09-29` | Team 4 Người | Initial version: SCR-701, SCR-702 |
+| `v1.1` | `2026-10-01` | Team 4 Người | Đối chiếu FF: không có thiếu sót về UI; thêm bảng truy vết FF → FE |

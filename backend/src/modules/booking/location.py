@@ -11,12 +11,18 @@ booking flow changes.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import StrEnum
 from typing import Protocol
 from uuid import UUID
 
 from src.common.core.workshop import Workshop, WorkshopStatus
 
-from .domain import LocationAnchor, RankedBy, haversine_km
+from .domain import LocationAnchor, RankedBy, fold_text, haversine_km
+
+
+class RankingMode(StrEnum):
+    DEFAULT = "DEFAULT"  # us-029 BR-003: the preferred workshop first
+    DISTANCE = "DISTANCE"  # us-061 BR-1506: distance only, the preferred workshop gets no boost
 
 
 @dataclass(frozen=True)
@@ -36,6 +42,7 @@ class WorkshopLocationFinder(Protocol):
         *,
         preferred_workshop_id: UUID | None,
         limit: int,
+        ranking: RankingMode = RankingMode.DEFAULT,
     ) -> tuple[list[RankedWorkshop], RankedBy]: ...
 
 
@@ -49,7 +56,9 @@ class SimpleTextLocationFinder:
         *,
         preferred_workshop_id: UUID | None,
         limit: int,
+        ranking: RankingMode = RankingMode.DEFAULT,
     ) -> tuple[list[RankedWorkshop], RankedBy]:
+        boost = ranking == RankingMode.DEFAULT
         active = [w for w in workshops if w.status == WorkshopStatus.ACTIVE]
 
         if anchor.has_coordinates:
@@ -67,17 +76,15 @@ class SimpleTextLocationFinder:
                     float(w.longitude),
                 )
                 scored.append(RankedWorkshop(w, dist, w.id == preferred_workshop_id))
-            # Preferred first, then nearest; unknown distance sinks to the end.
-            scored.sort(key=lambda r: (not r.is_preferred, r.distance_km is None, r.distance_km or 0.0))
+            # Preferred first (DEFAULT only), then nearest; unknown distance sinks to the end.
+            scored.sort(key=lambda r: (boost and not r.is_preferred, r.distance_km is None, r.distance_km or 0.0))
             return scored[:limit], ranked_by
 
-        # No coordinates → region / text match (BR-004).
+        # No coordinates → region / text match (BR-004), ignoring accents and case.
         ranked_by = RankedBy.REGION
-        needle = (anchor.province or anchor.query or "").strip().lower()
-        matched = [
-            w for w in active if not needle or needle in (w.region or "").lower() or needle in (w.name or "").lower()
-        ]
-        matched.sort(key=lambda w: (w.id != preferred_workshop_id, (w.name or "").lower()))
+        needle = fold_text(anchor.province or anchor.query)
+        matched = [w for w in active if not needle or needle in fold_text(w.region) or needle in fold_text(w.name)]
+        matched.sort(key=lambda w: (boost and w.id != preferred_workshop_id, (w.name or "").lower()))
         ranked = [RankedWorkshop(w, None, w.id == preferred_workshop_id) for w in matched]
         return ranked[:limit], ranked_by
 

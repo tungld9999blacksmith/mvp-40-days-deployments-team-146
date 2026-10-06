@@ -31,18 +31,14 @@ export function buildSettingsPatch(saved: NotificationSettings, form: SettingsFo
 
 export interface SettingsErrors {
   reminderLeadDays?: string
-  channels?: string
 }
 
-/** Client validation (US-021 FE §8.1). */
+/** Client validation (US-021 FE §8.1). No channel is required: reminders always reach the in-app feed. */
 export function validateSettings(form: SettingsForm): SettingsErrors {
   const errors: SettingsErrors = {}
   const raw = form.reminderLeadDays.trim()
   const value = Number(raw)
   if (raw === '' || !Number.isInteger(value)) errors.reminderLeadDays = 'Vui lòng nhập số ngày hợp lệ.'
   else if (value < 0 || value > 30) errors.reminderLeadDays = 'Số ngày nhắc trước phải từ 0 đến 30.'
-  if (form.remindersEnabled && !Object.values(form.channels).some(Boolean)) {
-    errors.channels = 'Chọn ít nhất một kênh nhận thông báo, hoặc tắt nhắc bảo dưỡng.'
-  }
   return errors
 }

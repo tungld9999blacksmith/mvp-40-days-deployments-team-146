@@ -76,7 +76,9 @@ services:
     environment:
       # Outgoing webhooks to EV Care (FEAT-VEH-001). Empty URL = disabled.
       # Same .env variable as the backend's OEM_WEBHOOK_SECRET, so both sides always match.
-      MOCK_WEBHOOK_URL: "http://backend:8000/api/v1/integrations/oem/webhooks"
+      # Webhooks tắt: backend không còn đồng bộ ODO/lịch sử từ mock (ODO cố định ngẫu nhiên).
+      # Bật lại: MOCK_WEBHOOK_URL: "http://backend:8000/api/v1/integrations/oem/webhooks"
+      MOCK_WEBHOOK_URL: ""
       MOCK_WEBHOOK_SECRET: "${OEM_WEBHOOK_SECRET:-change-me}"
       MOCK_WEBHOOK_USAGE_MIN_INTERVAL_SECONDS: "300"
       # Gmail dev: tự tạo chủ xe + xe khi khởi động (xem DEV_GUIDE.md).

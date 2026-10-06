@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from sqlmodel import Session, select
 
-from src.common.core.identity import DiscordLinkStatus, UserDiscordLink, VehicleUser
+from src.common.core.identity import VehicleUser
 from src.common.core.maintenance.reminder import ReminderChannel
 from src.common.core.notification import UserNotificationChannel, UserNotificationSetting
 
@@ -36,7 +36,7 @@ class NotificationSettingsService:
     def get(self, user: VehicleUser) -> schemas.NotificationSettingsOut:
         """API-NOTI-001. Read only: never creates rows."""
         prefs = load_preferences(self._db, user.user_id, default_lead_days=self._default_lead_days)
-        return self._out(user.user_id, prefs.reminders_enabled, prefs.lead_days, prefs.channels)
+        return self._out(prefs.reminders_enabled, prefs.lead_days, prefs.channels)
 
     def update(
         self, user: VehicleUser, payload: schemas.NotificationSettingsUpdateIn
@@ -62,9 +62,6 @@ class NotificationSettingsService:
             if payload.reminders_enabled is not None
             else (setting.reminders_enabled if setting else True)
         )
-        if enabled and not effective_channels(rows):
-            raise errors.NoChannelEnabledError()
-
         if setting is None:
             setting = UserNotificationSetting(user_id=user.user_id, reminder_lead_days=self._default_lead_days)
         setting.reminders_enabled = enabled
@@ -85,12 +82,11 @@ class NotificationSettingsService:
             self._db.add(row)
         self._db.commit()
 
-        return self._out(user.user_id, enabled, setting.reminder_lead_days, effective_channels(rows))
+        return self._out(enabled, setting.reminder_lead_days, effective_channels(rows))
 
     # ----------------------------------------------------------- helpers
     def _out(
         self,
-        user_id: int,
         reminders_enabled: bool,
         lead_days: int,
         enabled_channels: frozenset[ReminderChannel],
@@ -104,17 +100,13 @@ class NotificationSettingsService:
                     channel=_to_api(channel),
                     enabled=channel in enabled_channels,
                     available=channel in self._available,
-                    status=self._status(user_id, channel),
+                    status=self._status(channel),
                 )
                 for channel in ALL_CHANNELS
             ],
         )
 
-    def _status(self, user_id: int, channel: ReminderChannel) -> schemas.ChannelStatus:
+    def _status(self, channel: ReminderChannel) -> schemas.ChannelStatus:
         if channel not in self._available:
             return schemas.ChannelStatus.COMING_SOON
-        if channel is ReminderChannel.DISCORD:
-            link = self._db.get(UserDiscordLink, user_id)
-            connected = link is not None and link.status is DiscordLinkStatus.ACTIVE
-            return schemas.ChannelStatus.CONNECTED if connected else schemas.ChannelStatus.NOT_CONNECTED
         return schemas.ChannelStatus.NOT_CONNECTED

@@ -15,7 +15,7 @@ export default function LoginErrorPanel({
   onOtherAccount: () => void
 }) {
   return (
-    <div role="alert" className="bg-card border border-border rounded-2xl p-6">
+    <div role="alert" className="bg-card border border-border rounded-2xl p-6 elevation-sm">
       <div className="w-10 h-10 rounded-xl bg-error/10 flex items-center justify-center mb-4">
         <AlertTriangle className="w-5 h-5 text-error" aria-hidden />
       </div>

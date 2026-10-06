@@ -11,7 +11,7 @@ __pycache__
 **/.pytest_cache
 .ruff_cache
 **/.ruff_cache
-backend/data/
+backend/data/   
 backend/deprecated/
 backend/tools/
 knowledge/

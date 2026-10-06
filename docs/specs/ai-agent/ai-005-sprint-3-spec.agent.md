@@ -1,5 +1,7 @@
 # AI-Agent Specification — AI-005 Quote HITL Agent
 
+> **Đã loại khỏi phạm vi (02/10/2026).** Chức năng báo giá có chủ xưởng duyệt (F5b, us-049, AI-005) đã bị bỏ khỏi sản phẩm: code backend/frontend đã gỡ, bảng `quote`, `quote_item` được xoá bởi migration `backend/alembic/versions/a3c7e9f1b2d4_drop_quote_support_ticket_discord.py`. Tài liệu giữ lại để tham khảo lịch sử, **không dùng để triển khai**.
+
 > Đặc tả hành vi của **Quote HITL Agent** — lập báo giá nháp từ dự toán và đưa vào quy trình **chủ xưởng duyệt** (Human-in-the-Loop).
 >
 > **Nguồn:** [00-ai-agents-proposal.md](00-ai-agents-proposal.md) (AI-005), [PRD v3.5 §F5b, §7](../../product/PRD_EV_Care_MVP.md), [quote.entity.md](../entity/maintenance/quote.entity.md). Khi tài liệu này khác PRD/FF/Entity thì các tài liệu đó là chuẩn.

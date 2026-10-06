@@ -1,5 +1,9 @@
 # Frontend Technical Specification — Nhắc mốc bảo dưỡng & cấu hình thông báo
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > Đặc tả frontend cho Feature `FEAT-NOTI-001` (PRD F7 phần nhắc mốc + NOTI-01, US-021 → US-024).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-021-sprint-2-spec.ff.md) · **API:** [API Spec](../api/us-021-sprint-2-spec.api.md) · **Entity:** [Entity Spec](../entity/us-021-sprint-2-spec.entity.md)

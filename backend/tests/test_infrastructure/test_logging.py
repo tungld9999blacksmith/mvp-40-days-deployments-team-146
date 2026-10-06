@@ -86,7 +86,7 @@ def test_redactor_by_key_and_nested():
         {
             "event": "signup",
             "password": "p",
-            "discord_bot_token": "t",
+            "telegram_bot_token": "t",
             "api-key": "k",
             "Authorization": "Bearer xyz",
             "user": payload,
@@ -97,7 +97,7 @@ def test_redactor_by_key_and_nested():
         },
     )
     assert out["password"] == REDACTED
-    assert out["discord_bot_token"] == REDACTED
+    assert out["telegram_bot_token"] == REDACTED
     assert out["api-key"] == REDACTED
     assert out["Authorization"] == REDACTED
     assert out["user"] == {
@@ -136,6 +136,7 @@ def test_stdout_json_is_redacted():
     exc = lines[2]["exception"][0]
     assert exc["exc_type"] == "ValueError"
     assert "sk-proj" not in json.dumps(exc)
+    assert all(not frame.get("locals") for frame in exc["frames"])
 
 
 def test_default_file_export_is_log_only(tmp_path):

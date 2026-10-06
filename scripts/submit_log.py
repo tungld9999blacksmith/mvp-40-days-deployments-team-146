@@ -23,7 +23,9 @@ try:
     from dotenv import load_dotenv
     load_dotenv()
 except ImportError:
-    pass
+    if Path(".env").exists():
+        print("[ai-log] Cannot read .env: install python-dotenv in the hook's Python environment.", file=sys.stderr)
+        sys.exit(1)
 
 SERVER_URL = os.environ.get("AI_LOG_SERVER", "")
 API_KEY = os.environ.get("AI_LOG_API_KEY", "")
@@ -70,7 +72,7 @@ def _restore_pending(pending: Path) -> None:
 def main():
     if not SERVER_URL:
         print("[ai-log] AI_LOG_SERVER not set — skipping submission.", file=sys.stderr)
-        sys.exit(0)
+        sys.exit(1)
 
     if not LOG_FILE.exists() or LOG_FILE.stat().st_size == 0:
         print("[ai-log] No logs to submit.", file=sys.stderr)
@@ -125,7 +127,7 @@ def main():
         # Failure: restore the whole pending (including leftover) for next push.
         _restore_pending(pending)
         print(f"[ai-log] Submit failed: {e} — logs kept locally.", file=sys.stderr)
-        sys.exit(0)  # Don't block push on server error
+        sys.exit(1)  # The pre-push wrapper reports this without blocking push.
 
     # Success: archive the submitted batch, then handle any leftover.
     _archive(pending)

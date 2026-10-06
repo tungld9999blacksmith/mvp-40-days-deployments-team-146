@@ -1,5 +1,9 @@
 # Entity Specification — Booking Ticket, QR check-in, huỷ & đổi lịch
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Entity cho Feature `FEAT-BOOK-002` — PRD F6b (US-053 → US-056).
 >
 > **Nguyên tắc:** tái dùng `booking` (ENT-402); thêm **1 bảng** lịch sử đổi lịch (`booking_reschedule`, ENT-428) và **2 cột** trên `booking`. `booking_code` **giữ nguyên `NOT NULL`**: code hiện sinh mã ngay khi tạo booking và chỉ trả mã khi `confirmed` — cách này thoả ý us-029 BR-014 mà không cần đổi schema.

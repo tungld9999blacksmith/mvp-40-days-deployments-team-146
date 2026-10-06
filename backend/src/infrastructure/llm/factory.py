@@ -12,6 +12,18 @@ def create_llm_provider(settings: Settings, provider: str | None = None) -> LLMP
     if name == "openai" and not settings.openai_api_key and settings.gemini_api_key:
         name = "gemini"
 
+    if name == "openrouter":
+        from .openai_compatible_provider import OpenAICompatibleProvider
+
+        if not settings.openrouter_api_key.strip():
+            raise ValueError("OPENROUTER_API_KEY is required when LLM_PROVIDER=openrouter")
+        return OpenAICompatibleProvider(
+            api_key=settings.openrouter_api_key,
+            model=settings.openrouter_model,
+            provider_name="openrouter",
+            base_url=settings.openrouter_base_url,
+            default_max_tokens=settings.openrouter_max_tokens,
+        )
     if name == "openai":
         from .openai_compatible_provider import OpenAICompatibleProvider
 

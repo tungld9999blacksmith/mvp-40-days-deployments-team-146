@@ -20,7 +20,6 @@ from sqlmodel import Session, select
 
 from src.common.core.maintenance.booking import Booking, BookingStatus
 from src.common.core.maintenance.booking_status_event import BookingActorType, BookingStatusEvent
-from src.common.core.maintenance.quote import Quote
 
 from .reminders import BookingReminderScheduler, reminder_config
 
@@ -113,8 +112,6 @@ class BookingStateMachine:
             raise TransitionConflict(booking.status)
         self._db.refresh(booking)
 
-        if to == S.CANCELLED:
-            self.detach_quotes(booking.id)
         event = self._event(booking.id, frm, to, actor, source, reason_code, note)
         # us-033 HOOK-BR-001 — same transaction; failures never break the change.
         if to == S.CONFIRMED:
@@ -122,12 +119,6 @@ class BookingStateMachine:
         elif to == S.CANCELLED:
             self._reminders.on_cancelled(booking.id)
         return event
-
-    def detach_quotes(self, booking_id: UUID) -> None:
-        """us-049 HOOK-QT-02 — a cancelled booking releases its approved quote."""
-        for quote in self._db.exec(select(Quote).where(Quote.booking_id == booking_id)).all():
-            quote.booking_id = None
-            self._db.add(quote)
 
     def history(self, booking_id: UUID) -> list[BookingStatusEvent]:
         return list(

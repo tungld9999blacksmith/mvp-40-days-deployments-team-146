@@ -11,7 +11,6 @@ Run from the repository root:
 The default uses golden_set.jsonl for retrieval evaluation. Add --full-rag to
 also generate and score answers; that mode calls the configured LLM API.
 """
-
 from __future__ import annotations
 
 import argparse
@@ -84,9 +83,7 @@ def main() -> int:
     parser.add_argument("--concurrency", type=int, default=4, help="Concurrent production queries")
     parser.add_argument("--sample-per-category", type=int, help="Take N rows from each category")
     parser.add_argument("--heuristic-rewriter", action="store_true", help="Use the production rewriter fallback path")
-    parser.add_argument(
-        "--answer-delay-seconds", type=float, default=0.0, help="Delay before each real LLM answer call"
-    )
+    parser.add_argument("--answer-delay-seconds", type=float, default=0.0, help="Delay before each real LLM answer call")
     parser.add_argument("--output-stem", default="evaluation", help="Output filename prefix")
     parser.add_argument(
         "--evaluate-answers",
@@ -157,7 +154,9 @@ def main() -> int:
         async with semaphore:
             started = time.perf_counter()
             try:
-                vehicle_context = UserVehicleContext(model=row["model"]) if row.get("model") else None
+                vehicle_context = (
+                    UserVehicleContext(model=row["model"]) if row.get("model") else None
+                )
                 analysis = (
                     rewriter._heuristic_fallback(row["query"], vehicle_context)
                     if args.heuristic_rewriter
@@ -166,19 +165,26 @@ def main() -> int:
 
                 def retrieve_and_rank():
                     candidates = retriever.retrieve(analysis=analysis, top_candidates=25)
-                    ranked_items = reranker.rerank(row["query"], candidates, top_k=max(args.top_k * 3, args.top_k))
-                    ranked_items = retriever.select_context(ranked_items, analysis=analysis, top_k=args.top_k)
+                    ranked_items = reranker.rerank(
+                        row["query"], candidates, top_k=max(args.top_k * 3, args.top_k)
+                    )
+                    ranked_items = retriever.select_context(
+                        ranked_items, analysis=analysis, top_k=args.top_k
+                    )
                     return retriever.expand_neighbors(ranked_items)
 
                 ranked = await asyncio.to_thread(retrieve_and_rank)
                 result.retrieved_texts = [candidate.content for candidate in ranked]
                 result.retrieved_doc_ids = [candidate.doc_id for candidate in ranked]
                 result.scores = [
-                    round(candidate.dense_score or candidate.rerank_score or 0.0, 4) for candidate in ranked
+                    round(candidate.dense_score or candidate.rerank_score or 0.0, 4)
+                    for candidate in ranked
                 ]
                 result.top_score = max(
                     (
-                        candidate.dense_score if candidate.dense_score is not None else candidate.rerank_score or 0.0
+                        candidate.dense_score
+                        if candidate.dense_score is not None
+                        else candidate.rerank_score or 0.0
                         for candidate in ranked
                     ),
                     default=0.0,
@@ -189,9 +195,9 @@ def main() -> int:
                         if args.answer_delay_seconds > 0:
                             await asyncio.sleep(args.answer_delay_seconds)
                     response = await generator.generate(
-                        query_analysis=analysis,
-                        context_text=context_text,
-                        citations=citations,
+                            query_analysis=analysis,
+                            context_text=context_text,
+                            citations=citations,
                     )
                     result.generation_metadata = response.metadata
                     # Offline fallback không phải generated-answer evaluation.
@@ -207,7 +213,10 @@ def main() -> int:
 
     async def evaluate_all() -> list[QueryResult]:
         semaphore = asyncio.Semaphore(max(args.concurrency, 1))
-        completed = await asyncio.gather(*(evaluate_row(index, row, semaphore) for index, row in enumerate(golden, 1)))
+        completed = await asyncio.gather(*(
+            evaluate_row(index, row, semaphore)
+            for index, row in enumerate(golden, 1)
+        ))
         return [result for _, result in sorted(completed, key=lambda item: item[0])]
 
     results = asyncio.run(evaluate_all())
@@ -235,7 +244,8 @@ def main() -> int:
                 "keywords_missing": [
                     keyword
                     for keyword in result.expected_keywords
-                    if keyword.casefold() not in " ".join(result.retrieved_texts).casefold()
+                    if keyword.casefold()
+                    not in " ".join(result.retrieved_texts).casefold()
                 ],
                 "error": result.error,
                 "actual_answer": result.actual_answer,
@@ -247,12 +257,10 @@ def main() -> int:
 
     def normalized(value: str) -> str:
         import re
-
         return re.sub(r"[^\w]+", "", value.casefold())
 
     def token_set(value: str) -> set[str]:
         import re
-
         return {token for token in re.findall(r"\b[\w]+\b", value.casefold()) if len(token) >= 2}
 
     answer_rows = [result for result in results if result.actual_answer.strip()]
@@ -267,15 +275,17 @@ def main() -> int:
         recall = len(actual_tokens & expected_tokens) / len(expected_tokens) if expected_tokens else 1.0
         token_f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
         keyword_hits = sum(
-            normalized(keyword) in normalized(result.actual_answer) for keyword in result.expected_keywords
+            normalized(keyword) in normalized(result.actual_answer)
+            for keyword in result.expected_keywords
         )
         completeness = keyword_hits / len(result.expected_keywords) if result.expected_keywords else 1.0
         answer_correctness.append((token_f1 + completeness) / 2)
         answer_completeness.append(completeness)
         import re
-
         sentences = [
-            s.strip().casefold() for s in re.split(r"(?:[.!?]\s+|\n+)", result.actual_answer) if len(s.strip()) >= 15
+            s.strip().casefold()
+            for s in re.split(r"(?:[.!?]\s+|\n+)", result.actual_answer)
+            if len(s.strip()) >= 15
         ]
         answer_coherence.append(1.0 if sentences and len(sentences) == len(set(sentences)) else 0.0)
         support_scores = []
@@ -286,7 +296,8 @@ def main() -> int:
                 if doc_id.casefold() == cited_doc.casefold()
             )
             keyword_supported = any(
-                normalized(keyword) in normalized(cited_text) for keyword in result.expected_keywords
+                normalized(keyword) in normalized(cited_text)
+                for keyword in result.expected_keywords
             )
             overlap = token_set(result.actual_answer) & token_set(cited_text)
             support_scores.append(1.0 if keyword_supported or len(overlap) >= 3 else 0.0)
@@ -299,9 +310,7 @@ def main() -> int:
         "completeness": round(sum(answer_completeness) / len(answer_completeness), 4) if answer_completeness else None,
         "relevancy": round(metrics.answer_relevancy, 4) if metrics.answer_relevancy is not None else None,
         "coherence": round(sum(answer_coherence) / len(answer_coherence), 4) if answer_coherence else None,
-        "citation_correctness": round(metrics.citation_correctness, 4)
-        if metrics.citation_correctness is not None
-        else None,
+        "citation_correctness": round(metrics.citation_correctness, 4) if metrics.citation_correctness is not None else None,
         "citation_support": round(sum(citation_support) / len(citation_support), 4) if citation_support else None,
     }
 
@@ -312,19 +321,27 @@ def main() -> int:
         "pipeline": {
             "dense_enabled": not args.sparse_only,
             "query_embeddings": (
-                "disabled" if args.sparse_only else f"{store.embedding_provider.__class__.__name__}/Qdrant dense"
+                "disabled"
+                if args.sparse_only
+                else f"{store.embedding_provider.__class__.__name__}/Qdrant dense"
             ),
             "embedding_model": getattr(store.embedding_provider, "model", None),
             "dense_disabled_after_quota": retriever._dense_disabled,
             "rewriter": rewriter.__class__.__name__,
             "rewriter_mode": "heuristic_fallback" if args.heuristic_rewriter else "llm_with_fallback",
-            "rewrite_model": (None if args.heuristic_rewriter else getattr(rewriter.llm_provider, "_model", None)),
+            "rewrite_model": (
+                None
+                if args.heuristic_rewriter
+                else getattr(rewriter.llm_provider, "_model", None)
+            ),
             "reranker": initial_reranker_name,
             "rerank_model": getattr(reranker._reranker, "model", None),
             "reranker_final": reranker._reranker.__class__.__name__,
             "reranker_fallback_count": getattr(reranker, "fallback_count", 0),
             "generator": generator.__class__.__name__ if generator else None,
-            "generation_model": (getattr(generator.llm_provider, "_model", None) if generator else None),
+            "generation_model": (
+                getattr(generator.llm_provider, "_model", None) if generator else None
+            ),
             "top_k": args.top_k,
         },
         "retrieval_metrics": {

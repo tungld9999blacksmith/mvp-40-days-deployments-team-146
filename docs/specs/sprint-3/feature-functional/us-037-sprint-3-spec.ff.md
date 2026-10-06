@@ -1,5 +1,10 @@
 # Functional Specification — Workshop Board (Bảng điều phối lịch hẹn của xưởng)
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+> - Phiếu hỗ trợ (`support_ticket`): **đã bỏ**. Phản hồi hỏi thăm có vấn đề chỉ được phân loại và ghi trên `follow_up` (`has_issue`); app hiện lời khuyên an toàn và hotline xưởng, không tạo phiếu, không có màn phiếu cho chủ xe hay xưởng.
+
 > Tài liệu đặc tả chức năng/nghiệp vụ cho Feature **F8 — Workshop Board** trong [PRD EV Care MVP](../../../product/PRD_EV_Care_MVP.md#f8--workshop-board).
 >
 > **Phạm vi:** chủ xưởng xem lịch hẹn của xưởng mình, **chấp nhận / từ chối** yêu cầu giữ chỗ (xưởng chế độ thủ công), **chuyển trạng thái** lịch hẹn theo state machine (check-in bằng QR hoặc bấm tay → bắt đầu → hoàn tất, hoặc huỷ), **khoá bớt chỗ** trong khung giờ, và **đổi chế độ xác nhận** đặt lịch của xưởng.

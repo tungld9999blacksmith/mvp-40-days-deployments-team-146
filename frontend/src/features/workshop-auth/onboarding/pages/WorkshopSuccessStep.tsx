@@ -45,10 +45,10 @@ export default function WorkshopSuccessStep() {
         <p className="text-sm text-muted mt-1">Xưởng của bạn đã sẵn sàng nhận lịch hẹn.</p>
       </div>
 
-      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6">
+      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 elevation-sm">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted">Xưởng do hãng xác nhận</p>
+            <p className="text-[13px] font-semibold text-muted">Xưởng do hãng xác nhận</p>
             <h2 className="text-lg font-semibold text-foreground mt-2">{workshop.name}</h2>
             <p className="text-sm text-muted mt-0.5 font-mono">{workshop.centerId}</p>
           </div>
@@ -61,8 +61,8 @@ export default function WorkshopSuccessStep() {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <section className="bg-card border border-border rounded-2xl p-5 sm:p-6">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-2">Vận hành</p>
+        <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 elevation-sm">
+          <p className="text-[13px] font-semibold text-muted mb-2">Vận hành</p>
           <InfoRow label="Địa chỉ" value={workshop.address} />
           <InfoRow label="Hotline" value={workshop.hotline ?? '—'} mono />
           <InfoRow label="Kỹ thuật viên mỗi ca" value={workshop.totalTechnicians} mono />
@@ -74,8 +74,8 @@ export default function WorkshopSuccessStep() {
             </p>
           )}
         </section>
-        <section className="bg-card border border-border rounded-2xl p-5 sm:p-6">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-2">Giờ hoạt động</p>
+        <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 elevation-sm">
+          <p className="text-[13px] font-semibold text-muted mb-2">Giờ hoạt động</p>
           <ul>
             {hours.map((hour, index) => (
               <li key={hour.dayOfWeek} className="flex justify-between py-2 border-b border-border last:border-b-0 text-sm">

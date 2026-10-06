@@ -12,6 +12,7 @@ ignore = ["E501", "N818"]
 # camelCase fields mirror the public wire format (REST / WebSocket / events)
 "src/modules/conversation/schemas.py" = ["N815"]
 "src/infrastructure/messaging/events.py" = ["N815"]
+"src/modules/quick_booking/schemas.py" = ["N815"]
 
 [format]
 quote-style = "double"

@@ -1,5 +1,12 @@
 # AI-Agent Specification — AI-004 Booking Agent
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
+> **Cập nhật xác nhận đặt lịch (03/10/2026, [us-061](../sprint-4/feature-functional/us-061-sprint-4-spec.ff.md)):** chỉ nút **"Xác nhận đặt lịch"** trên thẻ đề xuất tạo booking (`API-QB-02`, backend kiểm chứng đề xuất / chủ xe / hội thoại / xe). Thay cho §7.2 và TOOL-403: câu gõ "xác nhận", "đồng ý đặt" **không** còn là `INT-403`; agent không có tool tạo / huỷ / đổi booking. Tool ghi duy nhất là `propose_booking` (chỉ tạo đề xuất, thẻ `BOOKING_PROPOSAL` thay cho `booking_summary`). Trạng thái HITL §16.3 ánh xạ sang `booking_proposal.status` (us-061 FF §12).
+
 > Đặc tả hành vi của **Booking Agent** — dẫn dắt chủ xe đặt / huỷ / đổi lịch qua chat theo sức chứa xưởng, **chỉ tạo side effect khi có xác nhận rõ**.
 >
 > **Nguồn:** [00-ai-agents-proposal.md](00-ai-agents-proposal.md) (AI-004), [PRD v3.5 §F6, §F6b, §7](../../product/PRD_EV_Care_MVP.md). Khi tài liệu này khác PRD/FF thì PRD/FF là chuẩn.

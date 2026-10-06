@@ -1,9 +1,8 @@
 """
 Provider adapter for any OpenAI Chat Completions-compatible API.
 
-Backs OpenAI itself, and — via `base_url` — Grok (xAI) and DeepSeek, which
-both expose an OpenAI-compatible `/chat/completions` endpoint. This avoids
-three near-identical adapter classes.
+Backs OpenAI itself, and — via `base_url` — Grok (xAI), DeepSeek and OpenRouter,
+which expose an OpenAI-compatible `/chat/completions` endpoint.
 
 Note: the Chat Completions API has no `top_k` parameter. `GenerationConfig.
 top_k` is ignored here; pass it via `config.extra` only if a specific
@@ -38,10 +37,12 @@ class OpenAICompatibleProvider(LLMProvider):
         *,
         provider_name: str = "openai",
         base_url: str | None = None,
+        default_max_tokens: int | None = None,
     ) -> None:
         self._client = openai.AsyncOpenAI(api_key=api_key, base_url=base_url)
         self._model = model
         self._provider_name = provider_name
+        self._default_max_tokens = default_max_tokens
 
     @property
     def provider_name(self) -> str:
@@ -129,6 +130,8 @@ class OpenAICompatibleProvider(LLMProvider):
             kwargs["top_p"] = config.top_p
         if config.max_tokens is not None:
             kwargs["max_tokens"] = config.max_tokens
+        elif self._default_max_tokens is not None:
+            kwargs["max_tokens"] = self._default_max_tokens
         if config.stop_sequences:
             kwargs["stop"] = config.stop_sequences
         kwargs.update(config.extra)

@@ -1,8 +1,7 @@
-"""Celery tasks for post-service care and quotes.
+"""Celery tasks for post-service care.
 
 - ``follow_up.send_due`` — open and send due follow-ups, retry deliveries (us-041 JOB-FU-001).
 - ``follow_up.close_expired`` — close follow-ups unanswered for 72h (us-041 JOB-FU-002).
-- ``quote.purge_stale_drafts`` — delete drafts older than the TTL (us-049 JOB-QT-01).
 
 Each task opens its own DB session in the worker process.
 """
@@ -54,18 +53,5 @@ def close_expired_follow_ups_task() -> int:
     session = next(get_session())
     try:
         return close_expired(session, response_window_hours=get_settings().follow_up_response_window_hours)
-    finally:
-        session.close()
-
-
-@celery.task(name="quote.purge_stale_drafts")
-def purge_stale_quote_drafts_task() -> int:
-    from src.config import get_settings
-    from src.infrastructure.supabase.db import get_session
-    from src.modules.quote.jobs import purge_stale_drafts
-
-    session = next(get_session())
-    try:
-        return purge_stale_drafts(session, ttl_days=get_settings().quote_draft_ttl_days)
     finally:
         session.close()

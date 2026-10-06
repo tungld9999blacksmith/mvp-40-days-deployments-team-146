@@ -1,24 +1,37 @@
 @echo off
 REM Cross-platform Python launcher for AI log hooks (Windows cmd.exe).
-REM Tries py -3 -> python -> python3 in order, runs the given script with all args.
-REM Exits 0 silently if no Python is found - hooks must never block the AI tool.
+REM Prefer the repository venv; execute probes to skip Windows Store aliases.
+setlocal
+cd /d "%~dp0.." || exit /b 1
 
-where py >nul 2>nul
+if not exist ".venv\Scripts\python.exe" goto try_py
+".venv\Scripts\python.exe" -c "import sys" >nul 2>nul
+if %ERRORLEVEL%==0 (
+  ".venv\Scripts\python.exe" %*
+  goto finished
+)
+
+:try_py
+py -3 -c "import sys" >nul 2>nul
 if %ERRORLEVEL%==0 (
   py -3 %*
-  exit /b %ERRORLEVEL%
+  goto finished
 )
 
-where python >nul 2>nul
+python -c "import sys" >nul 2>nul
 if %ERRORLEVEL%==0 (
   python %*
-  exit /b %ERRORLEVEL%
+  goto finished
 )
 
-where python3 >nul 2>nul
+python3 -c "import sys" >nul 2>nul
 if %ERRORLEVEL%==0 (
   python3 %*
-  exit /b %ERRORLEVEL%
+  goto finished
 )
 
-exit /b 0
+echo [ai-log] No working Python found. Create the repository .venv or install Python. 1>&2
+exit /b 1
+
+:finished
+exit /b %ERRORLEVEL%

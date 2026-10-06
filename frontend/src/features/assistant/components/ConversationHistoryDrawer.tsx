@@ -238,7 +238,7 @@ export default function ConversationHistoryDrawer({
         onClose={() => setToDelete(null)}
         role="alertdialog"
         title="Xoá cuộc trò chuyện này?"
-        description="Toàn bộ tin nhắn sẽ bị xoá vĩnh viễn và không thể khôi phục. Lịch hẹn hoặc báo giá đã tạo từ cuộc trò chuyện vẫn được giữ."
+        description="Toàn bộ tin nhắn sẽ bị xoá vĩnh viễn và không thể khôi phục. Lịch hẹn đã tạo từ cuộc trò chuyện vẫn được giữ."
         initialFocusRef={cancelRef}
         dismissable={!deleting}
         footer={

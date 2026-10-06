@@ -1,8 +1,8 @@
+const STANDALONE_DEMO_MODE = false
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Zap } from 'lucide-react'
 import { Notice } from '@/shared/ui/States'
-import { isFirebaseConfigured } from '@/shared/config/env'
+import { isAuthConfigured } from '@/shared/config/env'
 import { useOnlineStatus } from '@/shared/hooks/useOnlineStatus'
 import AuthBrandPanel from '@/features/auth/components/AuthBrandPanel'
 import GoogleSignInButton from '@/features/auth/components/GoogleSignInButton'
@@ -12,6 +12,7 @@ import { blockingLoginContent, inlineLoginMessage, SESSION_NOTICE_TEXT } from '@
 import { getPortal } from '@/features/auth/portal'
 import { useWorkshopAuth } from '../context/WorkshopAuthContext'
 import { resolveWorkshopRoute } from '../navigation'
+import Logo from '@/shared/ui/Logo'
 
 const WORKSHOP_BLOCKING = {
   ACCOUNT_SUSPENDED: {
@@ -53,21 +54,18 @@ export default function WorkshopLogin() {
         badge="Workshop Portal"
         headline="Quản lý xưởng dịch vụ"
         highlight="gọn gàng hơn"
-        subtitle="Nhận lịch hẹn từ chủ xe, duyệt báo giá và theo dõi công suất xưởng trên một cổng duy nhất."
-        chips={['Lịch hẹn', 'Báo giá', 'Công suất xưởng', 'Chính hãng']}
+        subtitle="Nhận lịch hẹn từ chủ xe, theo dõi tiến độ dịch vụ và công suất xưởng trên một cổng duy nhất."
+        chips={['Lịch hẹn', 'Tiến độ dịch vụ', 'Công suất xưởng', 'Chính hãng']}
       />
 
-      <main className="flex-1 flex flex-col justify-center items-center px-4 sm:px-8 py-12">
+      <main className="flex-1 flex flex-col justify-center items-center px-4 sm:px-8 py-12 bg-app-backdrop">
         <div className="lg:hidden flex items-center gap-2.5 mb-10">
-          <div className="w-9 h-9 rounded-xl bg-emerald flex items-center justify-center">
-            <Zap className="w-4 h-4 text-background" strokeWidth={2.5} />
-          </div>
-          <span className="text-foreground font-bold text-xl">EV Care</span>
+          <Logo className="h-9 text-foreground" />
           <span className="text-xs font-semibold text-emerald">Workshop</span>
         </div>
 
-        <div className="w-full max-w-sm">
-          <h2 className="text-2xl font-bold text-foreground">Đăng nhập cổng xưởng dịch vụ</h2>
+        <div className="w-full max-w-sm animate-pop-in sm:max-w-md sm:bg-card/70 sm:backdrop-blur-xl sm:border sm:border-border sm:rounded-3xl sm:p-8 sm:elevation-md">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Đăng nhập cổng xưởng dịch vụ</h2>
           <p className="text-muted text-sm mt-1 mb-8">
             Dùng đúng Gmail đã đăng ký với hãng làm người quản lý xưởng.
           </p>
@@ -77,7 +75,12 @@ export default function WorkshopLogin() {
               {notice.text}
             </Notice>
           )}
-          {!isFirebaseConfigured && (
+          {STANDALONE_DEMO_MODE && (
+            <Notice tone="info" className="mb-5" title="Chế độ demo">
+              Không cần tài khoản Google thật: bấm nút bên dưới để vào bằng tài khoản minh hoạ. Mọi dữ liệu là dữ liệu giả, lưu trong trình duyệt này.
+            </Notice>
+          )}
+          {!isAuthConfigured && (
             <Notice tone="error" role="alert" className="mb-5" title="Chưa cấu hình đăng nhập">
               Thiếu biến môi trường VITE_FIREBASE_* cho ứng dụng. Xem .env.example ở gốc repo.
             </Notice>
@@ -92,7 +95,7 @@ export default function WorkshopLogin() {
             />
           ) : (
             <div className="space-y-4">
-              <GoogleSignInButton onClick={() => void signIn()} loading={isSigningIn} disabled={!isFirebaseConfigured || !online} />
+              <GoogleSignInButton onClick={() => void signIn()} loading={isSigningIn} disabled={!isAuthConfigured || !online} />
               {!online && <p className="text-xs text-warning text-center">Không có kết nối mạng.</p>}
               {inline && (
                 <div role="alert" className="text-center">

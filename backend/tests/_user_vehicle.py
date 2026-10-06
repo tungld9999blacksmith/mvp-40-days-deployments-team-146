@@ -20,7 +20,6 @@ from sqlmodel import Session, create_engine
 import src.common.core  # noqa: F401
 from src.common.core.conversation.conversation import Conversation
 from src.common.core.conversation.message import ChatMessage
-from src.common.core.identity.user_discord_link import DiscordLinkStatus, UserDiscordLink
 from src.common.core.identity.vehicle_user import OnboardingStatus, UserStatus, VehicleUser
 from src.common.core.identity.workshop_owner import WorkshopOwner
 from src.common.core.maintenance.booking import Booking
@@ -76,7 +75,6 @@ TABLES = [
     ReminderDelivery.__table__,
     UserNotificationSetting.__table__,
     UserNotificationChannel.__table__,
-    UserDiscordLink.__table__,
     ServicePrice.__table__,
     UserLocation.__table__,
 ]
@@ -242,24 +240,6 @@ def mark_synced(session: Session, vehicle: UserVehicle, at: datetime = NOW) -> N
     session.commit()
 
 
-def add_discord_link(
-    session: Session,
-    user: VehicleUser,
-    *,
-    status: DiscordLinkStatus = DiscordLinkStatus.ACTIVE,
-) -> UserDiscordLink:
-    link = UserDiscordLink(
-        user_id=user.user_id,
-        discord_user_id="1122334455667788990",
-        discord_channel_id="1200000000000000001",
-        status=status,
-        linked_at=NOW,
-    )
-    session.add(link)
-    session.commit()
-    return link
-
-
 # ── Stubs ───────────────────────────────────────────────────────────────────
 class StubDataGateway(OemVehicleDataGateway):
     def __init__(
@@ -303,27 +283,37 @@ class MemoryLock(SyncLock):
 class RecordingScheduler(SyncScheduler):
     def __init__(self) -> None:
         self.calls: list[tuple[UUID, OemSyncTrigger, int]] = []
+        self.threads: list[int] = []
 
     def schedule(self, user_vehicle_id: UUID, trigger: OemSyncTrigger, *, delay_seconds: int = 0) -> None:
+        import threading
+
         self.calls.append((user_vehicle_id, trigger, delay_seconds))
+        self.threads.append(threading.get_ident())
 
 
 class MemoryEventStore(WebhookEventStore):
     def __init__(self) -> None:
         self.events: set[str] = set()
         self.debounced: set[UUID] = set()
+        self._locks = {}
 
-    async def claim_event(self, event_id: str) -> bool:
-        if event_id in self.events:
-            return False
+    def processing(self, key: str):
+        import asyncio
+
+        return self._locks.setdefault(key, asyncio.Lock())
+
+    async def event_processed(self, event_id: str) -> bool:
+        return event_id in self.events
+
+    async def mark_event_processed(self, event_id: str) -> None:
         self.events.add(event_id)
-        return True
 
-    async def claim_debounce(self, user_vehicle_id: UUID) -> bool:
-        if user_vehicle_id in self.debounced:
-            return False
+    async def is_debounced(self, user_vehicle_id: UUID) -> bool:
+        return user_vehicle_id in self.debounced
+
+    async def mark_debounced(self, user_vehicle_id: UUID) -> None:
         self.debounced.add(user_vehicle_id)
-        return True
 
 
 __all__ = [

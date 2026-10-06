@@ -6,8 +6,9 @@ import { formatDistance, remainingLabel, slotLabel } from '../utils'
 function hoursToday(workshop: NearbyWorkshop): string | null {
   const hours = workshop.operatingHoursToday
   if (!hours) return null
-  if (hours.isClosed || !hours.openTime || !hours.closeTime) return 'Nghỉ ngày này'
-  return `${slotLabel(hours.openTime)}–${slotLabel(hours.closeTime)}`
+  // Say "today": with no day picked, "Nghỉ ngày này" read as closed on every day.
+  if (hours.isClosed || !hours.openTime || !hours.closeTime) return 'Hôm nay nghỉ'
+  return `Hôm nay ${slotLabel(hours.openTime)}–${slotLabel(hours.closeTime)}`
 }
 
 /** FE §4.2 — one ranked workshop. */
@@ -30,7 +31,7 @@ export default function WorkshopCard({
     <button
       type="button"
       onClick={() => onSelect(workshop)}
-      className="w-full text-left bg-card border border-border rounded-2xl p-4 hover:bg-card-hover hover:border-emerald/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald/40"
+      className="w-full text-left bg-card border border-border rounded-2xl p-4 hover:bg-card-hover hover:border-emerald/40 hover:-translate-y-0.5 hover:elevation-md transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald/40 elevation-sm"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

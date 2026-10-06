@@ -8,7 +8,9 @@ BR-014) and the location-based ranking (BR-002..004, delegated to a
 
 from __future__ import annotations
 
+import asyncio
 import contextlib
+import hashlib
 import json
 import logging
 import secrets
@@ -18,11 +20,13 @@ from uuid import UUID
 from sqlalchemy import func, update
 from sqlalchemy.exc import DBAPIError
 from sqlmodel import Session, select
+from starlette.concurrency import run_in_threadpool
 
+from src.common.concurrency import wait_through_cancellation
 from src.common.core.identity.vehicle_user import VehicleUser
 from src.common.core.maintenance.booking import Booking, BookingStatus
+from src.common.core.maintenance.booking_request import BookingRequest
 from src.common.core.maintenance.booking_status_event import BookingActorType, BookingReschedule
-from src.common.core.maintenance.quote import Quote, QuoteStatus
 from src.common.core.vehicle import UserVehicle, VehicleLinkStatus, VehicleVerificationStatus
 from src.common.core.workshop import (
     BookingConfirmationMode,
@@ -83,6 +87,22 @@ class BookingService:
         self._keys = toolkit.keys
         self._finder = finder
         self._config = config
+
+    async def _write_in_threadpool(self, callback, *args, **kwargs):
+        """Keep transaction locks until a blocking write has actually finished.
+
+        Cancelling an await cannot stop a database operation in a worker thread.
+        Finish that operation before unwinding its locks/session; a committed
+        request can then be recovered through its durable retry receipt.
+        """
+        write = asyncio.create_task(run_in_threadpool(callback, *args, **kwargs))
+        if not await wait_through_cancellation(write):
+            return write.result()
+        if (exc := write.exception()) is not None:
+            rollback = asyncio.create_task(run_in_threadpool(self._session.rollback))
+            await wait_through_cancellation(rollback)
+            logger.warning("Booking write failed while request was cancelled", exc_info=exc)
+        raise asyncio.CancelledError
 
     # ── Ownership guards ────────────────────────────────────────────────
     def get_owned_active_vehicle(self, user: VehicleUser, user_vehicle_id: UUID) -> UserVehicle:
@@ -159,6 +179,69 @@ class BookingService:
     def _slot_in_hours(self, workshop_id: UUID, d: date, t: time) -> bool:
         return t in self._slots_for_day(workshop_id, d)
 
+    def open_slots(
+        self, workshop: Workshop, start: date, end: date, *, exclude_booking_id: UUID | None = None
+    ) -> dict[date, list[schemas.SlotOut]]:
+        """Slots of every day in ``[start, end]`` with their capacity, in three queries.
+
+        Same rules as ``_slots_for_day`` + ``_capacity`` (BR-005, BR-006), batched for
+        scans over many days (us-061 quick booking). Closed days are left out.
+        """
+        if end < start:
+            return {}
+        hours = {
+            h.day_of_week: h
+            for h in self._session.exec(
+                select(WorkshopOperatingHour).where(WorkshopOperatingHour.workshop_id == workshop.id)
+            ).all()
+        }
+        occupied_query = (
+            select(Booking.booking_date, Booking.time_slot, func.count())
+            .where(
+                Booking.workshop_id == workshop.id,
+                Booking.booking_date >= start,
+                Booking.booking_date <= end,
+                Booking.status.in_(_OCCUPYING),
+            )
+            .group_by(Booking.booking_date, Booking.time_slot)
+        )
+        if exclude_booking_id is not None:
+            occupied_query = occupied_query.where(Booking.id != exclude_booking_id)
+        occupied = {(d, t): int(n) for d, t, n in self._session.exec(occupied_query).all()}
+        blocked = {
+            (d, t): int(n or 0)
+            for d, t, n in self._session.exec(
+                select(
+                    WorkshopSlotBlock.block_date,
+                    WorkshopSlotBlock.time_slot,
+                    func.sum(WorkshopSlotBlock.blocked_count),
+                )
+                .where(
+                    WorkshopSlotBlock.workshop_id == workshop.id,
+                    WorkshopSlotBlock.block_date >= start,
+                    WorkshopSlotBlock.block_date <= end,
+                )
+                .group_by(WorkshopSlotBlock.block_date, WorkshopSlotBlock.time_slot)
+            ).all()
+        }
+        out: dict[date, list[schemas.SlotOut]] = {}
+        for offset in range((end - start).days + 1):
+            d = start + timedelta(days=offset)
+            h = hours.get(d.isoweekday())
+            if h is None or h.is_closed or h.open_time is None or h.close_time is None:
+                continue
+            day = []
+            for t in slot_starts(d, h.open_time, h.close_time, self._config.slot_minutes):
+                remaining, available = available_from(
+                    workshop.total_technicians,
+                    workshop.emergency_slots_reserved,
+                    blocked.get((d, t), 0),
+                    occupied.get((d, t), 0),
+                )
+                day.append(schemas.SlotOut(time_slot=t, available=available, remaining=remaining))
+            out[d] = day
+        return out
+
     # ── API-BK-01 nearby (UC-401, BR-002..004) ──────────────────────────
     async def find_nearby(
         self,
@@ -174,6 +257,41 @@ class BookingService:
         time_slot: time | None,
         limit: int | None,
     ) -> schemas.NearbyData:
+        data, has_vehicle = await run_in_threadpool(
+            self._find_nearby_sync,
+            user,
+            anchor_source=anchor_source,
+            lat=lat,
+            lng=lng,
+            query=query,
+            province=province,
+            user_vehicle_id=user_vehicle_id,
+            d=d,
+            time_slot=time_slot,
+            limit=limit,
+        )
+        if has_vehicle:
+            for workshop in data.workshops:
+                if workshop.availability is not None and workshop.availability.available:
+                    workshop.availability.confirmation_token = await self._issue_token(
+                        user, workshop.workshop_id, d, time_slot
+                    )
+        return data
+
+    def _find_nearby_sync(
+        self,
+        user: VehicleUser,
+        *,
+        anchor_source,
+        lat,
+        lng,
+        query,
+        province,
+        user_vehicle_id,
+        d,
+        time_slot,
+        limit,
+    ) -> tuple[schemas.NearbyData, bool]:
         anchor = self._resolve_anchor(user, anchor_source, lat, lng, query, province)
         vehicle = (
             self.get_owned_active_vehicle(user, user_vehicle_id) if user_vehicle_id else self._default_vehicle(user)
@@ -194,17 +312,14 @@ class BookingService:
             w = r.workshop
             hours = self._operating_hours(w.id, d) if d else None
             availability = None
-            token = None
             if d and time_slot and self._slot_in_hours(w.id, d, time_slot):
                 remaining, available = self._capacity(w, d, time_slot)
-                if available and vehicle is not None:
-                    token = await self._issue_token(user, w.id, d, time_slot)
                 availability = schemas.SlotAvailabilityOut(
                     date=d,
                     time_slot=time_slot,
                     available=available,
                     remaining=remaining,
-                    confirmation_token=token,
+                    confirmation_token=None,  # issued by find_nearby after the DB work
                 )
             out.append(
                 schemas.NearbyWorkshopOut(
@@ -236,7 +351,7 @@ class BookingService:
                 ranked_by=ranked_by.value,
             ),
             workshops=out,
-        )
+        ), vehicle is not None
 
     def _resolve_anchor(
         self,
@@ -289,6 +404,31 @@ class BookingService:
         with_alternatives: bool,
         reschedule_booking_id: UUID | None = None,
     ) -> schemas.AvailabilityData:
+        data, moving = await run_in_threadpool(
+            self._availability_sync,
+            user,
+            workshop_id,
+            d,
+            time_slot,
+            with_alternatives=with_alternatives,
+            reschedule_booking_id=reschedule_booking_id,
+        )
+        if data.requested is not None and data.requested.available:
+            data.requested.confirmation_token = await self._issue_token(
+                user, workshop_id, d, time_slot, rescheduling=moving
+            )
+        return data
+
+    def _availability_sync(
+        self,
+        user: VehicleUser,
+        workshop_id: UUID,
+        d: date,
+        time_slot: time | None,
+        *,
+        with_alternatives: bool,
+        reschedule_booking_id: UUID | None,
+    ) -> tuple[schemas.AvailabilityData, Booking | None]:
         workshop = self._get_active_workshop(workshop_id)
         if d < now_vn().date():
             raise errors.SlotOutOfHoursError("The date is in the past.")
@@ -297,28 +437,23 @@ class BookingService:
         )
         exclude = moving.id if moving else None
 
-        day_slots = self._slots_for_day(workshop_id, d)
-        slots_out: list[schemas.SlotOut] = []
-        for t in day_slots:
-            remaining, available = self._capacity(workshop, d, t, exclude_booking_id=exclude)
-            slots_out.append(schemas.SlotOut(time_slot=t, available=available, remaining=remaining))
+        slots_out = self.open_slots(workshop, d, d, exclude_booking_id=exclude).get(d, [])
+        by_time = {slot.time_slot: slot for slot in slots_out}
 
         requested = None
         alternatives: list[schemas.AlternativeOut] = []
         if time_slot is not None:
-            if time_slot not in day_slots:
+            if time_slot not in by_time:
                 raise errors.SlotOutOfHoursError()
             if moving and (moving.booking_date, moving.time_slot) == (d, time_slot):
                 raise errors.RescheduleSameSlotError()  # EDGE-1202
-            remaining, available = self._capacity(workshop, d, time_slot, exclude_booking_id=exclude)
-            token = None
-            if available:
-                token = await self._issue_token(user, workshop_id, d, time_slot, rescheduling=moving)
+            slot = by_time[time_slot]
+            remaining, available = slot.remaining, slot.available
             requested = schemas.RequestedSlotOut(
                 time_slot=time_slot,
                 available=available,
                 remaining=remaining,
-                confirmation_token=token,
+                confirmation_token=None,
             )
             if not available and with_alternatives:
                 alternatives = self._alternatives(
@@ -331,7 +466,7 @@ class BookingService:
             requested=requested,
             slots=slots_out,
             alternatives=alternatives,
-        )
+        ), moving
 
     def _alternatives(
         self,
@@ -347,27 +482,29 @@ class BookingService:
         A reschedule stays in the same workshop (us-053 AF-1203).
         """
         out: list[schemas.AlternativeOut] = []
+        days = self.open_slots(
+            workshop, d, d + timedelta(days=self._config.search_horizon_days), exclude_booking_id=exclude
+        )
+
+        def alternative(w: Workshop, day: date, slot: schemas.SlotOut) -> schemas.AlternativeOut:
+            return schemas.AlternativeOut(
+                workshop_id=w.id, name=w.name, date=day, time_slot=slot.time_slot, remaining=slot.remaining
+            )
 
         # 1) Same workshop, same day, other slots (nearest to requested first).
-        same_day = [
-            s
-            for s in self._slots_for_day(workshop.id, d)
-            if s != t and self._capacity(workshop, d, s, exclude_booking_id=exclude)[1]
-        ]
-        same_day.sort(key=lambda s: abs(datetime.combine(d, s) - datetime.combine(d, t)))
+        same_day = [s for s in days.get(d, []) if s.time_slot != t and s.available]
+        same_day.sort(key=lambda s: abs(datetime.combine(d, s.time_slot) - datetime.combine(d, t)))
         for s in same_day:
-            out.append(self._alt(workshop, d, s))
+            out.append(alternative(workshop, d, s))
             if len(out) >= 3:
                 return out
 
         # 2) Same workshop, next days, same slot.
         for offset in range(1, self._config.search_horizon_days + 1):
             nd = d + timedelta(days=offset)
-            if (
-                t in self._slots_for_day(workshop.id, nd)
-                and self._capacity(workshop, nd, t, exclude_booking_id=exclude)[1]
-            ):
-                out.append(self._alt(workshop, nd, t))
+            slot = next((s for s in days.get(nd, []) if s.time_slot == t and s.available), None)
+            if slot is not None:
+                out.append(alternative(workshop, nd, slot))
                 if len(out) >= 3:
                     return out
         if same_workshop_only:
@@ -382,15 +519,12 @@ class BookingService:
             )
         ).all()
         for w in others:
-            if t in self._slots_for_day(w.id, d) and self._capacity(w, d, t)[1]:
-                out.append(self._alt(w, d, t))
+            slot = next((s for s in self.open_slots(w, d, d).get(d, []) if s.time_slot == t and s.available), None)
+            if slot is not None:
+                out.append(alternative(w, d, slot))
                 if len(out) >= 3:
                     return out
         return out
-
-    def _alt(self, w: Workshop, d: date, t: time) -> schemas.AlternativeOut:
-        remaining, _ = self._capacity(w, d, t)
-        return schemas.AlternativeOut(workshop_id=w.id, name=w.name, date=d, time_slot=t, remaining=remaining)
 
     # ── Confirmation token (issued at BK-02, single-use at BK-03) ────────
     def _token_key(self, token: str) -> str:
@@ -424,8 +558,10 @@ class BookingService:
         await self._redis.set(self._token_key(token), payload, ex=self._config.token_ttl_seconds)
         return token
 
-    async def _consume_token(self, user: VehicleUser, token: str) -> tuple[UUID, date, time]:
-        raw = await self._redis.getdel(self._token_key(token))
+    async def _read_token(self, user: VehicleUser, token: str) -> tuple[UUID, date, time]:
+        # Consumption happens only after a successful DB commit, under the
+        # request/token locks. Validation never destroys another owner's token.
+        raw = await self._redis.get(self._token_key(token))
         if raw is None:
             raise errors.HoldExpiredError()  # missing or expired
         try:
@@ -447,17 +583,150 @@ class BookingService:
         payload: schemas.HoldRequest,
         *,
         source: str = "APP",
+        idempotency_key: str | None = None,
     ) -> schemas.BookingOut:
         """``source`` is ``APP`` for the UI and ``CHAT`` for the AI-004 tool (ENT-426)."""
-        workshop_id, d, t = await self._consume_token(user, payload.confirmation_token)
-        vehicle = self.get_owned_active_vehicle(user, payload.user_vehicle_id)
+        token_hash = hashlib.sha256(payload.confirmation_token.encode()).hexdigest()
+        request_id = hashlib.sha256(json.dumps([user.user_id, idempotency_key or token_hash]).encode()).hexdigest()
+        fingerprint = hashlib.sha256(
+            json.dumps([payload.model_dump(mode="json"), source], sort_keys=True).encode()
+        ).hexdigest()
+        receipt = BookingRequest(
+            request_id=request_id, user_id=user.user_id, fingerprint=fingerprint, token_hash=token_hash
+        )
+        try:
+            async with self._locks.transaction(
+                f"booking:request:{request_id}",
+                f"booking:token:{token_hash}",
+                ttl=self._config.lock_ttl_seconds,
+                wait_timeout=2.0,
+            ):
+                replay = await run_in_threadpool(self._replay_booking_request, receipt)
+                if replay is not None:
+                    return replay
+                workshop_id, d, t = await self._read_token(user, payload.confirmation_token)
+                result = await self.create_for_slot(
+                    user,
+                    payload.user_vehicle_id,
+                    workshop_id,
+                    d,
+                    t,
+                    source=source,
+                    odo_milestone=_milestone_from_ref(payload.milestone_ref),
+                    receipt=receipt,
+                )
+                # The DB receipt remains authoritative even when Redis cleanup
+                # or the HTTP response fails after commit.
+                try:
+                    await self._redis.delete(self._token_key(payload.confirmation_token))
+                except Exception:  # noqa: BLE001
+                    logger.warning("Booking token cleanup failed after commit", exc_info=True)
+                return result
+        except LockAcquireError as exc:
+            raise errors.ServiceUnavailableError() from exc
+        except Exception:
+            await run_in_threadpool(self._session.rollback)
+            raise
+
+    def _replay_booking_request(self, receipt: BookingRequest) -> schemas.BookingOut | None:
+        existing = self._session.get(BookingRequest, receipt.request_id)
+        if existing is not None:
+            if existing.user_id != receipt.user_id or existing.fingerprint != receipt.fingerprint:
+                raise errors.IdempotencyConflictError()
+            booking = self._session.get(Booking, existing.booking_id)
+            workshop = self._session.get(Workshop, booking.workshop_id)
+            return self._to_out(booking, workshop)
+        used_token = self._session.exec(
+            select(BookingRequest.request_id).where(BookingRequest.token_hash == receipt.token_hash)
+        ).first()
+        if used_token is not None:
+            raise errors.IdempotencyConflictError()
+        return None
+
+    async def create_for_slot(
+        self,
+        user: VehicleUser,
+        user_vehicle_id: UUID,
+        workshop_id: UUID,
+        d: date,
+        t: time,
+        *,
+        source: str,
+        odo_milestone: int | None = None,
+        source_message_id: UUID | None = None,
+        receipt: BookingRequest | None = None,
+    ) -> schemas.BookingOut:
+        """Book a slot the caller already validated (card token, or a chat proposal — us-061 BR-1510).
+
+        Same guards as the app path: owned active vehicle, active workshop, slot in the
+        operating hours, then vehicle lock + slot lock + capacity + BR-013. Without the
+        full-day scan of ``check_availability``. ``source_message_id`` links a chat
+        booking to the message the owner confirmed (AC-F4-06).
+        """
+        vehicle, workshop = await run_in_threadpool(self._validated_slot, user, user_vehicle_id, workshop_id, d, t)
+        return await self._create_for_vehicle(
+            user,
+            vehicle,
+            workshop,
+            d,
+            t,
+            source=source,
+            odo_milestone=odo_milestone,
+            source_message_id=source_message_id,
+            receipt=receipt,
+        )
+
+    def _validated_slot(self, user, user_vehicle_id, workshop_id, d, t):
+        vehicle = self.get_owned_active_vehicle(user, user_vehicle_id)
         workshop = self._get_active_workshop(workshop_id)
         if not self._slot_in_hours(workshop_id, d, t):
             raise errors.SlotOutOfHoursError()
+        return vehicle, workshop
 
-        quote = self._validate_quote(payload.quote_id, vehicle, workshop_id) if payload.quote_id else None
+    async def _create_for_vehicle(
+        self,
+        user: VehicleUser,
+        vehicle: UserVehicle,
+        workshop: Workshop,
+        d: date,
+        t: time,
+        *,
+        source: str,
+        odo_milestone: int | None,
+        source_message_id: UUID | None = None,
+        receipt: BookingRequest | None = None,
+    ) -> schemas.BookingOut:
+        """BR-013 + BR-001: vehicle lock, then slot lock (fixed order, no deadlock).
 
-        # BR-013: one open booking per vehicle.
+        The open-booking count runs inside the vehicle lock, so two requests for
+        different slots of the same vehicle cannot both pass it.
+        """
+        vehicle_lock = f"booking:vehicle:{vehicle.id}"
+        slot_lock = f"booking:{workshop.id}:{d.isoformat()}:{t.isoformat()}"
+        try:
+            async with self._locks.transaction(vehicle_lock, ttl=self._config.lock_ttl_seconds, wait_timeout=2.0):
+                await run_in_threadpool(self._ensure_no_open_booking, vehicle)
+                try:
+                    async with self._locks.transaction(slot_lock, ttl=self._config.lock_ttl_seconds, wait_timeout=2.0):
+                        return await self._write_in_threadpool(
+                            self._create_booking_locked,
+                            user,
+                            vehicle,
+                            workshop,
+                            d,
+                            t,
+                            source=source,
+                            odo_milestone=odo_milestone,
+                            source_message_id=source_message_id,
+                            receipt=receipt,
+                        )
+                except LockAcquireError as exc:
+                    raise errors.SlotFullError(await run_in_threadpool(self._alternatives, workshop, d, t)) from exc
+        except LockAcquireError as exc:  # another booking for this vehicle is in flight
+            raise errors.OpenBookingExistsError() from exc
+
+    def _ensure_no_open_booking(self, vehicle: UserVehicle) -> None:
+        """BR-013: one open booking per vehicle."""
         open_exists = self._session.exec(
             select(func.count())
             .select_from(Booking)
@@ -469,22 +738,6 @@ class BookingService:
         if int(open_exists) > 0:
             raise errors.OpenBookingExistsError()
 
-        lock_name = f"booking:{workshop_id}:{d.isoformat()}:{t.isoformat()}"
-        try:
-            async with self._locks.transaction(lock_name, ttl=self._config.lock_ttl_seconds, wait_timeout=2.0):
-                return self._create_booking_locked(
-                    user,
-                    vehicle,
-                    workshop,
-                    d,
-                    t,
-                    quote,
-                    source=source,
-                    odo_milestone=_milestone_from_ref(payload.milestone_ref),
-                )
-        except LockAcquireError as exc:
-            raise errors.SlotFullError(self._alternatives(workshop, d, t)) from exc
-
     def _create_booking_locked(
         self,
         user: VehicleUser,
@@ -492,18 +745,17 @@ class BookingService:
         workshop: Workshop,
         d: date,
         t: time,
-        quote: Quote | None,
         *,
         source: str,
         odo_milestone: int | None,
+        source_message_id: UUID | None = None,
+        receipt: BookingRequest | None = None,
     ) -> schemas.BookingOut:
         _, available = self._capacity(workshop, d, t)
         if not available:
             raise errors.SlotFullError(self._alternatives(workshop, d, t))
 
         now = now_vn()
-        if odo_milestone is None and quote is not None:
-            odo_milestone = quote.odo_milestone
         booking = Booking(
             booking_code=_new_booking_code(),
             user_id=user.user_id,
@@ -513,13 +765,16 @@ class BookingService:
             time_slot=t,
             status=BookingStatus.PENDING,
             hold_expires_at=now + timedelta(minutes=self._config.hold_minutes),
-            estimated_cost=quote.approved_total if quote else None,
             odo_milestone=odo_milestone,
+            source_message_id=source_message_id,
         )
         self._session.add(booking)
         machine = BookingStateMachine(self._session)
         try:
             self._session.flush()
+            if receipt is not None:
+                receipt.booking_id = booking.id
+                self._session.add(receipt)
             machine.record_created(booking, Actor.vehicle_owner(user.user_id), source)
             if workshop.booking_confirmation_mode == BookingConfirmationMode.AUTO:
                 machine.transition(
@@ -534,30 +789,11 @@ class BookingService:
             if "SLOT_FULL" in str(getattr(exc, "orig", exc)):
                 raise errors.SlotFullError(self._alternatives(workshop, d, t)) from exc
             raise
-        if quote is not None:
-            quote.booking_id = booking.id
-            self._session.add(quote)
         self._session.commit()
         self._session.refresh(booking)
-        return self._to_out(booking, workshop, quote)
+        return self._to_out(booking, workshop)
 
-    def _validate_quote(self, quote_id: str, vehicle: UserVehicle, workshop_id: UUID) -> Quote:
-        try:
-            quote = self._session.get(Quote, UUID(quote_id))
-        except ValueError as exc:
-            raise errors.QuoteExpiredError() from exc
-        if (
-            quote is None
-            or quote.status != QuoteStatus.APPROVED
-            or quote.user_vehicle_id != vehicle.id
-            or quote.workshop_id != workshop_id
-            or quote.expires_at is None
-            or quote.expires_at <= now_vn()
-        ):
-            raise errors.QuoteExpiredError()
-        return quote
-
-    def _to_out(self, booking: Booking, workshop: Workshop, quote: Quote | None) -> schemas.BookingOut:
+    def _to_out(self, booking: Booking, workshop: Workshop) -> schemas.BookingOut:
         confirmed = booking.status == BookingStatus.CONFIRMED
         return schemas.BookingOut(
             booking_id=booking.id,
@@ -572,7 +808,6 @@ class BookingService:
             booking_code=booking.booking_code if confirmed else None,
             qr_url=qr_url(booking.id) if confirmed else None,
             estimated_cost=booking.estimated_cost,
-            quote_id=str(quote.id) if quote else None,
         )
 
     # ── API-BK-04 cancel hold (BR-010) ──────────────────────────────────
@@ -585,7 +820,6 @@ class BookingService:
         if booking.hold_expires_at is None or booking.hold_expires_at <= now_vn():
             raise errors.HoldWindowClosedError()
         try:
-            # Also releases any attached quote (BR-ENT-404 reverse).
             BookingStateMachine(self._session).transition(
                 booking,
                 BookingStatus.CANCELLED,
@@ -646,11 +880,11 @@ class BookingService:
 
     async def reschedule(self, user: VehicleUser, booking_id: UUID, token: str, *, source: str = "APP") -> Booking:
         """API-BT-04 — move a confirmed booking atomically; same id and code (BR-1205)."""
-        booking = self._owned_booking(user, booking_id)
+        booking = await run_in_threadpool(self._owned_booking, user, booking_id)
         slot = await self._consume_reschedule_token(user, booking_id, token)
-        workshop = self._get_active_workshop(slot["workshop_id"])
+        workshop = await run_in_threadpool(self._get_active_workshop, slot["workshop_id"])
         new_d, new_t = slot["date"], slot["time_slot"]
-        if not self._slot_in_hours(workshop.id, new_d, new_t):
+        if not await run_in_threadpool(self._slot_in_hours, workshop.id, new_d, new_t):
             raise errors.SlotOutOfHoursError()
 
         # Lock both slots in a stable order so two crossing moves cannot deadlock.
@@ -664,7 +898,7 @@ class BookingService:
                     await stack.enter_async_context(
                         self._locks.transaction(name, ttl=self._config.lock_ttl_seconds, wait_timeout=2.0)
                     )
-                return self._reschedule_locked(user, booking, workshop, slot, source)
+                return await self._write_in_threadpool(self._reschedule_locked, user, booking, workshop, slot, source)
         except LockAcquireError as exc:
             raise errors.ServiceUnavailableError() from exc
 

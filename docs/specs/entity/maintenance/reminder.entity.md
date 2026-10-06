@@ -1,5 +1,9 @@
 # Entity Specification — `reminder` (Lịch nhắc nhở AI)
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > **Domain:** Maintenance · **Tổng quan lược đồ:** [core.entity.md](../core.entity.md)
 >
 > **Nguồn sự thật:** `core.entity.md` v1.1 §14.2 bảng 8. Cấu trúc bảng **giữ nguyên**.

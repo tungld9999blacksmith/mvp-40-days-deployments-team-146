@@ -1,32 +1,26 @@
-import { AlertCircle, Bell, Mail, MessageCircle, MessageSquare, Send, Smartphone } from 'lucide-react'
+import { AlertCircle, Bell, Mail, MessageCircle, Send, Smartphone } from 'lucide-react'
 import Badge from '@/shared/ui/Badge'
-import Button from '@/shared/ui/Button'
 import Checkbox from '@/shared/ui/Checkbox'
 import type { ChannelSetting } from '../types'
 
 const CHANNELS: Record<string, { label: string; Icon: typeof Bell }> = {
-  DISCORD: { label: 'Discord', Icon: MessageSquare },
   ZALO: { label: 'Zalo', Icon: MessageCircle },
   TELEGRAM: { label: 'Telegram', Icon: Send },
   SMS: { label: 'Tin nhắn SMS', Icon: Smartphone },
   EMAIL: { label: 'Email', Icon: Mail },
 }
 
-/** Channel rows: only available channels can be ticked (BR-506, US-021 FE §4.3). */
+/** External channel rows: only available channels can be ticked (BR-506, US-021 FE §4.3). */
 export default function NotificationChannelList({
   channels,
   values,
   onChange,
   disabled,
-  error,
-  onConnectDiscord,
 }: {
   channels: ChannelSetting[]
   values: Record<string, boolean>
   onChange: (channel: string, enabled: boolean) => void
   disabled?: boolean
-  error?: string
-  onConnectDiscord: () => void
 }) {
   return (
     <div>
@@ -56,11 +50,6 @@ export default function NotificationChannelList({
                 ) : (
                   <Badge tone="warning">Chưa kết nối</Badge>
                 )}
-                {notConnected && channel.channel === 'DISCORD' && (
-                  <Button variant="secondary" size="sm" onClick={onConnectDiscord}>
-                    Kết nối Discord
-                  </Button>
-                )}
               </div>
               {notConnected && enabled && (
                 <p className="flex items-start gap-1.5 text-xs text-warning mt-2 ml-7">
@@ -72,12 +61,6 @@ export default function NotificationChannelList({
           )
         })}
       </ul>
-      {error && (
-        <p role="alert" className="flex items-start gap-1.5 text-xs text-error mt-3">
-          <AlertCircle className="w-3.5 h-3.5 mt-px flex-shrink-0" aria-hidden />
-          {error}
-        </p>
-      )}
     </div>
   )
 }

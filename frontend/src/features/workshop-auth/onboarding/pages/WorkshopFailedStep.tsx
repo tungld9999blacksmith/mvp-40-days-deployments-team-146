@@ -69,7 +69,7 @@ export default function WorkshopFailedStep() {
   }
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-6 sm:p-8" role="alert">
+    <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 elevation-sm" role="alert">
       <div className="w-12 h-12 rounded-2xl bg-error/10 flex items-center justify-center">
         <AlertTriangle className="w-6 h-6 text-error" aria-hidden />
       </div>

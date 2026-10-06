@@ -1,5 +1,9 @@
 # Entity Specification — Đặt lịch bảo dưỡng theo sức chứa & vị trí
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Đặc tả các entity phục vụ Feature `FEAT-BOOK-001` — F6 (US-029 → US-032).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-029-sprint-3-spec.ff.md). Tài liệu này **không định nghĩa lại nghiệp vụ**; mọi rule đều trỏ về `BR-xxx` / `EF-xxx` / `EDGE-xxx` trong Functional Spec.

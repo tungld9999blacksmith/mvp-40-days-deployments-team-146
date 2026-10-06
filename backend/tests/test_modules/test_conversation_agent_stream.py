@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
 import pytest
@@ -51,6 +51,7 @@ async def test_chat_service_run_turn_with_agent_orchestrator():
     user_result_mock.created = True
     user_result_mock.message = user_msg_mock
     mock_messages.append = AsyncMock()
+    mock_messages.publish = AsyncMock()
 
     # User message append result
     assistant_msg_mock = MagicMock()
@@ -68,6 +69,10 @@ async def test_chat_service_run_turn_with_agent_orchestrator():
 
     mock_messages.append.side_effect = [user_result_mock, assistant_result_mock]
 
+    # Inject the agent runner; no global function patch or production DB lookup.
+    orchestrator = MagicMock()
+    orchestrator.fetch_vehicle_context = AsyncMock(return_value={})
+
     # Mock dependencies for ChatService
     service = ChatService(
         engine=MagicMock(),
@@ -76,7 +81,8 @@ async def test_chat_service_run_turn_with_agent_orchestrator():
         llm=MagicMock(),
         knowledge_store=MagicMock(),
         vector_store=MagicMock(),
-        settings=MagicMock(),
+        settings=MagicMock(chat_run_timeout_seconds=30),
+        orchestrator=orchestrator,
     )
 
     # Mock _build_history_messages to return empty list
@@ -96,18 +102,25 @@ async def test_chat_service_run_turn_with_agent_orchestrator():
             },
         }
 
-    with patch("src.agents.orchestrator.run_agent_turn", side_effect=fake_agent_turn):
-        frames: list[SseFrame] = []
-        async for frame in service._run_turn(
-            conversation_id=conversation_id,
-            user_id=user_id,
-            vehicle=vehicle,
-            client_message_id=client_message_id,
-            content=content,
-            trace_id=trace_id,
-            is_disconnected=None,
-        ):
-            frames.append(frame)
+    orchestrator.run_agent_turn.side_effect = fake_agent_turn
+    frames: list[SseFrame] = []
+    async for frame in service._run_turn(
+        conversation_id=conversation_id,
+        user_id=user_id,
+        vehicle=vehicle,
+        client_message_id=client_message_id,
+        content=content,
+        trace_id=trace_id,
+        is_disconnected=None,
+    ):
+        frames.append(frame)
+
+    orchestrator.fetch_vehicle_context.assert_awaited_once_with(vehicle.id)
+    run_args = orchestrator.run_agent_turn.call_args.kwargs
+    assert run_args["vehicle_id"] == vehicle.id
+    assert run_args["user_id"] == user_id
+    assert run_args["source_message_id"] == user_msg_mock.id
+    assert run_args["operation_key"] == str(client_message_id)
 
     # Kiểm tra các sự kiện SSE phát ra
     events = [f.event for f in frames]

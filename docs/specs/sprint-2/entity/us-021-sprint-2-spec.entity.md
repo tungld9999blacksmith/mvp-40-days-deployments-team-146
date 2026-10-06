@@ -1,5 +1,9 @@
 # Entity Specification — Nhắc mốc bảo dưỡng & cấu hình thông báo
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > Đặc tả dữ liệu cho `FEAT-NOTI-001` (US-021 → US-024).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-021-sprint-2-spec.ff.md) · **API:** [API Spec](../api/us-021-sprint-2-spec.api.md) · **Tổng quan lược đồ:** [core.entity.md](../../entity/core.entity.md)

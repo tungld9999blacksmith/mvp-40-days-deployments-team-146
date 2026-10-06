@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react'
-import { CalendarClock, Car, FileText, MapPin, RotateCw, Timer, Wrench } from 'lucide-react'
+import { CalendarClock, Car, MapPin, RotateCw, Timer, Wrench } from 'lucide-react'
 import Button from '@/shared/ui/Button'
 import { Card, CardHeader, InfoRow } from '@/shared/ui/Card'
 import { TextArea } from '@/shared/ui/Field'
 import { cn } from '@/shared/ui/cn'
-import { formatCountdown, formatKm, formatLicensePlate } from '@/shared/utils/format'
+import { formatCountdown, formatKm, formatLicensePlate, formatNumber } from '@/shared/utils/format'
 import type { MilestoneItem, VehicleSummary } from '@/features/vehicles/types'
 import { formatLongDay, NOTE_MAX_LENGTH, secondsLeft, slotLabel } from '../utils'
+
+/** Cost line of the card (FE §3.5): estimate of the same workshop + milestone, or none. */
+export type SummaryCost = { kind: 'LOADING' } | { kind: 'ESTIMATE'; amount: number } | { kind: 'NONE' }
 
 export interface BookingSummaryCardProps {
   workshop: { name: string; address: string | null }
@@ -15,7 +18,7 @@ export interface BookingSummaryCardProps {
   vehicle: VehicleSummary
   odoMilestone: number | null
   items: MilestoneItem[]
-  quoteId: string | null
+  cost?: SummaryCost
   /** epoch ms; the card is unusable afterwards (FF EF-001). */
   tokenExpiresAt: number
   submitting?: boolean
@@ -57,7 +60,7 @@ function useSecondsLeft(until: number): number {
  * by itself: only `onConfirm` does (AC-FE-401). Shared with the chat card.
  */
 export default function BookingSummaryCard(props: BookingSummaryCardProps) {
-  const { workshop, date, timeSlot, vehicle, odoMilestone, items, quoteId, tokenExpiresAt, submitting } = props
+  const { workshop, date, timeSlot, vehicle, odoMilestone, items, tokenExpiresAt, submitting } = props
   const left = useSecondsLeft(tokenExpiresAt)
   const expired = left <= 0
 
@@ -80,11 +83,10 @@ export default function BookingSummaryCard(props: BookingSummaryCardProps) {
         <InfoRow
           label="Chi phí"
           value={
-            quoteId ? (
-              <span className="inline-flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5 text-muted" />
-                Theo báo giá đã duyệt
-              </span>
+            props.cost?.kind === 'LOADING' ? (
+              <span className="text-muted">Đang tính…</span>
+            ) : props.cost?.kind === 'ESTIMATE' ? (
+              `Chi phí ước tính: ${formatNumber(props.cost.amount)} ₫`
             ) : (
               <span className="text-muted">Chưa có ước tính</span>
             )
@@ -94,7 +96,7 @@ export default function BookingSummaryCard(props: BookingSummaryCardProps) {
 
       {items.length > 0 && (
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-2 flex items-center gap-1.5">
+          <p className="text-[13px] font-semibold text-muted mb-2 flex items-center gap-1.5">
             <Wrench className="w-3.5 h-3.5" />
             Hạng mục của mốc
           </p>

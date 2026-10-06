@@ -155,7 +155,9 @@ class GroundedAnswerGenerator:
                 answer = re.sub(
                     r"\[Tài liệu\s+(\d+)\]",
                     lambda match: (
-                        f"[Tài liệu {index_map[int(match.group(1))]}]" if int(match.group(1)) in index_map else ""
+                        f"[Tài liệu {index_map[int(match.group(1))]}]"
+                        if int(match.group(1)) in index_map
+                        else ""
                     ),
                     answer,
                     flags=re.IGNORECASE,
@@ -165,7 +167,8 @@ class GroundedAnswerGenerator:
                 fallback_required = True
                 confidence = "low"
                 answer = (
-                    answer.rstrip() + "\n\nHiện chưa thể xác thực trích dẫn trực tiếp cho câu trả lời này; "
+                    answer.rstrip()
+                    + "\n\nHiện chưa thể xác thực trích dẫn trực tiếp cho câu trả lời này; "
                     "vui lòng liên hệ Xưởng Dịch vụ VinFast để kiểm tra."
                 )
 
@@ -191,11 +194,20 @@ class GroundedAnswerGenerator:
         citations: list[CitationItem],
     ) -> tuple[list[CitationItem], list[int]]:
         """Đối chiếu citation JSON với các thẻ thực sự có trong câu trả lời."""
-        answer_indexes = {int(value) for value in re.findall(r"\[Tài liệu\s+(\d+)\]", answer, flags=re.IGNORECASE)}
-        declared_indexes = (
-            {index for index in cited_indexes if isinstance(index, int)} if isinstance(cited_indexes, list) else set()
+        answer_indexes = {
+            int(value)
+            for value in re.findall(r"\[Tài liệu\s+(\d+)\]", answer, flags=re.IGNORECASE)
+        }
+        declared_indexes = {
+            index
+            for index in cited_indexes
+            if isinstance(index, int)
+        } if isinstance(cited_indexes, list) else set()
+        valid_indexes = sorted(
+            index
+            for index in answer_indexes & declared_indexes
+            if 1 <= index <= len(citations)
         )
-        valid_indexes = sorted(index for index in answer_indexes & declared_indexes if 1 <= index <= len(citations))
         return [citations[index - 1] for index in valid_indexes], valid_indexes
 
     def _extract_json(self, text: str) -> dict[str, Any]:
@@ -221,9 +233,11 @@ class GroundedAnswerGenerator:
                 f"- [{idx}] {c.title} ({c.section or 'Thông tin chung'}): Vui lòng tham khảo tài liệu [Tài liệu {idx}]."
             )
 
+        # Answer text chỉ reference 3 citations đầu, nên response cũng chỉ trả 3
+        offline_citations = citations[:3]
         return RAGResponse(
             answer="\n".join(lines),
-            citations=citations,
+            citations=offline_citations,
             confidence="medium",
             fallback_required=False,
             metadata={"mode": "offline_summary"},

@@ -1,5 +1,10 @@
 # Functional Specification — Tiến độ dịch vụ chi tiết 6 bước
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > Đặc tả nghiệp vụ cho Feature **F8b — Tiến độ chi tiết 6 bước (`service_progress`)** trong [PRD EV Care MVP](../../../product/PRD_EV_Care_MVP.md#5-phạm-vi) (Could, S4).
 >
 > **Quan hệ tài liệu:** [us-037 FF](../../sprint-3/feature-functional/us-037-sprint-3-spec.ff.md) (Workshop Board) quản lý `booking.status`; F8b bổ sung **mốc tiến độ chi tiết** bên trong giai đoạn xe ở xưởng (`checked_in` → `in_progress`) và **không** thay đổi state machine của booking.

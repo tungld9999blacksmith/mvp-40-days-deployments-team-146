@@ -1,5 +1,9 @@
 # AI-Agent Specification — AI-001 Orchestrator Agent
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Đặc tả hành vi của **Orchestrator Agent** — điểm vào duy nhất của mọi tin nhắn chat trong EV Care.
 >
 > **Nguồn:** [00-ai-agents-proposal.md](00-ai-agents-proposal.md) (AI-001), [PRD v3.5 §F4, §7, §8](../../product/PRD_EV_Care_MVP.md). Khi tài liệu này khác PRD/FF thì PRD/FF là chuẩn.

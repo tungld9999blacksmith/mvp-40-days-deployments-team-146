@@ -1,4 +1,4 @@
-import { Car } from 'lucide-react'
+import { CalendarClock, Car } from 'lucide-react'
 import Spinner from '@/shared/ui/Spinner'
 import { vehicleDisplayName } from '@/shared/domain/labels'
 import { formatKm, formatLicensePlate, formatTimeDayMonth } from '@/shared/utils/format'
@@ -6,6 +6,7 @@ import DueStatusBadge from '@/features/vehicles/components/DueStatusBadge'
 import { useMaintenanceStatus } from '@/features/vehicles/hooks/useVehicleQueries'
 import { remainingParts } from '@/features/vehicles/utils/maintenanceFormat'
 import type { VehicleSummary } from '@/features/vehicles/types'
+import { QUICK_BOOKING_LABEL } from '../quickBooking/proposalView'
 
 export const SUGGESTED_QUESTIONS = [
   'Mốc bảo dưỡng tới của xe tôi cần làm gì?',
@@ -21,11 +22,17 @@ export const SUGGESTED_QUESTIONS = [
 export default function ChatContextPanel({
   vehicle,
   onAsk,
+  onQuickBooking,
   disabled,
+  showSuggestions = true,
 }: {
   vehicle: VehicleSummary | null
   onAsk: (question: string) => void
+  /** us-061 — the quick-booking chip; never sent as a chat question. */
+  onQuickBooking: () => void
   disabled?: boolean
+  /** Off while the chat's empty state already shows the same questions. */
+  showSuggestions?: boolean
 }) {
   const status = useMaintenanceStatus(vehicle?.userVehicleId ?? null)
   const data = status.data
@@ -34,8 +41,8 @@ export default function ChatContextPanel({
   return (
     <div className="p-5 space-y-6">
       <section>
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">Thông tin xe</p>
-        <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
+        <p className="text-[13px] font-semibold text-muted mb-3">Thông tin xe</p>
+        <div className="bg-card border border-border rounded-2xl p-4 space-y-3 elevation-sm">
           {vehicle ? (
             <>
               <div className="flex items-center gap-2.5">
@@ -68,22 +75,34 @@ export default function ChatContextPanel({
         </div>
       </section>
 
-      <section>
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">Câu hỏi gợi ý</p>
-        <div className="space-y-2">
-          {SUGGESTED_QUESTIONS.map(question => (
+      {showSuggestions && (
+        <section>
+          <p className="text-[13px] font-semibold text-muted mb-3">Câu hỏi gợi ý</p>
+          <div className="space-y-2">
             <button
-              key={question}
               type="button"
-              disabled={disabled}
-              onClick={() => onAsk(question)}
-              className="w-full text-left rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm text-foreground hover:bg-card-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={disabled || !vehicle}
+              onClick={onQuickBooking}
+              className="w-full text-left rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm text-foreground hover:bg-card-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {question}
+              <CalendarClock className="w-3.5 h-3.5 text-emerald flex-shrink-0" aria-hidden />
+              {QUICK_BOOKING_LABEL}
             </button>
-          ))}
-        </div>
-      </section>
+            {!vehicle && <p className="text-xs text-muted">Liên kết xe để đặt lịch.</p>}
+            {SUGGESTED_QUESTIONS.map(question => (
+              <button
+                key={question}
+                type="button"
+                disabled={disabled}
+                onClick={() => onAsk(question)}
+                className="w-full text-left rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm text-foreground hover:bg-card-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {question}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )
 }

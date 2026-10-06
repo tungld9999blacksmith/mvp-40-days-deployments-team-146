@@ -60,14 +60,14 @@ export default function VerifyingStep() {
 
   if (failed) {
     return (
-      <div className="bg-card border border-border rounded-2xl">
+      <div className="bg-card border border-border rounded-2xl elevation-sm">
         <ErrorState onRetry={restart} description="Không kiểm tra được kết quả xác thực. Vui lòng thử lại." />
       </div>
     )
   }
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-8 text-center" role="status" aria-live="polite">
+    <div className="bg-card border border-border rounded-2xl p-8 text-center elevation-sm" role="status" aria-live="polite">
       {timedOut ? (
         <>
           <div className="w-12 h-12 rounded-2xl bg-warning/10 flex items-center justify-center mx-auto">

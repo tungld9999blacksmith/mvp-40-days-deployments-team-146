@@ -1,5 +1,9 @@
 # Entity Specification — `booking` (Lịch hẹn bảo dưỡng)
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > **Domain:** Maintenance · **Tổng quan lược đồ:** [core.entity.md](../core.entity.md)
 >
 > **Nguồn sự thật:** `core.entity.md` v1.1 §14.2 bảng 5, §11 (EF-001), §13 (State). Cấu trúc bảng **giữ nguyên**.

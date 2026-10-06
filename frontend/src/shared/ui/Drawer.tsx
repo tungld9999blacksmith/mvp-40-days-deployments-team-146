@@ -11,6 +11,7 @@ export default function Drawer({
   side = 'right',
   children,
   className,
+  width,
 }: {
   open: boolean
   onClose: () => void
@@ -18,6 +19,8 @@ export default function Drawer({
   side?: 'left' | 'right'
   children: ReactNode
   className?: string
+  /** Desktop width class, e.g. `sm:w-[30rem]` (default 26rem right / 24rem left). */
+  width?: string
 }) {
   const titleId = useId()
   const panelRef = useRef<HTMLDivElement>(null)
@@ -42,7 +45,7 @@ export default function Drawer({
 
   return createPortal(
     <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-background/80" aria-hidden onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in" aria-hidden onClick={onClose} />
       <div
         ref={panelRef}
         role="dialog"
@@ -50,11 +53,11 @@ export default function Drawer({
         aria-labelledby={titleId}
         tabIndex={-1}
         className={cn(
-          'absolute bg-surface border-border flex flex-col focus:outline-none',
+          'absolute bg-surface border-border flex flex-col elevation-md focus:outline-none',
           'inset-x-0 bottom-0 max-h-[85vh] rounded-t-2xl border-t',
           side === 'right'
-            ? 'sm:inset-y-0 sm:right-0 sm:left-auto sm:bottom-auto sm:max-h-none sm:w-[26rem] sm:rounded-none sm:border-t-0 sm:border-l'
-            : 'sm:inset-y-0 sm:left-0 sm:right-auto sm:bottom-auto sm:max-h-none sm:w-[24rem] sm:rounded-none sm:border-t-0 sm:border-r',
+            ? `sm:inset-y-0 sm:right-0 sm:left-auto sm:max-h-none ${width ?? 'sm:w-[26rem]'} sm:rounded-none sm:border-t-0 sm:border-l`
+            : `sm:inset-y-0 sm:left-0 sm:right-auto sm:max-h-none ${width ?? 'sm:w-[24rem]'} sm:rounded-none sm:border-t-0 sm:border-r`,
           className,
         )}
       >
@@ -71,7 +74,7 @@ export default function Drawer({
             <X className="w-4 h-4" />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto">{children}</div>
+        <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>
       </div>
     </div>,
     document.body,

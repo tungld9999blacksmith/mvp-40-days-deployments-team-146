@@ -57,6 +57,15 @@ class Forbidden(ConversationError):
         super().__init__(message)
 
 
+class AuthProviderUnavailable(ConversationError):
+    """Firebase could not be reached to check the token; the session may still be valid."""
+
+    code = "AUTH_PROVIDER_UNAVAILABLE"
+
+    def __init__(self) -> None:
+        super().__init__("Could not verify the session right now. Please retry.")
+
+
 class ConversationBusy(ConversationError):
     code = "CONVERSATION_BUSY"
 
@@ -97,6 +106,8 @@ ERROR_STATUS: dict[str, int] = {
     "VEHICLE_NOT_ACTIVE": 409,
     "CONVERSATION_BUSY": 409,
     "RATE_LIMITED": 429,
+    "AUTH_PROVIDER_UNAVAILABLE": 503,
+    "CHAT_TIMEOUT": 504,
 }
 
 

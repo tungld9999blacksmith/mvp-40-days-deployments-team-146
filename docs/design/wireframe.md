@@ -346,7 +346,7 @@ Chat input ở dưới.
 
 ---
 
-# 9. Screen 6 – Maintenance Estimate / Quote
+# 9. Screen 6 – Maintenance Estimate
 
 Page title:
 
@@ -382,18 +382,17 @@ Total:
 
 Warning card màu vàng đậm:
 
-"Đây là chi phí ước tính. Báo giá chính thức cần được kỹ thuật viên xác nhận."
+"Đây là chi phí ước tính. Chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe."
 
-Status:
+CTA:
 
-"WAITING FOR TECHNICIAN APPROVAL"
+"Đặt lịch"
 
 Timeline:
 
 AI Recommendation
 → Cost Estimate
-→ Technician Review
-→ Confirmed Quote
+→ Booking
 
 ---
 
@@ -498,24 +497,6 @@ CTA:
 
 ---
 
-### Quote Approved
-
-Icon success.
-
-Title:
-
-"Báo giá đã được kỹ thuật viên duyệt"
-
-Message:
-
-"Tổng chi phí dự kiến: 1,500,000 VND"
-
-CTA:
-
-"Xem báo giá"
-
----
-
 # 13. Technician Dashboard
 
 Sau khi login với role Technician, sử dụng cùng phong cách Premium Dark.
@@ -523,85 +504,20 @@ Sau khi login với role Technician, sử dụng cùng phong cách Premium Dark.
 Sidebar:
 
 * Dashboard
-* Báo giá
 * Lịch hẹn
 * Khách hàng
 * Thông báo
 
 Dashboard cards:
 
-* Pending Quotes
+* Pending Bookings
 * Today's Appointments
 * Completed Services
 * Overdue Vehicles
 
 ---
 
-# 14. Screen 10 – Pending Quote Approval
-
-Page title:
-
-"Yêu cầu duyệt báo giá"
-
-Danh sách card hoặc table.
-
-Columns:
-
-* Vehicle
-* Customer
-* Mileage
-* Estimated Price
-* Created At
-* Status
-* Action
-
-Action:
-
-"Review"
-
----
-
-# 15. Screen 11 – Technician Quote Review
-
-Page title:
-
-"Review Quote"
-
-Thông tin xe:
-
-* Model
-* License plate
-* Mileage
-* Customer
-
-AI Recommendation card:
-
-"AI Suggested Services"
-
-Hiển thị từng service.
-
-Cho Technician:
-
-* checkbox chọn/bỏ hạng mục
-* chỉnh sửa giá
-* thêm hạng mục
-* viết technician note
-
-Total Price cập nhật ở cuối.
-
-Buttons:
-
-"Reject"
-
-"Save Changes"
-
-"Approve Quote"
-
-Approve button màu xanh emerald nổi bật.
-
----
-
-# 16. Trạng thái quan trọng
+# 14. Trạng thái quan trọng
 
 Thiết kế badge thống nhất:
 
@@ -631,7 +547,7 @@ CANCELLED
 
 ---
 
-# 17. Design System
+# 15. Design System
 
 Colors:
 
@@ -677,7 +593,7 @@ dark red
 
 ---
 
-# 18. UX Priorities
+# 16. UX Priorities
 
 Dashboard phải giúp người dùng nhìn ngay thấy:
 
@@ -693,11 +609,9 @@ AI recommendations phải luôn hiển thị nguồn tài liệu chính hãng.
 
 Chi phí AI đưa ra phải luôn có nhãn "Estimated".
 
-Báo giá chưa được Technician duyệt phải có trạng thái rõ ràng.
-
 ---
 
-# 19. Prototype Flow
+# 17. Prototype Flow
 
 Tạo prototype navigation:
 
@@ -723,16 +637,13 @@ Login as Technician
 → Technician Dashboard
 
 Technician Dashboard
-→ Pending Quote
+→ Workshop Board
 
-Pending Quote
-→ Quote Review
+Workshop Board
+→ Booking detail
 
-Quote Review
-→ Approve
-
-Approve
-→ Quote status Approved
+Booking detail
+→ Accept / Check-in
 
 ---
 

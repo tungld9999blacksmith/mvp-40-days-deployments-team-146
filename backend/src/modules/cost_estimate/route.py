@@ -26,7 +26,7 @@ router = APIRouter(prefix="/user-vehicles", tags=["cost-estimate"])
     response_model=schemas.MilestonesEnvelope,
     summary="Milestones with a maintenance schedule for the vehicle's model (UC-1002)",
 )
-async def list_maintenance_milestones(
+def list_maintenance_milestones(
     vehicle: Annotated[UserVehicle, Depends(get_estimable_vehicle)],
     service: Annotated[CostEstimationService, Depends(get_cost_estimation_service)],
 ) -> schemas.MilestonesEnvelope:
@@ -38,7 +38,7 @@ async def list_maintenance_milestones(
     response_model=schemas.EstimateEnvelope,
     summary="Estimated cost of one milestone at one workshop (UC-1001, BR-1001)",
 )
-async def get_cost_estimate(
+def get_cost_estimate(
     user: Annotated[VehicleUser, Depends(require_active_vehicle_owner)],
     vehicle: Annotated[UserVehicle, Depends(get_estimable_vehicle)],
     service: Annotated[CostEstimationService, Depends(get_cost_estimation_service)],
@@ -54,7 +54,7 @@ async def get_cost_estimate(
     response_model=schemas.CompareEnvelope,
     summary="Compare the same milestone at 2-3 workshops (UC-1003, Q-1003)",
 )
-async def compare_cost_estimates(
+def compare_cost_estimates(
     user: Annotated[VehicleUser, Depends(require_active_vehicle_owner)],
     vehicle: Annotated[UserVehicle, Depends(get_estimable_vehicle)],
     service: Annotated[CostEstimationService, Depends(get_cost_estimation_service)],

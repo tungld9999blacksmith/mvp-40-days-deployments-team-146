@@ -632,7 +632,7 @@ resolveWorkshopRoute(onboarding):
 | UI Element | Condition |
 |---|---|
 | Luồng onboarding xưởng | Có phiên, đăng nhập qua cổng xưởng, chưa `ACTIVE` |
-| Sidebar kỹ thuật viên (`/technician`, `/technician/quotes`, `/customers`) | `onboarding.status = ACTIVE` (`BR-203`) |
+| Sidebar kỹ thuật viên (`/technician`, `/technician/board`, `/customers`) | `onboarding.status = ACTIVE` (`BR-203`) |
 | Nút `Sửa CCCD` | `failureReason = NATIONAL_ID_MISMATCH` và còn lượt |
 | Nút `Gửi lại` | `failureReason = OEM_UNAVAILABLE` và còn lượt |
 | Hiển thị CCCD | Chỉ dạng mask từ API |

@@ -1,4 +1,4 @@
-"""Shared test helpers for the maintenance flows (cost estimate, bookings, quotes, CRM).
+"""Shared test helpers for the maintenance flows (cost estimate, bookings, CRM).
 
 Builds on ``tests._user_vehicle`` (same in-memory SQLite approach) and adds the
 workshop-side tables plus seed helpers for workshops, owners and bookings.
@@ -15,13 +15,12 @@ from sqlalchemy.pool import StaticPool
 from sqlmodel import Session, create_engine
 
 from src.common.core.crm.follow_up import FollowUp
-from src.common.core.crm.support_ticket import SupportTicket
 from src.common.core.identity.vehicle_user import VehicleUser
 from src.common.core.identity.workshop_owner import WorkshopOwner
 from src.common.core.maintenance.booking import Booking, BookingStatus
+from src.common.core.maintenance.booking_proposal import BookingProposal
+from src.common.core.maintenance.booking_request import BookingRequest
 from src.common.core.maintenance.booking_status_event import BookingReschedule, BookingStatusEvent
-from src.common.core.maintenance.quote import Quote
-from src.common.core.maintenance.quote_item import QuoteItem
 from src.common.core.maintenance.service_progress import ServiceProgress
 from src.common.core.notification import (
     BookingReminder,
@@ -44,16 +43,15 @@ TABLES = [
     *VEHICLE_TABLES,
     WorkshopOperatingHour.__table__,
     WorkshopSlotBlock.__table__,
-    Quote.__table__,
-    QuoteItem.__table__,
     ServiceProgress.__table__,
     FollowUp.__table__,
-    SupportTicket.__table__,
     BookingStatusEvent.__table__,
     BookingReschedule.__table__,
     BookingReminder.__table__,
     BookingReminderDelivery.__table__,
     FollowUpDelivery.__table__,
+    BookingProposal.__table__,
+    BookingRequest.__table__,
 ]
 
 

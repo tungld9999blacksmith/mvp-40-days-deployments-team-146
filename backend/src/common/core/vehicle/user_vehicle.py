@@ -1,7 +1,7 @@
 """ENT-003 — UserVehicle: a vehicle a user declared, plus the manufacturer snapshot.
 
 Columns follow ``docs/specs/entity/vehicle/user_vehicle.entity.md``. Core entity:
-bookings, reminders, quotes and support tickets all reference ``user_vehicle``.
+bookings and reminders all reference ``user_vehicle``.
 """
 
 from datetime import date, datetime

@@ -36,11 +36,6 @@ class VehicleOut(CamelModel):
     license_plate: str | None
 
 
-class QuoteRefOut(CamelModel):
-    quote_id: UUID
-    status: str
-
-
 class BoardItemOut(CamelModel):
     booking_id: UUID
     booking_code: str
@@ -51,7 +46,6 @@ class BoardItemOut(CamelModel):
     vehicle: VehicleOut
     milestone_label: str | None = None
     estimated_cost: Money | None = None
-    quote: QuoteRefOut | None = None
     attendance_confirmed_at: datetime | None = None
     confirm_deadline: datetime | None = None
     allowed_actions: list[str]

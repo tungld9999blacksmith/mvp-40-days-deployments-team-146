@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import logging
+import random
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -22,6 +23,7 @@ from pydantic import ValidationError
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
+from starlette.concurrency import run_in_threadpool
 
 from src.common.core.vehicle import (
     OemSyncTrigger,
@@ -35,6 +37,7 @@ from src.common.core.vehicle import (
     VehicleVerificationStatus,
 )
 from src.common.core.workshop.workshop import Workshop
+from src.infrastructure.redis.errors import LockAcquireError
 
 from . import errors
 from .ports import (
@@ -76,6 +79,59 @@ def list_eligible_vehicle_ids(session: Session) -> list[UUID]:
     """Vehicles the poll job syncs (JOB-VEH-001 trigger ``poll``)."""
     stmt = select(UserVehicle.id).where(*eligible_vehicle_filter()).order_by(UserVehicle.id)
     return list(session.exec(stmt).all())
+
+
+STATIC_ODOMETER_MIN_KM = 5_000
+STATIC_ODOMETER_MAX_KM = 50_000
+
+
+def seed_static_odometer(
+    session: Session,
+    user_vehicle_id: UUID,
+    *,
+    trigger: OemSyncTrigger = OemSyncTrigger.INITIAL,
+    rng: random.Random | None = None,
+    clock: Callable[[], datetime] = utc_now,
+) -> bool:
+    """Give a linked vehicle a one-off random ODO instead of pulling it from the OEM.
+
+    The ODO never increases afterwards. The sync state is marked done so the due
+    status is computed right away (BR-ENT-436) without waiting for an OEM sync.
+    Returns ``True`` when a reading was inserted; a vehicle with an ODO keeps it.
+    The vehicle row is locked so concurrent callers cannot seed two readings.
+    """
+    vehicle = session.get(UserVehicle, user_vehicle_id, with_for_update=True)
+    if vehicle is None or vehicle.verification_status != VehicleVerificationStatus.VERIFIED:
+        return False
+    now = clock()
+    has_reading = session.exec(
+        select(VehicleOdometerReading.id).where(VehicleOdometerReading.user_vehicle_id == user_vehicle_id)
+    ).first()
+    if has_reading is None:
+        session.add(
+            VehicleOdometerReading(
+                user_vehicle_id=user_vehicle_id,
+                odo_km=(rng or random).randint(STATIC_ODOMETER_MIN_KM, STATIC_ODOMETER_MAX_KM),
+                recorded_at=now,
+                oem_data_source=OemUsageSource.MANUAL,
+                received_via=OemSyncTrigger.INITIAL,
+            )
+        )
+    state = session.get(VehicleOemSync, user_vehicle_id) or VehicleOemSync(user_vehicle_id=user_vehicle_id)
+    state.usage_synced_at = state.usage_synced_at or now
+    state.service_history_synced_at = state.service_history_synced_at or now
+    state.last_attempt_at = now
+    state.last_trigger = trigger
+    state.consecutive_failures = 0
+    state.last_error_code = None
+    session.add(state)
+    try:
+        session.commit()
+    except IntegrityError:
+        # A concurrent call seeded the same vehicle first.
+        session.rollback()
+        return False
+    return has_reading is None
 
 
 @dataclass(frozen=True)
@@ -334,20 +390,28 @@ class OemWebhookService:
 
         event = self._parse(raw_body)
 
-        if not await self._events.claim_event(event_id):
-            return WebhookResult(event_id=event_id, duplicate=True)
-
-        vehicle_id = self._db.exec(
-            select(UserVehicle.id).where(
-                UserVehicle.external_vehicle_id == event.vehicle_id, *eligible_vehicle_filter()
-            )
-        ).first()
-        if vehicle_id is None:
-            # Not a vehicle linked to EV Care: accept without revealing that (EDGE-312).
-            return WebhookResult(event_id=event_id, ignored=True)
-
-        if await self._events.claim_debounce(vehicle_id):
-            self._scheduler.schedule(vehicle_id, OemSyncTrigger.WEBHOOK, delay_seconds=WEBHOOK_DEBOUNCE_SECONDS)
+        try:
+            async with self._events.processing(f"event:{event_id}"):
+                if await self._events.event_processed(event_id):
+                    return WebhookResult(event_id=event_id, duplicate=True)
+                vehicle_id = await run_in_threadpool(self._find_vehicle_id, event.vehicle_id)
+                if vehicle_id is None:
+                    await self._events.mark_event_processed(event_id)
+                    return WebhookResult(event_id=event_id, ignored=True)
+                # A different event must not be acknowledged while scheduling
+                # this vehicle is still pending (and might fail).
+                async with self._events.processing(f"vehicle:{vehicle_id}"):
+                    if not await self._events.is_debounced(vehicle_id):
+                        await run_in_threadpool(
+                            self._scheduler.schedule,
+                            vehicle_id,
+                            OemSyncTrigger.WEBHOOK,
+                            delay_seconds=WEBHOOK_DEBOUNCE_SECONDS,
+                        )
+                        await self._events.mark_debounced(vehicle_id)
+                    await self._events.mark_event_processed(event_id)
+        except LockAcquireError as exc:
+            raise errors.WebhookProcessingError() from exc
         logger.info(
             "OEM webhook %s %s accepted for vehicle %s",
             event_id,
@@ -355,6 +419,19 @@ class OemWebhookService:
             vehicle_id,
         )
         return WebhookResult(event_id=event_id)
+
+    def _find_vehicle_id(self, external_vehicle_id: str) -> UUID | None:
+        try:
+            return self._db.exec(
+                select(UserVehicle.id).where(
+                    UserVehicle.external_vehicle_id == external_vehicle_id, *eligible_vehicle_filter()
+                )
+            ).first()
+        finally:
+            # Read-only: end the transaction so the pooled connection is returned before
+            # the Redis/Celery awaits. Otherwise each webhook of an OEM burst holds a
+            # Supavisor connection "idle in transaction" and starves every other API.
+            self._db.rollback()
 
     def _check_timestamp(self, timestamp: str | None) -> None:
         try:

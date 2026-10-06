@@ -1,5 +1,9 @@
 # API Technical Specification — Đặt lịch bảo dưỡng theo sức chứa & vị trí
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Backend cho Feature `FEAT-BOOK-001` — F6 (US-029 → US-032).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-029-sprint-3-spec.ff.md) là chuẩn; API **không** định nghĩa lại nghiệp vụ, chỉ trỏ `BR-xxx` / `EF-xxx` / `EDGE-xxx`.

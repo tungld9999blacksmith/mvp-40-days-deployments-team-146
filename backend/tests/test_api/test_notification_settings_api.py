@@ -12,7 +12,7 @@ from src.common.core.notification import UserNotificationChannel, UserNotificati
 from src.infrastructure.supabase.db import get_session
 from src.main import app
 from src.modules.oauth.dependency import verify_firebase_token
-from tests._user_vehicle import add_discord_link, add_owner, make_session
+from tests._user_vehicle import add_owner, make_session
 
 URL = "/api/v1/notification-settings"
 AUTH = {"Authorization": "Bearer x"}
@@ -67,19 +67,13 @@ async def test_defaults_when_never_configured_ac509(api: _Api, owner):
     data = r.json()["data"]
     assert data["remindersEnabled"] is True
     assert data["reminderLeadDays"] == 2 and data["defaultReminderLeadDays"] == 2
+    # Reminders are shown in the app; no external channel exists yet.
     assert [c["channel"] for c in data["channels"]] == [
-        "DISCORD",
         "ZALO",
         "TELEGRAM",
         "SMS",
         "EMAIL",
     ]
-    assert _channel(data, "DISCORD") == {
-        "channel": "DISCORD",
-        "enabled": True,
-        "available": True,
-        "status": "NOT_CONNECTED",
-    }
     for name in ("ZALO", "TELEGRAM", "SMS", "EMAIL"):
         assert _channel(data, name) == {
             "channel": name,
@@ -97,15 +91,6 @@ async def test_get_does_not_create_rows(api: _Api, owner):
     assert api.session.exec(select(UserNotificationChannel)).all() == []
 
 
-@pytest.mark.asyncio
-async def test_discord_shows_connected_with_active_link(api: _Api, owner):
-    add_discord_link(api.session, owner)
-
-    data = (await api.client.get(URL, headers=AUTH)).json()["data"]
-
-    assert _channel(data, "DISCORD")["status"] == "CONNECTED"
-
-
 # ── API-NOTI-002 ────────────────────────────────────────────────────────────
 
 
@@ -118,8 +103,8 @@ async def test_save_lead_days_and_switch_ac502(api: _Api, owner):
     assert data["reminderLeadDays"] == 5 and data["remindersEnabled"] is False
     saved = api.session.get(UserNotificationSetting, owner.user_id)
     assert saved.reminder_lead_days == 5 and saved.reminders_enabled is False
-    # Nothing was said about channels: still the default.
-    assert _channel(data, "DISCORD")["enabled"] is True
+    # Nothing was said about channels: still the default (none).
+    assert not any(c["enabled"] for c in data["channels"])
 
 
 @pytest.mark.asyncio
@@ -173,39 +158,28 @@ async def test_unavailable_channel_can_be_switched_off(api: _Api, owner):
 
 
 @pytest.mark.asyncio
-async def test_turning_off_the_only_channel_needs_reminders_off(api: _Api, owner):
-    r = await api.client.put(URL, json={"channels": [{"channel": "DISCORD", "enabled": False}]}, headers=AUTH)
-
-    assert r.status_code == 422
-    assert r.json()["error"]["code"] == "NO_CHANNEL_ENABLED"
-    assert api.session.exec(select(UserNotificationChannel)).all() == []
-
-
-@pytest.mark.asyncio
-async def test_all_channels_off_is_fine_when_reminders_are_off(api: _Api, owner):
+async def test_reminders_on_without_external_channel_is_fine(api: _Api, owner):
+    """Reminders always reach the in-app feed, so no external channel is required."""
     r = await api.client.put(
         URL,
-        json={
-            "remindersEnabled": False,
-            "channels": [{"channel": "DISCORD", "enabled": False}],
-        },
+        json={"remindersEnabled": True, "channels": [{"channel": "SMS", "enabled": False}]},
         headers=AUTH,
     )
 
     assert r.status_code == 200
     data = r.json()["data"]
-    assert _channel(data, "DISCORD")["enabled"] is False
+    assert data["remindersEnabled"] is True
+    assert not any(c["enabled"] for c in data["channels"])
 
 
 @pytest.mark.asyncio
-async def test_reenabling_discord_updates_the_same_row(api: _Api, owner):
-    off = {"remindersEnabled": False, "channels": [{"channel": "DISCORD", "enabled": False}]}
-    on = {"remindersEnabled": True, "channels": [{"channel": "DISCORD", "enabled": True}]}
+async def test_switching_a_channel_again_updates_the_same_row(api: _Api, owner):
+    off = {"channels": [{"channel": "SMS", "enabled": False}]}
     await api.client.put(URL, json=off, headers=AUTH)
 
-    r = await api.client.put(URL, json=on, headers=AUTH)
+    r = await api.client.put(URL, json=off, headers=AUTH)
 
-    assert r.status_code == 200 and _channel(r.json()["data"], "DISCORD")["enabled"] is True
+    assert r.status_code == 200 and _channel(r.json()["data"], "SMS")["enabled"] is False
     assert len(api.session.exec(select(UserNotificationChannel)).all()) == 1
 
 

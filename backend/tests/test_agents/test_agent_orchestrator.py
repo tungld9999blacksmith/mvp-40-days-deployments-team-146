@@ -1,6 +1,13 @@
-import asyncio
+"""Demo walkthrough of ``run_agent_turn`` with a live LLM and the real tools.
+
+The tools run against an in-memory SQLite + fakeredis seeded with one owner,
+one VF6 at 11,500 km and one workshop, like ``test_ev_care_tools``.
+"""
+
 import os
 import sys
+from contextlib import contextmanager
+from datetime import time
 from pathlib import Path
 
 # Fix Windows console encoding for UTF-8
@@ -9,42 +16,80 @@ if hasattr(sys.stdout, "reconfigure"):
 
 os.environ["LANGCHAIN_TRACING_V2"] = "false"
 
-# Add paths to sys.path
 backend_dir = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(backend_dir))
-sys.path.insert(0, str(backend_dir / "src"))
 
 import pytest
+import pytest_asyncio
 from dotenv import load_dotenv
+from fakeredis import FakeAsyncRedis
 
 env_path = backend_dir.parent / ".env"
 if env_path.exists():
     load_dotenv(dotenv_path=env_path)
 
 from src.agents.orchestrator import run_agent_turn
+from src.agents.tools import _services
+from src.common.core.workshop.service_price import ServicePrice
+from src.infrastructure.redis import RedisToolkit
+from tests._maintenance import add_hours, add_workshop, make_session
+from tests._user_vehicle import MODEL_ID, add_odometer, add_owner, add_rules, add_vehicle, mark_synced
+
+
+@pytest.fixture
+def session():
+    yield from make_session()
+
+
+@pytest_asyncio.fixture
+async def toolkit():
+    redis = FakeAsyncRedis()
+    tk = RedisToolkit(redis, key_prefix="test", default_cache_ttl=60)
+    yield tk
+    await tk.pubsub.stop()
+    await tk.cache.write_back_buffer.stop(final_flush=False)
+    await redis.flushall()
+    await redis.aclose()
+
+
+@pytest.fixture
+def seeded(monkeypatch, session, toolkit):
+    @contextmanager
+    def open_session():
+        yield session
+
+    monkeypatch.setattr(_services, "open_session", open_session)
+    monkeypatch.setattr(_services, "redis_toolkit", lambda: toolkit)
+
+    user = add_owner(session)
+    vehicle = add_vehicle(session, user)
+    add_rules(session)
+    add_odometer(session, vehicle, 11_500)
+    mark_synced(session, vehicle)
+    workshop = add_workshop(session, name="VinFast Thanh Xuân", region="Hà Nội")
+    add_hours(session, workshop, open_at=time(8), close_at=time(17))
+    session.add(
+        ServicePrice(
+            workshop_id=workshop.id,
+            model_id=MODEL_ID,
+            item_code="BRAKE_INSPECTION",
+            item_name="Brake system inspection",
+            price=350_000,
+        )
+    )
+    user.preferred_workshop_id = workshop.id
+    session.add(user)
+    session.commit()
+    return user, vehicle
 
 
 @pytest.mark.asyncio
-async def test_evo200_demo_walkthrough():
-    """Kịch bản Demo Flow từ README:
-    Chủ xe Evo200 đi 5.760 km (cách lần trước 7 tháng).
-    Hỏi: Cần làm gì, giá bao nhiêu? Đặt giúp lịch chiều thứ Bảy gần Thanh Xuân.
-    """
-    print("\n" + "=" * 60)
-    print("BẮT ĐẦU KIỂM THỬ RUN_AGENT_TURN: KỊCH BẢN EVO200 WALKTHROUGH")
-    print("=" * 60)
-
-    vehicle_context = {
-        "model": "Evo200",
-        "current_odo": 5760,
-        "last_service_odo": 5100,
-        "months_since_last": 7,
-        "license_plate": "29-AA 123.45",
-    }
-
+async def test_vf6_demo_walkthrough(seeded):
+    """Chủ xe VF6 (11.500 km) hỏi cần làm gì, giá bao nhiêu, và nhờ tìm lịch chiều thứ Bảy."""
+    user, vehicle = seeded
+    vehicle_context = {"vehicle_id": str(vehicle.id), "model": "VF6", "license_plate": vehicle.license_plate}
     user_message = (
-        "Xe Evo200 của tôi đi 5.760 km, lần bảo dưỡng trước là 5.100 km cách đây 7 tháng. "
-        "Tôi cần làm gì và chi phí bao nhiêu? Đặt giúp lịch chiều thứ Bảy ở gần Thanh Xuân."
+        "Xe của tôi sắp tới cần bảo dưỡng gì và chi phí bao nhiêu? "
+        "Tìm giúp tôi khung giờ chiều thứ Bảy ở xưởng VinFast Thanh Xuân."
     )
 
     tools_called = []
@@ -52,71 +97,33 @@ async def test_evo200_demo_walkthrough():
     completed_data = None
 
     print(f"\n[CHỦ XE]: {user_message}\n")
-    print("[AI ORCHESTRATOR STREAMING]:")
-
     async for event in run_agent_turn(
         conversation_id="conv-demo-01",
-        user_id="user-evo-01",
-        vehicle_id="vh-evo-01",
+        user_id=user.user_id,
+        vehicle_id=vehicle.id,
         message=user_message,
         vehicle_context=vehicle_context,
     ):
-        event_type = event["type"]
-
-        if event_type == "tool_start":
-            tool_name = event["tool"]
-            tools_called.append(tool_name)
-            print(f"\n⚙️ [GỌI TOOL]: {tool_name} (Inputs: {event.get('input')})")
-
-        elif event_type == "tool_end":
-            print(f"   ✓ [TOOL HOÀN TẤT]: {event['tool']}")
-
-        elif event_type == "token":
-            delta = event["delta"]
-            tokens.append(delta)
-            print(delta, end="", flush=True)
-
-        elif event_type == "completed":
+        if event["type"] == "tool_start":
+            tools_called.append(event["tool"])
+            print(f"\n⚙️ [GỌI TOOL]: {event['tool']} (Inputs: {event.get('input')})")
+        elif event["type"] == "token":
+            tokens.append(event["delta"])
+            print(event["delta"], end="", flush=True)
+        elif event["type"] == "completed":
             completed_data = event["message_data"]
-            print("\n\n🏁 [HOÀN TẤT LƯỢT HỘI THOẠI]")
 
     full_response = "".join(tokens) or (completed_data["content"] if completed_data else "")
+    print(f"\n\nTools: {tools_called}")
 
-    print("\n" + "-" * 60)
-    print("KIỂM TRA CÁC RÀNG BUỘC THEO THIẾT KẾ README:")
-    print("-" * 60)
+    assert "get_due_maintenance" in tools_called
+    assert "estimate_service_cost" in tools_called
+    assert tools_called.index("get_due_maintenance") < tools_called.index("estimate_service_cost")
+    assert "get_available_slots" in tools_called
+    # Chủ xe chưa chốt giờ: chưa tạo cả đề xuất, và không tool nào tạo lịch hẹn.
+    assert "propose_booking" not in tools_called
 
-    # 1. Kiểm tra tool gọi
-    print(f"1. Danh sách tool đã gọi: {tools_called}")
-    assert "get_due_maintenance" in tools_called, "Phải gọi get_due_maintenance đầu tiên"
-    assert "estimate_service_cost" in tools_called, "Phải gọi estimate_service_cost"
-    assert "find_workshops" in tools_called, "Phải gọi find_workshops khi tìm xưởng gần Thanh Xuân"
-
-    # 2. Kiểm tra thứ tự gọi tool
-    idx_maint = tools_called.index("get_due_maintenance")
-    idx_cost = tools_called.index("estimate_service_cost")
-    assert idx_maint < idx_cost, "get_due_maintenance phải được gọi TRƯỚC estimate_service_cost"
-    print("   ✓ Thứ tự gọi tool chính xác: get_due_maintenance -> estimate_service_cost")
-
-    # 3. Ràng buộc an toàn: Chưa được tự ý tạo đơn giữ chỗ
-    assert "create_booking_draft" not in tools_called, (
-        "create_booking_draft KHÔNG ĐƯỢC gọi khi chủ xe chưa xác nhận khung giờ cụ thể!"
-    )
-    print("   ✓ Bảo đảm an toàn: Chưa gọi create_booking_draft (chờ chủ xe chốt giờ)")
-
-    # 4. Kiểm tra nội dung phản hồi
     resp_lower = full_response.lower()
-    has_maint_info = any(k in resp_lower for k in ["bảo dưỡng", "quá hạn", "7 tháng", "6 tháng"])
-    has_cost_info = any(k in resp_lower for k in ["chi phí", "giá", "miễn phí", "150", "250", "tiền công"])
-    has_slot_info = any(k in resp_lower for k in ["chiều thứ bảy", "thứ bảy", "14:00", "15:30", "16:30", "khung giờ"])
-
-    assert has_maint_info, "Phản hồi phải giải thích lý do quá hạn / mốc bảo dưỡng"
-    assert has_cost_info, "Phản hồi phải có dự toán chi phí"
-    assert has_slot_info, "Phản hồi phải đề xuất khung giờ / xưởng"
-
-    print("   ✓ Phản hồi đầy đủ thông tin: Lý do quá hạn, dự toán chi phí và đề xuất khung giờ!")
-    print("\n>>> TEST KỊCH BẢN EVO200 THÀNH CÔNG RỰC RỠ! <<<\n")
-
-
-if __name__ == "__main__":
-    asyncio.run(test_evo200_demo_walkthrough())
+    assert "12.000" in full_response or "12,000" in full_response, "Phải nêu mốc 12.000 km lấy từ dữ liệu xe"
+    assert any(k in resp_lower for k in ["chi phí", "giá", "350"]), "Phải có dự toán chi phí"
+    assert "khung giờ" in resp_lower or ":00" in resp_lower, "Phải đề xuất khung giờ"

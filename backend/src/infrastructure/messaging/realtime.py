@@ -140,6 +140,11 @@ class MessageService:
         )
         return result[0]
 
+    async def publish(self, conversation_id: UUID, message: ChatMessage) -> None:
+        """Push an already persisted chat message to live subscribers (best effort)."""
+        if message.role in (MessageRole.USER, MessageRole.ASSISTANT):
+            await self._safe_publish(conversation_id, message)
+
     async def append_many(
         self,
         conversation_id: UUID,

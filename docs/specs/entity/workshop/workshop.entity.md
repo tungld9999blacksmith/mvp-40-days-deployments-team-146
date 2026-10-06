@@ -1,5 +1,9 @@
 # Entity Specification — `workshop` (Xưởng dịch vụ)
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > **Domain:** Workshop · **Tổng quan lược đồ:** [core.entity.md](../core.entity.md)
 >
 > **Nguồn sự thật:** cột core theo `core.entity.md` v1.1 §14.2 bảng 3 (căn theo `ServiceCenter` — [proposed_erd.latest.md §3.8](../../mock-system/proposed_erd.latest.md)); cột bổ sung và CHECK theo [ENT-008 — us-009-sprint-1-spec.entity.md](../../sprint-1/entity/us-009-sprint-1-spec.entity.md#ent-008--workshop-core--mở-rộng). Tài liệu này **không thay đổi** hai nguồn trên.

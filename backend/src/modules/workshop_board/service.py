@@ -22,7 +22,6 @@ from sqlmodel import Session, select
 from src.common.core.identity.vehicle_user import VehicleUser
 from src.common.core.identity.workshop_owner import WorkshopOwner
 from src.common.core.maintenance.booking import Booking, BookingStatus
-from src.common.core.maintenance.quote import Quote
 from src.common.core.vehicle import (
     ServiceRecordSource,
     UserVehicle,
@@ -158,7 +157,6 @@ class WorkshopBoardService:
         return []
 
     def _item(self, booking: Booking, user: VehicleUser | None, vehicle: UserVehicle | None) -> dict:
-        quote = self._db.exec(select(Quote).where(Quote.booking_id == booking.id)).first()
         return {
             "booking_id": booking.id,
             "booking_code": booking.booking_code,
@@ -177,7 +175,6 @@ class WorkshopBoardService:
                 f"Mốc {booking.odo_milestone:,} km".replace(",", ".") if booking.odo_milestone else None
             ),
             "estimated_cost": booking.estimated_cost,
-            "quote": schemas.QuoteRefOut(quote_id=quote.id, status=quote.status.value.upper()) if quote else None,
             "attendance_confirmed_at": booking.attendance_confirmed_at,
             "confirm_deadline": self.confirm_deadline(booking) if booking.status == S.PENDING else None,
             "allowed_actions": self.allowed_actions(booking),

@@ -1,5 +1,9 @@
 # Entity Specification — `service_price` (Bảng giá dịch vụ của xưởng)
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > **Domain:** Workshop · **Tổng quan lược đồ:** [core.entity.md](../core.entity.md)
 >
 > **Nguồn:** entity `service_prices` (ENT-009) trong bản ERD sinh tự động ([archive/core.entity.generated.md](../archive/core.entity.generated.md)), đã **chỉnh theo quy ước core v1.1** và bảng `workshop` đã có. Thay đổi: xem §21.

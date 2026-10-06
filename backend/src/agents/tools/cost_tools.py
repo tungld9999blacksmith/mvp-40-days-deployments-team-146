@@ -1,166 +1,65 @@
 from __future__ import annotations
 
-import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
+from uuid import UUID
 
-from langchain_core.tools import tool
+from langchain_core.runnables import RunnableConfig
+from langchain_core.tools import BaseTool, tool
 
-logger = logging.getLogger(__name__)
+from src.modules.cost_estimate import errors as estimate_errors
 
-# Đơn giá tham chiếu vật tư phụ tùng tiêu hao chính hãng VinFast
-ITEM_PRICE_CATALOG: dict[str, dict[str, Any]] = {
-    "STEERING_GREASE": {
-        "name": "Mỡ bôi trơn cổ phốt & bạc đạn chuyên dụng",
-        "min_price": 50000,
-        "max_price": 80000,
-        "is_labor_free": True,
-    },
-    "BRAKE_CHECK": {
-        "name": "Dung dịch vệ sinh và bảo dưỡng cùm phanh",
-        "min_price": 60000,
-        "max_price": 90000,
-        "is_labor_free": True,
-    },
-    "CHASSIS_BOLTS": {
-        "name": "Siết ốc khung gầm theo lực tiêu chuẩn",
-        "min_price": 0,
-        "max_price": 0,
-        "is_labor_free": True,
-    },
-    "BATTERY_CHECK": {
-        "name": "Đo chẩn đoán dung lượng pin và BMS",
-        "min_price": 0,
-        "max_price": 0,
-        "is_labor_free": True,
-    },
-    "TIRE_INSPECTION": {
-        "name": "Kiểm tra và bơm chuẩn áp suất lốp",
-        "min_price": 0,
-        "max_price": 0,
-        "is_labor_free": True,
-    },
-    "FIRMWARE_UPDATE": {
-        "name": "Cập nhật firmware phần mềm chính hãng",
-        "min_price": 0,
-        "max_price": 0,
-        "is_labor_free": True,
-    },
-    "BRAKE_FLUID_REPLACE": {
-        "name": "Dầu phanh DOT4 chính hãng",
-        "min_price": 100000,
-        "max_price": 150000,
-        "is_labor_free": True,
-    },
-    "CABIN_FILTER": {
-        "name": "Lọc gió điều hòa kháng khuẩn",
-        "min_price": 250000,
-        "max_price": 350000,
-        "is_labor_free": True,
-    },
-    "COOLANT_CHECK": {
-        "name": "Kiểm tra và châm nước làm mát pin",
-        "min_price": 50000,
-        "max_price": 100000,
-        "is_labor_free": True,
-    },
-}
+from . import _services
+
+if TYPE_CHECKING:
+    from .dependency import AgentToolServices
 
 
-@tool
-def estimate_service_cost(
-    model: str,
-    item_codes: list[str],
-    workshop_id: str | None = None,
-) -> dict[str, Any]:
-    """Dự toán chi phí bảo dưỡng định kỳ dựa trên danh sách mã hạng mục item_codes.
+def build_cost_tools(services: AgentToolServices | None = None) -> list[BaseTool]:
+    """Create tools bound to these service factories."""
+    provider = services if services is not None else _services
 
-    ⚠️ RÀNG BUỘC PHỤ THUỘC (GUARDRAIL):
-    Công cụ này bắt buộc phải nhận danh sách `item_codes` từ kết quả của `get_due_maintenance`.
-    Không được tự đoán giá hoặc gọi tool này khi chưa có `item_codes`.
+    @tool
+    def estimate_service_cost(
+        config: RunnableConfig,
+        odo_milestone: int | None = None,
+        workshop_id: str | None = None,
+    ) -> dict[str, Any]:
+        """Ước tính chi phí một mốc bảo dưỡng của xe đang chọn tại một xưởng (TOOL-301).
 
-    Args:
-        model: Tên dòng xe (ví dụ: 'Evo200', 'VF5', 'VF8')
-        item_codes: Danh sách mã hạng mục bảo dưỡng (ví dụ: ['BRAKE_CHECK', 'CHASSIS_BOLTS', 'STEERING_GREASE', ...])
-        workshop_id: Mã xưởng dịch vụ (tùy chọn)
+        Giá lấy từ bảng giá của xưởng (price_source = WORKSHOP_PRICE) hoặc giá tham khảo
+        (REFERENCE_PRICE); hạng mục được bảo hành có giá 0. Không tự bịa giá.
 
-    Returns:
-        Dự toán chi phí tiền công (miễn phí theo bảo hành), chi phí vật tư và tổng ước tính.
-    """
-    # ── Guardrail: Kiểm tra tính phụ thuộc ────────────────────────────────
-    if not item_codes or not isinstance(item_codes, list) or len(item_codes) == 0:
-        return {
-            "status": "ERROR_PREREQUISITE_MISSING",
-            "error_type": "ToolDependencyError",
-            "message": (
-                "⚠️ CẢNH BÁO THỨ TỰ GỌI CÔNG CỤ: "
-                "Tool `estimate_service_cost` bắt buộc phải có danh sách mã hạng mục `item_codes` "
-                "từ kết quả của tool `get_due_maintenance`. "
-                "Vui lòng gọi `get_due_maintenance` trước để xác định chính xác các hạng mục bảo dưỡng, "
-                "sau đó truyền `item_codes` vào công cụ này!"
-            ),
-            "action_required": "call get_due_maintenance first",
-        }
+        Args:
+            odo_milestone: Mốc km cần ước tính, lấy từ next_milestone.odo_milestone_km của
+                get_due_maintenance. Bỏ trống để dùng mốc kế tiếp của xe.
+            workshop_id: workshop_id (UUID) từ find_workshops. Bỏ trống để dùng xưởng ưu tiên
+                của chủ xe, không có thì xưởng gần vị trí chính nhất.
 
-    # Tính toán chi phí
-    details = []
-    total_min = 0
-    total_max = 0
+        Returns:
+            status (READY / NO_RULE), milestone, workshop, warranty_status, items (item_name,
+            covered, price, price_source), chargeable_total, has_reference_price.
+            Lỗi MILESTONE_REQUIRED / MILESTONE_NOT_FOUND kèm details.validMilestones.
+        """
+        try:
+            workshop_uuid = UUID(workshop_id) if workshop_id else None
+        except ValueError:
+            return _services.tool_error(
+                estimate_errors.InvalidRequestError("workshop_id must come from find_workshops.")
+            )
 
-    for code in item_codes:
-        normalized_code = code.strip().upper()
-        item_info = ITEM_PRICE_CATALOG.get(
-            normalized_code,
-            {
-                "name": f"Hạng mục {normalized_code}",
-                "min_price": 20000,
-                "max_price": 50000,
-                "is_labor_free": True,
-            },
-        )
-        min_p = item_info["min_price"]
-        max_p = item_info["max_price"]
-        total_min += min_p
-        total_max += max_p
+        with provider.open_session() as session:
+            try:
+                who = _services.caller(session, config)
+                service = provider.cost_estimation_service(session)
+                vehicle = service.get_owned_active_vehicle(who.user, who.user_vehicle_id)
+                data = service.estimate_for_request(
+                    who.user, vehicle, odo_milestone=odo_milestone, workshop_id=workshop_uuid
+                )
+                return data.model_dump(mode="json")
+            except (_services.MissingCallerError, estimate_errors.CostEstimateError) as exc:
+                return _services.tool_error(exc)
 
-        price_display = (
-            "Miễn phí" if max_p == 0 else f"{min_p:,.0f}đ - {max_p:,.0f}đ" if min_p != max_p else f"{min_p:,.0f}đ"
-        )
+    return [estimate_service_cost]
 
-        details.append(
-            {
-                "code": normalized_code,
-                "name": item_info["name"],
-                "labor_fee": "0đ (Miễn phí tiền công định kỳ theo chính sách VinFast)",
-                "parts_fee": price_display,
-            }
-        )
 
-    def _fmt(val: int | float) -> str:
-        return f"{val:,.0f}".replace(",", ".") + "đ"
-
-    # Đảm bảo dải giá tiêu hao tối thiểu cho các mốc định kỳ có vật tư
-    if total_min == 0 and total_max == 0:
-        total_range = "0đ (Miễn phí hoàn toàn)"
-    elif total_min == total_max:
-        total_range = _fmt(total_min)
-    else:
-        # Dải tiêu hao chuẩn cho mốc định kỳ có phát sinh phụ tư
-        min_val = max(total_min, 150000)
-        max_val = max(total_max, 250000)
-        total_range = f"{_fmt(min_val)} - {_fmt(max_val)}"
-
-    return {
-        "status": "SUCCESS",
-        "model": model,
-        "item_count": len(item_codes),
-        "labor_cost": 0,
-        "labor_policy": "Miễn phí 100% tiền công bảo dưỡng định kỳ theo chính sách bảo hành VinFast",
-        "estimated_total": total_range,
-        "currency": "VND",
-        "details": details,
-        "note": (
-            "Tiền công được miễn phí theo chế độ bảo hành định kỳ VinFast. "
-            "Chi phí ước tính bao gồm vật tư tiêu hao (như mỡ bôi trơn cổ phốt chuyên dụng, "
-            "dung dịch làm sạch phanh). Chi phí thực tế có thể thay đổi nhẹ tùy theo hiện trạng thực tế của xe tại xưởng."
-        ),
-    }
+estimate_service_cost = build_cost_tools()[0]

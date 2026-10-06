@@ -9,10 +9,10 @@ import { getChatTransport } from '../transport/ChatTransport'
 import type { ConversationExcerpt } from '../types'
 
 /**
- * SCR-605 — read-only conversation that led to a booking / quote of the workshop
+ * SCR-605 — read-only conversation that led to a booking of the workshop
  * (US-025 FE §4.9). Collapsed by default; the API is only called when opened.
  */
-export default function ConversationExcerptPanel({ source }: { source: { type: 'booking' | 'quote'; id: string } }) {
+export default function ConversationExcerptPanel({ source }: { source: { type: 'booking'; id: string } }) {
   const [open, setOpen] = useState(false)
   const [excerpt, setExcerpt] = useState<ConversationExcerpt | null>(null)
   const [error, setError] = useState<ApiError | null>(null)
@@ -26,7 +26,7 @@ export default function ConversationExcerptPanel({ source }: { source: { type: '
       setExcerpt(await getChatTransport().getConversationExcerpt(source))
     } catch (loadError) {
       if (!isApiError(loadError)) throw loadError
-      if (isApiError(loadError, 'BOOKING_NOT_FOUND') || isApiError(loadError, 'QUOTE_NOT_FOUND')) setHidden(true)
+      if (isApiError(loadError, 'BOOKING_NOT_FOUND')) setHidden(true)
       else setError(loadError)
     } finally {
       setLoading(false)
@@ -36,7 +36,7 @@ export default function ConversationExcerptPanel({ source }: { source: { type: '
   if (hidden) return null
 
   return (
-    <section className="bg-card border border-border rounded-2xl">
+    <section className="bg-card border border-border rounded-2xl elevation-sm">
       <button
         type="button"
         aria-expanded={open}

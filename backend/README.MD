@@ -3,6 +3,25 @@
 Vector store mặc định là **Qdrant** (Cloud hoặc local), dùng chung cho RAG và tìm kiếm ngữ nghĩa trong chat.
 Xem [cấu hình Qdrant](guide/qdrant.md). PostgreSQL/Supabase vẫn lưu dữ liệu nghiệp vụ.
 
+## Đặt lịch và hội thoại
+
+- Trước khi chạy phiên bản mới, chạy `uv run alembic upgrade head` từ `backend/`.
+  Migration `c9e4a2f6b8d1` thêm bảng `booking_request`, lưu kết quả đặt lịch cùng
+  transaction với lịch hẹn để phục hồi khi mất phản hồi HTTP.
+- `POST /api/v1/bookings` nhận `Idempotency-Key` (1–128 ký tự). Khi thử lại, gửi
+  cùng khóa và payload; server trả lại cùng lịch hẹn. Dùng cùng khóa cho payload
+  khác trả `409 IDEMPOTENCY_CONFLICT`. Nếu không gửi khóa, token xác nhận được
+  dùng để nhận diện lần thử lại. Token chỉ bị xóa sau khi DB ghi thành công.
+- WebSocket `/api/v1/conversations/{id}/stream` yêu cầu frame đầu tiên
+  `{"type":"auth","token":"<Firebase ID token>"}`. Danh tính được lấy từ token;
+  frame chỉ có `userId` không còn được chấp nhận.
+- API trích đoạn hội thoại yêu cầu token chủ xưởng và kiểm tra xưởng thuộc tài
+  khoản đó; header `X-Workshop-Id` không quyết định quyền truy cập.
+- Lượt AI dùng `CHAT_RUN_TIMEOUT_SECONDS` (mặc định 30 giây). Sau khi chấp nhận
+  tin nhắn, lỗi trả bằng SSE `error` kèm `traceId`; quá thời gian có mã
+  `CHAT_TIMEOUT`. Khi hủy một lượt có thao tác ghi DB đang chạy, khóa đặt lịch
+  được giữ đến khi thao tác đó kết thúc để bảo vệ transaction.
+
 ## Giới thiệu về các cấu trúc thư mục 
 
 - `./backend/src/*`: thư mục này chứa toàn bộ src code backend, sử dụng fast-api để giao tiếp với frontend

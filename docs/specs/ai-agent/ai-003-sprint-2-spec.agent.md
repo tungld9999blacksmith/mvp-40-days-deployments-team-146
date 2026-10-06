@@ -1,5 +1,9 @@
 # AI-Agent Specification — AI-003 Cost Estimation
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Đặc tả hành vi của **Cost Estimation** — đưa ra dự toán chi phí bảo dưỡng theo model + mốc ODO. **LLM không tự cộng số**: tool tất định tính, LLM chỉ gọi tool và diễn giải.
 >
 > **Nguồn:** [00-ai-agents-proposal.md](00-ai-agents-proposal.md) (AI-003), [PRD v3.5 §F5, §7](../../product/PRD_EV_Care_MVP.md). Khi tài liệu này khác PRD/FF thì PRD/FF là chuẩn.

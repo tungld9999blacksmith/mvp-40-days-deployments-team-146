@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Literal
 from urllib.parse import quote_plus
 
-from pydantic import AliasChoices, Field
+from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Single env file for the whole repo (backend, frontend, docker compose).
@@ -40,7 +40,11 @@ class Settings(BaseSettings):
     llm_temperature: float = Field(default=0.7, ge=0.0, le=2.0)
 
     # LLM providers (standardized interface, see infrastructure/llm/)
-    llm_provider: Literal["openai", "anthropic", "gemini", "grok", "deepseek"] = "openai"
+    llm_provider: Literal["openai", "anthropic", "gemini", "grok", "deepseek", "openrouter"] = "openai"
+    openrouter_api_key: str = ""
+    openrouter_model: str = "google/gemini-3.5-flash-lite"
+    openrouter_base_url: str = "https://openrouter.ai/api/v1"
+    openrouter_max_tokens: int = Field(default=1024, ge=1)
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-opus-5"
     gemini_api_key: str = Field(
@@ -63,6 +67,9 @@ class Settings(BaseSettings):
     database_user: str = "postgres"
     database_password: str = ""
     database_sslmode: str = "prefer"
+    # Fail fast instead of hanging when the pooler stalls (shared Supabase dev DB).
+    database_connect_timeout_seconds: int = Field(default=10, ge=1)
+    database_keepalive_idle_seconds: int = Field(default=30, ge=1)
 
     # Supabase
     supabase_url: str = ""
@@ -79,6 +86,9 @@ class Settings(BaseSettings):
 
     # OEM data sync + webhook (FEAT-VEH-001, docs/specs/sprint-2/**/us-017*)
     oem_sync_interval_seconds: int = Field(default=7200, ge=60)  # Q-309: 120 minutes
+    # "static": seed one fixed random ODO per vehicle (demo, no OEM pull); "oem": pull
+    # from the OEM. Unset: static outside production, always "oem" in production.
+    oem_sync_mode: Literal["", "oem", "static"] = ""
     oem_sync_alert_failures: int = Field(default=3, ge=1)  # BR-ENT-437 / Q-312
     oem_webhook_secret: str = ""
     oem_webhook_tolerance_seconds: int = Field(default=300, ge=1)
@@ -105,6 +115,14 @@ class Settings(BaseSettings):
     booking_confirmation_token_ttl_seconds: int = Field(default=600, ge=30)  # card token
     booking_lock_ttl_seconds: int = Field(default=10, ge=1)  # Redis capacity lock (BR-001)
 
+    # Quick booking from the AI assistant (docs/specs/sprint-4/**/us-061*)
+    quick_booking_proposal_ttl_minutes: int = Field(default=30, ge=1)  # BR-1508
+    quick_booking_min_lead_minutes: int = Field(default=120, ge=0)  # BR-1504
+    quick_booking_horizon_days: int = Field(default=14, ge=1)  # BR-1504
+    quick_booking_not_due_lead_days: int = Field(default=7, ge=0)  # BR-1504 (NORMAL)
+    quick_booking_max_lookahead_days: int = Field(default=60, ge=1)  # EF-1504
+    quick_booking_max_workshops: int = Field(default=5, ge=1, le=10)  # BR-1506
+
     # Booking ticket, reminders actions & reschedule (docs/specs/sprint-3/**/us-033*, us-053*)
     feature_reschedule_enabled: bool = True  # Q-703 — rescheduleMode F6B vs GUIDE
     reschedule_min_lead_minutes: int = Field(default=60, ge=0)  # BR-1206
@@ -125,13 +143,7 @@ class Settings(BaseSettings):
     no_show_grace_minutes: int = Field(default=30, ge=0)  # BR-806
     slot_block_max_days_ahead: int = Field(default=30, ge=0)  # BR-809
 
-    # Quotes with workshop approval (docs/specs/sprint-3/**/us-049*)
-    quote_default_validity_days: int = Field(default=7, ge=1)
-    quote_max_validity_days: int = Field(default=30, ge=1)
-    quote_draft_refresh_hours: int = Field(default=24, ge=1)  # Q-1104
-    quote_draft_ttl_days: int = Field(default=7, ge=1)  # BR-1112 — purge job
-
-    # Post-service follow-up & support tickets (docs/specs/sprint-4/**/us-041*)
+    # Post-service follow-up (docs/specs/sprint-4/**/us-041*)
     follow_up_delay_hours: int = Field(default=12, ge=0)  # BR-902
     follow_up_response_window_hours: int = Field(default=72, ge=1)  # BR-905
     follow_up_quiet_start_hour: int = Field(default=21, ge=0, le=23)
@@ -162,6 +174,16 @@ class Settings(BaseSettings):
     @property
     def workshop_consent_policy_version_list(self) -> list[str]:
         return [v.strip() for v in self.workshop_consent_policy_versions.split(",") if v.strip()]
+
+    @model_validator(mode="after")
+    def _no_demo_odometer_in_production(self) -> "Settings":
+        if self.app_env == "production" and self.oem_sync_mode == "static":
+            raise ValueError("OEM_SYNC_MODE=static writes made-up odometer readings; it is not allowed in production")
+        return self
+
+    def uses_static_odometer(self) -> bool:
+        mode = self.oem_sync_mode or ("oem" if self.app_env == "production" else "static")
+        return mode == "static"
 
     @property
     def sqlalchemy_database_url(self) -> str:

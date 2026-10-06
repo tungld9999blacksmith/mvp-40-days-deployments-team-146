@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { isApiError } from '@/shared/api/client'
 import Button from '@/shared/ui/Button'
@@ -6,14 +6,16 @@ import Dialog from '@/shared/ui/Dialog'
 import { useToast } from '@/shared/ui/Toast'
 import { track } from '@/shared/utils/track'
 import { useMaintenanceStatus } from '@/features/vehicles/hooks/useVehicleQueries'
+import { getCostEstimate } from '@/features/estimate/api'
 import { createBooking } from '../api'
+import { invalidateUpcomingBookings } from '../hooks/useUpcomingBookings'
 import AlternativesSheet from '../components/AlternativesSheet'
-import BookingSummaryCard from '../components/BookingSummaryCard'
+import BookingSummaryCard, { type SummaryCost } from '../components/BookingSummaryCard'
 import { useBookingWizard } from '../context/BookingWizardContext'
 import { useSlotRequest } from '../hooks/useSlotRequest'
 import { useBookingMilestone } from './BookingLayout'
 import type { Alternative, Booking } from '../types'
-import { bookingErrorMessage, slotLabel } from '../utils'
+import { bookingErrorMessage } from '../utils'
 
 /** Router state handed to the ticket screen (no GET /bookings/{id} yet — us-053). */
 export interface TicketState {
@@ -32,8 +34,30 @@ export default function BookingConfirm() {
   const milestone = useBookingMilestone()
   const { pending, alternatives, showAlternatives, closeAlternatives, requestSlot } = useSlotRequest()
   const [submitting, setSubmitting] = useState(false)
-  const [blocking, setBlocking] = useState<'OPEN_BOOKING_EXISTS' | 'QUOTE_EXPIRED' | null>(null)
+  const [blocking, setBlocking] = useState<'OPEN_BOOKING_EXISTS' | null>(null)
+  const [cost, setCost] = useState<SummaryCost>({ kind: 'LOADING' })
+  /** Booked: the card is cleared while the ticket opens; nothing may redirect back to the slots. */
+  const booked = useRef(false)
+  const cardWorkshop = card?.workshopId ?? null
 
+  // FE §3.5 — the us-045 estimate of the same workshop + milestone.
+  useEffect(() => {
+    let cancelled = false
+    const done = (value: SummaryCost) => !cancelled && setCost(value)
+    setCost({ kind: 'LOADING' })
+    if (cardWorkshop && milestone !== null) {
+      getCostEstimate(vehicle.userVehicleId, { odoMilestone: milestone, workshopId: cardWorkshop })
+        .then(estimate => done(estimate.status === 'READY' ? { kind: 'ESTIMATE', amount: estimate.chargeableTotal } : { kind: 'NONE' }))
+        .catch(() => done({ kind: 'NONE' }))
+    } else {
+      done({ kind: 'NONE' })
+    }
+    return () => {
+      cancelled = true
+    }
+  }, [cardWorkshop, milestone, vehicle.userVehicleId])
+
+  if (booked.current) return null
   // Token lives in memory only: after a reload the owner picks the slot again (FE §10).
   if (!card || card.workshopId !== params.workshopId) {
     return <Navigate to={`/booking/slots${searchFor({ timeSlot: null })}`} replace />
@@ -44,8 +68,7 @@ export default function BookingConfirm() {
   const next = status.data?.nextMilestone ?? null
   const items = next && (params.odoMilestone === null || params.odoMilestone === next.odoMilestoneKm) ? next.items : []
 
-  const recheck = (quoteId: string | null = params.quoteId) =>
-    void requestSlot({ workshopId: current.workshopId, date: current.date, timeSlot: current.timeSlot }, { quoteId })
+  const recheck = () => void requestSlot({ workshopId: current.workshopId, date: current.date, timeSlot: current.timeSlot })
 
   async function confirm() {
     setSubmitting(true)
@@ -53,8 +76,8 @@ export default function BookingConfirm() {
       const booking = await createBooking(
         {
           confirmationToken: current.confirmationToken,
+          ...(params.proposalId ? { proposalId: params.proposalId } : {}),
           userVehicleId: vehicle.userVehicleId,
-          ...(params.quoteId ? { quoteId: params.quoteId } : {}),
           ...(milestone !== null ? { milestoneRef: String(milestone) } : {}),
           ...(note.trim() ? { note: note.trim() } : {}),
         },
@@ -62,11 +85,12 @@ export default function BookingConfirm() {
       )
       track('booking_confirmed', {
         status: booking.status.toUpperCase(),
-        hasQuote: Boolean(params.quoteId),
         secondsFromStart: Math.round((Date.now() - startedAt) / 1000),
       })
+      booked.current = true
       setCard(null)
       setNote('')
+      invalidateUpcomingBookings()
       const state: TicketState = { booking, workshopAddress: workshop?.address || null }
       navigate(`/bookings/${encodeURIComponent(booking.bookingId)}`, { replace: true, state })
     } catch (reason) {
@@ -88,7 +112,7 @@ export default function BookingConfirm() {
         recheck()
         return
       }
-      if (reason.code === 'OPEN_BOOKING_EXISTS' || reason.code === 'QUOTE_EXPIRED') {
+      if (reason.code === 'OPEN_BOOKING_EXISTS') {
         setBlocking(reason.code)
         return
       }
@@ -109,7 +133,7 @@ export default function BookingConfirm() {
         vehicle={vehicle}
         odoMilestone={milestone}
         items={items}
-        quoteId={params.quoteId}
+        cost={cost}
         tokenExpiresAt={current.expiresAt}
         submitting={submitting || pending !== null}
         note={note}
@@ -141,28 +165,6 @@ export default function BookingConfirm() {
               Đóng
             </Button>
             <Button onClick={() => navigate('/dashboard')}>Về trang chủ</Button>
-          </>
-        }
-      />
-
-      <Dialog
-        open={blocking === 'QUOTE_EXPIRED'}
-        onClose={() => setBlocking(null)}
-        title="Báo giá đã hết hiệu lực"
-        description={`Bạn vẫn có thể giữ khung ${slotLabel(current.timeSlot)} mà không kèm báo giá.`}
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setBlocking(null)}>
-              Để sau
-            </Button>
-            <Button
-              onClick={() => {
-                setBlocking(null)
-                recheck(null)
-              }}
-            >
-              Đặt không kèm báo giá
-            </Button>
           </>
         }
       />

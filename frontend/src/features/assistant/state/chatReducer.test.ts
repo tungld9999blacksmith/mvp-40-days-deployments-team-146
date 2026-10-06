@@ -23,6 +23,12 @@ describe('mergeMessages', () => {
     expect(mergeMessages(live, olderPage).map(m => m.seq)).toEqual([1, 2, 3, 4])
   })
 
+  it('replaces the card of a message with the same id (us-061 live proposal state)', () => {
+    const before = { ...message('a', 1, 'assistant'), card: { type: 'BOOKING_PROPOSAL', proposalId: 'p', status: 'PROPOSED' } }
+    const after = { ...before, card: { ...before.card, status: 'CONFIRMED' } }
+    expect(mergeMessages([before], [after])[0].card?.status).toBe('CONFIRMED')
+  })
+
   it('drops roles other than user/assistant (tool messages are never shown)', () => {
     expect(mergeMessages([], [message('t', 5, 'tool')])).toEqual([])
   })

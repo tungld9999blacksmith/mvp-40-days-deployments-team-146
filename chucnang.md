@@ -3,6 +3,8 @@
 EV Care là nền tảng hậu mãi cho xe điện VinFast. Có hai nhóm người dùng: **chủ xe** và **chủ xưởng / kỹ thuật viên dịch vụ**.
 
 > Cập nhật: 29/09/2026, theo nhánh `develop` (đã merge `phuoctien`, `tungld-backend`, `thaidinh`).
+>
+> 02/10/2026: đã bỏ khỏi phạm vi **báo giá / duyệt báo giá**, **phiếu hỗ trợ** và **kết nối Discord**. Nhắc bảo dưỡng chỉ hiện trong mục Thông báo của app.
 
 ---
 
@@ -15,7 +17,7 @@ Nguyên tắc: **ai làm chức năng nào ở frontend thì làm luôn phần b
 | **Lê Đức Tùng** | Tài khoản, onboarding, xưởng dịch vụ | Đăng nhập, Khung ứng dụng, Dashboard kỹ thuật viên, Khách hàng | Xác thực + onboarding chủ xe, xác thực + onboarding chủ xưởng, giám sát, tác vụ nền của xưởng và phiên đăng nhập |
 | **Mai Văn Trung** | Xe và bảo dưỡng | Tổng quan, Xe của tôi, Lịch sử dịch vụ, Thông báo | Xe của chủ xe, cài đặt nhắc bảo dưỡng, tích hợp hãng xe (OEM), đồng bộ OEM, gửi nhắc bảo dưỡng |
 | **Đinh Kim Thái** | AI Trợ lý | AI Trợ lý, Ước tính chi phí | Hội thoại AI, LangGraph Agent, Retrieval, tool cho Agent, LLM, embedding |
-| **Nguyễn Lê Phước Tiến** | Đặt lịch và báo giá | Đặt lịch, Đặt lịch thành công, Báo giá, Duyệt báo giá | API đặt lịch, API báo giá / duyệt báo giá (chưa có, cần làm mới), RAG Indexing |
+| **Nguyễn Lê Phước Tiến** | Đặt lịch | Đặt lịch, Đặt lịch thành công | API đặt lịch, RAG Indexing |
 
 ---
 
@@ -42,7 +44,7 @@ Công nghệ: React 19, React Router 7, Tailwind CSS 4, lucide-react.
 | Trang | Đường dẫn | Chức năng | Người phụ trách |
 |---|---|---|---|
 | Đăng nhập | `/` | Form email/mật khẩu, "Ghi nhớ đăng nhập", chọn vai trò Chủ xe / Kỹ thuật viên | Lê Đức Tùng |
-| Thông báo | `/notifications` | Danh sách thông báo (nhắc bảo dưỡng, báo giá, lịch hẹn) | Mai Văn Trung |
+| Thông báo | `/notifications` | Danh sách thông báo (nhắc bảo dưỡng, lịch hẹn, khảo sát sau dịch vụ) | Mai Văn Trung |
 | Khung ứng dụng | — | Sidebar theo vai trò, ô tìm kiếm, chuông thông báo, thông tin người dùng, Hỗ trợ, Đăng xuất | Lê Đức Tùng |
 
 ### 2.2. Chủ xe
@@ -61,9 +63,7 @@ Công nghệ: React 19, React Router 7, Tailwind CSS 4, lucide-react.
 
 | Trang | Đường dẫn | Chức năng | Người phụ trách |
 |---|---|---|---|
-| Dashboard kỹ thuật viên | `/technician` | Lịch hẹn hôm nay, báo giá chờ duyệt | Lê Đức Tùng |
-| Báo giá | `/technician/quotes` | Danh sách yêu cầu duyệt báo giá | Nguyễn Lê Phước Tiến |
-| Duyệt báo giá | `/technician/quote-review` | Xem thông tin khách hàng và dịch vụ AI gợi ý, ghi chú kỹ thuật viên, phê duyệt hoặc từ chối (khách hàng được thông báo) | Nguyễn Lê Phước Tiến |
+| Dashboard kỹ thuật viên | `/technician` | Lịch hẹn hôm nay | Lê Đức Tùng |
 | Khách hàng | `/customers` | Có trong menu nhưng **chưa có trang** (chuyển về trang đăng nhập) | Lê Đức Tùng |
 
 ---
@@ -112,7 +112,7 @@ Ngoài ra còn có module mẫu `/vehicles` (CRUD: tạo, liệt kê, xem, sửa
 | GET | `/notification-settings` | Xem công tắc nhắc, số ngày nhắc trước, kênh nhận | Mai Văn Trung |
 | PUT | `/notification-settings` | Lưu các cài đặt trên | Mai Văn Trung |
 
-Kênh gửi hiện có: Discord (adapter ghi log).
+Nhắc bảo dưỡng hiện trong mục Thông báo của app. Các kênh ngoài (Zalo, Telegram, SMS, Email) có trong danh sách nhưng chưa có adapter nên hiện "Sắp có".
 
 ### 3.5. Chủ xưởng dịch vụ
 
@@ -182,12 +182,11 @@ Khi phát triển, hệ thống hãng được giả lập bằng `mock-ev-syste
 |---|---|
 | Nối trang Đăng nhập với Firebase + `/oauth/sign-in`, thêm luồng onboarding chủ xe và chủ xưởng | Lê Đức Tùng |
 | Làm trang Khách hàng (`/customers`) và API cho trang này | Lê Đức Tùng |
-| Nối Dashboard kỹ thuật viên với dữ liệu thật (lịch hẹn hôm nay, báo giá chờ duyệt) | Lê Đức Tùng |
+| Nối Dashboard kỹ thuật viên với dữ liệu thật (lịch hẹn hôm nay) | Lê Đức Tùng |
 | Nối Tổng quan, Xe của tôi với `/user-vehicles` | Mai Văn Trung |
 | Làm API **lịch sử dịch vụ** và nối trang `/history` | Mai Văn Trung |
 | Nối trang Thông báo với cài đặt nhắc bảo dưỡng và danh sách thông báo | Mai Văn Trung |
 | Frontend gọi `POST /api/v1/chat` nhưng backend chưa có endpoint này (chỉ có `/conversations`): thống nhất API và nối trang AI Trợ lý | Đinh Kim Thái |
 | Làm API ước tính chi phí từ dịch vụ AI gợi ý | Đinh Kim Thái |
 | Làm API **đặt lịch** (xưởng gần nhất, khung giờ, xác nhận) và nối trang Đặt lịch | Nguyễn Lê Phước Tiến |
-| Làm API **báo giá / duyệt báo giá** và nối hai trang báo giá của kỹ thuật viên | Nguyễn Lê Phước Tiến |
 | Khai báo `html2text` trong dependency để các test RAG chạy được | Nguyễn Lê Phước Tiến |

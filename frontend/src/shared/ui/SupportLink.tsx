@@ -14,16 +14,17 @@ export default function SupportLink({
   className,
 }: {
   label?: string
-  variant?: 'primary' | 'secondary' | 'ghost'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'sidebar'
   className?: string
 }) {
   const toast = useToast()
   const style = cn(
     'inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors',
-    variant === 'primary' && 'justify-center bg-emerald text-background font-semibold hover:bg-emerald-bright',
+    variant === 'primary' && 'justify-center bg-brand-gradient text-on-brand font-semibold glow-emerald hover:brightness-110',
     variant === 'secondary' &&
       'justify-center bg-card border border-border text-muted hover:text-foreground hover:bg-card-hover',
-    variant === 'ghost' && 'w-full text-muted hover:text-foreground hover:bg-card',
+    variant === 'ghost' && 'w-full text-muted hover:text-foreground hover:bg-foreground/5',
+    variant === 'sidebar' && 'w-full text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-hover',
     className,
   )
   if (SUPPORT_URL) {

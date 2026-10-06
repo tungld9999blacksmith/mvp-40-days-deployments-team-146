@@ -2,8 +2,8 @@
 
 Columns and lifecycle follow ``docs/specs/entity/crm/follow_up.entity.md``.
 At most one follow-up per booking; it is sent 12 hours after the booking
-becomes ``completed`` (Q-412, BR-ENT-421). ``has_issue`` escalates to a
-``support_ticket`` (BR-ENT-422).
+becomes ``completed`` (Q-412, BR-ENT-421). ``has_issue`` only records that the
+answer reported a problem; it does not open any ticket.
 """
 
 from datetime import datetime, timedelta

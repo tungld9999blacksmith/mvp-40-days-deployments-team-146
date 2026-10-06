@@ -8,7 +8,6 @@ from datetime import UTC, date, datetime, time
 import pytest
 from sqlmodel import select
 
-from src.common.core.identity import DiscordLinkStatus, UserDiscordLink
 from src.common.core.identity.vehicle_user import UserStatus
 from src.common.core.maintenance import Booking, BookingStatus, Reminder
 from src.common.core.maintenance.reminder import ReminderChannel, ReminderLevel
@@ -19,7 +18,6 @@ from src.common.core.notification import (
     UserNotificationSetting,
 )
 from src.common.core.workshop.workshop import Workshop, WorkshopStatus
-from src.modules.notification.adapters import LoggingDiscordAdapter
 from src.modules.notification.channels import (
     DeliveryResult,
     NotificationChannelAdapter,
@@ -33,7 +31,6 @@ from src.modules.notification.reminder_service import (
 from src.modules.user_vehicle.service import UserVehicleService
 from tests._user_vehicle import (
     RecordingScheduler,
-    add_discord_link,
     add_odometer,
     add_owner,
     add_rules,
@@ -72,6 +69,13 @@ def owner(session):
 
 
 @pytest.fixture
+def zalo_on(session, owner):
+    """External channels are opt-in (default: in-app feed only); turn on the test channel."""
+    session.add(UserNotificationChannel(user_id=owner.user_id, channel=ReminderChannel.ZALO))
+    session.commit()
+
+
+@pytest.fixture
 def vehicle(session, owner):
     """VF6 bought 2025-10-15, rules seeded, synced, 5,000 km (far from the km threshold)."""
     vehicle = add_vehicle(session, owner)
@@ -92,8 +96,8 @@ def _service(session, adapters, now, **kwargs) -> MaintenanceReminderService:
     )
 
 
-def _discord(*results: DeliveryResult) -> ScriptedAdapter:
-    return ScriptedAdapter(ReminderChannel.DISCORD, *results)
+def _zalo(*results: DeliveryResult) -> ScriptedAdapter:
+    return ScriptedAdapter(ReminderChannel.ZALO, *results)
 
 
 def _deliveries(session) -> list[ReminderDelivery]:
@@ -104,28 +108,28 @@ def _deliveries(session) -> list[ReminderDelivery]:
 
 
 @pytest.mark.asyncio
-async def test_reminds_two_days_before_by_default_ac501(session, vehicle):
-    discord = _discord()
+async def test_reminds_two_days_before_by_default_ac501(session, vehicle, zalo_on):
+    zalo = _zalo()
 
-    outcome = await _service(session, [discord], TWO_DAYS_BEFORE).remind(vehicle.id)
+    outcome = await _service(session, [zalo], TWO_DAYS_BEFORE).remind(vehicle.id)
 
     assert outcome.created_level is ReminderLevel.EARLY and outcome.deliveries_sent == 1
     (reminder,) = session.exec(select(Reminder)).all()
     assert reminder.target_odo_milestone == 12_000 and not reminder.is_resolved
     (delivery,) = _deliveries(session)
-    assert delivery.channel is ReminderChannel.DISCORD
+    assert delivery.channel is ReminderChannel.ZALO
     assert delivery.status is DeliveryStatus.SENT and delivery.attempts == 1
-    (_, message) = discord.calls[0]
+    (_, message) = zalo.calls[0]
     assert "12,000 km / 12 months" in message.body and "30A12345" not in message.body
 
 
 @pytest.mark.asyncio
 async def test_no_reminder_before_the_lead_window(session, vehicle):
-    discord = _discord()
+    zalo = _zalo()
 
-    outcome = await _service(session, [discord], FIVE_DAYS_BEFORE).remind(vehicle.id)
+    outcome = await _service(session, [zalo], FIVE_DAYS_BEFORE).remind(vehicle.id)
 
-    assert outcome.created_level is None and discord.calls == []
+    assert outcome.created_level is None and zalo.calls == []
     assert session.exec(select(Reminder)).all() == []
 
 
@@ -134,14 +138,14 @@ async def test_owner_lead_days_apply_ac502(session, vehicle, owner):
     session.add(UserNotificationSetting(user_id=owner.user_id, reminder_lead_days=5))
     session.commit()
 
-    outcome = await _service(session, [_discord()], FIVE_DAYS_BEFORE).remind(vehicle.id)
+    outcome = await _service(session, [_zalo()], FIVE_DAYS_BEFORE).remind(vehicle.id)
 
     assert outcome.created_level is ReminderLevel.EARLY
 
 
 @pytest.mark.asyncio
 async def test_default_lead_days_come_from_config(session, vehicle):
-    outcome = await _service(session, [_discord()], FIVE_DAYS_BEFORE, default_lead_days=7).remind(vehicle.id)
+    outcome = await _service(session, [_zalo()], FIVE_DAYS_BEFORE, default_lead_days=7).remind(vehicle.id)
 
     assert outcome.created_level is ReminderLevel.EARLY
 
@@ -150,51 +154,51 @@ async def test_default_lead_days_come_from_config(session, vehicle):
 async def test_km_threshold_reminds_before_the_date_af502(session, vehicle):
     add_odometer(session, vehicle, 11_700, FIVE_DAYS_BEFORE)
 
-    outcome = await _service(session, [_discord()], FIVE_DAYS_BEFORE).remind(vehicle.id)
+    outcome = await _service(session, [_zalo()], FIVE_DAYS_BEFORE).remind(vehicle.id)
 
     assert outcome.created_level is ReminderLevel.EARLY
 
 
 @pytest.mark.asyncio
-async def test_overdue_sends_expired_once_ac504(session, vehicle):
-    discord = _discord()
-    service = _service(session, [discord], THREE_DAYS_LATE)
+async def test_overdue_sends_expired_once_ac504(session, vehicle, zalo_on):
+    zalo = _zalo()
+    service = _service(session, [zalo], THREE_DAYS_LATE)
 
     first = await service.remind(vehicle.id)
     second = await service.remind(vehicle.id)
 
     assert first.created_level is ReminderLevel.EXPIRED and first.deliveries_sent == 1
     assert second.created_level is None and second.deliveries_sent == 0
-    assert len(discord.calls) == 1
-    assert "overdue" in discord.calls[0][1].body
+    assert len(zalo.calls) == 1
+    assert "overdue" in zalo.calls[0][1].body
 
 
 # ── Idempotency (BR-502, AC-503) ────────────────────────────────────────────
 
 
 @pytest.mark.asyncio
-async def test_same_level_is_never_sent_twice_ac503(session, vehicle):
-    discord = _discord()
-    service = _service(session, [discord], TWO_DAYS_BEFORE)
+async def test_same_level_is_never_sent_twice_ac503(session, vehicle, zalo_on):
+    zalo = _zalo()
+    service = _service(session, [zalo], TWO_DAYS_BEFORE)
 
     await service.remind(vehicle.id)
     again = await service.remind(vehicle.id)
 
     assert again.created_level is None and again.deliveries_sent == 0
-    assert len(discord.calls) == 1
+    assert len(zalo.calls) == 1
     assert len(session.exec(select(Reminder)).all()) == 1
 
 
 @pytest.mark.asyncio
-async def test_early_then_expired_are_two_reminders(session, vehicle):
-    discord = _discord()
-    await _service(session, [discord], TWO_DAYS_BEFORE).remind(vehicle.id)
+async def test_early_then_expired_are_two_reminders(session, vehicle, zalo_on):
+    zalo = _zalo()
+    await _service(session, [zalo], TWO_DAYS_BEFORE).remind(vehicle.id)
 
-    await _service(session, [discord], THREE_DAYS_LATE).remind(vehicle.id)
+    await _service(session, [zalo], THREE_DAYS_LATE).remind(vehicle.id)
 
     levels = {r.reminder_level for r in session.exec(select(Reminder)).all()}
     assert levels == {ReminderLevel.EARLY, ReminderLevel.EXPIRED}
-    assert len(discord.calls) == 2
+    assert len(zalo.calls) == 2
 
 
 # ── Skips ───────────────────────────────────────────────────────────────────
@@ -205,16 +209,16 @@ async def test_disabled_reminders_are_skipped_ac506(session, vehicle, owner):
     session.add(UserNotificationSetting(user_id=owner.user_id, reminders_enabled=False))
     session.commit()
 
-    outcome = await _service(session, [_discord()], TWO_DAYS_BEFORE).remind(vehicle.id)
+    outcome = await _service(session, [_zalo()], TWO_DAYS_BEFORE).remind(vehicle.id)
 
     assert (outcome.status, outcome.reason) == ("skipped", "REMINDERS_DISABLED")
     assert session.exec(select(Reminder)).all() == []
 
 
 @pytest.mark.asyncio
-async def test_open_booking_stops_and_closes_reminders_ac505(session, vehicle, owner):
-    discord = _discord()
-    await _service(session, [discord], TWO_DAYS_BEFORE).remind(vehicle.id)
+async def test_open_booking_stops_and_closes_reminders_ac505(session, vehicle, owner, zalo_on):
+    zalo = _zalo()
+    await _service(session, [zalo], TWO_DAYS_BEFORE).remind(vehicle.id)
     workshop = Workshop(
         external_center_id="SC-01",
         name="Workshop",
@@ -239,18 +243,18 @@ async def test_open_booking_stops_and_closes_reminders_ac505(session, vehicle, o
     )
     session.commit()
 
-    outcome = await _service(session, [discord], THREE_DAYS_LATE.replace(day=13)).remind(vehicle.id)
+    outcome = await _service(session, [zalo], THREE_DAYS_LATE.replace(day=13)).remind(vehicle.id)
 
     assert (outcome.status, outcome.reason) == ("skipped", "HAS_BOOKING")
     assert all(r.is_resolved for r in session.exec(select(Reminder)).all())
-    assert len(discord.calls) == 1  # nothing new was sent
+    assert len(zalo.calls) == 1  # nothing new was sent
 
 
 @pytest.mark.asyncio
 async def test_unknown_status_is_skipped_ef504(session, owner):
     vehicle = add_vehicle(session, owner)  # never synced
 
-    outcome = await _service(session, [_discord()], TWO_DAYS_BEFORE).remind(vehicle.id)
+    outcome = await _service(session, [_zalo()], TWO_DAYS_BEFORE).remind(vehicle.id)
 
     assert (outcome.status, outcome.reason) == ("skipped", "STATUS_UNKNOWN")
 
@@ -261,7 +265,7 @@ async def test_inactive_owner_is_skipped_br510(session, vehicle, owner):
     session.add(owner)
     session.commit()
 
-    outcome = await _service(session, [_discord()], TWO_DAYS_BEFORE).remind(vehicle.id)
+    outcome = await _service(session, [_zalo()], TWO_DAYS_BEFORE).remind(vehicle.id)
 
     assert (outcome.status, outcome.reason) == ("skipped", "USER_NOT_ACTIVE")
     assert list_eligible_vehicle_ids(session) == []
@@ -269,8 +273,8 @@ async def test_inactive_owner_is_skipped_br510(session, vehicle, owner):
 
 @pytest.mark.asyncio
 async def test_obsolete_milestone_reminders_are_closed(session, vehicle):
-    discord = _discord()
-    await _service(session, [discord], TWO_DAYS_BEFORE).remind(vehicle.id)
+    zalo = _zalo()
+    await _service(session, [zalo], TWO_DAYS_BEFORE).remind(vehicle.id)
     # The owner serviced the vehicle: the next milestone is now 24,000 km.
     from src.common.core.vehicle import ServiceRecordSource, VehicleServiceRecord
 
@@ -285,7 +289,7 @@ async def test_obsolete_milestone_reminders_are_closed(session, vehicle):
     )
     session.commit()
 
-    await _service(session, [discord], TWO_DAYS_BEFORE).remind(vehicle.id)
+    await _service(session, [zalo], TWO_DAYS_BEFORE).remind(vehicle.id)
 
     (old,) = session.exec(select(Reminder)).all()
     assert old.target_odo_milestone == 12_000 and old.is_resolved
@@ -295,81 +299,72 @@ async def test_obsolete_milestone_reminders_are_closed(session, vehicle):
 
 
 @pytest.mark.asyncio
-async def test_no_recipient_is_recorded_and_not_retried_ac507(session, vehicle):
-    discord = _discord(DeliveryResult.no_recipient())
-    service = _service(session, [discord], TWO_DAYS_BEFORE)
+async def test_without_external_channel_the_reminder_is_in_app_only(session, vehicle):
+    outcome = await _service(session, [_zalo()], TWO_DAYS_BEFORE).remind(vehicle.id)
+
+    assert outcome.created_level is ReminderLevel.EARLY and outcome.deliveries_sent == 0
+    (reminder,) = session.exec(select(Reminder)).all()
+    assert reminder.channel is ReminderChannel.IN_APP
+    assert _deliveries(session) == []
+
+
+@pytest.mark.asyncio
+async def test_no_recipient_is_recorded_and_not_retried_ac507(session, vehicle, zalo_on):
+    zalo = _zalo(DeliveryResult.no_recipient())
+    service = _service(session, [zalo], TWO_DAYS_BEFORE)
 
     await service.remind(vehicle.id)
     await service.remind(vehicle.id)
 
     (delivery,) = _deliveries(session)
     assert delivery.status is DeliveryStatus.NO_RECIPIENT and delivery.attempts == 1
-    assert len(discord.calls) == 1
-
-
-@pytest.mark.asyncio
-async def test_logging_discord_adapter_needs_an_active_link(session, vehicle, owner):
-    service = _service(session, [LoggingDiscordAdapter(session)], TWO_DAYS_BEFORE)
-
-    await service.remind(vehicle.id)
-    assert _deliveries(session)[0].status is DeliveryStatus.NO_RECIPIENT
-
-
-@pytest.mark.asyncio
-async def test_logging_discord_adapter_sends_to_active_link(session, vehicle, owner):
-    add_discord_link(session, owner)
-    service = _service(session, [LoggingDiscordAdapter(session, clock=lambda: TWO_DAYS_BEFORE)], TWO_DAYS_BEFORE)
-
-    outcome = await service.remind(vehicle.id)
-
-    assert outcome.deliveries_sent == 1
-    assert session.get(UserDiscordLink, owner.user_id).last_delivered_at is not None
+    assert len(zalo.calls) == 1
 
 
 @pytest.mark.asyncio
 async def test_every_enabled_channel_gets_a_delivery_af503(session, vehicle, owner):
-    session.add(UserNotificationChannel(user_id=owner.user_id, channel=ReminderChannel.DISCORD))
+    session.add(UserNotificationChannel(user_id=owner.user_id, channel=ReminderChannel.ZALO))
     session.add(UserNotificationChannel(user_id=owner.user_id, channel=ReminderChannel.TELEGRAM))
     session.commit()
-    discord = _discord()
+    zalo = _zalo()
     telegram = ScriptedAdapter(ReminderChannel.TELEGRAM)
 
-    outcome = await _service(session, [discord, telegram], TWO_DAYS_BEFORE).remind(vehicle.id)
+    outcome = await _service(session, [zalo, telegram], TWO_DAYS_BEFORE).remind(vehicle.id)
 
     assert outcome.deliveries_sent == 2
     assert {d.channel for d in _deliveries(session)} == {
-        ReminderChannel.DISCORD,
+        ReminderChannel.ZALO,
         ReminderChannel.TELEGRAM,
     }
 
 
 @pytest.mark.asyncio
 async def test_disabled_channel_is_not_used(session, vehicle, owner):
-    session.add(UserNotificationChannel(user_id=owner.user_id, channel=ReminderChannel.DISCORD, is_enabled=False))
+    session.add(UserNotificationChannel(user_id=owner.user_id, channel=ReminderChannel.ZALO, is_enabled=False))
     session.add(UserNotificationChannel(user_id=owner.user_id, channel=ReminderChannel.TELEGRAM))
     session.commit()
-    discord = _discord()
+    zalo = _zalo()
     telegram = ScriptedAdapter(ReminderChannel.TELEGRAM)
 
-    await _service(session, [discord, telegram], TWO_DAYS_BEFORE).remind(vehicle.id)
+    await _service(session, [zalo, telegram], TWO_DAYS_BEFORE).remind(vehicle.id)
 
-    assert discord.calls == [] and len(telegram.calls) == 1
+    assert zalo.calls == [] and len(telegram.calls) == 1
 
 
 @pytest.mark.asyncio
 async def test_one_failing_channel_does_not_block_the_other(session, vehicle, owner):
-    session.add(UserNotificationChannel(user_id=owner.user_id, channel=ReminderChannel.DISCORD))
+    session.add(UserNotificationChannel(user_id=owner.user_id, channel=ReminderChannel.ZALO))
     session.add(UserNotificationChannel(user_id=owner.user_id, channel=ReminderChannel.TELEGRAM))
     session.commit()
-    discord = _discord(DeliveryResult.failed("TIMEOUT"))
+    zalo = _zalo(DeliveryResult.failed("TIMEOUT"))
     telegram = ScriptedAdapter(ReminderChannel.TELEGRAM)
 
-    outcome = await _service(session, [discord, telegram], TWO_DAYS_BEFORE).remind(vehicle.id)
+    outcome = await _service(session, [zalo, telegram], TWO_DAYS_BEFORE).remind(vehicle.id)
 
     statuses = {d.channel: d.status for d in _deliveries(session)}
     assert outcome.deliveries_sent == 1
     assert statuses == {
-        ReminderChannel.DISCORD: DeliveryStatus.FAILED,
+        ReminderChannel.ZALO: DeliveryStatus.FAILED,
         ReminderChannel.TELEGRAM: DeliveryStatus.SENT,
     }
 
@@ -378,10 +373,10 @@ async def test_one_failing_channel_does_not_block_the_other(session, vehicle, ow
 
 
 @pytest.mark.asyncio
-async def test_transient_failures_are_retried_up_to_the_limit_ac508(session, vehicle, caplog):
+async def test_transient_failures_are_retried_up_to_the_limit_ac508(session, vehicle, caplog, zalo_on):
     timeout = DeliveryResult.failed("TIMEOUT")
-    discord = _discord(timeout, timeout, timeout, timeout)
-    service = _service(session, [discord], TWO_DAYS_BEFORE, max_attempts=3)
+    zalo = _zalo(timeout, timeout, timeout, timeout)
+    service = _service(session, [zalo], TWO_DAYS_BEFORE, max_attempts=3)
 
     with caplog.at_level(logging.ERROR):
         for _ in range(5):
@@ -389,14 +384,14 @@ async def test_transient_failures_are_retried_up_to_the_limit_ac508(session, veh
 
     (delivery,) = _deliveries(session)
     assert delivery.status is DeliveryStatus.FAILED and delivery.attempts == 3
-    assert len(discord.calls) == 3
+    assert len(zalo.calls) == 3
     assert "failed for good" in caplog.text
 
 
 @pytest.mark.asyncio
-async def test_retry_can_succeed(session, vehicle):
-    discord = _discord(DeliveryResult.failed("RATE_LIMITED"), DeliveryResult.sent())
-    service = _service(session, [discord], TWO_DAYS_BEFORE)
+async def test_retry_can_succeed(session, vehicle, zalo_on):
+    zalo = _zalo(DeliveryResult.failed("RATE_LIMITED"), DeliveryResult.sent())
+    service = _service(session, [zalo], TWO_DAYS_BEFORE)
 
     await service.remind(vehicle.id)
     second = await service.remind(vehicle.id)
@@ -408,20 +403,16 @@ async def test_retry_can_succeed(session, vehicle):
 
 
 @pytest.mark.asyncio
-async def test_forbidden_is_final_and_revokes_the_discord_link(session, vehicle, owner):
-    add_discord_link(session, owner)
-    discord = _discord(DeliveryResult.failed("DELIVERY_FORBIDDEN"))
-    service = _service(session, [discord], TWO_DAYS_BEFORE)
+async def test_forbidden_is_final(session, vehicle, zalo_on):
+    zalo = _zalo(DeliveryResult.failed("DELIVERY_FORBIDDEN"))
+    service = _service(session, [zalo], TWO_DAYS_BEFORE)
 
     await service.remind(vehicle.id)
     await service.remind(vehicle.id)
 
     (delivery,) = _deliveries(session)
     assert delivery.status is DeliveryStatus.FAILED and delivery.attempts == 1
-    assert len(discord.calls) == 1
-    link = session.get(UserDiscordLink, owner.user_id)
-    assert link.status is DiscordLinkStatus.REVOKED
-    assert link.revoked_reason == "delivery_forbidden"
+    assert len(zalo.calls) == 1
 
 
 @pytest.mark.asyncio

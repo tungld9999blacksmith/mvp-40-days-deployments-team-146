@@ -1,5 +1,9 @@
 # Functional Specification — Đặt lịch bảo dưỡng theo sức chứa & vị trí
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Tài liệu đặc tả chức năng/nghiệp vụ cho Feature **F6 — Đặt lịch hội thoại theo sức chứa** trong [PRD EV Care MVP](../../../product/PRD_EV_Care_MVP.md#f6--đặt-lịch-theo-sức-chứa), tập trung vào **hỗ trợ chủ xe đặt lịch tự động/bán tự động** và **gợi ý xưởng gần một địa điểm chỉ định hoặc địa điểm trong hồ sơ cá nhân**.
 >
 > **Ghi chú:** Điểm nghiệp vụ PRD chưa chốt được đánh dấu `[Đề xuất]` (có giá trị mặc định để triển khai) hoặc `[Cần xác nhận]`, và được liệt kê lại ở mục 24 — Open Questions.

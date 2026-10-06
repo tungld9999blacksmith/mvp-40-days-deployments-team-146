@@ -33,7 +33,7 @@
 | Tài liệu | Nội dung |
 |---|---|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Kiến trúc tổng quan |
-| [docs/architecture.md](docs/architecture.md) · [docs/architecture/README.md](docs/architecture/README.md) · [docs/architecture_diagram.md](docs/architecture_diagram.md) | Kiến trúc hệ thống, sơ đồ |
+| [docs/architecture.md](docs/architecture.md) · [docs/architecture-deep-dive.md](docs/architecture-deep-dive.md) · [docs/architecture/README.md](docs/architecture/README.md) · [docs/architecture_diagram.md](docs/architecture_diagram.md) | Kiến trúc hệ thống, sơ đồ |
 | [docs/product/README.md](docs/product/README.md) · [docs/product/PRD_EV_Care_MVP.md](docs/product/PRD_EV_Care_MVP.md) | Nghiệp vụ, PRD MVP |
 | [docs/specs/INSTRUCTION.MD](docs/specs/INSTRUCTION.MD) | Cách viết / đọc tài liệu đặc tả (FF, API, FE, Entity) |
 | [docs/specs/](docs/specs/) | Đặc tả theo sprint (`sprint-1` … `sprint-4`), entity, AI agent, mock system |

@@ -1,5 +1,9 @@
 # API Technical Specification — Booking Ticket, QR check-in, huỷ & đổi lịch
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Backend cho Feature `FEAT-BOOK-002` — PRD F6b (US-053 → US-056).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-053-sprint-3-spec.ff.md) là chuẩn; API chỉ trỏ `BR-12xx` / `EF-12xx` / `EDGE-12xx`.

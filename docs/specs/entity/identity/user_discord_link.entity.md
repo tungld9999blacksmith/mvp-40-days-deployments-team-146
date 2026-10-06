@@ -1,5 +1,7 @@
 # Entity Specification — `user_discord_link` (Liên kết Discord của chủ xe)
 
+> **Đã loại khỏi phạm vi (02/10/2026).** Chức năng kết nối Discord (ENT-417) đã bị bỏ khỏi sản phẩm: code backend/frontend đã gỡ, bảng `user_discord_link` được xoá bởi migration `backend/alembic/versions/a3c7e9f1b2d4_drop_quote_support_ticket_discord.py`. Tài liệu giữ lại để tham khảo lịch sử, **không dùng để triển khai**.
+
 > **Domain:** Identity · **Tổng quan lược đồ:** [core.entity.md](../core.entity.md)
 >
 > **Nguồn nghiệp vụ:** [PRD v3.5 §F7](../../../product/PRD_EV_Care_MVP.md) — PQ-11: mỗi chủ xe nhận thông báo ở **kênh Discord riêng**.

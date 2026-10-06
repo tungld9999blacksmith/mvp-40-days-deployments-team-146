@@ -1,4 +1,4 @@
-"""Post-service follow-up & support tickets (FEAT-CRM-001, us-041)."""
+"""Post-service follow-up (FEAT-CRM-001, us-041)."""
 
 from .errors import FollowUpError, status_for
 

@@ -24,7 +24,7 @@ export interface SlotTarget {
 export function useSlotRequest() {
   const navigate = useNavigate()
   const toast = useToast()
-  const { searchFor, setCard, workshopById, rememberWorkshops } = useBookingWizard()
+  const { params, searchFor, setCard, workshopById, rememberWorkshops } = useBookingWizard()
   const [pending, setPending] = useState<string | null>(null)
   const [alternatives, setAlternatives] = useState<Alternative[] | null>(null)
 
@@ -67,7 +67,8 @@ export function useSlotRequest() {
             expiresAt: tokenExpiry(Date.now()),
             idempotencyKey: newId(),
           })
-          navigate(`/booking/confirm${searchFor({ workshopId: target.workshopId, date: target.date, timeSlot: label, ...extraQuery })}`)
+          const sameProposalSlot = params.workshopId === target.workshopId && params.date === target.date && slotLabel(params.timeSlot ?? '') === label
+          navigate(`/booking/confirm${searchFor({ proposalId: sameProposalSlot ? params.proposalId : null, workshopId: target.workshopId, date: target.date, timeSlot: label, ...extraQuery })}`)
           return true
         }
         const withAlternatives = await getAvailability({ workshopId: target.workshopId, date: target.date, timeSlot: label })
@@ -81,7 +82,7 @@ export function useSlotRequest() {
         setPending(null)
       }
     },
-    [navigate, searchFor, setCard, toast, workshopById, rememberWorkshops, showAlternatives],
+    [params, navigate, searchFor, setCard, toast, workshopById, rememberWorkshops, showAlternatives],
   )
 
   return { pending, alternatives, showAlternatives, closeAlternatives, requestSlot }

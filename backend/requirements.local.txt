@@ -162,3 +162,19 @@ websockets==15.0.1
 xxhash==4.0.1
 yarl==1.25.1
 zstandard==0.25.0
+
+# Missing direct dependencies verified in the working demo environment.
+langchain-google-genai==4.4.0
+langgraph-checkpoint-postgres==3.1.2
+psycopg[binary,pool]==3.3.6
+qdrant-client==1.19.1
+rank-bm25==0.2.2
+flashrank==0.2.10
+html2text==2025.4.15
+beautifulsoup4==4.15.0
+pypdf==6.19.0
+segno==1.6.6
+structlog==26.1.0
+fakeredis[lua]==2.38.0
+psycopg-binary==3.3.6
+psycopg-pool==3.3.3

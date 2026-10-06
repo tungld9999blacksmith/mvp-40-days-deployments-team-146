@@ -1,20 +1,55 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Car, ChevronRight, Gauge, History, ShieldCheck } from 'lucide-react'
 import type { ApiError } from '@/shared/api/client'
 import Badge from '@/shared/ui/Badge'
 import { Card, CardHeader, InfoRow } from '@/shared/ui/Card'
+import PlateTile from '@/shared/ui/PlateTile'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
 import { ErrorState, Notice } from '@/shared/ui/States'
 import { vehicleDisplayName, warrantyComponentLabel } from '@/shared/domain/labels'
 import { formatDate, formatKm, formatLicensePlate, formatNumber, formatTimeDayMonth } from '@/shared/utils/format'
 import type { Odometer, VehicleProfile, VehicleSummary } from '../types'
+import { vehiclePhotoSrc } from '../utils/vehiclePhoto'
 
-/** Structural placeholder instead of a decorative car photo (design style §5.1). */
+/** Structural placeholder when there is no photo for the model (design style §5.1). */
 export function CarPlaceholder({ label, tall }: { label: string; tall?: boolean }) {
   return (
     <div className={`w-full ${tall ? 'h-40' : 'h-28'} rounded-xl bg-background border border-border flex flex-col items-center justify-center`}>
       <Car className={`${tall ? 'w-12 h-12' : 'w-9 h-9'} text-muted`} strokeWidth={1.5} aria-hidden />
       <span className="text-xs text-muted mt-2">{label}</span>
+    </div>
+  )
+}
+
+/**
+ * Photo of the model the owner declared at onboarding (a photo of the model, so the colour may differ
+ * from the owner's car). Falls back to the placeholder for models without a photo or when the file fails to load.
+ */
+export function CarPhoto({ label, modelName, modelId, tall, fill }: {
+  label: string
+  modelName: string | null
+  modelId?: string | null
+  tall?: boolean
+  /** Grow to the free height of a flex column; the whole car stays visible. */
+  fill?: boolean
+}) {
+  const src = vehiclePhotoSrc(modelName, modelId)
+  const [failed, setFailed] = useState(false)
+  if (!src || failed) return <CarPlaceholder label={label} tall={tall} />
+
+  const size = fill ? 'flex-1 min-h-36' : tall ? 'h-48' : 'h-36'
+  return (
+    // Photos are transparent WebP: a soft fill stages the car without a second card border or a white block in dark mode.
+    <div className={`w-full ${size} overflow-hidden rounded-xl bg-card-hover`}>
+      <img
+        src={src}
+        alt={label}
+        loading="lazy"
+        decoding="async"
+        onError={() => setFailed(true)}
+        className={`h-full w-full ${fill ? 'object-contain' : 'object-cover'}`}
+      />
     </div>
   )
 }
@@ -25,14 +60,14 @@ export function VehicleSummaryCard({ vehicle }: { vehicle: VehicleSummary }) {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader title="Xe của tôi" icon={<Car className="w-4 h-4 text-muted" />} />
-      <CarPlaceholder label={name} />
+      <CarPhoto label={name} modelName={vehicle.modelName} fill />
       <div className="mt-4">
         <p className="text-base font-semibold text-foreground">{name}</p>
-        <p className="text-sm text-muted font-mono mt-0.5">{formatLicensePlate(vehicle.licensePlate)}</p>
+        <PlateTile plate={vehicle.licensePlate} className="mt-2" />
       </div>
       <Link
         to="/vehicle"
-        className="mt-auto pt-4 inline-flex items-center gap-1 text-sm text-emerald hover:text-emerald-bright transition-colors"
+        className="pt-4 inline-flex items-center gap-1 text-sm text-emerald hover:text-emerald-bright transition-colors"
       >
         Xem chi tiết <ChevronRight className="w-3.5 h-3.5" aria-hidden />
       </Link>
@@ -54,11 +89,11 @@ export function VehicleIdentityCard({ profile }: { profile: VehicleProfile }) {
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
           <h2 className="text-lg font-semibold text-foreground">{name}</h2>
-          <p className="text-sm text-muted font-mono mt-0.5">{formatLicensePlate(profile.licensePlate)}</p>
+          <PlateTile plate={profile.licensePlate} className="mt-2" />
         </div>
         <Badge tone="success">Đã xác thực</Badge>
       </div>
-      <CarPlaceholder label={name} tall />
+      <CarPhoto label={name} modelName={profile.modelName} modelId={profile.modelId} tall />
       <div className="mt-5">
         <InfoRow label="Mẫu xe / phiên bản" value={[profile.modelName, profile.trim].filter(Boolean).join(' ') || '—'} />
         <InfoRow label="Màu" value={profile.color ?? '—'} />

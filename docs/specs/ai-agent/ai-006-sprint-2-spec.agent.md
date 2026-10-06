@@ -1,5 +1,9 @@
 # AI-Agent Specification — AI-006 Reminder Agent
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > Đặc tả hành vi của **Reminder Agent** — worker chủ động nhắc mốc bảo dưỡng và nhắc lịch hẹn 24h qua **Discord (kênh riêng mỗi chủ xe)**.
 >
 > **Nguồn:** [00-ai-agents-proposal.md](00-ai-agents-proposal.md) (AI-006), [PRD v3.6 §F7](../../product/PRD_EV_Care_MVP.md), [us-021 FF](../sprint-2/feature-functional/us-021-sprint-2-spec.ff.md). **Luật nhắc mốc (BR-501 … BR-511) định nghĩa trong us-021; tài liệu này không định nghĩa lại**, chỉ đặc tả phần "agent": nội dung, guardrail, quan sát.

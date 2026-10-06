@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Zap, WifiOff } from 'lucide-react'
+import { WifiOff } from 'lucide-react'
 import Button from '@/shared/ui/Button'
+import Logo from '@/shared/ui/Logo'
 import Spinner from '@/shared/ui/Spinner'
 import { NETWORK_ERROR, type ApiError } from '@/shared/api/client'
 import { useOnlineStatus } from '@/shared/hooks/useOnlineStatus'
@@ -30,10 +31,7 @@ export default function SplashScreen({
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div role="status" aria-live="polite" className="flex flex-col items-center text-center max-w-sm">
-        <div className="w-12 h-12 rounded-2xl bg-emerald flex items-center justify-center mb-4">
-          <Zap className="w-6 h-6 text-background" strokeWidth={2.5} />
-        </div>
-        <p className="text-foreground font-bold text-xl tracking-tight">EV Care</p>
+        <Logo className="h-12 text-foreground" />
         {brand && <p className="text-emerald text-xs font-semibold mt-1">{brand}</p>}
 
         {offline ? (

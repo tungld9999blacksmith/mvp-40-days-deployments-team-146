@@ -46,15 +46,15 @@ export default function SuccessStep() {
         <p className="text-sm text-muted mt-1">Tài khoản của bạn đã sẵn sàng.</p>
       </div>
 
-      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-2">Xe của bạn</p>
+      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 elevation-sm">
+        <p className="text-[13px] font-semibold text-muted mb-2">Xe của bạn</p>
         <InfoRow label="Mẫu xe" value={vehicleDisplayName(vehicle.spec?.modelName, vehicle.spec?.trim)} />
         <InfoRow label="Biển số" value={formatLicensePlate(vehicle.licensePlate)} mono />
         <InfoRow label="Số VIN" value={vehicle.vin} mono />
       </section>
 
-      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-2">Bảo hành</p>
+      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 elevation-sm">
+        <p className="text-[13px] font-semibold text-muted mb-2">Bảo hành</p>
         {warranties.length === 0 ? (
           <p className="text-sm text-muted py-2">Chưa có thông tin bảo hành từ hãng.</p>
         ) : (

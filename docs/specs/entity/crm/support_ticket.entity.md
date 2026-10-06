@@ -1,5 +1,7 @@
 # Entity Specification — `support_ticket` (Phiếu hỗ trợ)
 
+> **Đã loại khỏi phạm vi (02/10/2026).** Chức năng phiếu hỗ trợ sau dịch vụ (phần phiếu của us-041) đã bị bỏ khỏi sản phẩm: code backend/frontend đã gỡ, bảng `support_ticket` được xoá bởi migration `backend/alembic/versions/a3c7e9f1b2d4_drop_quote_support_ticket_discord.py`. Tài liệu giữ lại để tham khảo lịch sử, **không dùng để triển khai**.
+
 > **Domain:** CRM · **Tổng quan lược đồ:** [core.entity.md](../core.entity.md)
 >
 > **Nguồn:** entity `support_tickets` (ENT-014) trong bản ERD sinh tự động ([archive/core.entity.generated.md](../archive/core.entity.generated.md)), đã **chỉnh theo quy ước core v1.1** và các entity đã có. Thay đổi: xem §21.

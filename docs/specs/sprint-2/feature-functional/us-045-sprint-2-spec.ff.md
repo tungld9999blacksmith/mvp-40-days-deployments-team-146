@@ -1,5 +1,9 @@
 # Functional Specification — Dự toán chi phí bảo dưỡng theo model + mốc
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > Đặc tả nghiệp vụ cho Feature **F5 — Dự toán chi phí** trong [PRD EV Care MVP](../../../product/PRD_EV_Care_MVP.md#f5--dự-toán-chi-phí).
 >
 > **Quan hệ tài liệu:** Tầng hội thoại đã đặc tả tại [AI-003 Cost Estimation](../../ai-agent/ai-003-sprint-2-spec.agent.md). Tài liệu này là **nguồn nghiệp vụ chính** cho cả tầng hội thoại (AI-003) lẫn màn hình dự toán trên UI; khi hai bên khác nhau, tài liệu này là chuẩn.

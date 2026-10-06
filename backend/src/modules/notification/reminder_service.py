@@ -20,7 +20,7 @@ from sqlalchemy import and_, or_
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
-from src.common.core.identity import DiscordLinkStatus, OnboardingStatus, UserDiscordLink
+from src.common.core.identity import OnboardingStatus
 from src.common.core.identity.vehicle_user import UserStatus, VehicleUser
 from src.common.core.maintenance import Booking, BookingStatus, Reminder
 from src.common.core.maintenance.reminder import ReminderChannel, ReminderLevel
@@ -29,7 +29,7 @@ from src.common.core.vehicle import UserVehicle, VehicleLinkStatus, VehicleVerif
 from src.modules.oem_integration.service import utc_now
 from src.modules.user_vehicle.domain import DueResult, today_vn
 
-from .channels import DELIVERY_FORBIDDEN, RETRYABLE_ERRORS, NotificationService
+from .channels import RETRYABLE_ERRORS, NotificationService
 from .domain import build_message, decide_level
 from .preferences import Preferences, load_preferences
 
@@ -158,7 +158,7 @@ class MaintenanceReminderService:
             user_vehicle_id=user_vehicle_id,
             target_odo_milestone=milestone_km,
             reminder_level=level,
-            channel=ReminderChannel.DISCORD,  # legacy column; see reminder_delivery
+            channel=ReminderChannel.IN_APP,  # always shown in the feed; external sends: reminder_delivery
             scheduled_at=now,
         )
         self._db.add(reminder)
@@ -214,18 +214,11 @@ class MaintenanceReminderService:
             if outcome.status is DeliveryStatus.SENT:
                 sent += 1
             elif outcome.status is DeliveryStatus.FAILED:
-                self._on_failure(delivery, user.user_id)
+                self._on_failure(delivery)
             self._db.commit()
         return sent
 
-    def _on_failure(self, delivery: ReminderDelivery, user_id: int) -> None:
-        if delivery.error_code == DELIVERY_FORBIDDEN and delivery.channel is ReminderChannel.DISCORD:
-            # BR-ENT-442: the bot lost access, ask the owner to connect again.
-            link = self._db.get(UserDiscordLink, user_id)
-            if link is not None and link.status is not DiscordLinkStatus.REVOKED:
-                link.status = DiscordLinkStatus.REVOKED
-                link.revoked_reason = "delivery_forbidden"
-                self._db.add(link)
+    def _on_failure(self, delivery: ReminderDelivery) -> None:
         if delivery.attempts >= self._max_attempts or delivery.error_code not in RETRYABLE_ERRORS:
             logger.error(
                 "reminder delivery %s failed for good on %s (%s, attempts=%s)",

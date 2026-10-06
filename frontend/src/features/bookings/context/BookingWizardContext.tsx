@@ -16,6 +16,7 @@ export interface SummaryCard {
 }
 
 export interface BookingParams {
+  proposalId: string | null
   workshopId: string | null
   date: string | null
   timeSlot: string | null
@@ -57,6 +58,7 @@ export function BookingWizardProvider({ vehicle, children }: { vehicle: VehicleS
 
   const params = useMemo<BookingParams>(
     () => ({
+      proposalId: searchParams.get('proposalId'),
       workshopId: searchParams.get('workshopId'),
       date: searchParams.get('date'),
       timeSlot: searchParams.get('timeSlot'),
@@ -70,7 +72,7 @@ export function BookingWizardProvider({ vehicle, children }: { vehicle: VehicleS
     overrides => {
       const next = new URLSearchParams()
       const merged: Record<string, string | number | null> = { ...params, ...overrides }
-      for (const key of ['workshopId', 'date', 'timeSlot', 'odoMilestone', 'quoteId'] as const) {
+      for (const key of ['proposalId', 'workshopId', 'date', 'timeSlot', 'odoMilestone', 'quoteId'] as const) {
         const value = merged[key]
         if (value !== null && value !== undefined && value !== '') next.set(key, String(value))
       }

@@ -5,6 +5,8 @@ import { onSessionEnd } from '@/shared/session/sessionCache'
 import { useToast } from '@/shared/ui/Toast'
 import { newId } from '@/shared/utils/id'
 import { track } from '@/shared/utils/track'
+import { getDeviceLocation } from '../quickBooking/location'
+import { runQuickBooking } from '../quickBooking/runQuickBooking'
 import { chatReducer, initialChatState } from '../state/chatReducer'
 import { clearClientIds, forgetClientId, lookupClientId, rememberClientId } from '../state/clientIds'
 import { getChatTransport } from '../transport/ChatTransport'
@@ -42,6 +44,8 @@ export function useChatSession({
   const skipLoadFor = useRef<string | null>(null)
   const abortRef = useRef<AbortController | null>(null)
   const busyRetried = useRef(new Set<string>())
+  const [quickBusy, setQuickBusy] = useState(false)
+  const quickBusyRef = useRef(false)
 
   // Load a conversation when the route changes.
   useEffect(() => {
@@ -269,6 +273,75 @@ export function useChatSession({
     [transport, userVehicleId, navigate, toast, refreshTitle],
   )
 
+  /**
+   * us-061 UC-1501 — the "Đặt lịch bảo dưỡng nhanh" chip: a proposal card from the backend.
+   * Never sends the label as a chat question and never books (AC-1502).
+   */
+  const quickBooking = useCallback(
+    async ({ province = null }: { province?: string | null } = {}) => {
+      if (stateRef.current.streaming || quickBusyRef.current || !userVehicleId) return
+      quickBusyRef.current = true
+      setQuickBusy(true)
+      setHelper(null)
+      track('quick_booking_started', { province: Boolean(province) })
+      try {
+        const location = province ? null : await getDeviceLocation()
+        const { conversationId, assistantMessage } = await runQuickBooking({
+          transport,
+          dispatch,
+          conversationId: stateRef.current.conversationId,
+          userVehicleId,
+          clientMessageId: newId(),
+          location,
+          province,
+          onConversationCreated: id => {
+            skipLoadFor.current = id
+            navigate(`/ai/${id}`, { replace: true })
+          },
+        })
+        const card = assistantMessage.card
+        track('quick_booking_result', {
+          cardType: card?.type ?? 'NONE',
+          locationBasis: typeof card?.locationBasis === 'string' ? card.locationBasis : null,
+          hasDeviceLocation: Boolean(location),
+        })
+        if (!stateRef.current.title) void refreshTitle(conversationId)
+      } catch (error) {
+        if (!isApiError(error)) throw error
+        track('quick_booking_failed', { code: error.code })
+        switch (error.code) {
+          case 'RATE_LIMITED':
+            setRetryAt(Date.now() + (error.retryAfter ?? 60) * 1000)
+            break
+          case 'CONVERSATION_BUSY':
+            toast.show('Trợ lý đang trả lời, thử lại sau giây lát.', 'warning')
+            break
+          case 'VEHICLE_NOT_ACTIVE':
+            setLockedReason('Xe chưa được xác thực hoặc đã gỡ liên kết — bạn vẫn xem được lịch sử nhưng không gửi tin mới.')
+            break
+          case 'CONVERSATION_NOT_FOUND':
+            toast.show('Không tìm thấy cuộc trò chuyện.', 'error')
+            navigate('/ai', { replace: true })
+            break
+          case 'ONBOARDING_REQUIRED':
+            setApiError(error)
+            break
+          case 'NOT_SUPPORTED_IN_MOCK':
+            toast.show('Chế độ minh hoạ chưa hỗ trợ đặt lịch nhanh.', 'warning')
+            break
+          default:
+            toast.show('Chưa tạo được đề xuất đặt lịch. Vui lòng thử lại.', 'error')
+        }
+      } finally {
+        quickBusyRef.current = false
+        setQuickBusy(false)
+      }
+    },
+    [transport, userVehicleId, navigate, toast, refreshTitle],
+  )
+
+  const getState = useCallback(() => stateRef.current, [])
+
   const resend = useCallback(
     (clientMessageId: string) => {
       const pending = stateRef.current.pending.find(item => item.clientMessageId === clientMessageId)
@@ -291,8 +364,11 @@ export function useChatSession({
   return {
     state,
     dispatch,
+    getState,
     send,
     resend,
+    quickBooking,
+    quickBusy,
     loadOlder,
     abortStream,
     retryAt,

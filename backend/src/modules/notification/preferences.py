@@ -26,7 +26,7 @@ def channel_rows(session: Session, user_id: int) -> dict[ReminderChannel, bool]:
 
 
 def effective_channels(rows: dict[ReminderChannel, bool]) -> frozenset[ReminderChannel]:
-    """No rows -> the default (Discord only); otherwise the enabled ones."""
+    """No rows -> the default (no external channel); otherwise the enabled ones."""
     if not rows:
         return DEFAULT_CHANNELS
     return frozenset(channel for channel, enabled in rows.items() if enabled)

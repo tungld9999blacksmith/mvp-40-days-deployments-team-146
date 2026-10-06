@@ -11,14 +11,15 @@ Chạy: uv run --package mock-ev-system uvicorn mock_ev_system.main:app --reload
 """
 
 import asyncio
-from contextlib import asynccontextmanager
+import os
 from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
 from .db import init_db
+from .routers import admin, lookup, maintenance, usage, vehicles, verify, warranty, webhooks
 from .simulator import run_simulator
-from .routers import admin, vehicles, warranty, maintenance, usage, lookup, verify, webhooks
 
 
 @asynccontextmanager
@@ -26,17 +27,23 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Khởi tạo DB + seed data
     init_db()
 
-    # Chạy odometer simulator ở background
-    simulator_task = asyncio.create_task(run_simulator())
+    # Odometer simulator: tắt mặc định (km đứng yên, không bắn webhook hàng loạt).
+    # Bật lại bằng MOCK_ODOMETER_SIMULATOR=1.
+    simulator_task = (
+        asyncio.create_task(run_simulator())
+        if os.getenv("MOCK_ODOMETER_SIMULATOR", "").lower() in {"1", "true", "yes"}
+        else None
+    )
 
     yield
 
     # Cleanup khi shutdown
-    simulator_task.cancel()
-    try:
-        await simulator_task
-    except asyncio.CancelledError:
-        pass
+    if simulator_task is not None:
+        simulator_task.cancel()
+        try:
+            await simulator_task
+        except asyncio.CancelledError:
+            pass
 
 
 app = FastAPI(

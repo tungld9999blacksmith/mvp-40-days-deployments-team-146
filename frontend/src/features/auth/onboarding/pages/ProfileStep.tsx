@@ -244,7 +244,7 @@ export default function ProfileStep() {
         </p>
       </div>
 
-      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-5">
+      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-5 elevation-sm">
         <TextInput
           label="Họ tên"
           required
@@ -271,7 +271,7 @@ export default function ProfileStep() {
           required
           inputMode="numeric"
           autoComplete="off"
-          className="font-mono"
+          className="font-mono placeholder:font-sans"
           placeholder={maskedId ? `CCCD đã lưu: ${maskedId}` : '12 chữ số'}
           helper={maskedId ? 'Nhập lại đầy đủ số CCCD khi cập nhật thông tin.' : 'Dùng để hãng xác nhận bạn là chủ xe.'}
           value={form.nationalId}
@@ -290,7 +290,7 @@ export default function ProfileStep() {
         />
       </section>
 
-      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-5">
+      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-5 elevation-sm">
         <div>
           <h2 className="text-sm font-semibold text-foreground">Địa điểm gần bạn</h2>
           <p className="text-xs text-muted mt-1">Khu vực bạn sinh sống hoặc hoạt động chính.</p>

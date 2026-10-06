@@ -1,5 +1,9 @@
 # Functional Specification — Nhắc mốc bảo dưỡng & cấu hình thông báo
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > Đặc tả nghiệp vụ cho Feature **F7 (phần nhắc mốc bảo dưỡng)** trong [PRD EV Care MVP](../../../product/PRD_EV_Care_MVP.md#f7--nhắc). Dùng kết quả tính của [F3 — us-017](us-017-sprint-2-spec.ff.md).
 >
 > **Phạm vi tài liệu này:** nhắc chủ xe khi mốc bảo dưỡng **sắp đến**, thời điểm bắt đầu nhắc và kênh nhận do chủ xe cấu hình. **Không** gồm nhắc lịch hẹn 24h (booking) và hỏi thăm sau dịch vụ (F9).

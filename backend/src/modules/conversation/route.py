@@ -5,25 +5,26 @@ Covers the platform CRUD (API-CONV-001..006) and the F4-specific send-with-SSE
 (API-MSG-001) lives in ``ws.py``.
 
 Owner routes identify the caller by Firebase ID token (``get_current_user_id``;
-``X-User-Id`` only as a non-production fallback). TODO(auth Q-621): the workshop
-excerpt routes still read ``X-Workshop-Id``.
+``X-User-Id`` only as a non-production fallback). Workshop excerpts use the
+authenticated workshop owner's scope.
 """
 
 from __future__ import annotations
 
 import json
 from collections.abc import AsyncIterator
+from contextlib import aclosing
 from typing import Annotated
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, Header, Path, Query, Request, Response
+from fastapi import APIRouter, Depends, Path, Query, Request, Response
 from fastapi.responses import StreamingResponse
 from sqlmodel import Session
 
-from src.common.core.maintenance import Booking, Quote
-from src.infrastructure.messaging import MessageDto
+from src.common.core.maintenance import Booking
 from src.infrastructure.supabase.db import engine
 from src.infrastructure.vectorstore import mask_pii
+from src.modules.workshop_board.dependency import OwnerWorkshop, get_owner_workshop
 
 from . import errors, schemas
 from .dependency import ChatService, get_chat_service, get_current_user_id
@@ -53,7 +54,8 @@ def list_conversations(
     cursor: str | None = None,
 ) -> schemas.ConversationListEnvelope:
     items, next_cursor, has_more = service.list_conversations(user_id, user_vehicle_id, limit, cursor)
-    data = [_conversation_dto(c, preview=service.last_message_preview(c.id)) for c in items]
+    previews = service.last_message_previews([c.id for c in items])
+    data = [_conversation_dto(c, preview=previews.get(c.id)) for c in items]
     return schemas.ConversationListEnvelope(data=data, page=schemas.PageInfo(nextCursor=next_cursor, hasMore=has_more))
 
 
@@ -100,7 +102,7 @@ def list_messages(
     service.get_owned_conversation(user_id, conversation_id)  # 404 if not owner
     rows, next_cursor, has_more = service.list_messages(conversation_id, limit, before, after)
     return schemas.MessageListEnvelope(
-        data=[MessageDto.from_message(m) for m in rows],
+        data=service.to_dtos(rows),
         page=schemas.PageInfo(nextCursor=next_cursor, hasMore=has_more),
     )
 
@@ -130,12 +132,15 @@ async def send_message(
     )
     # Pull the first frame eagerly so pre-stream errors (rate limit, busy, not
     # found, invalid) map to real HTTP status codes before the stream starts.
-    first = await agen.__anext__()
+    first = await anext(agen, None)
+    if first is None:  # the client disconnected before the turn produced a frame
+        return Response(status_code=204)
 
     async def event_stream() -> AsyncIterator[bytes]:
-        yield _sse(first.event, first.data)
-        async for frame in agen:
-            yield _sse(frame.event, frame.data)
+        async with aclosing(agen):
+            yield _sse(first.event, first.data)
+            async for frame in agen:
+                yield _sse(frame.event, frame.data)
 
     return StreamingResponse(
         event_stream(),
@@ -185,39 +190,22 @@ def delete_conversation(
     return Response(status_code=204)
 
 
-# ── API-CHAT-007 / 008 — workshop conversation excerpt ───────────────────
+# ── API-CHAT-007 — workshop conversation excerpt ───────────────────
 @workshop_router.get("/bookings/{bookingId}/conversation-excerpt", response_model=schemas.ExcerptEnvelope)
 def booking_excerpt(
     booking_id: Annotated[UUID, Path(alias="bookingId")],
     service: Annotated[ChatService, Depends(get_chat_service)],
-    workshop_id: Annotated[UUID, Header(alias="X-Workshop-Id")],
+    scope: Annotated[OwnerWorkshop, Depends(get_owner_workshop)],
 ) -> schemas.ExcerptEnvelope:
     with Session(engine) as session:
         booking = session.get(Booking, booking_id)
         source_id = booking.source_message_id if booking else None
-        owned = booking is not None and booking.workshop_id == workshop_id
+        owned = booking is not None and booking.workshop_id == scope.workshop.id
     if not owned:
         raise errors.ConversationNotFound()  # 404 – never reveal other workshops' records
     if source_id is None:
         raise errors.ExcerptNotAvailable()
     return _excerpt_envelope(service.excerpt_for_source("booking", source_id, booking_id))
-
-
-@workshop_router.get("/quotes/{quoteId}/conversation-excerpt", response_model=schemas.ExcerptEnvelope)
-def quote_excerpt(
-    quote_id: Annotated[UUID, Path(alias="quoteId")],
-    service: Annotated[ChatService, Depends(get_chat_service)],
-    workshop_id: Annotated[UUID, Header(alias="X-Workshop-Id")],
-) -> schemas.ExcerptEnvelope:
-    with Session(engine) as session:
-        quote = session.get(Quote, quote_id)
-        source_id = quote.source_message_id if quote else None
-        owned = quote is not None and quote.workshop_id == workshop_id
-    if not owned:
-        raise errors.ConversationNotFound()
-    if source_id is None:
-        raise errors.ExcerptNotAvailable()
-    return _excerpt_envelope(service.excerpt_for_source("quote", source_id, quote_id))
 
 
 # ── helpers ───────────────────────────────────────────────────────────────

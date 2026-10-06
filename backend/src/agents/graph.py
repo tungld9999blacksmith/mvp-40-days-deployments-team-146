@@ -5,8 +5,10 @@ import os
 from typing import Any
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
-from langgraph.prebuilt import ToolNode, tools_condition
+from langgraph.prebuilt import ToolNode
+from langgraph.types import interrupt
 from pydantic import SecretStr
 
 try:
@@ -43,6 +45,21 @@ def get_agent_llm() -> Any:
     """Khởi tạo Chat Model hỗ trợ tool calling dựa trên cấu hình môi trường."""
     settings = get_settings()
 
+    if settings.llm_provider == "openrouter":
+        from langchain_openai import ChatOpenAI
+
+        if not settings.openrouter_api_key.strip():
+            raise ValueError("OPENROUTER_API_KEY is required when LLM_PROVIDER=openrouter")
+        return ChatOpenAI(
+            model=settings.openrouter_model,
+            api_key=SecretStr(settings.openrouter_api_key),
+            base_url=settings.openrouter_base_url,
+            max_tokens=settings.openrouter_max_tokens,
+            temperature=0.2,
+            timeout=settings.chat_run_timeout_seconds,
+            max_retries=1,
+        )
+
     # Ưu tiên Gemini nếu có API key
     if settings.gemini_api_key:
         from langchain_google_genai import ChatGoogleGenerativeAI
@@ -52,11 +69,15 @@ def get_agent_llm() -> Any:
         if model_name in ("gemini-flash-latest", "gemini-1.5-flash", "gemini-2.5-flash"):
             model_name = "gemini-flash-lite-latest"
 
-        return ChatGoogleGenerativeAI(
-            model=model_name,
-            google_api_key=settings.gemini_api_key,
-            temperature=0.2,
-        )
+        llm_kwargs: dict[str, Any] = {
+            "model": model_name,
+            "google_api_key": settings.gemini_api_key,
+        }
+        # Model dòng -lite sử dụng fixed sampling defaults từ Google, không truyền temperature để tránh cảnh báo UserWarning
+        if "lite" not in model_name.lower():
+            llm_kwargs["temperature"] = 0.2
+
+        return ChatGoogleGenerativeAI(**llm_kwargs)
 
     # Sử dụng OpenAI nếu có API key
     if settings.openai_api_key:
@@ -78,15 +99,49 @@ def get_agent_llm() -> Any:
     )
 
 
-def build_graph(llm: Any | None = None, tools: list[Any] | None = None) -> Any:
+def get_checkpointer(use_postgres: bool = True) -> Any:
+    """Khởi tạo checkpointer cho LangGraph:
+    - AsyncPostgresSaver nếu có DATABASE_URL và use_postgres=True (production/staging)
+    - MemorySaver nếu không có DB hoặc đang chạy test offline
+    """
+    db_url = os.getenv("DATABASE_URL", "")
+    if use_postgres and db_url and not db_url.startswith("sqlite"):
+        try:
+            from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+
+            # Chuyển postgresql:// → postgresql+psycopg:// cho psycopg3
+            conn_string = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
+            checkpointer = AsyncPostgresSaver.from_conn_string(conn_string)
+            logger.info("LangGraph checkpointer: AsyncPostgresSaver (PostgreSQL)")
+            return checkpointer
+        except Exception as e:
+            logger.warning("Không thể khởi tạo AsyncPostgresSaver (%s), dùng MemorySaver.", e)
+
+    logger.info("LangGraph checkpointer: MemorySaver (in-memory / dev mode)")
+    return MemorySaver()
+
+
+def build_graph(
+    llm: Any | None = None,
+    tools: list[Any] | None = None,
+    checkpointer: Any | None = None,
+    *,
+    system_prompt: str | None = None,
+    collect_citations: bool = True,
+) -> Any:
     """Xây dựng StateGraph ReAct cho Agent EV Care theo kiến trúc Single Orchestrator.
 
     Luồng:
     [START] ──► [agent] ──(tools_condition)──┬──► [tools] ──► [agent]
                                              └──► [END]
+
+    Args:
+        llm: Chat model tùy chỉnh (mặc định: auto-detect từ env)
+        tools: Danh sách tool tùy chỉnh (mặc định: CUSTOMER_AGENT_TOOLS)
+        checkpointer: LangGraph checkpointer (mặc định: auto-detect PostgreSQL hoặc MemorySaver)
     """
-    model = llm or get_agent_llm()
-    bound_tools = tools or CUSTOMER_AGENT_TOOLS
+    model = llm if llm is not None else get_agent_llm()
+    bound_tools = tools if tools is not None else CUSTOMER_AGENT_TOOLS
     model_with_tools = model.bind_tools(bound_tools)
 
     async def agent_node(state: AgentState) -> dict[str, Any]:
@@ -108,13 +163,48 @@ def build_graph(llm: Any | None = None, tools: list[Any] | None = None) -> Any:
                 "current_odo": state.get("current_odometer_km"),
             }
 
-        system_instruction = format_system_prompt(vehicle_ctx)
+        system_instruction = system_prompt or format_system_prompt(vehicle_ctx)
+        if system_prompt and vehicle_ctx:
+            import json
+
+            system_instruction += "\nNgữ cảnh xe được backend xác thực: " + json.dumps(vehicle_ctx, ensure_ascii=False)
 
         # Đảm bảo SystemMessage ở đầu luồng hội thoại
         has_system = any(isinstance(m, SystemMessage) for m in messages)
         full_messages = messages if has_system else [SystemMessage(content=system_instruction)] + messages
 
         response = await model_with_tools.ainvoke(full_messages)
+
+        # --- Task #2: Pre-fill args cho get_due_maintenance từ vehicle_context ---
+        # LLM đôi khi bỏ sót model/ODO khi context đã rõ; inject tự động để tránh tool fail.
+        if getattr(response, "tool_calls", None) and vehicle_ctx:
+            patched_tool_calls = []
+            changed = False
+            for tc in response.tool_calls:
+                if tc.get("name") == "get_due_maintenance":
+                    args = dict(tc.get("args", {}))
+                    if not args.get("model") and vehicle_ctx.get("model"):
+                        args["model"] = vehicle_ctx["model"]
+                        changed = True
+                    if not args.get("current_odometer_km") and not args.get("current_odo"):
+                        odo = vehicle_ctx.get("current_odo") or vehicle_ctx.get("current_odometer_km")
+                        if odo:
+                            args["current_odometer_km"] = int(odo)
+                            changed = True
+                    if args.get("months_since_last_service") is None:
+                        months = vehicle_ctx.get("months_since_last") or vehicle_ctx.get("months_since_last_service")
+                        if months is not None:
+                            args["months_since_last_service"] = int(months)
+                            changed = True
+                    patched_tool_calls.append({**tc, "args": args})
+                else:
+                    patched_tool_calls.append(tc)
+            if changed:
+                # Gắn lại tool_calls đã patch vào response — dùng copy để tránh mutate object LangChain
+                try:
+                    response = response.model_copy(update={"tool_calls": patched_tool_calls})
+                except Exception:
+                    pass  # Nếu không patch được, giữ nguyên — LLM args vẫn được dùng
 
         # Nếu có init_messages từ query legacy, đưa vào messages trả về để lưu trong state
         out_messages = init_messages + [response] if init_messages else [response]
@@ -124,12 +214,16 @@ def build_graph(llm: Any | None = None, tools: list[Any] | None = None) -> Any:
         if hasattr(response, "content") and response.content:
             result["response"] = extract_text_from_content(response.content)
 
-        # Nếu hoàn tất (không gọi thêm tool nào), thu thập citations và metadata
-        if not getattr(response, "tool_calls", None):
+        # Nếu hoàn tất (không gọi thêm tool nào), thu thập citations từ tool messages thật
+        if collect_citations and not getattr(response, "tool_calls", None):
+            import json
+
             collected_citations: list[dict[str, Any]] = list(state.get("citations", []))
             for m in messages:
                 name = getattr(m, "name", "")
                 content = str(getattr(m, "content", ""))
+
+                # Citation từ RAG tools: chỉ lấy khi có section "[Tài liệu tham chiếu chính hãng]:"
                 if name in ("search_ev_knowledge", "get_maintenance_schedule_rag", "get_warranty_policy_rag"):
                     if "[Tài liệu tham chiếu chính hãng]:" in content:
                         parts = content.split("[Tài liệu tham chiếu chính hãng]:")[-1].strip().split("\n")
@@ -147,60 +241,138 @@ def build_graph(llm: Any | None = None, tools: list[Any] | None = None) -> Any:
                                         "document_id": "DOC-VINFAST-OFFICIAL",
                                     }
                                 )
+
+                # Citation từ get_due_maintenance: chỉ khi tool trả về milestone_km thật
                 elif name == "get_due_maintenance":
                     try:
-                        import ast
+                        raw_data = None
+                        if content.startswith("{"):
+                            try:
+                                raw_data = json.loads(content)
+                            except Exception:
+                                import ast
 
-                        data = ast.literal_eval(content) if isinstance(content, str) and content.startswith("{") else {}
-                        model_name = data.get("model") or (vehicle_ctx.get("model") if vehicle_ctx else "VinFast")
-                        m_km = data.get("milestone_km") or (vehicle_ctx.get("current_odo") if vehicle_ctx else "")
-                        sec_info = (
-                            f"Mốc bảo dưỡng {m_km:,} km" if isinstance(m_km, (int, float)) else f"Mốc bảo dưỡng {m_km}"
-                        )
-                        collected_citations.append(
-                            {
-                                "title": f"Sổ tay bảo dưỡng định kỳ VinFast {model_name}",
-                                "section": sec_info,
-                                "document_id": f"DOC-{str(model_name).upper()}-MAINTENANCE",
-                            }
-                        )
+                                raw_data = ast.literal_eval(content)
+                        if isinstance(raw_data, dict):
+                            status = raw_data.get("status", "ok")
+                            if status == "ok":
+                                data = raw_data.get("data") if isinstance(raw_data.get("data"), dict) else raw_data
+                                # Lấy milestone từ due_milestone (tên) hoặc milestone_km (số)
+                                due_milestone = data.get("due_milestone") or data.get("milestone_km")
+                                tool_model = data.get("model") or (vehicle_ctx.get("model") if vehicle_ctx else None)
+                                if due_milestone and tool_model:
+                                    collected_citations.append(
+                                        {
+                                            "title": f"Sổ tay bảo dưỡng định kỳ VinFast {tool_model}",
+                                            "section": str(due_milestone),
+                                            "document_id": f"DOC-{str(tool_model).upper()}-MAINTENANCE",
+                                        }
+                                    )
                     except Exception:
                         pass
 
-            if not collected_citations:
-                model_name = vehicle_ctx.get("model") if vehicle_ctx else "VinFast"
-                collected_citations.append(
-                    {
-                        "title": f"Cẩm nang hướng dẫn sử dụng và bảo dưỡng xe {model_name}",
-                        "section": "Quy trình bảo dưỡng tiêu chuẩn chính hãng",
-                        "document_id": f"DOC-{str(model_name).upper()}-MANUAL",
-                    }
-                )
-
+            # KHÔNG tạo citation giả khi collected_citations rỗng —
+            # nếu không có tool nào trả dữ liệu thật thì trả về list rỗng.
             result["citations"] = collected_citations
-            result["confidence"] = "high"
+            result["confidence"] = "high" if collected_citations else "standard"
             result["fallback_required"] = False
 
         return result
 
     tools_node = ToolNode(bound_tools)
 
+    def hitl_routing(state: AgentState) -> str:
+        """Kiểm tra xem LLM có muốn gọi create_booking_draft không.
+        Nếu có → chuyển sang hitl_node để xin xác nhận từ user trước.
+        Nếu không → chuyển sang tools_node bình thường.
+        """
+        messages = state.get("messages", [])
+        if not messages:
+            return "end"
+        last = messages[-1]
+        tool_calls = getattr(last, "tool_calls", None) or []
+        has_booking = any(tc.get("name") == "create_booking_draft" for tc in tool_calls)
+        if has_booking:
+            return "hitl"
+        if tool_calls:
+            return "tools"
+        return "end"
+
+    async def hitl_node(state: AgentState) -> dict[str, Any]:
+        """Human-in-the-Loop node: tạm dừng graph, chờ chủ xe xác nhận.
+
+        Gọi interrupt() để LangGraph lưu checkpoint và trả quyền kiểm soát về orchestrator.
+        Orchestrator sẽ emit sự kiện 'hitl_required' cho frontend, rồi resume graph
+        khi user xác nhận hoặc hủy thông qua confirm_booking_turn().
+        """
+        messages = state.get("messages", [])
+        last = messages[-1] if messages else None
+        tool_calls = getattr(last, "tool_calls", None) or []
+
+        # Trích thông tin booking draft để gửi lên frontend
+        booking_draft: dict[str, Any] = {}
+        for tc in tool_calls:
+            if tc.get("name") == "create_booking_draft":
+                booking_draft = tc.get("args", {})
+                break
+
+        # interrupt() lưu state vào checkpointer và raise exception đặc biệt của LangGraph
+        # Giá trị trả về là dữ liệu mà orchestrator truyền vào khi resume (confirmed / rejected)
+        user_decision: dict[str, Any] = interrupt(
+            {
+                "type": "booking_confirmation_required",
+                "draft": booking_draft,
+            }
+        )
+
+        # Nếu user từ chối → xóa tool_call booking khỏi messages, trả thông báo hủy
+        if not user_decision.get("confirmed", False):
+            from langchain_core.messages import AIMessage
+
+            cancel_msg = AIMessage(
+                content="Đã hủy yêu cầu đặt lịch theo ý bạn. Bạn có muốn chọn khung giờ khác hoặc xưởng khác không?",
+            )
+            return {"messages": [cancel_msg], "draft_booking": None}
+
+        # Nếu user xác nhận → tiếp tục, graph sẽ tự route sang tools_node để thực thi create_booking_draft
+        return {}
+
     workflow = StateGraph(AgentState)  # type: ignore[reportArgumentType]
 
     # Thêm nodes
     workflow.add_node("agent", agent_node)
     workflow.add_node("tools", tools_node)
+    workflow.add_node("hitl", hitl_node)
 
-    # Thiết lập luồng cạnh
+    # Luồng chính: START → agent → (routing) → tools/hitl/end
     workflow.add_edge(START, "agent")
-    workflow.add_conditional_edges("agent", tools_condition)
+    workflow.add_conditional_edges(
+        "agent",
+        hitl_routing,
+        {"tools": "tools", "hitl": "hitl", "end": "__end__"},
+    )
+    # Sau HITL (user xác nhận) → tools để thực thi create_booking_draft
+    workflow.add_conditional_edges(
+        "hitl",
+        lambda state: (
+            "tools" if state.get("messages") and getattr(state["messages"][-1], "tool_calls", None) else "agent"
+        ),
+        {"tools": "tools", "agent": "agent"},
+    )
     workflow.add_edge("tools", "agent")
 
-    return workflow.compile()
+    # Compile với checkpointer — dùng checkpointer truyền vào, hoặc auto-detect
+    cp = checkpointer if checkpointer is not None else get_checkpointer()
+    return workflow.compile(checkpointer=cp)
 
 
-# Khởi tạo instance agent mặc định
-agent = build_graph()
+def __getattr__(name: str) -> Any:
+    """Keep the legacy ``graph.agent`` export lazy, using the DI graph."""
+    if name == "agent":
+        from .dependency import get_agent_graph
+
+        return get_agent_graph()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def route_intent(state: AgentState) -> str:

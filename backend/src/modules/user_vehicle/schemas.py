@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import datetime as dt
 from datetime import date, datetime
+from decimal import Decimal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -122,3 +123,30 @@ class VehicleProfileEnvelope(CamelModel):
 
 class MaintenanceStatusEnvelope(CamelModel):
     data: MaintenanceStatusOut
+
+
+# ── API-VEH-005 service history ────────────────────────────────────────────
+class ServiceRecordWorkshopOut(CamelModel):
+    workshop_id: UUID | None = None
+    name: str
+
+
+class ServiceRecordOut(CamelModel):
+    record_id: UUID
+    source: str  # "OEM" (manufacturer sync) | "EV_CARE" (completed on the Workshop Board)
+    service_date: date
+    odo_km: int | None = None
+    is_periodic: bool
+    items_done: str | None = None
+    workshop: ServiceRecordWorkshopOut | None = None
+    booking_id: UUID | None = None
+    booking_code: str | None = None
+    actual_cost: Decimal | None = None
+
+
+class ServiceRecordListOut(CamelModel):
+    items: list[ServiceRecordOut]
+
+
+class ServiceRecordListEnvelope(CamelModel):
+    data: ServiceRecordListOut

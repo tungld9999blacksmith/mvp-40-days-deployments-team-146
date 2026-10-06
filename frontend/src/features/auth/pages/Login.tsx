@@ -1,8 +1,8 @@
+const STANDALONE_DEMO_MODE = false
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Zap } from 'lucide-react'
 import { Notice } from '@/shared/ui/States'
-import { isFirebaseConfigured } from '@/shared/config/env'
+import { isAuthConfigured } from '@/shared/config/env'
 import { useOnlineStatus } from '@/shared/hooks/useOnlineStatus'
 import { useAuth } from '../context/AuthContext'
 import { resolveOnboardingRoute } from '../navigation'
@@ -12,6 +12,7 @@ import GoogleSignInButton from '../components/GoogleSignInButton'
 import LoginErrorPanel from '../components/LoginErrorPanel'
 import SplashScreen from '../components/SplashScreen'
 import { getPortal } from '../portal'
+import Logo from '@/shared/ui/Logo'
 
 /** SCR-001 / SCR-101 — owner login (Google only). */
 export default function Login() {
@@ -55,16 +56,13 @@ export default function Login() {
         chips={['AI 24/7', 'Lịch bảo dưỡng', 'Đặt lịch online', 'Theo dõi xe']}
       />
 
-      <main className="flex-1 flex flex-col justify-center items-center px-4 sm:px-8 py-12">
+      <main className="flex-1 flex flex-col justify-center items-center px-4 sm:px-8 py-12 bg-app-backdrop">
         <div className="lg:hidden flex items-center gap-2.5 mb-10">
-          <div className="w-9 h-9 rounded-xl bg-emerald flex items-center justify-center">
-            <Zap className="w-4 h-4 text-background" strokeWidth={2.5} />
-          </div>
-          <span className="text-foreground font-bold text-xl">EV Care</span>
+          <Logo className="h-9 text-foreground" />
         </div>
 
-        <div className="w-full max-w-sm">
-          <h2 className="text-2xl font-bold text-foreground">Đăng nhập</h2>
+        <div className="w-full max-w-sm animate-pop-in sm:max-w-md sm:bg-card/70 sm:backdrop-blur-xl sm:border sm:border-border sm:rounded-3xl sm:p-8 sm:elevation-md">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Đăng nhập</h2>
           <p className="text-muted text-sm mt-1 mb-8">Dùng tài khoản Google để tiếp tục. Không cần tạo mật khẩu riêng.</p>
 
           {notice && !blocking && (
@@ -73,7 +71,12 @@ export default function Login() {
             </Notice>
           )}
 
-          {!isFirebaseConfigured && (
+          {STANDALONE_DEMO_MODE && (
+            <Notice tone="info" className="mb-5" title="Chế độ demo">
+              Không cần tài khoản Google thật: bấm nút bên dưới để vào bằng tài khoản minh hoạ. Mọi dữ liệu là dữ liệu giả, lưu trong trình duyệt này.
+            </Notice>
+          )}
+          {!isAuthConfigured && (
             <Notice tone="error" role="alert" className="mb-5" title="Chưa cấu hình đăng nhập">
               Thiếu biến môi trường VITE_FIREBASE_* cho ứng dụng. Xem .env.example ở gốc repo.
             </Notice>
@@ -86,7 +89,7 @@ export default function Login() {
               <GoogleSignInButton
                 onClick={() => void signIn()}
                 loading={isSigningIn}
-                disabled={!isFirebaseConfigured || !online}
+                disabled={!isAuthConfigured || !online}
               />
               {!online && <p className="text-xs text-warning text-center">Không có kết nối mạng.</p>}
               {inline && (

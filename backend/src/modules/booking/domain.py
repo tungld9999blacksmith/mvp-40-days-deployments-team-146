@@ -6,6 +6,8 @@ Pure logic only (no DB/Redis), so it stays unit-testable.
 from __future__ import annotations
 
 import math
+import re
+import unicodedata
 from dataclasses import dataclass
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
@@ -60,6 +62,19 @@ class LocationAnchor:
     @property
     def has_coordinates(self) -> bool:
         return self.latitude is not None and self.longitude is not None
+
+
+def fold_text(value: str | None) -> str:
+    """Accent-, case- and punctuation-insensitive form for place names (BR-004).
+
+    ``"Hà Nội"``, ``"ha noi"`` and ``"HA-NOI"`` all fold to ``"ha noi"``; ``"TP. Hồ Chí Minh"``
+    folds to ``"tp ho chi minh"``.
+    """
+    if not value:
+        return ""
+    text = unicodedata.normalize("NFD", value.replace("đ", "d").replace("Đ", "D"))
+    text = "".join(ch for ch in text if not unicodedata.combining(ch)).casefold()
+    return " ".join(re.sub(r"[^0-9a-z]+", " ", text).split())
 
 
 def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:

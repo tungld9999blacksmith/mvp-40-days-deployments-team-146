@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Bot, CalendarClock, ChevronRight, ShieldCheck, Wrench } from 'lucide-react'
+import { Bot, Calculator, CalendarClock, ChevronRight, ShieldCheck, Wrench } from 'lucide-react'
 import type { ApiError } from '@/shared/api/client'
 import { Card, CardHeader } from '@/shared/ui/Card'
 import Button from '@/shared/ui/Button'
@@ -66,7 +66,7 @@ export default function MaintenanceStatusCard({
   const shownItems = compact ? items.slice(0, 3) : items
 
   return (
-    <Card className="h-full flex flex-col">
+    <Card className={cn('flex flex-col', compact && 'h-full')}>
       <CardHeader
         title="Bảo dưỡng"
         action={
@@ -98,7 +98,7 @@ export default function MaintenanceStatusCard({
         <Notice>Chưa có lịch bảo dưỡng cho mẫu xe này — vui lòng liên hệ xưởng.</Notice>
       ) : (
         <>
-          <div className={cn('flex flex-wrap items-baseline gap-x-1.5', compact ? 'text-xl' : 'text-2xl', 'font-extrabold font-mono')}>
+          <div className={cn('flex flex-wrap items-baseline gap-x-1.5', compact ? 'text-3xl' : 'text-4xl', 'font-bold font-plate leading-none')}>
             {parts.map((part, index) => (
               <span key={part.kind} className={part.emphasized ? TONE_TEXT[tone] : alerting ? 'text-muted' : 'text-foreground'}>
                 {index > 0 && <span className="text-muted font-normal mr-1.5">·</span>}
@@ -155,7 +155,7 @@ export default function MaintenanceStatusCard({
 
       {shownItems.length > 0 && !unknown && (
         <div className="mt-4 pt-4 border-t border-border">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-2">Hạng mục của mốc</p>
+          <p className="text-[13px] font-semibold text-muted mb-2">Hạng mục của mốc</p>
           <ul className="space-y-1.5">
             {shownItems.map(item => (
               <li key={item.itemCode} className="flex items-center justify-between gap-3 text-sm">
@@ -173,12 +173,23 @@ export default function MaintenanceStatusCard({
         </div>
       )}
 
-      <div className="mt-auto pt-5 flex flex-col sm:flex-row gap-2">
+      {status.nextMilestone && (
+        <Link
+          to={`/estimate?odoMilestone=${status.nextMilestone.odoMilestoneKm}`}
+          className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-emerald hover:text-emerald-bright transition-colors"
+        >
+          <Calculator className="w-3.5 h-3.5" aria-hidden />
+          Xem chi phí dự kiến
+        </Link>
+      )}
+
+      {/* From md the compact card sits in a half-width column (~350px): side by side, both labels wrap. */}
+      <div className={cn('mt-auto pt-5 flex flex-col gap-2', compact ? 'sm:flex-row md:flex-col' : 'sm:flex-row')}>
         {alerting ? (
           <>
             <Link
               to="/booking"
-              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm bg-emerald text-background font-semibold hover:bg-emerald-bright transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm bg-brand-gradient text-on-brand font-semibold glow-emerald hover:brightness-110 transition-all active:scale-[0.98]"
             >
               <CalendarClock className="w-4 h-4" aria-hidden />
               Đặt lịch bảo dưỡng

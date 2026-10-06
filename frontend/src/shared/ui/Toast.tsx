@@ -54,7 +54,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           return (
             <div
               key={item.id}
-              className="pointer-events-auto flex items-start gap-3 bg-surface border border-border rounded-2xl px-4 py-3"
+              className="pointer-events-auto flex items-start gap-3 bg-surface/90 backdrop-blur-xl border border-border rounded-2xl px-4 py-3 elevation-md animate-pop-in"
             >
               <Icon className={cn('w-4 h-4 mt-0.5 flex-shrink-0', tones[item.tone])} aria-hidden />
               <p className="flex-1 text-sm text-foreground">{item.message}</p>

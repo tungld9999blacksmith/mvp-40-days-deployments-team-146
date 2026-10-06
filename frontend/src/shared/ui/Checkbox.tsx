@@ -19,7 +19,7 @@ export default function Checkbox({ checked, onChange, label, description, disabl
     <div className={className}>
       <label
         htmlFor={id}
-        className={cn('flex items-start gap-3 select-none', disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer')}
+        className={cn('flex items-start gap-3 min-h-11 py-1 select-none', disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer')}
       >
         <input
           id={id}
@@ -34,12 +34,12 @@ export default function Checkbox({ checked, onChange, label, description, disabl
         <span
           aria-hidden
           className={cn(
-            'mt-0.5 w-4 h-4 flex-shrink-0 rounded-md flex items-center justify-center border transition-colors',
+            'w-5 h-5 flex-shrink-0 rounded-md flex items-center justify-center border transition-colors',
             'peer-focus-visible:ring-2 peer-focus-visible:ring-emerald/50',
             checked ? 'bg-emerald border-emerald' : error ? 'bg-card border-error' : 'bg-card border-border',
           )}
         >
-          {checked && <Check className="w-3 h-3 text-background" strokeWidth={3} />}
+          {checked && <Check className="w-3.5 h-3.5 text-background" strokeWidth={3} />}
         </span>
         <span className="text-sm text-foreground leading-snug">
           {label}
@@ -47,7 +47,7 @@ export default function Checkbox({ checked, onChange, label, description, disabl
         </span>
       </label>
       {error && (
-        <p id={errorId} className="flex items-start gap-1.5 text-xs text-error mt-1.5 ml-7">
+        <p id={errorId} className="flex items-start gap-1.5 text-xs text-error mt-1.5 ml-8">
           <AlertCircle className="w-3.5 h-3.5 mt-px flex-shrink-0" aria-hidden />
           {error}
         </p>

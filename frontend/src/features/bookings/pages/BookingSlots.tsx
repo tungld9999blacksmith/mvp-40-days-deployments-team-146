@@ -38,7 +38,7 @@ export default function BookingSlots() {
   const [attempt, setAttempt] = useState(0)
   const { pending, alternatives, closeAlternatives, requestSlot } = useSlotRequest()
 
-  // Workshop details when the page is opened directly (estimate / quote / reload).
+  // Workshop details when the page is opened directly (estimate / reload).
   useEffect(() => {
     if (!workshopId || workshop) return
     let cancelled = false

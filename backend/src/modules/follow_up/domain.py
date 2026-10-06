@@ -1,4 +1,4 @@
-"""Follow-up — pure rules: send time, feedback classification, ticket priority (us-041).
+"""Follow-up — pure rules: send time and feedback classification (us-041).
 
 No DB, no LLM: the LLM classifier (AI-007) is optional and plugs in through
 ``ports.FeedbackClassifier``; these rules are the always-available fallback.
@@ -15,7 +15,6 @@ from enum import StrEnum
 from zoneinfo import ZoneInfo
 
 TZ_VN = ZoneInfo("Asia/Ho_Chi_Minh")
-ISSUE_SUMMARY_MAX = 500
 LOW_CONFIDENCE = Decimal("0.70")
 
 
@@ -86,15 +85,6 @@ def apply_policy(result: Classification, rating: int) -> Classification:
             result.intent, True, result.safety, result.classified_by, result.confidence, result.summary
         )
     return result
-
-
-def issue_summary(result: Classification, rating: int, comment: str | None) -> str:
-    """AI summary when present, else the owner's own words, else a neutral line."""
-    if result.summary:
-        return result.summary[:ISSUE_SUMMARY_MAX]
-    if comment:
-        return comment[:ISSUE_SUMMARY_MAX]
-    return f"Khách chấm {rating}/5, không để lại nhận xét."
 
 
 def quiet_hours_adjust(t: datetime, *, quiet_start: int, quiet_end: int) -> datetime:

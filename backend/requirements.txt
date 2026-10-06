@@ -1,14 +1,23 @@
+# Local workspace package ev-contracts is installed separately (not from PyPI).
+# From repo root: python -m pip install ./backend/shared/ev-contracts
+# uv sync installs it automatically through backend/pyproject.toml.
+
 # Core
-fastapi>=0.115.0
+fastapi>=0.121.0
 uvicorn[standard]>=0.34.0
 pydantic>=2.10.0
 pydantic-settings>=2.7.0
 python-dotenv>=1.0.0
+# IANA timezone data for ZoneInfo (required on Windows).
+tzdata>=2024.1
 
 # AI / LangChain
 langchain>=0.3.0
+langchain-core>=0.3.0
 langchain-openai>=0.3.0
+langchain-google-genai>=4.4.0
 langgraph>=0.2.0
+langgraph-checkpoint-postgres>=2.0.0
 
 # LLM provider SDKs (infrastructure/llm — standardized multi-provider interface)
 # Grok (xAI) and DeepSeek reuse the `openai` client via base_url, no separate SDK.
@@ -20,6 +29,8 @@ google-genai>=2.25.0
 sqlalchemy>=2.0.0
 alembic>=1.14.0
 psycopg2-binary>=2.9.0
+# LangGraph Postgres checkpointer uses psycopg 3, independently of SQLAlchemy.
+psycopg[binary,pool]>=3.2.0
 sqlmodel>=0.0.47
 
 # Embedding engine (infrastructure/embedding — OpenAI/Gemini reuse the SDKs above)
@@ -43,6 +54,7 @@ supabase>=2.31.0
 
 # Auth
 firebase-admin>=7.7.0
+google-auth[requests]>=2.0.0
 
 # Booking ticket QR image (us-053 API-BT-02)
 segno>=1.6.0

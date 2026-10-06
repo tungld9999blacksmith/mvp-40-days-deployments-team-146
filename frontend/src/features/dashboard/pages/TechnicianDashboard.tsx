@@ -1,117 +1,113 @@
-import { pendingQuotes, todayAppointments } from '@/mocks/technician-dashboard'
-import { useNavigate } from 'react-router-dom'
-import { FileText, CalendarClock, CheckCircle2, AlertTriangle, ChevronRight, TrendingUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { AlarmClock, CalendarClock, ChevronRight, QrCode, Wrench } from 'lucide-react'
+import { isApiError, type ApiError } from '@/shared/api/client'
+import Badge from '@/shared/ui/Badge'
+import Button from '@/shared/ui/Button'
+import { Card } from '@/shared/ui/Card'
+import Skeleton from '@/shared/ui/Skeleton'
+import { EmptyState, ErrorState } from '@/shared/ui/States'
+import { PORTAL_BOOKING_STATUS as BOOKING_STATUS } from '@/shared/domain/bookingLabels'
+import { formatLicensePlate } from '@/shared/utils/format'
+import { useWorkshopAuth } from '@/features/workshop-auth/context/WorkshopAuthContext'
+import { slotLabel, todayVn } from '@/features/bookings/utils'
+import { getBoard } from '@/features/workshop-board/api'
+import type { BoardData } from '@/features/workshop-board/types'
 
-const stats = [
-  { label: 'Pending Quotes', value: '3', sub: 'Chờ duyệt báo giá', icon: FileText, color: 'text-warning', bg: 'bg-warning/10', to: '/technician/quotes' },
-  { label: "Today's Appointments", value: '5', sub: 'Lịch hẹn hôm nay', icon: CalendarClock, color: 'text-emerald', bg: 'bg-emerald/10', to: '/notifications' },
-  { label: 'Completed Services', value: '28', sub: 'Tháng này', icon: CheckCircle2, color: 'text-emerald', bg: 'bg-emerald/10', to: '/notifications' },
-  { label: 'Overdue Vehicles', value: '2', sub: 'Cần liên hệ ngay', icon: AlertTriangle, color: 'text-error', bg: 'bg-error/10', to: '/notifications' },
-]
+const TODAY_LABEL = new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' })
 
+/** `/technician` — today's summary from API-WB-01 (first 5 bookings). */
 export default function TechnicianDashboard() {
   const navigate = useNavigate()
+  const { displayName, workshop } = useWorkshopAuth()
+  const [board, setBoard] = useState<BoardData | null>(null)
+  const [boardError, setBoardError] = useState<ApiError | null>(null)
+
+  const loadBoard = () => {
+    const today = todayVn()
+    setBoardError(null)
+    getBoard({ from: today, to: today, statuses: [], q: '' })
+      .then(setBoard)
+      .catch((reason: unknown) => setBoardError(isApiError(reason) ? reason : null))
+  }
+
+  useEffect(() => {
+    loadBoard()
+  }, [])
+
+  const summary = board?.summary
+  const stats = [
+    { label: 'Chờ xác nhận', value: summary?.PENDING, icon: AlarmClock, tone: 'text-warning bg-warning/10', to: '/technician/board?status=PENDING' },
+    { label: 'Lịch hẹn hôm nay', value: board ? board.items.filter(item => item.status !== 'CANCELLED').length : undefined, icon: CalendarClock, tone: 'text-emerald bg-emerald/10', to: '/technician/board' },
+    { label: 'Đang làm', value: summary ? summary.CHECKED_IN + summary.IN_PROGRESS : undefined, icon: Wrench, tone: 'text-emerald bg-emerald/10', to: '/technician/board?status=CHECKED_IN&status=IN_PROGRESS' },
+  ]
 
   return (
-    <div className="p-6 xl:p-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground">Dashboard Kỹ thuật viên</h1>
-        <p className="text-muted text-sm mt-1">Trần Minh Kỹ • Thứ Tư, 17/09/2026</p>
+    <div className="p-4 sm:p-6 xl:p-8">
+      <div className="flex flex-wrap items-end justify-between gap-3 mb-8">
+        <div>
+          <p className="text-xs font-medium text-muted first-letter:uppercase">{TODAY_LABEL.format(new Date())}</p>
+          <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+            Xin chào{displayName ? ', ' : ''}
+            {displayName && <span>{displayName}</span>}
+          </h1>
+          {workshop && <p className="text-muted mt-1.5">{workshop.name}</p>}
+        </div>
+        <Button icon={<QrCode className="w-4 h-4" />} onClick={() => navigate('/technician/check-in')}>
+          Check-in QR
+        </Button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {stats.map(({ label, value, sub, icon: Icon, color, bg, to }) => (
-          <button
-            key={label}
-            onClick={() => navigate(to)}
-            className="rounded-2xl p-5 text-left transition-all hover:brightness-110 hover:scale-[1.02] active:scale-100"
-            style={{ background: '#171D1C', border: '1px solid #1F2A28' }}
-          >
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 ${bg}`}>
-              <Icon className={`w-4.5 h-4.5 ${color}`} />
-            </div>
-            <div className="text-3xl font-bold text-foreground font-mono">{value}</div>
-            <div className="text-sm font-semibold text-foreground mt-1">{label}</div>
-            <div className="text-xs text-muted mt-0.5">{sub}</div>
-          </button>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6">
+        {stats.map(({ label, value, icon: Icon, tone, to }) => (
+          <Link key={label} to={to} className="group rounded-2xl p-3 sm:p-5 bg-card border border-border elevation-sm hover:-translate-y-0.5 hover:elevation-md hover:border-emerald/30 transition-all">
+            <span className={`hidden sm:flex w-9 h-9 rounded-xl items-center justify-center mb-3 ${tone}`}>
+              <Icon className="w-4 h-4" />
+            </span>
+            <span className="block text-2xl sm:text-3xl font-bold text-foreground font-mono">{value ?? '–'}</span>
+            <span className="block text-xs sm:text-sm text-muted mt-1">{label}</span>
+          </Link>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-        {/* Pending quotes */}
-        <div
-          className="rounded-2xl overflow-hidden"
-          style={{ background: '#171D1C', border: '1px solid #1F2A28' }}
-        >
-          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #1F2A28' }}>
-            <span className="text-sm font-semibold text-foreground">Báo giá chờ duyệt</span>
-            <button
-              onClick={() => navigate('/technician/quotes')}
-              className="text-xs text-emerald hover:text-emerald-bright transition-colors"
-            >
-              Xem tất cả →
-            </button>
-          </div>
-          <div className="divide-y" style={{ borderColor: '#1F2A28' }}>
-            {pendingQuotes.map((q, i) => (
-              <div key={i} className="px-5 py-4 flex items-center gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-foreground">{q.vehicle}</div>
-                  <div className="text-xs text-muted font-mono mt-0.5">{q.plate} • {q.customer}</div>
-                  <div className="flex items-center gap-3 mt-1.5">
-                    <span className="text-xs text-muted">{q.km}</span>
-                    <span className="text-xs text-foreground font-mono font-medium">{q.price}</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => navigate('/technician/quote-review')}
-                  className="px-3 py-1.5 rounded-xl text-xs font-medium text-emerald flex items-center gap-1 hover:bg-emerald/10 transition-colors flex-shrink-0"
-                  style={{ border: '1px solid rgba(16,185,129,0.2)' }}
-                >
-                  Review <ChevronRight className="w-3 h-3" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Today's appointments */}
-        <div
-          className="rounded-2xl overflow-hidden"
-          style={{ background: '#171D1C', border: '1px solid #1F2A28' }}
-        >
-          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: '1px solid #1F2A28' }}>
+      <div className="grid grid-cols-1 gap-5">
+        <Card className="p-0 overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border">
             <span className="text-sm font-semibold text-foreground">Lịch hẹn hôm nay</span>
-            <span className="text-xs text-muted">{todayAppointments.length} lịch hẹn</span>
+            <Link to="/technician/board" className="text-xs text-emerald font-medium hover:text-emerald-bright">
+              Xem tất cả →
+            </Link>
           </div>
-          <div className="divide-y" style={{ borderColor: '#1F2A28' }}>
-            {todayAppointments.map((appt, i) => (
-              <div key={i} className="px-5 py-4 flex items-start gap-4">
-                <div
-                  className="text-sm font-bold text-foreground font-mono flex-shrink-0 w-12 mt-0.5"
-                >
-                  {appt.time}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-foreground">{appt.vehicle}</div>
-                  <div className="text-xs text-muted mt-0.5">{appt.customer}</div>
-                  <div className="text-xs text-muted mt-0.5">{appt.type}</div>
-                </div>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-xs font-semibold flex-shrink-0 ${
-                    appt.status === 'completed'
-                      ? 'text-emerald bg-emerald/10'
-                      : 'text-muted bg-card'
-                  }`}
-                  style={appt.status !== 'completed' ? { border: '1px solid #1F2A28' } : undefined}
-                >
-                  {appt.status === 'completed' ? 'Hoàn thành' : 'Sắp tới'}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+          {boardError ? (
+            <ErrorState compact traceId={boardError.traceId} onRetry={loadBoard} />
+          ) : !board ? (
+            <div className="p-5 space-y-3">
+              {[0, 1, 2].map(index => (
+                <Skeleton key={index} className="h-10 w-full" />
+              ))}
+            </div>
+          ) : board.items.length === 0 ? (
+            <EmptyState title="Chưa có lịch hẹn nào hôm nay." />
+          ) : (
+            <ul className="divide-y divide-border">
+              {board.items.slice(0, 5).map(item => (
+                <li key={item.bookingId}>
+                  <Link to={`/technician/board/${encodeURIComponent(item.bookingId)}`} className="px-5 py-3.5 flex items-center gap-4 hover:bg-card-hover transition-colors">
+                    <span className="text-sm font-bold text-foreground font-mono w-12">{slotLabel(item.timeSlot)}</span>
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-sm font-medium text-foreground truncate">{item.customer.fullName}</span>
+                      <span className="block text-xs text-muted truncate">
+                        {item.vehicle.modelName} · {formatLicensePlate(item.vehicle.licensePlate)}
+                      </span>
+                    </span>
+                    {BOOKING_STATUS[item.status] && <Badge tone={BOOKING_STATUS[item.status].tone}>{BOOKING_STATUS[item.status].label}</Badge>}
+                    <ChevronRight className="w-4 h-4 text-muted" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
       </div>
     </div>
   )

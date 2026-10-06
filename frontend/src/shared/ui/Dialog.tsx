@@ -77,7 +77,7 @@ export default function Dialog({
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div
-        className="absolute inset-0 bg-background/80"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
         aria-hidden
         onClick={() => dismissable && onClose()}
       />
@@ -89,7 +89,7 @@ export default function Dialog({
         aria-describedby={description ? descId : undefined}
         tabIndex={-1}
         className={cn(
-          'relative w-full sm:max-w-sm bg-surface border border-border rounded-t-2xl sm:rounded-2xl p-6 focus:outline-none',
+          'relative w-full sm:max-w-sm bg-surface border border-border rounded-t-3xl sm:rounded-3xl p-6 elevation-md animate-pop-in focus:outline-none',
           className,
         )}
       >

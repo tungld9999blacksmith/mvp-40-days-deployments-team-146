@@ -154,7 +154,7 @@ Xem [ENT-001 §8](../../sprint-1/entity/us-001-sprint-1-spec.entity.md#ent-001--
 # 9. Business Rules & Constraints
 
 * **BR-001** (core) — `firebase_uid`, `email`, `phone`, `national_id` là duy nhất giữa các tài khoản (BR-ENT-001, BR-ENT-002, D-03).
-* Chỉ tài khoản `onboarding_status = active` được dùng tính năng chính (BR-ENT-004): đặt lịch, nhận báo giá, nhắc nhở.
+* Chỉ tài khoản `onboarding_status = active` được dùng tính năng chính (BR-ENT-004): đặt lịch, nhắc nhở.
 * Các rule còn lại: ENT-001 §9 (BR-ENT-001 … BR-ENT-006).
 
 ---

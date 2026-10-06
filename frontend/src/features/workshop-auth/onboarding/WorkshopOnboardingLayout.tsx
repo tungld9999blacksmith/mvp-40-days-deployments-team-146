@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { LogOut, Zap } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import Stepper from '@/shared/ui/Stepper'
 import { Notice } from '@/shared/ui/States'
 import { formatDate } from '@/shared/utils/format'
@@ -8,6 +8,7 @@ import SplashScreen from '@/features/auth/components/SplashScreen'
 import LogoutConfirmDialog from '@/features/auth/components/LogoutConfirmDialog'
 import { useWorkshopAuth } from '../context/WorkshopAuthContext'
 import { WorkshopOnboardingProvider, useWorkshopOnboarding } from './WorkshopOnboardingContext'
+import Logo from '@/shared/ui/Logo'
 
 const STEPS = ['Thông tin chủ xưởng', 'Vận hành xưởng', 'Xác thực']
 
@@ -35,10 +36,7 @@ function Shell() {
     <div className="min-h-screen bg-background">
       <header className="h-16 bg-surface border-b border-border">
         <div className="max-w-3xl mx-auto h-full px-4 sm:px-6 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-emerald flex items-center justify-center flex-shrink-0">
-            <Zap className="w-4 h-4 text-background" strokeWidth={2.5} />
-          </div>
-          <span className="text-foreground font-bold tracking-tight">EV Care</span>
+          <Logo className="h-8 text-foreground" />
           <span className="text-xs font-semibold text-emerald">Workshop Portal</span>
           <span className="ml-auto hidden md:inline text-sm text-muted truncate max-w-[220px]">{owner?.email}</span>
           <button
@@ -77,10 +75,14 @@ function Shell() {
 /** `/workshop/onboarding/*` layout (US-009 FE §3.1). */
 export default function WorkshopOnboardingLayout() {
   const { authStatus, onboarding, bootError, retryBootstrap } = useWorkshopAuth()
+  const location = useLocation()
   if (authStatus === 'initializing') {
     return <SplashScreen brand="Workshop Portal" label="Đang kiểm tra phiên đăng nhập..." error={bootError} onRetry={retryBootstrap} />
   }
   if (authStatus !== 'signed-in' || !onboarding) return <Navigate to="/workshop/login" replace />
+  if (onboarding.status === 'ACTIVE' && !['/workshop/onboarding/verifying', '/workshop/onboarding/success'].includes(location.pathname)) {
+    return <Navigate to="/technician" replace />
+  }
   return (
     <WorkshopOnboardingProvider>
       <Shell />

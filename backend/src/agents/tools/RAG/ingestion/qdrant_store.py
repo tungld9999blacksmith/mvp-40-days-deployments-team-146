@@ -53,8 +53,16 @@ class QdrantVectorStore:
         from src.config import get_settings
 
         cfg = get_settings()
-        self.url = (url or cfg.qdrant_url or os.getenv("QDRANT_URL", "")).strip()
-        self.api_key = (api_key or cfg.qdrant_api_key or os.getenv("QDRANT_API_KEY", "")).strip()
+        self.url = (
+            url
+            or cfg.qdrant_url
+            or os.getenv("QDRANT_URL", "")
+        ).strip()
+        self.api_key = (
+            api_key
+            or cfg.qdrant_api_key
+            or os.getenv("QDRANT_API_KEY", "")
+        ).strip()
         self.collection_name = (
             collection_name
             or cfg.qdrant_collection_name
@@ -73,8 +81,19 @@ class QdrantVectorStore:
             elif "text-embedding-3-large" in m:
                 self.vector_size = 3072
 
-        # Kết nối tới Qdrant
-        if self.url and self.api_key:
+        # Kết nối tới Qdrant (ưu tiên service dependency nếu có)
+        client_from_dep = None
+        try:
+            from src.infrastructure.qdrant import dependency
+            svc = dependency.get_qdrant_service()
+            if hasattr(svc, "client") and svc.client is not None:
+                client_from_dep = svc.client
+        except Exception:
+            pass
+
+        if client_from_dep is not None:
+            self._client = client_from_dep
+        elif self.url and self.api_key:
             self._client = QdrantClient(
                 url=self.url,
                 api_key=self.api_key,
@@ -102,7 +121,25 @@ class QdrantVectorStore:
         collections_res = self._client.get_collections()
         existing = [c.name for c in collections_res.collections]
 
-        if self.collection_name not in existing:
+        if self.collection_name in existing:
+            # Kiểm tra tương thích vector size
+            try:
+                coll_info = self._client.get_collection(self.collection_name)
+                params = getattr(getattr(coll_info, "config", None), "params", None)
+                vectors = getattr(params, "vectors", None)
+                existing_size = getattr(vectors, "size", None)
+                if existing_size is None and isinstance(vectors, dict):
+                    existing_size = vectors.get("size")
+                if existing_size is not None and existing_size != self.vector_size:
+                    raise ValueError(
+                        f"Collection '{self.collection_name}' has vector size {existing_size}, "
+                        f"incompatible with required {self.vector_size}"
+                    )
+            except ValueError:
+                raise
+            except Exception:
+                pass
+        else:
             logger.info(
                 f"Tạo Collection Qdrant '{self.collection_name}' (vector_size={self.vector_size}, distance=COSINE)..."
             )
@@ -161,7 +198,10 @@ class QdrantVectorStore:
             except Exception:
                 existing_ids = set()
 
-            missing_chunks = [c for c in batch if str(uuid.uuid5(uuid.NAMESPACE_DNS, c.chunk_id)) not in existing_ids]
+            missing_chunks = [
+                c for c in batch
+                if str(uuid.uuid5(uuid.NAMESPACE_DNS, c.chunk_id)) not in existing_ids
+            ]
 
             if not missing_chunks:
                 logger.info(f"Batch {i // batch_size + 1}: Toàn bộ {len(batch)} chunks đã có trong Qdrant. Bỏ qua.")
@@ -244,7 +284,9 @@ class QdrantVectorStore:
 
         # Lọc danh mục dịch vụ
         if category and category not in ["all", "general"]:
-            must_conditions.append(FieldCondition(key="category", match=MatchValue(value=category)))
+            must_conditions.append(
+                FieldCondition(key="category", match=MatchValue(value=category))
+            )
 
         query_filter = Filter(must=must_conditions) if must_conditions else None
 
@@ -301,14 +343,12 @@ class QdrantVectorStore:
 
             for record in records:
                 payload = record.payload or {}
-                all_chunks.append(
-                    {
-                        "chunk_id": payload.get("chunk_id", str(record.id)),
-                        "doc_id": payload.get("document_id", ""),
-                        "content": payload.get("content", ""),
-                        "metadata": payload.get("metadata", payload),
-                    }
-                )
+                all_chunks.append({
+                    "chunk_id": payload.get("chunk_id", str(record.id)),
+                    "doc_id": payload.get("document_id", ""),
+                    "content": payload.get("content", ""),
+                    "metadata": payload.get("metadata", payload),
+                })
 
             if next_page_offset is None:
                 break

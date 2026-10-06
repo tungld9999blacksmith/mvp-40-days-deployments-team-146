@@ -6,6 +6,12 @@
     <meta name="robots" content="noindex, nofollow" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>EV Care</title>
+    <script>
+      // Apply the saved theme before first paint (key shared with src/shared/hooks/useTheme.ts).
+      try {
+        if (localStorage.getItem('evcare.theme.v2') === 'dark') document.documentElement.dataset.theme = 'dark'
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

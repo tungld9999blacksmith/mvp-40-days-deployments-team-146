@@ -1,5 +1,7 @@
 # Functional Specification — Báo giá có chủ xưởng duyệt (HITL)
 
+> **Đã loại khỏi phạm vi (02/10/2026).** Chức năng báo giá có chủ xưởng duyệt (F5b, us-049, AI-005) đã bị bỏ khỏi sản phẩm: code backend/frontend đã gỡ, bảng `quote`, `quote_item` được xoá bởi migration `backend/alembic/versions/a3c7e9f1b2d4_drop_quote_support_ticket_discord.py`. Tài liệu giữ lại để tham khảo lịch sử, **không dùng để triển khai**.
+
 > Đặc tả nghiệp vụ cho Feature **F5b — Báo giá HITL** trong [PRD EV Care MVP](../../../product/PRD_EV_Care_MVP.md#f5b--báo-giá-hitl).
 >
 > **Quan hệ tài liệu:** Tầng hội thoại đã đặc tả tại [AI-005 Quote HITL Agent](../../ai-agent/ai-005-sprint-3-spec.agent.md). Tài liệu này là **nguồn nghiệp vụ chính** cho chat, app chủ xe và Workshop Portal; khi khác nhau, tài liệu này là chuẩn.

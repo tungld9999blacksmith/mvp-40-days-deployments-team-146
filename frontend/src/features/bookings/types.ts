@@ -78,9 +78,10 @@ export interface AvailabilityData {
 }
 
 export interface HoldRequest {
+  proposalId?: string
+  quoteId?: string
   confirmationToken: string
   userVehicleId: string
-  quoteId?: string
   milestoneRef?: string
   note?: string
 }
@@ -89,6 +90,7 @@ export interface HoldRequest {
 export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | (string & {})
 
 export interface Booking {
+  quoteId?: string | null
   bookingId: string
   status: BookingStatus
   confirmationMode: string
@@ -102,10 +104,103 @@ export interface Booking {
   qrUrl: string | null
   estimatedCost: string | number | null
   estimateLabel: string
-  quoteId: string | null
 }
 
 export interface CancelHoldData {
   bookingId: string
   status: BookingStatus
 }
+
+// ---------------------------------------------------------------- us-033 / us-053 (ticket)
+
+export type BookingAction = 'CONFIRM_ATTENDANCE' | 'CANCEL' | 'RESCHEDULE' | 'CANCEL_HOLD'
+export type TicketStatus = 'PENDING' | 'CONFIRMED' | 'CHECKED_IN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
+export type RescheduleBlockedReason = 'TOO_CLOSE_TO_APPOINTMENT' | 'MAX_RESCHEDULES_REACHED' | 'NOT_CONFIRMED'
+
+export type BookingHistoryEntry =
+  | {
+      kind: 'STATUS'
+      fromStatus: string | null
+      toStatus: string
+      actorType: 'VEHICLE_OWNER' | 'WORKSHOP_OWNER' | 'SYSTEM'
+      source: string
+      reasonCode: string | null
+      note: string | null
+      at: string
+    }
+  | {
+      kind: 'RESCHEDULE'
+      from: { date: string; timeSlot: string }
+      to: { date: string; timeSlot: string }
+      source: string
+      at: string
+    }
+
+/** API-BR-01 extended with the us-053 ticket fields. */
+export interface BookingDetail {
+  bookingId: string
+  bookingCode: string | null
+  status: TicketStatus
+  bookingDate: string
+  timeSlot: string
+  appointmentAt: string
+  workshop: { workshopId: string; name: string; address: string | null; phone: string | null }
+  vehicle: { userVehicleId: string | null; modelName: string; plateMasked: string }
+  estimatedCost: number | null
+  estimateLabel: string
+  qrUrl: string | null
+  qrPayload: string | null
+  attendanceConfirmedAt: string | null
+  allowedActions: BookingAction[]
+  rescheduleMode: 'F6B' | 'GUIDE'
+  rescheduleBlockedReason: RescheduleBlockedReason | null
+  odoMilestone: number | null
+  items: { itemName: string; covered: boolean }[]
+  cost: { amount: number | null; label: 'ESTIMATE' | 'NONE' }
+  documentsToBring: string[]
+  rescheduleCount: number
+  rescheduleDeadline: string | null
+  holdExpiresAt: string | null
+  ownerCancelableUntil: string | null
+  cancelledAt: string | null
+  cancelledBy: 'VEHICLE_OWNER' | 'WORKSHOP_OWNER' | 'SYSTEM' | null
+  cancelReason: string | null
+  completedAt: string | null
+  history: BookingHistoryEntry[]
+  /** us-041 §19 proposal: survey of a completed booking. */
+  followUp: { followUpId: string; canRespond: boolean } | null
+}
+
+/** API-BT-01 row. */
+export interface MyBookingItem {
+  bookingId: string
+  bookingCode: string | null
+  status: TicketStatus
+  appointmentAt: string
+  bookingDate: string
+  timeSlot: string
+  workshop: { workshopId: string; name: string }
+  cost: { amount: number | null; label: 'ESTIMATE' | 'NONE' }
+  allowedActions: BookingAction[]
+}
+
+export interface MyBookingsPage {
+  items: MyBookingItem[]
+  nextCursor: string | null
+}
+
+export interface AttendanceResult {
+  bookingId: string
+  status: TicketStatus
+  attendanceConfirmedAt: string
+}
+
+export interface CancelResult {
+  bookingId: string
+  status: 'CANCELLED'
+  cancelledAt: string
+  cancelledBy: 'VEHICLE_OWNER'
+  source: string
+}
+
+export type BookingSource = 'APP' | 'REMINDER_24H'

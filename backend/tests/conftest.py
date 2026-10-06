@@ -4,12 +4,14 @@ import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 
-from src.main import app
-
 
 @pytest_asyncio.fixture
 async def client():
     """Async HTTP client for testing API endpoints."""
+    # Demo tests inject their own app and must not initialize SQL/Firebase
+    # production configuration just to collect the test suite.
+    from src.main import app
+
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac

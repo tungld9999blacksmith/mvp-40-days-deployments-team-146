@@ -1,10 +1,13 @@
 import { useEffect, useState, type ComponentType } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Bell, LogOut, Menu, WifiOff, X, Zap } from 'lucide-react'
+import { Bell, LogOut, Menu, WifiOff, X } from 'lucide-react'
 import LogoutConfirmDialog from '@/features/auth/components/LogoutConfirmDialog'
 import { useOnlineStatus } from '@/shared/hooks/useOnlineStatus'
 import { cn } from '@/shared/ui/cn'
+import { ICON_BUTTON } from '@/shared/ui/iconButton'
+import Logo from '@/shared/ui/Logo'
 import SupportLink from '@/shared/ui/SupportLink'
+import ThemeToggle from '@/shared/ui/ThemeToggle'
 
 export interface NavItem {
   to: string
@@ -13,6 +16,8 @@ export interface NavItem {
   end?: boolean
   /** Not built yet: shown greyed with "Sắp có". */
   disabled?: boolean
+  /** Count shown as a pill (e.g. unread notifications); hidden when 0. */
+  badge?: number
 }
 
 interface AppLayoutProps {
@@ -40,26 +45,29 @@ function Sidebar({ nav, brandSuffix, onLogoutClick, onNavigate }: {
   onNavigate?: () => void
 }) {
   return (
-    <div className="flex h-full flex-col bg-surface">
-      <div className="h-16 flex items-center gap-2.5 px-5 border-b border-border">
-        <div className="w-8 h-8 rounded-lg bg-emerald flex items-center justify-center flex-shrink-0">
-          <Zap className="w-4 h-4 text-background" strokeWidth={2.5} />
-        </div>
-        <span className="text-foreground font-bold text-lg tracking-tight">EV Care</span>
-        {brandSuffix && <span className="text-xs font-semibold text-emerald">{brandSuffix}</span>}
+    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
+      <div className="h-16 flex items-center gap-2.5 px-5">
+        {/* At h-9 the wordmark plus the suffix badge overflow the 240px sidebar. */}
+        <Logo className={cn('text-sidebar-foreground', brandSuffix ? 'h-7' : 'h-9')} />
+        {brandSuffix && (
+          <span className="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold text-emerald bg-emerald/10 ring-1 ring-inset ring-emerald/20">
+            {brandSuffix}
+          </span>
+        )}
       </div>
 
-      <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto" aria-label="Điều hướng chính">
-        {nav.map(({ to, label, icon: Icon, end, disabled }) =>
+      <p className="px-6 pt-4 pb-2 text-xs font-semibold text-sidebar-muted">Menu</p>
+      <nav className="flex-1 px-3 pb-4 space-y-1 overflow-y-auto" aria-label="Điều hướng chính">
+        {nav.map(({ to, label, icon: Icon, end, disabled, badge }) =>
           disabled ? (
             <span
               key={to}
               aria-disabled="true"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted/50 cursor-not-allowed"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-muted/50 cursor-not-allowed"
             >
               <Icon className="w-4 h-4 flex-shrink-0" />
               {label}
-              <span className="ml-auto text-[10px] font-semibold uppercase tracking-wide">Sắp có</span>
+              <span className="ml-auto text-[11px] font-medium">Sắp có</span>
             </span>
           ) : (
             <NavLink
@@ -69,24 +77,31 @@ function Sidebar({ nav, brandSuffix, onLogoutClick, onNavigate }: {
               onClick={onNavigate}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150',
-                  isActive ? 'bg-emerald/10 text-emerald' : 'text-muted hover:text-foreground hover:bg-card',
+                  'relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
+                  isActive
+                    ? 'bg-sidebar-active text-sidebar-foreground font-semibold [&>svg]:text-sidebar-active-foreground'
+                    : 'text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-hover',
                 )
               }
             >
               <Icon className="w-4 h-4 flex-shrink-0" />
               {label}
+              {badge ? (
+                <span className="ml-auto min-w-5 h-5 px-1.5 rounded-full bg-brand text-on-brand text-[11px] font-bold flex items-center justify-center" aria-label={`${badge} mới`}>
+                  {badge > 99 ? '99+' : badge}
+                </span>
+              ) : null}
             </NavLink>
           ),
         )}
       </nav>
 
-      <div className="px-3 pb-4 pt-4 space-y-1 border-t border-border">
-        <SupportLink label="Hỗ trợ" variant="ghost" />
+      <div className="mx-3 mb-4 pt-3 space-y-1 border-t border-sidebar-border">
+        <SupportLink label="Hỗ trợ" variant="sidebar" />
         <button
           type="button"
           onClick={onLogoutClick}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-muted hover:text-error hover:bg-error/10 w-full transition-colors"
+          className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-sidebar-muted hover:text-error hover:bg-error/10 w-full transition-colors"
         >
           <LogOut className="w-4 h-4" />
           Đăng xuất
@@ -117,21 +132,26 @@ export default function AppLayout({
 
   useEffect(() => setDrawerOpen(false), [location.pathname])
 
+  // Longest matching entry: `/technician/board/…` is "Lịch hẹn", not the `/technician` dashboard.
+  const current = nav
+    .filter(item => !item.disabled && (location.pathname === item.to || (!item.end && location.pathname.startsWith(`${item.to}/`))))
+    .sort((a, b) => b.to.length - a.to.length)[0]
+
   const openLogout = () => {
     setDrawerOpen(false)
     setLogoutOpen(true)
   }
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
-      <aside className="hidden lg:block w-60 flex-shrink-0 border-r border-border">
+    <div className="flex h-screen bg-background bg-app-backdrop overflow-hidden">
+      <aside className="hidden lg:block w-60 flex-shrink-0 border-r border-sidebar-border">
         <Sidebar nav={nav} brandSuffix={brandSuffix} onLogoutClick={openLogout} />
       </aside>
 
       {drawerOpen && (
         <div className="lg:hidden fixed inset-0 z-40">
-          <div className="absolute inset-0 bg-background/80" aria-hidden onClick={() => setDrawerOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-64 border-r border-border">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in" aria-hidden onClick={() => setDrawerOpen(false)} />
+          <div className="absolute inset-y-0 left-0 w-64 border-r border-sidebar-border bg-sidebar elevation-md">
             <Sidebar
               nav={nav}
               brandSuffix={brandSuffix}
@@ -142,7 +162,7 @@ export default function AppLayout({
               type="button"
               onClick={() => setDrawerOpen(false)}
               aria-label="Đóng menu"
-              className="absolute top-4 -right-12 w-9 h-9 rounded-xl bg-surface border border-border flex items-center justify-center text-muted"
+              className="absolute top-4 -right-12 w-9 h-9 rounded-full bg-surface border border-border flex items-center justify-center text-muted"
             >
               <X className="w-4 h-4" />
             </button>
@@ -151,36 +171,35 @@ export default function AppLayout({
       )}
 
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <header className="h-16 bg-surface border-b border-border flex items-center px-4 sm:px-6 gap-3 flex-shrink-0">
+        <header className="h-16 bg-surface/60 backdrop-blur-xl border-b border-border flex items-center px-4 sm:px-6 gap-3 flex-shrink-0">
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
             aria-label="Mở menu"
-            className="lg:hidden w-9 h-9 rounded-xl bg-card border border-border flex items-center justify-center text-muted hover:text-foreground"
+            className={cn(ICON_BUTTON, 'lg:hidden')}
           >
             <Menu className="w-4 h-4" />
           </button>
+          <Logo className="hidden sm:block lg:hidden h-6 text-foreground" />
+          {current && <p className="text-base font-semibold text-foreground truncate">{current.label}</p>}
 
-          <div className="flex items-center gap-3 ml-auto">
-            <button
-              type="button"
-              onClick={() => navigate(notificationsPath)}
-              aria-label="Thông báo"
-              className="w-9 h-9 rounded-xl bg-card border border-border flex items-center justify-center text-muted hover:text-foreground transition-colors"
-            >
+          <div className="flex items-center gap-2 sm:gap-3 ml-auto">
+            <ThemeToggle />
+            <button type="button" onClick={() => navigate(notificationsPath)} aria-label="Thông báo" className={ICON_BUTTON}>
               <Bell className="w-4 h-4" />
             </button>
-            <div className="flex items-center gap-2.5 select-none">
+            <span aria-hidden className="hidden sm:block w-px h-6 bg-border mx-1" />
+            <div className="flex items-center gap-2.5 select-none rounded-full sm:border sm:border-border sm:bg-card/60 sm:pl-1 sm:pr-4 sm:py-1">
               {avatarUrl ? (
-                <img src={avatarUrl} alt="" referrerPolicy="no-referrer" className="w-9 h-9 rounded-xl object-cover" />
+                <img src={avatarUrl} alt="" referrerPolicy="no-referrer" className="w-8 h-8 rounded-full object-cover ring-2 ring-emerald/30" />
               ) : (
-                <div className="w-9 h-9 rounded-xl bg-emerald/15 flex items-center justify-center flex-shrink-0">
-                  <span className="text-emerald text-xs font-bold">{initialsOf(userName)}</span>
+                <div className="w-8 h-8 rounded-full bg-brand-gradient flex items-center justify-center flex-shrink-0">
+                  <span className="text-on-brand text-xs font-bold">{initialsOf(userName)}</span>
                 </div>
               )}
               <div className="hidden sm:block min-w-0">
-                <div className="text-sm font-semibold text-foreground leading-tight truncate max-w-[200px]">{userName}</div>
-                <div className="text-xs text-muted truncate max-w-[200px]">{roleLabel}</div>
+                <div className="text-sm font-semibold text-foreground leading-tight truncate max-w-[180px]">{userName}</div>
+                <div className="text-[11px] text-muted leading-tight truncate max-w-[180px]">{roleLabel}</div>
               </div>
             </div>
           </div>
@@ -193,7 +212,7 @@ export default function AppLayout({
           </div>
         )}
 
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto [&>*]:animate-fade-in">
           <Outlet />
         </main>
       </div>

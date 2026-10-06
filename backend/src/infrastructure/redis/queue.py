@@ -141,7 +141,7 @@ class DistributedQueue(Generic[T]):
         if delay and delay > 0:
             delayed_id = uuid.uuid4().hex
             async with self._redis.pipeline(transaction=True) as pipe:
-                pipe.hset(self.delayed_data_key, delayed_id, raw)  # type: ignore
+                pipe.hset(self.delayed_data_key, mapping={delayed_id: raw})
                 pipe.zadd(self.delayed_key, {delayed_id: time.time() + delay})
                 await pipe.execute()
             return f"delayed:{delayed_id}"
@@ -200,13 +200,29 @@ class DistributedQueue(Generic[T]):
         if reclaimed:
             return reclaimed
 
-        response = await self._redis.xreadgroup(
-            self.group,
-            self.consumer,
-            {self.stream_key: ">"},
-            count=count,
-            block=int(block * 1000) if block else None,
-        )
+        block_ms = int(block * 1000) if block else None
+        try:
+            if block:
+                response = await asyncio.wait_for(
+                    self._redis.xreadgroup(
+                        self.group,
+                        self.consumer,
+                        {self.stream_key: ">"},
+                        count=count,
+                        block=block_ms,
+                    ),
+                    timeout=max(block * 2, 0.2),
+                )
+            else:
+                response = await self._redis.xreadgroup(
+                    self.group,
+                    self.consumer,
+                    {self.stream_key: ">"},
+                    count=count,
+                    block=None,
+                )
+        except TimeoutError:
+            response = None
         messages: list[QueueMessage[T]] = []
         for _stream, entries in response or []:
             for msg_id, fields in entries:

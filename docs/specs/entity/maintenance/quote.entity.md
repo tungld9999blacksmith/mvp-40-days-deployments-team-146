@@ -1,5 +1,7 @@
 # Entity Specification — `quote` (Báo giá bảo dưỡng — HITL)
 
+> **Đã loại khỏi phạm vi (02/10/2026).** Chức năng báo giá có chủ xưởng duyệt (F5b, us-049, AI-005) đã bị bỏ khỏi sản phẩm: code backend/frontend đã gỡ, bảng `quote`, `quote_item` được xoá bởi migration `backend/alembic/versions/a3c7e9f1b2d4_drop_quote_support_ticket_discord.py`. Tài liệu giữ lại để tham khảo lịch sử, **không dùng để triển khai**.
+
 > **Domain:** Maintenance · **Tổng quan lược đồ:** [core.entity.md](../core.entity.md)
 >
 > **Nguồn:** entity `quotes` (ENT-010) trong bản ERD sinh tự động ([archive/core.entity.generated.md](../archive/core.entity.generated.md)), đã **chỉnh theo quy ước core v1.1** và các entity đã có. Các điểm thay đổi so với bản sinh tự động: xem §21. Đánh dấu `[Đề xuất]` là phần bổ sung chưa có trong nguồn nào, cần review.

@@ -40,7 +40,9 @@ services:
     environment:
       # Outgoing webhooks to the backend running on the host (FEAT-VEH-001).
       # The secret must equal OEM_WEBHOOK_SECRET in the root .env.
-      MOCK_WEBHOOK_URL: "http://host.docker.internal:8000/api/v1/integrations/oem/webhooks"
+      # Webhooks tắt: backend không còn đồng bộ ODO/lịch sử từ mock (ODO cố định ngẫu nhiên).
+      # Bật lại: MOCK_WEBHOOK_URL: "http://host.docker.internal:8000/api/v1/integrations/oem/webhooks"
+      MOCK_WEBHOOK_URL: ""
       MOCK_WEBHOOK_SECRET: "${OEM_WEBHOOK_SECRET:-change-me}"
       MOCK_WEBHOOK_USAGE_MIN_INTERVAL_SECONDS: "300"
       # Gmail quản lý xưởng cho Workshop Portal (trống = email mẫu trong seed).

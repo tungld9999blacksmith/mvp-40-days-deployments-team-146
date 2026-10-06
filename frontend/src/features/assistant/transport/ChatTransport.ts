@@ -1,5 +1,13 @@
 import { CHAT_TRANSPORT } from '@/shared/config/env'
-import type { ConversationDto, ConversationExcerpt, MessageDto, Paged, SearchResultDto, StreamHandlers } from '../types'
+import type {
+  ConfirmProposalResult,
+  ConversationDto,
+  ConversationExcerpt,
+  MessageDto,
+  Paged,
+  SearchResultDto,
+  StreamHandlers,
+} from '../types'
 import { createHttpTransport } from './httpTransport'
 import { createMockTransport } from './mockTransport'
 
@@ -34,7 +42,22 @@ export interface ChatTransport {
   /** API-CONV-005 — 204 */
   deleteConversation(conversationId: string): Promise<void>
   /** API-CHAT-007 / API-CHAT-008 (Workshop Portal). */
-  getConversationExcerpt(source: { type: 'booking' | 'quote'; id: string }): Promise<ConversationExcerpt>
+  getConversationExcerpt(source: { type: 'booking'; id: string }): Promise<ConversationExcerpt>
+  /** us-061 API-QB-01 — the quick-booking chip: a proposal card, never a booking. */
+  quickBooking(
+    conversationId: string,
+    body: { clientMessageId: string; location: { lat: number; lng: number } | null; province: string | null },
+  ): Promise<{ userMessage: MessageDto; assistantMessage: MessageDto; replayed: boolean }>
+  /** us-061 API-QB-02 — the only way a proposal becomes a booking. Idempotent per proposal. */
+  confirmProposal(conversationId: string, proposalId: string): Promise<ConfirmProposalResult>
+  /** us-061 API-QB-03 */
+  reviseProposal(
+    conversationId: string,
+    proposalId: string,
+    body: { workshopId: string; date: string; timeSlot: string },
+  ): Promise<{ proposalId: string; message: MessageDto }>
+  /** us-061 API-QB-04 */
+  cancelProposal(conversationId: string, proposalId: string): Promise<{ proposalId: string; status: 'CANCELLED' }>
 }
 
 let instance: ChatTransport | null = null

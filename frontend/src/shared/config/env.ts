@@ -15,6 +15,7 @@ export const isFirebaseConfigured = Boolean(
 )
 
 export const firebaseAuthEmulatorUrl = env.VITE_FIREBASE_AUTH_EMULATOR_URL ?? ''
+export const DEMO_MODE = env.VITE_DEMO_MODE === 'true' || Boolean(firebaseAuthEmulatorUrl)
 
 /** Policy versions must match the backend `CONSENT_POLICY_VERSION` settings. */
 export const CONSENT_POLICY_VERSION = env.VITE_CONSENT_POLICY_VERSION || '2026-09'
@@ -26,3 +27,12 @@ export const CHAT_WS_ENABLED = env.VITE_CHAT_WS_ENABLED === 'true'
 
 /** Support channel is still undecided (open question in the FE specs). */
 export const SUPPORT_URL = env.VITE_SUPPORT_URL ?? ''
+
+/** UI demo uses the backend store, never the standalone browser mocks. */
+export const API_MOCKS: 'off' | 'all' | 'demo' | string[] = (() => {
+  const raw = (env.VITE_API_MOCKS ?? '').trim().toLowerCase()
+  if (!raw || raw === 'off' || raw === 'false') return 'off'
+  if (raw === 'all' || raw === 'demo') return raw
+  return raw.split(',').map(value => value.trim()).filter(Boolean)
+})()
+export const isAuthConfigured = isFirebaseConfigured

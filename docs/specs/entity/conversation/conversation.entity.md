@@ -79,7 +79,7 @@ Không có trạng thái. Tồn tại đến khi bị xoá (chủ xe yêu cầu 
 
 ### BR-ENT-462 — Xoá hoàn toàn
 
-**Rule:** Xoá hội thoại xoá: các `chat_message` (`ON DELETE CASCADE`), các bản ghi checkpointer có `thread_id = id`. Cột `booking.source_message_id`, `quote.source_message_id` tự về `NULL`.
+**Rule:** Xoá hội thoại xoá: các `chat_message` (`ON DELETE CASCADE`), các bản ghi checkpointer có `thread_id = id`. Cột `booking.source_message_id` tự về `NULL`.
 
 **Expected Behavior:** thực hiện trong một transaction cho dữ liệu Postgres; bản ghi checkpointer bị xoá cùng transaction (cùng database).
 

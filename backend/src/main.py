@@ -34,19 +34,18 @@ from .modules.examples.route import vehicle_router
 from .modules.follow_up import FollowUpError
 from .modules.follow_up import status_for as follow_up_status_for
 from .modules.follow_up.route import router as follow_up_router
-from .modules.follow_up.route import workshop_router as follow_up_workshop_router
 from .modules.health.route import router as health_router
 from .modules.notification.errors import NotificationError
 from .modules.notification.errors import status_for as notification_status_for
+from .modules.notification.route import feed_router as notification_feed_router
 from .modules.notification.route import router as notification_router
 from .modules.oauth.route import router as oauth_router
 from .modules.oem_integration.errors import OemWebhookError
 from .modules.oem_integration.errors import status_for as oem_webhook_status_for
 from .modules.oem_integration.route import router as oem_integration_router
-from .modules.quote import QuoteError
-from .modules.quote import status_for as quote_status_for
-from .modules.quote.route import router as quote_router
-from .modules.quote.route import workshop_router as quote_workshop_router
+from .modules.quick_booking import QuickBookingError
+from .modules.quick_booking import status_for as quick_booking_status_for
+from .modules.quick_booking.route import router as quick_booking_router
 from .modules.service_progress import ProgressError
 from .modules.service_progress import status_for as progress_status_for
 from .modules.user_vehicle.errors import UserVehicleError
@@ -82,6 +81,10 @@ from .modules.workshop_owner_onboarding.route import (
 async def lifespan(app: FastAPI):
     settings = get_settings()
     print(f"Starting {settings.app_name} in {settings.app_env} mode")
+    if settings.uses_static_odometer():
+        logging.getLogger(__name__).warning(
+            "OEM_SYNC_MODE resolves to 'static': vehicles get a random demo odometer instead of OEM data"
+        )
     try:
         # Firebase Admin must be initialized before any auth.verify_id_token call.
         import src.infrastructure.firebase.oauth.setup  # noqa: F401
@@ -145,14 +148,13 @@ app.include_router(cost_estimate_router, prefix="/api/v1")
 app.include_router(booking_router, prefix="/api/v1")
 app.include_router(oem_integration_router, prefix="/api/v1")
 app.include_router(notification_router, prefix="/api/v1")
+app.include_router(notification_feed_router, prefix="/api/v1")
 app.include_router(conversation_router, prefix="/api/v1")
+app.include_router(quick_booking_router, prefix="/api/v1")
 app.include_router(conversation_workshop_router, prefix="/api/v1")
 app.include_router(conversation_ws_router, prefix="/api/v1")
 app.include_router(workshop_board_router, prefix="/api/v1")
-app.include_router(quote_router, prefix="/api/v1")
-app.include_router(quote_workshop_router, prefix="/api/v1")
 app.include_router(follow_up_router, prefix="/api/v1")
-app.include_router(follow_up_workshop_router, prefix="/api/v1")
 
 
 def _error_body(code: str, message: str, trace_id: str | None, details=None) -> dict:
@@ -253,16 +255,16 @@ async def board_error_handler(request: Request, exc: BoardError) -> JSONResponse
     return _domain_error_response(request, exc, board_status_for)
 
 
-@app.exception_handler(QuoteError)
-async def quote_error_handler(request: Request, exc: QuoteError) -> JSONResponse:
-    """Quote errors (us-049)."""
-    return _domain_error_response(request, exc, quote_status_for)
-
-
 @app.exception_handler(FollowUpError)
 async def follow_up_error_handler(request: Request, exc: FollowUpError) -> JSONResponse:
-    """Follow-up & support ticket errors (us-041)."""
+    """Post-service follow-up errors (us-041)."""
     return _domain_error_response(request, exc, follow_up_status_for)
+
+
+@app.exception_handler(QuickBookingError)
+async def quick_booking_error_handler(request: Request, exc: QuickBookingError) -> JSONResponse:
+    """Quick booking errors (us-061); ``details`` carries the follow-up message on SLOT_FULL."""
+    return _domain_error_response(request, exc, quick_booking_status_for)
 
 
 @app.exception_handler(ProgressError)
@@ -321,9 +323,7 @@ _ONBOARDING_PREFIXES = (
     "/api/v1/integrations/oem",
     "/api/v1/bookings",
     "/api/v1/workshops",
-    "/api/v1/quotes",
     "/api/v1/follow-ups",
-    "/api/v1/support-tickets",
 )
 
 

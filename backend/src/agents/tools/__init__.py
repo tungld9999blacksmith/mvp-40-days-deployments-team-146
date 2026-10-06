@@ -1,9 +1,9 @@
 """Tools package cho AI Agent EV Care."""
 
 from .booking_tools import (
-    create_booking_draft,
     find_workshops,
     get_available_slots,
+    propose_booking,
 )
 from .cost_tools import estimate_service_cost
 from .maintenance_tools import get_due_maintenance
@@ -19,7 +19,7 @@ CUSTOMER_AGENT_TOOLS = [
     estimate_service_cost,
     find_workshops,
     get_available_slots,
-    create_booking_draft,
+    propose_booking,
     search_ev_knowledge,
 ]
 
@@ -28,7 +28,7 @@ __all__ = [
     "estimate_service_cost",
     "find_workshops",
     "get_available_slots",
-    "create_booking_draft",
+    "propose_booking",
     "search_ev_knowledge",
     "get_maintenance_schedule_rag",
     "get_warranty_policy_rag",

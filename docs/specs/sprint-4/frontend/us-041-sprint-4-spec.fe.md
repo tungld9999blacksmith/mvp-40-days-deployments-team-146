@@ -1,5 +1,10 @@
 # Frontend Technical Specification — Hỏi thăm sau dịch vụ & phiếu hỗ trợ
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Phiếu hỗ trợ (`support_ticket`): **đã bỏ**. Phản hồi hỏi thăm có vấn đề chỉ được phân loại và ghi trên `follow_up` (`has_issue`); app hiện lời khuyên an toàn và hotline xưởng, không tạo phiếu, không có màn phiếu cho chủ xe hay xưởng.
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > Đặc tả frontend cho Feature `FEAT-CRM-001` (PRD F9, US-041 → US-044).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-041-sprint-4-spec.ff.md) · **API:** [API Spec](../api/us-041-sprint-4-spec.api.md) · **Entity:** [Entity Spec](../entity/us-041-sprint-4-spec.entity.md)
@@ -15,7 +20,7 @@
 | Feature | `FEAT-CRM-001` — Hỏi thăm sau dịch vụ & phiếu hỗ trợ |
 | Screen | `SCR-901` Hỏi thăm · `SCR-902` Phiếu của tôi · `SCR-903` Chi tiết phiếu (chủ xe) · `SCR-904` Phiếu hỗ trợ (Portal) · `SCR-905` Chi tiết phiếu (Portal) |
 | Route | `/follow-ups/:followUpId` · `/support-tickets` · `/support-tickets/:ticketId` · `/technician/tickets` · `/technician/tickets/:ticketId` |
-| Version | `v1.0` |
+| Version | `v1.1` |
 | Author | Team 4 Người |
 | FE Owner | `[Cần phân công]` — F9 chưa có trong bảng phân công (`chucnang.md`) |
 | Status | `Draft` |
@@ -536,6 +541,7 @@ frontend/src/features/after-service/
 
 - Nút `Đánh giá dịch vụ` trên SCR-701 (us-033) cần API-BR-01 trả thêm `followUp { followUpId, canRespond }` khi booking `COMPLETED` — `[Đề xuất]` bổ sung vào us-033 API v1.1.
 - Mock trong `frontend/src/mocks/` giữ đúng shape API cho tới khi backend sẵn sàng.
+- Nhận xét của chủ xe và tóm tắt AI luôn render dạng **văn bản thuần** (escape HTML, không render markdown/link) trên Portal; tóm tắt có nhãn "Tóm tắt tự động" và luôn hiển thị kèm nhận xét gốc — nội dung chủ xe nhập được coi là dữ liệu, kể cả khi trông như lệnh cho AI (FF EF-906).
 
 ---
 
@@ -547,7 +553,26 @@ frontend/src/features/after-service/
 
 ---
 
-# 21. Related Documents
+# 21. Truy vết FF → FE
+
+Mã trong [FF us-041](../feature-functional/us-041-sprint-4-spec.ff.md). "Backend" = job/nghiệp vụ không có UI riêng.
+
+| FF | Nội dung | FE |
+|---|---|---|
+| UC-902, BR-905, AC-903 | Chủ xe phản hồi (1–5 sao bắt buộc, nhận xét tuỳ chọn) | §4.1–4.3, AC-FE-901, AC-FE-903 |
+| AF-901 | Phản hồi hài lòng | §4.4 ResultPanel |
+| AF-902, BR-906, BR-907, AC-904 | Có vấn đề ⇒ phiếu hỗ trợ | §4.4, §2.2 (`Xem phiếu hỗ trợ`) |
+| BR-908 | Ưu tiên an toàn, khuyến cáo trên màn cảm ơn | §4.4, AC-FE-902, AC-FE-907 (Portal: khẩn lên đầu) |
+| AF-903 | Mở hỏi thăm từ app (không qua Discord) | §2.2 (nút trên chi tiết lịch hẹn `COMPLETED`), §19 |
+| EF-902, BR-909, UC-905, AC-905 | Quá 72 giờ / tự đóng | §4.4, §11.2 `FOLLOW_UP_CLOSED`, AC-FE-904 |
+| EF-903, AC-906 | Gửi hai lần | §5.2, §11.2 `FOLLOW_UP_ALREADY_RESPONDED` |
+| UC-904, BR-910, AC-908, AC-909 | Chủ xưởng xử lý phiếu | §4.5, §4.6, AC-FE-906 |
+| EF-905 | Phiếu đã đổi trạng thái | §11.2 `INVALID_STATUS_TRANSITION` |
+| BR-911, BR-912, AC-910 | Chủ xe không thấy ưu tiên; phân quyền phiếu | §4.5, AC-FE-905, §11.2 `*_NOT_FOUND` |
+| EF-906 | Prompt injection trong nhận xét | §19 (render văn bản thuần, nhãn "Tóm tắt tự động") |
+| UC-901, UC-903, BR-901–904, AF-904, EF-901, EF-904, AC-901/902/907 | Tạo, hẹn giờ, gửi hỏi thăm; phân loại AI, lỗi AI không bỏ sót | Backend |
+
+# 22. Related Documents
 
 - Functional Spec: [us-041-sprint-4-spec.ff.md](../feature-functional/us-041-sprint-4-spec.ff.md)
 - API Spec: [us-041-sprint-4-spec.api.md](../api/us-041-sprint-4-spec.api.md)
@@ -558,8 +583,9 @@ frontend/src/features/after-service/
 
 ---
 
-# 22. Change Log
+# 23. Change Log
 
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | `v1.0` | `2026-09-29` | Team 4 Người | Initial version: SCR-901 → SCR-905 |
+| `v1.1` | `2026-10-01` | Team 4 Người | Đối chiếu FF: render nhận xét/tóm tắt dạng văn bản thuần (EF-906), bảng truy vết FF → FE |

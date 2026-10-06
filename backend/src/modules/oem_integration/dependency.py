@@ -7,17 +7,22 @@ from typing import Annotated
 from fastapi import Depends
 from sqlmodel import Session
 
-from src.config import get_settings
+from src.config import Settings, get_settings
 from src.infrastructure.redis import get_redis_toolkit
 from src.infrastructure.supabase.db import get_session
 
-from .adapters import CelerySyncScheduler, RedisWebhookEventStore
+from .adapters import CelerySyncScheduler, RedisWebhookEventStore, StaticOdometerScheduler
 from .ports import SyncScheduler, WebhookEventStore
 from .service import OemWebhookService
 
 
+def sync_scheduler_for(settings: Settings) -> SyncScheduler:
+    # Demo ODO (a fixed random value seeded once) unless the OEM pull is configured.
+    return StaticOdometerScheduler() if settings.uses_static_odometer() else CelerySyncScheduler()
+
+
 def get_sync_scheduler() -> SyncScheduler:
-    return CelerySyncScheduler()
+    return sync_scheduler_for(get_settings())
 
 
 def get_webhook_event_store() -> WebhookEventStore:

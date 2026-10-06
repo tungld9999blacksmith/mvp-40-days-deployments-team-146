@@ -12,7 +12,8 @@ from datetime import date, time
 from typing import Annotated, Literal
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Path, Query, Response
+from fastapi import APIRouter, Depends, Header, Path, Query, Response
+from starlette.concurrency import run_in_threadpool
 
 from src.common.core.identity.vehicle_user import VehicleUser
 from src.modules.service_progress.dependency import get_service_progress_service
@@ -95,8 +96,9 @@ async def create_booking(
     payload: schemas.HoldRequest,
     user: Annotated[VehicleUser, Depends(require_active_vehicle_owner)],
     service: Annotated[BookingService, Depends(get_booking_service)],
+    idempotency_key: Annotated[str | None, Header(alias="Idempotency-Key", min_length=1, max_length=128)] = None,
 ) -> schemas.BookingEnvelope:
-    data = await service.create_hold(user, payload)
+    data = await service.create_hold(user, payload, idempotency_key=idempotency_key)
     return schemas.BookingEnvelope(data=data)
 
 
@@ -105,7 +107,7 @@ async def create_booking(
     response_model=schemas.CancelEnvelope,
     summary="Cancel a held slot within the owner's 10-minute window (BK-04, BR-010)",
 )
-async def cancel_hold(
+def cancel_hold(
     user: Annotated[VehicleUser, Depends(require_active_vehicle_owner)],
     service: Annotated[BookingService, Depends(get_booking_service)],
     booking_id: Annotated[UUID, Path(alias="bookingId")],
@@ -122,7 +124,7 @@ async def cancel_hold(
     response_model=schemas.MyBookingsEnvelope,
     summary="My bookings — upcoming or past (UC-1202, BR-1213)",
 )
-async def list_my_bookings(
+def list_my_bookings(
     user: Annotated[VehicleUser, Depends(require_active_vehicle_owner)],
     tickets: Annotated[BookingTicketService, Depends(get_ticket_service)],
     scope: Annotated[Literal["UPCOMING", "PAST"], Query()] = "UPCOMING",
@@ -138,7 +140,7 @@ async def list_my_bookings(
     response_model=schemas.BookingByCodeEnvelope,
     summary="Open my ticket from the QR URL /c/{code} (BR-1203)",
 )
-async def find_my_booking_by_code(
+def find_my_booking_by_code(
     user: Annotated[VehicleUser, Depends(require_active_vehicle_owner)],
     tickets: Annotated[BookingTicketService, Depends(get_ticket_service)],
     booking_code: Annotated[str, Path(alias="bookingCode", max_length=20)],
@@ -152,7 +154,7 @@ async def find_my_booking_by_code(
     response_model=schemas.TicketEnvelope,
     summary="Booking ticket with the actions allowed now (UC-702, UC-1201)",
 )
-async def get_booking_ticket(
+def get_booking_ticket(
     user: Annotated[VehicleUser, Depends(require_active_vehicle_owner)],
     tickets: Annotated[BookingTicketService, Depends(get_ticket_service)],
     booking_id: Annotated[UUID, Path(alias="bookingId")],
@@ -166,7 +168,7 @@ async def get_booking_ticket(
     response_model=schemas.AttendanceEnvelope,
     summary="Owner confirms they will come (BR-708) — status unchanged",
 )
-async def confirm_attendance(
+def confirm_attendance(
     user: Annotated[VehicleUser, Depends(require_active_vehicle_owner)],
     tickets: Annotated[BookingTicketService, Depends(get_ticket_service)],
     booking_id: Annotated[UUID, Path(alias="bookingId")],
@@ -179,7 +181,7 @@ async def confirm_attendance(
     response_model=schemas.OwnerCancelEnvelope,
     summary="Owner cancels a confirmed booking; the slot is freed at once (BR-709)",
 )
-async def cancel_confirmed_booking(
+def cancel_confirmed_booking(
     payload: schemas.OwnerCancelRequest,
     user: Annotated[VehicleUser, Depends(require_active_vehicle_owner)],
     tickets: Annotated[BookingTicketService, Depends(get_ticket_service)],
@@ -195,7 +197,7 @@ async def cancel_confirmed_booking(
     responses={200: {"content": {"image/png": {}}}},
     summary="QR image of a confirmed booking (BR-1203)",
 )
-async def get_booking_qr(
+def get_booking_qr(
     user: Annotated[VehicleUser, Depends(require_active_vehicle_owner)],
     tickets: Annotated[BookingTicketService, Depends(get_ticket_service)],
     booking_id: Annotated[UUID, Path(alias="bookingId")],
@@ -220,7 +222,7 @@ async def reschedule_booking(
     booking_id: Annotated[UUID, Path(alias="bookingId")],
 ) -> schemas.TicketEnvelope:
     booking = await service.reschedule(user, booking_id, payload.confirmation_token, source=payload.source.value)
-    return schemas.TicketEnvelope(data=tickets.ticket(booking))
+    return schemas.TicketEnvelope(data=await run_in_threadpool(tickets.ticket, booking))
 
 
 @router.get(
@@ -228,7 +230,7 @@ async def reschedule_booking(
     response_model=ProgressEnvelope,
     summary="Service progress timeline of my booking (us-057 API-PG-03)",
 )
-async def get_my_booking_progress(
+def get_my_booking_progress(
     user: Annotated[VehicleUser, Depends(require_active_vehicle_owner)],
     tickets: Annotated[BookingTicketService, Depends(get_ticket_service)],
     progress: Annotated[ServiceProgressService, Depends(get_service_progress_service)],

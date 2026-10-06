@@ -119,8 +119,6 @@ export function bookingErrorMessage(code: string): string | null {
     case 'HOLD_EXPIRED':
     case 'INVALID_CONFIRMATION_TOKEN':
       return 'Thẻ đặt lịch đã hết hiệu lực, mình kiểm tra lại giúp bạn.'
-    case 'QUOTE_EXPIRED':
-      return 'Báo giá đã hết hiệu lực.'
     case 'OPEN_BOOKING_EXISTS':
       return 'Xe của bạn đang có một lịch hẹn chưa hoàn tất.'
     case 'HOLD_WINDOW_CLOSED':

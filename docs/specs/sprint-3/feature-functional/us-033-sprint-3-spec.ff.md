@@ -1,5 +1,10 @@
 # Functional Specification — Nhắc lịch hẹn 24h & xử lý từ lời nhắc
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+> - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
+
 > Tài liệu đặc tả chức năng/nghiệp vụ cho Feature **F7 — phần nhắc lịch hẹn** trong [PRD EV Care MVP](../../../product/PRD_EV_Care_MVP.md#f7--nhắc).
 >
 > **Phạm vi tài liệu này:** nhắc chủ xe **24 giờ trước giờ hẹn** của một booking đã `confirmed`, và các hành động chủ xe làm từ lời nhắc: **Xác nhận sẽ đến / Đổi / Huỷ**. Phần **nhắc mốc bảo dưỡng** và **cấu hình kênh** đã đặc tả tại [us-021 FF](../../sprint-2/feature-functional/us-021-sprint-2-spec.ff.md) — tài liệu này **tái dùng**, không định nghĩa lại.

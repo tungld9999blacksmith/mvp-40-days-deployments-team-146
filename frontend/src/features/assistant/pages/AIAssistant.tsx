@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { Car, History, Plus, Sparkles, Trash2 } from 'lucide-react'
+import { CalendarClock, Car, History, Plus, Sparkles, Trash2 } from 'lucide-react'
 import { isApiError } from '@/shared/api/client'
 import Button from '@/shared/ui/Button'
 import Dialog from '@/shared/ui/Dialog'
@@ -18,6 +18,9 @@ import CitationDrawer from '../components/CitationDrawer'
 import ConversationHistoryDrawer from '../components/ConversationHistoryDrawer'
 import MessageList from '../components/MessageList'
 import { useChatSession } from '../hooks/useChatSession'
+import { QUICK_BOOKING_LABEL } from '../quickBooking/proposalView'
+import { QuickBookingProvider, type QuickBookingActions } from '../quickBooking/QuickBookingContext'
+import { useProposalActions } from '../quickBooking/useProposalActions'
 import { getChatTransport } from '../transport/ChatTransport'
 import type { CitationDto } from '../types'
 
@@ -113,6 +116,20 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
     void chat.send(question)
   }
 
+  const { quickBooking } = chat
+  const proposalActions = useProposalActions({ transport, dispatch, getState: chat.getState })
+  const quickBusy = chat.quickBusy || Boolean(state.streaming)
+  const quickActions = useMemo<QuickBookingActions>(
+    () => ({ ...proposalActions, start: options => quickBooking(options), busy: quickBusy }),
+    [proposalActions, quickBooking, quickBusy],
+  )
+
+  function startQuickBooking() {
+    setContextOpen(false)
+    void chat.send('Tôi muốn đặt lịch bảo dưỡng. Hãy hỏi ngày giờ và xưởng, sau đó tạo đề xuất để tôi xác nhận.')
+  }
+  const chipDisabled = Boolean(chat.lockedReason) || Boolean(retryIn) || quickBusy
+
   async function deleteCurrent() {
     if (!state.conversationId) return
     setDeleting(true)
@@ -141,6 +158,8 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
   const resolving = conversationParam === undefined
   const title = state.conversationId ? state.title ?? 'Cuộc trò chuyện' : 'Cuộc trò chuyện mới'
 
+  // Same condition MessageList uses to render `emptyState`.
+  const chatEmpty = !state.loading && state.messages.length === 0 && state.pending.length === 0
   const emptyState = (
     <div className="flex flex-col items-center text-center py-10">
       <div className="w-12 h-12 rounded-2xl bg-emerald/10 flex items-center justify-center mb-4">
@@ -150,6 +169,15 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
         Xin chào! Tôi có thể giúp bạn tra cứu lịch bảo dưỡng, hạng mục, bảo hành và cách dùng xe theo tài liệu chính hãng.
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-2 max-w-xl">
+        <button
+          type="button"
+          onClick={startQuickBooking}
+          disabled={chipDisabled}
+          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-xs text-foreground hover:bg-card-hover transition-colors disabled:opacity-50"
+        >
+          <CalendarClock className="w-3.5 h-3.5 text-emerald" aria-hidden />
+          {QUICK_BOOKING_LABEL}
+        </button>
         {SUGGESTED_QUESTIONS.map(question => (
           <button
             key={question}
@@ -219,6 +247,7 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
         ) : state.loadError ? (
           <ErrorState title="Không tải được cuộc trò chuyện." traceId={state.loadError.traceId} onRetry={() => navigate(0)} />
         ) : (
+          <QuickBookingProvider value={quickActions}>
           <MessageList
             state={state}
             onLoadOlder={chat.loadOlder}
@@ -229,6 +258,7 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
             lastUnanswered={chat.lastUnanswered}
             empty={emptyState}
           />
+          </QuickBookingProvider>
         )}
 
         <ChatComposer
@@ -244,11 +274,22 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
       </div>
 
       <aside className="hidden xl:block w-80 flex-shrink-0 border-l border-border bg-surface overflow-y-auto">
-        <ChatContextPanel vehicle={vehicle} onAsk={ask} disabled={Boolean(state.streaming) || Boolean(chat.lockedReason)} />
+        <ChatContextPanel
+          vehicle={vehicle}
+          onAsk={ask}
+          onQuickBooking={startQuickBooking}
+          disabled={Boolean(state.streaming) || Boolean(chat.lockedReason) || chat.quickBusy}
+          showSuggestions={!chatEmpty}
+        />
       </aside>
 
       <Drawer open={contextOpen} onClose={() => setContextOpen(false)} title="Xe của tôi">
-        <ChatContextPanel vehicle={vehicle} onAsk={ask} disabled={Boolean(state.streaming) || Boolean(chat.lockedReason)} />
+        <ChatContextPanel
+          vehicle={vehicle}
+          onAsk={ask}
+          onQuickBooking={startQuickBooking}
+          disabled={Boolean(state.streaming) || Boolean(chat.lockedReason) || chat.quickBusy}
+        />
       </Drawer>
 
       <CitationDrawer citation={citation} onClose={() => setCitation(null)} />
@@ -283,7 +324,7 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
         onClose={() => setConfirmDelete(false)}
         role="alertdialog"
         title="Xoá cuộc trò chuyện này?"
-        description="Toàn bộ tin nhắn sẽ bị xoá vĩnh viễn và không thể khôi phục. Lịch hẹn hoặc báo giá đã tạo từ cuộc trò chuyện vẫn được giữ."
+        description="Toàn bộ tin nhắn sẽ bị xoá vĩnh viễn và không thể khôi phục. Lịch hẹn đã tạo từ cuộc trò chuyện vẫn được giữ."
         initialFocusRef={cancelRef}
         dismissable={!deleting}
         footer={

@@ -73,6 +73,7 @@ export default function VehicleStep() {
   const [modelsError, setModelsError] = useState<ApiError | null>(null)
   const [modelsLoading, setModelsLoading] = useState(false)
   const prefilled = useRef(Boolean(vehicleForm))
+  const submitted = useRef(false)
   const refs = useRef<Partial<Record<FormKey, HTMLInputElement | HTMLSelectElement | null>>>({})
 
   const loadModels = useCallback(() => {
@@ -114,7 +115,8 @@ export default function VehicleStep() {
     setFocusField(null)
   }, [focusField, snapshot, form, setFocusField])
 
-  if (onboarding && (!onboarding.profileCompleted || !['ONBOARDING_IN_PROGRESS', 'VERIFICATION_FAILED'].includes(onboarding.status))) {
+  // `submitted`: the submit itself navigates to its result; the new status must not redirect first.
+  if (!submitted.current && onboarding && (!onboarding.profileCompleted || !['ONBOARDING_IN_PROGRESS', 'VERIFICATION_FAILED'].includes(onboarding.status))) {
     return <Navigate to={resolveOnboardingRoute(onboarding)} replace />
   }
   if (!snapshot) {
@@ -167,6 +169,7 @@ export default function VehicleStep() {
         response = await authApi.submitVehicleVerification(body, idempotencyKey)
       }
       const { data, status } = response
+      submitted.current = true
       setOnboarding(data.onboarding)
       setOutcome({
         result: data.verification,
@@ -260,13 +263,13 @@ export default function VehicleStep() {
         <p className="text-sm text-muted mt-1">Thông tin xe sẽ được đối chiếu với hệ thống của hãng để xác thực bạn là chủ xe.</p>
       </div>
 
-      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-5">
+      <section className="bg-card border border-border rounded-2xl p-5 sm:p-6 space-y-5 elevation-sm">
         <TextInput
           label="Số VIN"
           required
           autoComplete="off"
           spellCheck={false}
-          className="font-mono uppercase"
+          className="font-mono uppercase placeholder:font-sans placeholder:normal-case"
           placeholder="17 ký tự trên giấy đăng ký xe"
           maxLength={20}
           helper="17 ký tự chữ và số, in trên giấy đăng ký hoặc khung xe."

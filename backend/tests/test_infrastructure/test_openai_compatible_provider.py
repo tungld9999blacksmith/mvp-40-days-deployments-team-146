@@ -5,7 +5,7 @@ import httpx2
 import openai
 import pytest
 
-from src.infrastructure.llm.base import ChatMessage, LLMProviderUnavailableError, LLMRateLimitError
+from src.infrastructure.llm.base import ChatMessage, GenerationConfig, LLMProviderUnavailableError, LLMRateLimitError
 from src.infrastructure.llm.openai_compatible_provider import OpenAICompatibleProvider
 
 
@@ -63,6 +63,22 @@ def test_grok_and_deepseek_reuse_the_same_provider_class_with_base_url():
     )
     assert grok.provider_name == "grok"
     assert deepseek.provider_name == "deepseek"
+
+
+@pytest.mark.asyncio
+async def test_default_output_limit_is_sent_when_no_limit_is_provided():
+    provider = OpenAICompatibleProvider(api_key="test-key", model="test-model", default_max_tokens=1024)
+    provider._client.chat.completions.create = AsyncMock(return_value=_fake_response())
+    await provider.generate_text("Hi")
+    assert provider._client.chat.completions.create.call_args.kwargs["max_tokens"] == 1024
+
+
+@pytest.mark.asyncio
+async def test_explicit_output_limit_overrides_provider_default():
+    provider = OpenAICompatibleProvider(api_key="test-key", model="test-model", default_max_tokens=1024)
+    provider._client.chat.completions.create = AsyncMock(return_value=_fake_response())
+    await provider.generate_text("Hi", GenerationConfig(max_tokens=3000))
+    assert provider._client.chat.completions.create.call_args.kwargs["max_tokens"] == 3000
 
 
 @pytest.mark.asyncio

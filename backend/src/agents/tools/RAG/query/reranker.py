@@ -135,30 +135,29 @@ class HeuristicReranker(BaseReranker):
         query_lower = query.casefold()
         # Giữ token >= 2 ký tự VÀ bảo toàn từ domain quan trọng (xe, km, pin, vf)
         domain_keep = {"xe", "km", "pin", "vf", "bm", "dc", "ac", "kw"}
-        query_terms = {t for t in re.findall(r"\b[\w\d]+\b", query_lower) if len(t) >= 2 or t in domain_keep}
+        query_terms = {
+            t
+            for t in re.findall(r"\b[\w\d]+\b", query_lower)
+            if len(t) >= 2 or t in domain_keep
+        }
         if not query_terms:
             return candidates[:top_k]
         query_numbers = set(re.findall(r"\d+(?:[.,]\d+)*", query_lower))
-        warranty_intent = any(term in query_lower for term in ("bảo hành", "warranty"))
+        warranty_intent   = any(term in query_lower for term in ("bảo hành", "warranty"))
         maintenance_intent = any(term in query_lower for term in ("bảo dưỡng", "định kỳ", "mốc", "hạng mục"))
-        pricing_intent = any(term in query_lower for term in ("giá", "bao nhiêu", "chi phí", "mất tiền", "báo giá"))
+        pricing_intent = any(
+            term in query_lower
+            for term in ("giá", "bao nhiêu", "chi phí", "mất tiền", "báo giá")
+        )
         procedure_intent = any(
             term in query_lower
             for term in (
-                "đặt lịch",
-                "quy trình",
-                "tiếp nhận",
-                "bàn giao",
-                "nhận xe",
-                "hóa đơn",
-                "thanh toán",
-                "mobile service",
-                "lịch sử dịch vụ",
-                "hủy lịch",
-                "đổi lịch",
+                "đặt lịch", "quy trình", "tiếp nhận", "bàn giao", "nhận xe",
+                "hóa đơn", "thanh toán", "mobile service", "lịch sử dịch vụ",
+                "hủy lịch", "đổi lịch",
             )
         )
-        battery_intent = any(term in query_lower for term in ("pin", "sạc", "soh", "bms", "turtle"))
+        battery_intent    = any(term in query_lower for term in ("pin", "sạc", "soh", "bms", "turtle"))
 
         scored: list[tuple[RetrievalCandidate, float]] = []
 
@@ -177,18 +176,21 @@ class HeuristicReranker(BaseReranker):
             if km_match and km_match.group(0) in content_lower:
                 km_bonus = 0.3
             measurement_bonus = 0.0
-            query_measurements = re.findall(r"\b\d+(?:[.,]\d+)?\s*(?:kw|kwh|km|v|a)\b", query_lower)
+            query_measurements = re.findall(
+                r"\b\d+(?:[.,]\d+)?\s*(?:kw|kwh|km|v|a)\b", query_lower
+            )
             if query_measurements and all(
-                re.search(re.escape(value).replace(r"\ ", r"\s*"), content_lower) for value in query_measurements
+                re.search(re.escape(value).replace(r"\ ", r"\s*"), content_lower)
+                for value in query_measurements
             ):
                 measurement_bonus = 0.20
             number_penalty = 0.0
             if query_numbers and not all(number in content_lower for number in query_numbers):
                 number_penalty = 0.12
 
-            rrf_contrib = (cand.rrf_score or 0.0) * 10.0
-            dense_contrib = cand.dense_score or 0.0
-            sparse_raw = cand.sparse_score or 0.0
+            rrf_contrib    = (cand.rrf_score or 0.0) * 10.0
+            dense_contrib  = cand.dense_score or 0.0
+            sparse_raw     = cand.sparse_score or 0.0
             sparse_contrib = sparse_raw / (sparse_raw + 10.0) if sparse_raw > 0 else 0.0
             doc_id = cand.doc_id.lower()
 

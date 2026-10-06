@@ -1,5 +1,7 @@
 # API Technical Specification — Báo giá có chủ xưởng duyệt (HITL)
 
+> **Đã loại khỏi phạm vi (02/10/2026).** Chức năng báo giá có chủ xưởng duyệt (F5b, us-049, AI-005) đã bị bỏ khỏi sản phẩm: code backend/frontend đã gỡ, bảng `quote`, `quote_item` được xoá bởi migration `backend/alembic/versions/a3c7e9f1b2d4_drop_quote_support_ticket_discord.py`. Tài liệu giữ lại để tham khảo lịch sử, **không dùng để triển khai**.
+
 > Backend cho Feature `FEAT-QUOTE-001` — PRD F5b (US-049 → US-052).
 >
 > **Nguồn nghiệp vụ:** [Functional Spec](../feature-functional/us-049-sprint-3-spec.ff.md) là chuẩn; API chỉ trỏ `BR-11xx` / `EF-11xx` / `EDGE-11xx`.

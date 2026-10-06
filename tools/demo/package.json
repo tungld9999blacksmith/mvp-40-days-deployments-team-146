@@ -1,0 +1,12 @@
+{
+  "name": "ev-care-demo-verification",
+  "private": true,
+  "scripts": {
+    "auth": "firebase emulators:start --only auth --project demo-ev-care --config firebase.json",
+    "smoke": "node browser-smoke.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "firebase-tools": "^15.32.1"
+  }
+}

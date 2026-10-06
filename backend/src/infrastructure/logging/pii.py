@@ -49,7 +49,7 @@ DEFAULT_SECRET_KEYS: frozenset[str] = frozenset(
         "verification_code",
     }
 )
-# Suffixes that also mark a key as secret (e.g. "discord_bot_token").
+# Suffixes that also mark a key as secret (e.g. "telegram_bot_token").
 # "_tokens" (LLM usage counters) and "_key" (cache / idempotency keys) are
 # deliberately NOT included.
 _SECRET_SUFFIXES = ("_token", "_secret", "_password", "_api_key", "_apikey")

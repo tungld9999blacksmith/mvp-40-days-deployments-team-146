@@ -26,11 +26,14 @@ backend/src/agents/
 ├── prompts.py                     # System Prompts định hướng nghiệp vụ xe điện EV Care
 ├── graph.py                       # LangGraph StateGraph (vòng lặp: agent ⇆ tools ➔ respond)
 ├── orchestrator.py                # Entrypoint điều phối (run_agent_turn stream SSE)
+├── dependency.py                  # Composition root: graph + AgentOrchestrator dùng chung
 └── tools/                         # Bộ công cụ nghiệp vụ kết nối với Service Layer backend
     ├── __init__.py                # Registry tập hợp và xuất danh sách tools cho Agent
-    ├── maintenance_tools.py       # [Mới] Xác định hạng mục đến hạn theo ODO & tháng (MaintenanceRule)
-    ├── cost_tools.py              # [Mới] Dự toán chi phí bảo dưỡng (ràng buộc nhận item_codes)
-    ├── booking_tools.py           # [Mới] Tách riêng: find_workshops, get_available_slots (Đọc) & create_booking_draft (Ghi)
+    ├── dependency.py              # AgentToolServices + factory tạo tools được inject
+    ├── _services.py               # Lấy chủ xe + xe từ RunnableConfig của phiên chat, dựng service thật
+    ├── maintenance_tools.py       # Tình trạng bảo dưỡng của xe (UserVehicleService, TOOL-VEH-001)
+    ├── cost_tools.py              # Ước tính chi phí một mốc tại một xưởng (CostEstimationService, TOOL-301)
+    ├── booking_tools.py           # find_workshops, get_available_slots (Đọc) & propose_booking (chỉ tạo đề xuất, us-061)
     └── RAG/                       # [Có sẵn] Engine RAG chuyên sâu trên Qdrant Cloud
         ├── ingestion/             # Luồng nạp sổ bảo dưỡng, chunking, embedding lên Qdrant
         └── query/                 # Luồng Hybrid Search (Dense+BM25), Reranker, và rag_tool.py
@@ -42,17 +45,17 @@ backend/src/agents/
 
 > **💡 Nguyên tắc Kiến trúc quan trọng:**
 > 1. **Nạp ngữ cảnh trước Agent (Pre-loaded Context):** Thông tin xe (`model`, `current_odo`, `last_service_date`, `months_since_last`) được backend nạp trực tiếp vào `AgentState` từ phiên đăng nhập/session trước khi gọi node `agent`. Không tạo tool `get_vehicle_context` để tránh lãng phí 1 vòng lặp LLM và loại bỏ nguy cơ LLM quên gọi hoặc đoán sai thông tin xe.
-> 2. **Ràng buộc phụ thuộc (Tool Chaining & Self-Correction):** `estimate_service_cost` bắt buộc phải nhận danh sách `item_codes` từ kết quả của `get_due_maintenance`. Nếu LLM gọi sai thứ tự, tool sẽ kích hoạt cơ chế Self-Correction để yêu cầu LLM chạy lại đúng quy trình.
-> 3. **Phân tách Đọc / Ghi (CQRS):** Tách bạch rõ các tool tra cứu (`find_workshops`, `get_available_slots`) với tool ghi nhận dữ liệu (`create_booking_draft`). Khi bổ sung HITL ở phiên bản sau, chỉ cần gắn cổng kiểm duyệt vào tool ghi mà không ảnh hưởng tool đọc.
+> 2. **Dữ liệu thật, danh tính từ phiên chat:** Mọi tool gọi đúng service mà các endpoint HTTP dùng (BR-011, BR-1006). Chủ xe và xe lấy từ `RunnableConfig["configurable"]` (`user_id`, `user_vehicle_id`) do `run_agent_turn` truyền vào, không phải từ tham số LLM sinh ra, nên LLM không thể thao tác trên xe của tài khoản khác. Lỗi nghiệp vụ trả về dạng `{"status": "ERROR", "error_code", "message"}` để LLM giải thích cho chủ xe.
+> 3. **Phân tách Đọc / Ghi (CQRS):** Tách bạch rõ các tool tra cứu (`find_workshops`, `get_available_slots`) với `propose_booking`. Không tool nào tạo lịch: `propose_booking` chỉ tạo thẻ đề xuất, lịch được tạo khi chủ xe bấm "Xác nhận đặt lịch" (API-QB-02, us-061 BR-1514). Đó là cổng HITL do backend kiểm chứng.
 
 | Tên Tool | Loại | Đầu vào chính (Inputs) | Đầu ra chính (Outputs) | Module Backend liên kết | Trách nhiệm |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `get_due_maintenance` | **Đọc** | `model_id`, `current_odo`, `months_since_last` | Danh sách hạng mục cần làm, mốc km/tháng kích hoạt, `item_codes` | `common/core/maintenance` | Kiểm tra quy tắc bảo dưỡng theo ODO và thời gian. |
-| `estimate_service_cost` | **Đọc** | `model_id`, `item_codes`, `workshop_id` | Chi phí ước tính min/max, chi tiết từng hạng mục | `modules/cost_estimate` | Tính toán giá dịch vụ tạm tính (yêu cầu `item_codes` từ bước trước). |
+| `get_due_maintenance` | **Đọc** | (không có, xe lấy từ phiên chat) | `due_status`, `next_milestone` (mốc km, hạn ngày, hạng mục), `remaining_km`, `odometer` | `modules/user_vehicle` (`get_maintenance_status`) | Tình trạng bảo dưỡng theo ODO thật và lịch sử dịch vụ. |
+| `estimate_service_cost` | **Đọc** | `odo_milestone`, `workshop_id` (đều tùy chọn) | Hạng mục, giá, `price_source`, `chargeable_total`, `has_reference_price` | `modules/cost_estimate` (`estimate_for_request`) | Ước tính theo bảng giá xưởng / giá tham khảo; chọn xưởng theo BR-1003 nếu bỏ trống. |
 | `search_ev_knowledge` | **Đọc** | `query`, `model`, `category` | Đoạn trích cẩm nang kỹ thuật + Citation nguồn | `agents/tools/RAG` (Qdrant Cloud) | Tra cứu sổ tay bảo hành, hướng dẫn kỹ thuật chính hãng VinFast. |
-| `find_workshops` | **Đọc** | `latitude`, `longitude` (hoặc tên khu vực) | Danh sách xưởng gần nhất, khoảng cách (km), địa chỉ | `modules/booking` (Redis GEO) | Định vị và gợi ý xưởng dịch vụ thuận tiện. |
-| `get_available_slots` | **Đọc** | `workshop_id`, `target_date` | Danh sách các khung giờ trống (còn capacity) | `modules/booking/service.py` | Kiểm tra lịch trống của xưởng, trừ slot đã đầy hoặc block. |
-| `create_booking_draft` | **Ghi** | `vehicle_id`, `workshop_id`, `slot_time`, `service_items` | `draft_id`, thông tin lịch giữ chỗ tạm thời (HOLD) | `modules/booking/service.py` | Tạo bản nháp lịch hẹn (giữ chỗ tạm 10 phút chống overbooking). |
+| `find_workshops` | **Đọc** | `area_or_address` (tùy chọn), `limit` | `workshops`: `workshop_id`, tên, địa chỉ, khu vực, `distance_km` | `modules/booking` (`find_nearby`, API-BK-01) | Gợi ý xưởng đang hoạt động; bỏ trống khu vực thì tìm quanh vị trí hồ sơ / xưởng ưu tiên. |
+| `get_available_slots` | **Đọc** | `workshop_id`, `target_date` (YYYY-MM-DD) | `slots`: `time_slot`, `available`, `remaining` | `modules/booking` (`check_availability`, API-BK-02) | Khung giờ theo giờ mở cửa, trừ chỗ đã đặt và slot bị khóa. |
+| `propose_booking` | **Đề xuất** | `workshop_id`, `booking_date`, `time_slot` (HH:MM), `odo_milestone` | `status: PROPOSED`, `proposal_id`; card `BOOKING_PROPOSAL` trong `artifact` (LLM không thấy); lỗi `SLOT_FULL` kèm `alternatives` | `modules/quick_booking` (`propose_from_agent`) | Tạo đề xuất (không booking, không giữ chỗ). Booking chỉ tạo qua nút Xác nhận (API-QB-02). |
 
 ---
 
@@ -88,7 +91,7 @@ Agent hoạt động theo mô hình **ReAct (Reasoning + Action)** trên nền t
 |       │    • search_ev_knowledge (Qdrant RAG)       |
 |       │    • find_workshops (tìm xưởng - Đọc)       |
 |       │    • get_available_slots (giờ trống - Đọc)  |
-|       │    • create_booking_draft (giữ chỗ - Ghi)   |
+|       │    • propose_booking (đề xuất, không ghi)   |
 |       │                               │              |
 |       │    ┌──────────────────────────┘              |
 |       │    ▼                                         |
@@ -109,7 +112,7 @@ Agent hoạt động theo mô hình **ReAct (Reasoning + Action)** trên nền t
                           ▼
             [ 3. PHẢN HỒI CHO CHỦ XE (SSE) ]
               • Giải thích nguyên nhân quá hạn
-              • Báo giá chi tiết theo mốc
+              • Dự toán chi phí theo mốc
               • Đề xuất 2-3 khung giờ chiều thứ Bảy
 ```
 
@@ -229,7 +232,7 @@ flowchart TD
 |                                                      |
 |  [Agent] ──► Gửi phản hồi SSE cho Chủ xe:            |
 |               1. Giải thích lý do quá hạn 7 tháng    |
-|               2. Báo giá dự kiến 150.000đ - 250.000đ |
+|               2. Chi phí dự kiến 150.000đ - 250.000đ |
 |               3. Gợi ý 3 slot chiều thứ Bảy          |
 |               👉 Chỉ gọi create_booking khi đã chọn! |
 +──────────────────────────────────────────────────────+
@@ -281,8 +284,8 @@ sequenceDiagram
     end
 
     rect rgb(255, 241, 242)
-        Note over User,Agent: GIAI ĐOẠN 4: Đề xuất phương án (Chưa gọi create_booking_draft)
-        Agent-->>User: Giải thích quá hạn 7 tháng, báo giá 150-250k,<br/>đề xuất 3 khung giờ chiều thứ Bảy. Chờ chủ xe xác nhận!
+        Note over User,Agent: GIAI ĐOẠN 4: Đề xuất phương án (propose_booking chỉ tạo thẻ, chưa có lịch)
+        Agent-->>User: Giải thích quá hạn 7 tháng, dự toán 150-250k,<br/>đề xuất 3 khung giờ chiều thứ Bảy. Chờ chủ xe xác nhận!
     end
     deactivate Agent
 ```
@@ -292,25 +295,45 @@ sequenceDiagram
 
 ## 6. Giao tiếp với Module Hội thoại (`conversation`) — [Đã hoàn thành ✅]
 
-Agent đã được cắm trực tiếp vào luồng xử lý chat của ứng dụng trong [conversation/service.py](file:///d:/lab_vinuni/AI_logs/P-146/backend/src/modules/conversation/service.py) (thay thế lệnh gọi `LLMProvider.chat_stream` đơn thuần):
+Agent được inject vào [ChatService](../modules/conversation/service.py) qua [conversation/dependency.py](../modules/conversation/dependency.py). `ChatService` điều phối lượt chat, chuyển event của agent thành SSE và gọi `MessageService` để lưu/phát tin nhắn.
+
+Luồng dependency:
+
+```text
+get_chat_service()
+  ├── get_message_service() → MessageService (lưu + publish + index)
+  └── get_agent_orchestrator() → AgentOrchestrator
+        ├── get_agent_graph() → graph với LLM, tools, checkpointer
+        │     └── get_agent_tools() → build_customer_agent_tools(AgentToolServices)
+        └── vehicle_context_loader → session factory của AgentToolServices
+```
+
+`AgentToolServices` chứa factory mở session và dựng các service nghiệp vụ (`user_vehicle`, `cost_estimate`, `booking`, `quick_booking`) cùng provider RAG khởi tạo khi cần. Tools được bind với bundle này qua closure; dependency không xuất hiện trong schema gửi cho LLM. Mỗi lần gọi tool mở/đóng session riêng, không dùng chung session giữa các tool chạy đồng thời. Danh tính chủ xe/xe vẫn lấy từ `RunnableConfig` của lượt chat.
+
+Graph và orchestrator mặc định được cache theo process, khởi tạo khi lấy dependency. Import module không dựng graph hoặc LLM. Các entrypoint `run_agent_turn`, `confirm_booking_turn` và export `agent` vẫn dùng cùng graph từ dependency để giữ tương thích với script hiện có.
 
 ```python
-# Seam tích hợp LangGraph Agent Orchestrator
-from src.agents.orchestrator import run_agent_turn
-
-async for event in run_agent_turn(
+# Trong ChatService: orchestrator nhận qua constructor.
+async for event in self._orchestrator.run_agent_turn(
     conversation_id=conversation_id,
     user_id=user_id,
     vehicle_id=vehicle.id,
     message=content,
+    vehicle_context=vehicle_context,
+    history_messages=history_messages,
+    source_message_id=user_result.message.id,
+    operation_key=str(client_message_id),
 ):
     if event["type"] == "token":
         yield SseFrame(event="token", data={"delta": event["delta"]})
     elif event["type"] == "tool_start":
         yield SseFrame(event="status", data={"stage": f"Đang tra cứu {event['tool']}..."})
     elif event["type"] == "completed":
-        yield SseFrame(event="message.completed", data=event["message_data"])
+        collected_citations = event["message_data"]["citations"]
+# ChatService lưu câu trả lời qua MessageService rồi phát message.completed.
 ```
+
+Để kiểm thử hoặc dùng runtime riêng, tạo `AgentToolServices` với các factory thay thế, gọi `build_customer_agent_tools(services)` rồi truyền tools vào `build_graph`. Tạo `AgentOrchestrator(graph, vehicle_context_loader)` và truyền `orchestrator=` vào `ChatService`; không cần thay đổi provider toàn cục. Coverage offline nằm ở `test_agent_dependencies.py`, `test_ev_care_tools.py` và `test_conversation_agent_stream.py`.
 
 ---
 
@@ -319,8 +342,7 @@ async for event in run_agent_turn(
 Sau khi hoàn thiện Core Agent chạy được kịch bản trên, các tính năng tiếp theo sẽ được bổ sung:
 1. **Trigger Nhắc bảo dưỡng Chủ động (Outbound Trigger từ Celery Beat)**:
    * Ở phiên bản hiện tại, Agent tập trung xử lý luồng **Inbound Chat (Chủ xe nhắn tin trước)**.
-   * Ở phiên bản sau, Celery Beat hằng ngày sẽ kích hoạt Agent chạy ngầm để quét mốc ODO/thời gian của các xe ➔ tự động soạn nội dung nhắc nhở cá nhân hóa gửi qua Discord/Zalo/Notification Service.
-2. **Human-In-The-Loop (HITL) Gate**: Tích hợp cơ chế ngắt nhịp (interrupt/breakpoint) của LangGraph để gắn cổng duyệt vào tool ghi `create_booking_draft` trước khi xác nhận lịch chính thức.
-3. **Technician Toolset & RBAC**: Tách riêng bộ công cụ duyệt/chỉnh sửa báo giá cho Kỹ thuật viên xưởng.
-4. **Structured Audit Log**: Ghi log chi tiết từng lệnh gọi tool vào bảng `agent_audit_log` của PostgreSQL để phục vụ phân tích chất lượng phản hồi và kiểm toán giao dịch.
+   * Ở phiên bản sau, Celery Beat hằng ngày sẽ kích hoạt Agent chạy ngầm để quét mốc ODO/thời gian của các xe ➔ tự động soạn nội dung nhắc nhở cá nhân hóa và đưa vào feed Thông báo (sau này thêm Zalo qua Notification Service).
+2. **Human-In-The-Loop (HITL) Gate**: Tích hợp cơ chế ngắt nhịp (interrupt/breakpoint) của LangGraph (đã thay bằng nút "Xác nhận đặt lịch" do backend kiểm chứng, us-061).
+3. **Structured Audit Log**: Ghi log chi tiết từng lệnh gọi tool vào bảng `agent_audit_log` của PostgreSQL để phục vụ phân tích chất lượng phản hồi và kiểm toán giao dịch.
 

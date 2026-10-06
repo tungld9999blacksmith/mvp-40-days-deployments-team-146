@@ -1,5 +1,9 @@
 # Entity Specification — `maintenance_rule` (Quy định & Bảng giá bảo dưỡng chuẩn)
 
+> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
+>
+> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+
 > **Domain:** Maintenance · **Tổng quan lược đồ:** [core.entity.md](../core.entity.md)
 >
 > **Nguồn sự thật:** `core.entity.md` v1.1 §14.2 bảng 4. Cấu trúc bảng giữ nguyên, **v1.2 bổ sung** cột `item_code` (Q-402) và unique (`model_id`, `odo_milestone`, `item_name`) (Q-401). Tương ứng với `MaintenanceSchedule` + `MaintenanceItem` của hãng ([proposed_erd.latest.md §3.5–3.6](../../mock-system/proposed_erd.latest.md)).

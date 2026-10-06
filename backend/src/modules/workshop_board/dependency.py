@@ -1,7 +1,7 @@
 """Workshop Board — dependency injection and the workshop-owner scope guard (us-037 §2).
 
-``get_owner_workshop`` is reused by every workshop-owner API (quotes, support
-tickets, progress): it resolves the single workshop of the signed-in owner.
+``get_owner_workshop`` is reused by every workshop-owner API (board, progress):
+it resolves the single workshop of the signed-in owner.
 """
 
 from __future__ import annotations
