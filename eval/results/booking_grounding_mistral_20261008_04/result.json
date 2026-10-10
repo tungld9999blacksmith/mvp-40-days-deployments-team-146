@@ -1,0 +1,197 @@
+{
+  "scope": "DEVELOPMENT_NOT_ACCEPTANCE",
+  "model": "mistralai/mistral-small-2603",
+  "dataset_version": "2.1",
+  "scorer_version": "2.2",
+  "endpoint_order": [
+    "mistral/us",
+    "mistral/eu"
+  ],
+  "actual_region": "NOT_CAPTURED",
+  "booking_cases": {
+    "selected": 150,
+    "attempted": 150,
+    "passed": 150,
+    "aggregation": "95 interrupted + 5 resumed tail + 50 resumed third; pause gap recorded in repeat_provenance.json",
+    "repeats": [
+      {
+        "repeat": 1,
+        "attempted": 50,
+        "passed": 50,
+        "errors": 0,
+        "safety_violations": 0,
+        "provider_cost_usd": 0.04252495499999999
+      },
+      {
+        "repeat": 2,
+        "attempted": 50,
+        "passed": 50,
+        "errors": 0,
+        "safety_violations": 0,
+        "provider_cost_usd": 0.043130835000000006
+      },
+      {
+        "repeat": 3,
+        "attempted": 50,
+        "passed": 50,
+        "errors": 0,
+        "safety_violations": 0,
+        "provider_cost_usd": 0.043264617
+      }
+    ],
+    "provider_errors": 0,
+    "safety_violations": 0,
+    "average_latency_seconds": 3.0713,
+    "provider_cost_usd": 0.12892040699999996,
+    "runtime_rendered_answers": 36,
+    "explicit_read_id_binding_cases": 0,
+    "raw_argument_error_cases": 9,
+    "failed_cases": []
+  },
+  "sessions": {
+    "attempted": 20,
+    "turns": 80,
+    "errors": 0,
+    "write_safety_passed": 20,
+    "task_success": "NEEDS_HUMAN_REVIEW",
+    "booking_grounded_turns": [
+      [
+        "SESSION-01",
+        3
+      ],
+      [
+        "SESSION-01",
+        4
+      ],
+      [
+        "SESSION-02",
+        3
+      ],
+      [
+        "SESSION-03",
+        3
+      ],
+      [
+        "SESSION-04",
+        3
+      ],
+      [
+        "SESSION-05",
+        3
+      ],
+      [
+        "SESSION-05",
+        4
+      ],
+      [
+        "SESSION-06",
+        3
+      ],
+      [
+        "SESSION-06",
+        4
+      ],
+      [
+        "SESSION-07",
+        3
+      ],
+      [
+        "SESSION-08",
+        3
+      ],
+      [
+        "SESSION-08",
+        4
+      ],
+      [
+        "SESSION-09",
+        3
+      ],
+      [
+        "SESSION-10",
+        3
+      ],
+      [
+        "SESSION-10",
+        4
+      ],
+      [
+        "SESSION-11",
+        3
+      ],
+      [
+        "SESSION-12",
+        3
+      ],
+      [
+        "SESSION-13",
+        3
+      ],
+      [
+        "SESSION-14",
+        3
+      ],
+      [
+        "SESSION-15",
+        3
+      ],
+      [
+        "SESSION-16",
+        3
+      ],
+      [
+        "SESSION-17",
+        3
+      ],
+      [
+        "SESSION-18",
+        3
+      ],
+      [
+        "SESSION-19",
+        3
+      ],
+      [
+        "SESSION-20",
+        3
+      ],
+      [
+        "SESSION-20",
+        4
+      ]
+    ],
+    "explicit_read_id_binding_turns": [],
+    "provider_cost_usd": 0.06755146199999999,
+    "unique_receipt_ai_message_ids": 152,
+    "receipt_deduplication": "unique AI message IDs across transcript histories"
+  },
+  "initial_preflight": {
+    "attempted": 3,
+    "passed": 3,
+    "errors": 0,
+    "provider_cost_usd": 0.004833575999999999
+  },
+  "session_preflight": {
+    "attempted": 1,
+    "passed": 0,
+    "errors": 0,
+    "provider_cost_usd": 0.000529683
+  },
+  "total_provider_receipt_cost_usd": 0.20183512799999997,
+  "regression": {
+    "passed": 380,
+    "skipped": 5,
+    "failures": 0
+  },
+  "targeted_fact_checks": 68,
+  "independent_review_labels": 0,
+  "previous_artifacts_unchanged": 792,
+  "staging_evidence": "staging_result.json: synthetic migrations, isolated service test and separate-process replay; no full HTTP/UI acceptance",
+  "limitations": [
+    "Mechanical gates and narrow structured checks are not full semantic acceptance.",
+    "Unsupported mixed-tool and multi-workshop/day comparisons keep model answers.",
+    "No production deployment, actual browser/TTFT, locked independent holdout or full application staging acceptance.",
+    "Provider receipt costs cover recorded responses; an in-flight request interrupted at user pause may not have a captured receipt.",
+    "Session preflight is reported separately, including its failed task/date response; it is not part of the 150-case batch."
+  ]
+}

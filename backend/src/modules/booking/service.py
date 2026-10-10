@@ -17,6 +17,7 @@ import secrets
 from datetime import UTC, date, datetime, time, timedelta
 from uuid import UUID
 
+from redis.exceptions import RedisError
 from sqlalchemy import func, update
 from sqlalchemy.exc import DBAPIError
 from sqlmodel import Session, select
@@ -24,9 +25,10 @@ from starlette.concurrency import run_in_threadpool
 
 from src.common.concurrency import wait_through_cancellation
 from src.common.core.identity.vehicle_user import VehicleUser
-from src.common.core.maintenance.booking import Booking, BookingStatus
+from src.common.core.maintenance.booking import Booking, BookingStatus, PricingFlow
 from src.common.core.maintenance.booking_request import BookingRequest
 from src.common.core.maintenance.booking_status_event import BookingActorType, BookingReschedule
+from src.common.core.maintenance.quote import Quote, QuoteStatus
 from src.common.core.vehicle import UserVehicle, VehicleLinkStatus, VehicleVerificationStatus
 from src.common.core.workshop import (
     BookingConfirmationMode,
@@ -37,6 +39,7 @@ from src.common.core.workshop import (
 )
 from src.infrastructure.redis.errors import LockAcquireError
 from src.infrastructure.redis.toolkit import RedisToolkit
+from src.modules.booking_line.service import BookingLineService
 from src.modules.vehicle_owner_onboarding.domain import UserLocation
 
 from . import errors, schemas
@@ -555,7 +558,10 @@ class BookingService:
                 "old_time_slot": rescheduling.time_slot.isoformat(),
             }
         payload = json.dumps(data)
-        await self._redis.set(self._token_key(token), payload, ex=self._config.token_ttl_seconds)
+        try:
+            await self._redis.set(self._token_key(token), payload, ex=self._config.token_ttl_seconds)
+        except RedisError as exc:
+            raise errors.ServiceUnavailableError() from exc
         return token
 
     async def _read_token(self, user: VehicleUser, token: str) -> tuple[UUID, date, time]:
@@ -613,6 +619,7 @@ class BookingService:
                     t,
                     source=source,
                     odo_milestone=_milestone_from_ref(payload.milestone_ref),
+                    quote_id=payload.quote_id,
                     receipt=receipt,
                 )
                 # The DB receipt remains authoritative even when Redis cleanup
@@ -654,6 +661,7 @@ class BookingService:
         source: str,
         odo_milestone: int | None = None,
         source_message_id: UUID | None = None,
+        quote_id: UUID | None = None,
         receipt: BookingRequest | None = None,
     ) -> schemas.BookingOut:
         """Book a slot the caller already validated (card token, or a chat proposal — us-061 BR-1510).
@@ -661,9 +669,11 @@ class BookingService:
         Same guards as the app path: owned active vehicle, active workshop, slot in the
         operating hours, then vehicle lock + slot lock + capacity + BR-013. Without the
         full-day scan of ``check_availability``. ``source_message_id`` links a chat
-        booking to the message the owner confirmed (AC-F4-06).
+        booking to the message the owner confirmed (AC-F4-06). ``quote_id`` attaches an
+        approved quote of the same vehicle and workshop (us-049 BR-1108).
         """
         vehicle, workshop = await run_in_threadpool(self._validated_slot, user, user_vehicle_id, workshop_id, d, t)
+        quote = await run_in_threadpool(self._validate_quote, quote_id, vehicle, workshop_id) if quote_id else None
         return await self._create_for_vehicle(
             user,
             vehicle,
@@ -673,6 +683,7 @@ class BookingService:
             source=source,
             odo_milestone=odo_milestone,
             source_message_id=source_message_id,
+            quote=quote,
             receipt=receipt,
         )
 
@@ -682,6 +693,30 @@ class BookingService:
         if not self._slot_in_hours(workshop_id, d, t):
             raise errors.SlotOutOfHoursError()
         return vehicle, workshop
+
+    def _validate_quote(self, quote_id: UUID, vehicle: UserVehicle, workshop_id: UUID) -> Quote:
+        """us-049 BR-1108 — only an unexpired approved quote of this vehicle and workshop, not in use.
+
+        A cancelled booking detaches its quote (HOOK-QT-02), so ``booking_id`` set means the
+        quote belongs to an open or completed booking (HOOK-QT-01).
+        """
+        if self._config.pricing_flow == PricingFlow.TWO_TIER:
+            raise errors.LegacyQuoteNotAcceptedError()
+        quote = self._session.get(Quote, quote_id)
+        expires_at = quote.expires_at if quote else None
+        if expires_at is not None and expires_at.tzinfo is None:  # SQLite drops tzinfo
+            expires_at = expires_at.replace(tzinfo=UTC)
+        if (
+            quote is None
+            or quote.status != QuoteStatus.APPROVED
+            or quote.user_vehicle_id != vehicle.id
+            or quote.workshop_id != workshop_id
+            or quote.booking_id is not None
+            or expires_at is None
+            or expires_at <= now_vn()
+        ):
+            raise errors.QuoteExpiredError()
+        return quote
 
     async def _create_for_vehicle(
         self,
@@ -694,6 +729,7 @@ class BookingService:
         source: str,
         odo_milestone: int | None,
         source_message_id: UUID | None = None,
+        quote: Quote | None = None,
         receipt: BookingRequest | None = None,
     ) -> schemas.BookingOut:
         """BR-013 + BR-001: vehicle lock, then slot lock (fixed order, no deadlock).
@@ -718,6 +754,7 @@ class BookingService:
                             source=source,
                             odo_milestone=odo_milestone,
                             source_message_id=source_message_id,
+                            quote=quote,
                             receipt=receipt,
                         )
                 except LockAcquireError as exc:
@@ -749,6 +786,7 @@ class BookingService:
         source: str,
         odo_milestone: int | None,
         source_message_id: UUID | None = None,
+        quote: Quote | None = None,
         receipt: BookingRequest | None = None,
     ) -> schemas.BookingOut:
         _, available = self._capacity(workshop, d, t)
@@ -756,6 +794,9 @@ class BookingService:
             raise errors.SlotFullError(self._alternatives(workshop, d, t))
 
         now = now_vn()
+        two_tier = self._config.pricing_flow == PricingFlow.TWO_TIER
+        if odo_milestone is None and quote is not None:
+            odo_milestone = quote.odo_milestone
         booking = Booking(
             booking_code=_new_booking_code(),
             user_id=user.user_id,
@@ -765,8 +806,11 @@ class BookingService:
             time_slot=t,
             status=BookingStatus.PENDING,
             hold_expires_at=now + timedelta(minutes=self._config.hold_minutes),
+            estimated_cost=quote.approved_total if quote else None,
             odo_milestone=odo_milestone,
             source_message_id=source_message_id,
+            # Fixed at creation (D7): turning QUOTE_FLOW off later never changes this booking.
+            pricing_flow=PricingFlow.TWO_TIER if quote is None and two_tier else PricingFlow.LEGACY,
         )
         self._session.add(booking)
         machine = BookingStateMachine(self._session)
@@ -776,6 +820,9 @@ class BookingService:
                 receipt.booking_id = booking.id
                 self._session.add(receipt)
             machine.record_created(booking, Actor.vehicle_owner(user.user_id), source)
+            if booking.pricing_flow == PricingFlow.TWO_TIER:
+                # Tier 1 in the same transaction: a failing estimate rolls the booking back.
+                BookingLineService(self._session).snapshot_package(booking, vehicle, workshop)
             if workshop.booking_confirmation_mode == BookingConfirmationMode.AUTO:
                 machine.transition(
                     booking,
@@ -789,6 +836,9 @@ class BookingService:
             if "SLOT_FULL" in str(getattr(exc, "orig", exc)):
                 raise errors.SlotFullError(self._alternatives(workshop, d, t)) from exc
             raise
+        if quote is not None:
+            quote.booking_id = booking.id
+            self._session.add(quote)
         self._session.commit()
         self._session.refresh(booking)
         return self._to_out(booking, workshop)
@@ -808,6 +858,7 @@ class BookingService:
             booking_code=booking.booking_code if confirmed else None,
             qr_url=qr_url(booking.id) if confirmed else None,
             estimated_cost=booking.estimated_cost,
+            quote_id=self._session.exec(select(Quote.id).where(Quote.booking_id == booking.id)).first(),
         )
 
     # ── API-BK-04 cancel hold (BR-010) ──────────────────────────────────
@@ -820,6 +871,7 @@ class BookingService:
         if booking.hold_expires_at is None or booking.hold_expires_at <= now_vn():
             raise errors.HoldWindowClosedError()
         try:
+            # Also releases any attached quote (BR-ENT-404 reverse).
             BookingStateMachine(self._session).transition(
                 booking,
                 BookingStatus.CANCELLED,

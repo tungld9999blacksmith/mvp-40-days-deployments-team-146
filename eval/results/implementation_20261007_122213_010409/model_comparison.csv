@@ -1,0 +1,6 @@
+run,model,repeat,category,passed,attempted,selected_run,complete_run,errors_run,safety_violations_run,average_latency_seconds_run,p95_latency_seconds_run,cost_usd_single_cases_run,semantic_review
+baseline_booking_10,mistralai/mistral-small-2603,1,booking,6,10,10,True,0,2,5.006,7.262,0.013910259,PENDING
+improved_booking_50,mistralai/mistral-small-2603,1,booking,49,50,50,True,0,0,3.37094,7.374,0.04334929500000001,PENDING
+improved_business_70,mistralai/mistral-small-2603,1,guardrail,20,20,70,True,0,0,3.5556714285714284,5.78,0.065469624,PENDING
+improved_business_70,mistralai/mistral-small-2603,1,maintenance_cost,29,30,70,True,0,0,3.5556714285714284,5.78,0.065469624,PENDING
+improved_business_70,mistralai/mistral-small-2603,1,reminder,18,20,70,True,0,0,3.5556714285714284,5.78,0.065469624,PENDING

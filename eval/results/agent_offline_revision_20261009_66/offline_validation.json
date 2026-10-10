@@ -1,0 +1,42 @@
+{
+  "unique_tests_in_final_suite": 256,
+  "new_tests": 36,
+  "existing_tests": 220,
+  "failed_or_error": 0,
+  "skipped": 0,
+  "passed": 256,
+  "junit_report": "regression_suite_02.xml",
+  "command": ".\\.venv\\Scripts\\python.exe -m pytest -p eval.offline_network_guard66 backend/tests/evaluation_budget/test_rag_revision66.py eval/test_offline_evaluator66.py backend/tests/test_agents/test_rag/test_rag_intent.py backend/tests/test_agents/test_procedure_evidence_gate.py backend/tests/test_agents/test_source_evidence_gate.py backend/tests/test_agents/test_maintenance_evidence_gate.py backend/tests/test_agents/test_rag_policy_gate.py backend/tests/test_agents/test_reminder_intent.py backend/tests/test_agents/test_ev_care_tools.py backend/tests/test_agents/test_booking_followup_policy.py backend/tests/test_agents/test_business_grounding.py backend/tests/test_agents/test_evaluation_persistence.py::test_sqlite_proposal_survives_engine_restart_and_confirm_is_idempotent -q --junitxml=eval/results/agent_offline_revision_20261009_66/regression_suite_02.xml",
+  "ruff": {
+    "status": "PASS",
+    "files": [
+      "backend/src/agents/tools/RAG/query/generator.py",
+      "backend/src/agents/tools/RAG/query/answer_scope.py",
+      "backend/src/agents/tools/RAG/query/documented_procedure.py",
+      "backend/tests/evaluation_budget/test_rag_revision66.py",
+      "eval/offline_evaluator66.py",
+      "eval/test_offline_evaluator66.py",
+      "eval/offline_network_guard66.py",
+      "eval/offline_revision66.py",
+      "eval/finalize_offline66.py"
+    ]
+  },
+  "fixtures": [
+    "Recorded LLM outputs",
+    "Stub LLM",
+    "Saved expanded evidence",
+    "SQLite",
+    "FakeRedis"
+  ],
+  "network": "External socket connections prohibited; loopback permitted for asyncio socketpair",
+  "not_executed": [
+    "Fresh LLM",
+    "Embedding",
+    "Qdrant",
+    "Postgres/Redis staging",
+    "Firebase/HTTP/UI",
+    "Resend email"
+  ],
+  "no_new_model_quality_or_live_retrieval_claim": true,
+  "earlier_overlapping_reports_retained_not_added_to_unique_total": true
+}

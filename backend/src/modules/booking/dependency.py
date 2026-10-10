@@ -35,6 +35,7 @@ def get_booking_config() -> BookingConfig:
         lock_ttl_seconds=s.booking_lock_ttl_seconds,
         reschedule_min_lead_minutes=s.reschedule_min_lead_minutes,
         reschedule_max_count=s.reschedule_max_count,
+        pricing_flow=s.quote_flow,
     )
 
 
@@ -64,6 +65,7 @@ def get_ticket_service(
             app_base_url=s.app_base_url or s.frontend_url,
             documents_to_bring=documents,
             past_days=s.my_bookings_past_days,
+            follow_up_window_hours=s.follow_up_response_window_hours,
         ),
     )
 

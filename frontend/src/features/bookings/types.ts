@@ -156,7 +156,7 @@ export interface BookingDetail {
   rescheduleBlockedReason: RescheduleBlockedReason | null
   odoMilestone: number | null
   items: { itemName: string; covered: boolean }[]
-  cost: { amount: number | null; label: 'ESTIMATE' | 'NONE' }
+  cost: { amount: number | null; label: 'APPROVED_QUOTE' | 'ESTIMATE' | 'NONE'; quoteId: string | null }
   documentsToBring: string[]
   rescheduleCount: number
   rescheduleDeadline: string | null
@@ -180,7 +180,7 @@ export interface MyBookingItem {
   bookingDate: string
   timeSlot: string
   workshop: { workshopId: string; name: string }
-  cost: { amount: number | null; label: 'ESTIMATE' | 'NONE' }
+  cost: { amount: number | null; label: 'APPROVED_QUOTE' | 'ESTIMATE' | 'NONE' }
   allowedActions: BookingAction[]
 }
 

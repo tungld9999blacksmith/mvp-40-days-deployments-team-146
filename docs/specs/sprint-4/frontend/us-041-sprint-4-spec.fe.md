@@ -22,7 +22,7 @@
 | Route | `/follow-ups/:followUpId` · `/support-tickets` · `/support-tickets/:ticketId` · `/technician/tickets` · `/technician/tickets/:ticketId` |
 | Version | `v1.1` |
 | Author | Team 4 Người |
-| FE Owner | `[Cần phân công]` — F9 chưa có trong bảng phân công (`chucnang.md`) |
+| FE Owner | `[Cần phân công]` — F9 chưa được giao người phụ trách |
 | Status | `Draft` |
 | Related PRD | [PRD_EV_Care_MVP.md §F9](../../../product/PRD_EV_Care_MVP.md) |
 | Related User Flow | [FF §7, §8](../feature-functional/us-041-sprint-4-spec.ff.md#7-user-flow) |

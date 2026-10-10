@@ -1,0 +1,5 @@
+{
+  "reranker": "FlashRankReranker",
+  "embedding_model": "gemini-embedding-001",
+  "embedding_dimensions": 3072
+}

@@ -1,0 +1,7 @@
+{
+  "status": "FAILED_OFFLINE",
+  "cause": "Runner initially used ranked chunks before neighbor expansion and raw rewrite rather than final recorded query analysis; no generation recording exists for the source-gated coolant case. Corrected to replay evidence_chunks and query_analysis from saved response metadata.",
+  "new_api_calls": 0,
+  "new_api_cost_usd": 0,
+  "old_results_modified": false
+}

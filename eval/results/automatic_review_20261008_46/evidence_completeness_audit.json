@@ -1,0 +1,5 @@
+{
+  "pilot_quality_gate_passed": true,
+  "full_not_started": true,
+  "next_revision_reason": "Tool call artifacts/proposal_artifacts and before-after snapshot existed in original full29 trace but were absent as judge evidence cards. BOOK19 false-positive risk: raw tool summary already contains workshop name. Preserve raw FAIL and add complete evidence in a new revision, not rescore46."
+}

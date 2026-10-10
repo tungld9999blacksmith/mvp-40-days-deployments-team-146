@@ -1,0 +1,11 @@
+"""Evaluate Gemini embedding retrieval and optionally grounded answer generation."""
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[5]
+sys.path.insert(0, str(ROOT / "backend"))
+
+from tests.evaluation_v2.rag_runner import main  # noqa: E402
+
+if __name__ == "__main__":
+    raise SystemExit(main())

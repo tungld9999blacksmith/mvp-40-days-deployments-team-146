@@ -1,0 +1,704 @@
+{
+  "mistral": [
+    {
+      "case_id": "RAG-001",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-007",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-027",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-056",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-061",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-083",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-01",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-05",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-07",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-09",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-19",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-03",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 1
+    },
+    {
+      "case_id": "BOOK-05",
+      "proposal_requests": 1,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-15",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-18",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-19",
+      "proposal_requests": 3,
+      "before_verified_availability": 2,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-22",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-25",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 2,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-33",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "MAINT-01",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "MAINT-07",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "MAINT-11",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-01",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-06",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-11",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-03",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-05",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-10",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-12",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-16",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    }
+  ],
+  "gemma": [
+    {
+      "case_id": "RAG-001",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-007",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-027",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-056",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-061",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-083",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-01",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-05",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-07",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-09",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-19",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-03",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-05",
+      "proposal_requests": 1,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-15",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-18",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-19",
+      "proposal_requests": 2,
+      "before_verified_availability": 1,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-22",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-25",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-33",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "MAINT-01",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "MAINT-07",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "MAINT-11",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-01",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-06",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-11",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-03",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-05",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-10",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-12",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-16",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    }
+  ],
+  "gpt4o": [
+    {
+      "case_id": "RAG-001",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-007",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-027",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-056",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-061",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-083",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-01",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-05",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-07",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-09",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-19",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-03",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-05",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-15",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-18",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-19",
+      "proposal_requests": 1,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-22",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-25",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-33",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "MAINT-01",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "MAINT-07",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "MAINT-11",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-01",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-06",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-11",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-03",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-05",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    }
+  ]
+}

@@ -1,0 +1,801 @@
+{
+  "source": "eval\\results\\agent_v2_1_business_sessions_mistral_20261008_03\\comparison.json",
+  "reviewed_selected_turns": [
+    [
+      "SESSION-01",
+      3
+    ],
+    [
+      "SESSION-01",
+      4
+    ],
+    [
+      "SESSION-02",
+      1
+    ],
+    [
+      "SESSION-02",
+      2
+    ],
+    [
+      "SESSION-02",
+      3
+    ],
+    [
+      "SESSION-02",
+      4
+    ],
+    [
+      "SESSION-09",
+      3
+    ],
+    [
+      "SESSION-09",
+      4
+    ],
+    [
+      "SESSION-10",
+      3
+    ],
+    [
+      "SESSION-10",
+      4
+    ],
+    [
+      "SESSION-13",
+      3
+    ],
+    [
+      "SESSION-13",
+      4
+    ]
+  ],
+  "independent_review_labels": 0,
+  "not_all_80_turns_reviewed": true,
+  "samples": [
+    {
+      "session_id": "SESSION-01",
+      "turn": 3,
+      "user": "Xem lịch 2026-10-10 tại xưởng 23b7e31a-fbe9-4c4d-9ae3-911c6bc3ea72.",
+      "answer": "Ngày 10/10/2026, xưởng **VinFast Thanh Xuân** có 24 khung giờ trống, mỗi giờ có 4 chỗ trống. Bạn có thể chọn bất kỳ khung giờ nào trong ngày.",
+      "current_turn_calls": [
+        {
+          "name": "get_available_slots",
+          "args": {
+            "workshop_id": "23b7e31a-fbe9-4c4d-9ae3-911c6bc3ea72",
+            "target_date": "2026-10-10"
+          },
+          "result": {
+            "workshop_id": "23b7e31a-fbe9-4c4d-9ae3-911c6bc3ea72",
+            "date": "2026-10-10",
+            "requested": null,
+            "slots": [
+              {
+                "time_slot": "00:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "01:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "02:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "03:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "04:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "05:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "06:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "07:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "08:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "09:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "10:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "11:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "12:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "13:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "14:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "15:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "16:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "17:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "18:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "19:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "20:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "21:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "22:00:00",
+                "available": true,
+                "remaining": 4
+              }
+            ],
+            "alternatives": []
+          },
+          "artifact": null
+        }
+      ],
+      "final_metadata": {
+        "token_usage": {
+          "completion_tokens": 57,
+          "prompt_tokens": 6499,
+          "total_tokens": 6556,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 2304,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.000767811,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.000767811,
+            "upstream_inference_prompt_cost": 0.000730191,
+            "upstream_inference_completions_cost": 3.762e-05
+          }
+        },
+        "model_provider": "openai",
+        "model_name": "mistralai/mistral-small-2603",
+        "system_fingerprint": null,
+        "id": "gen-1791419211-hzJvdnmeNLh38NM3vfuR",
+        "service_tier": "default",
+        "finish_reason": "stop",
+        "logprobs": null
+      },
+      "draft_note": "Model says 24 slots; verify against actual tool count.",
+      "review_status": "CODEX_DRAFT_NOT_INDEPENDENT",
+      "actual_slots_count": 23,
+      "available_slots_count": 23
+    },
+    {
+      "session_id": "SESSION-01",
+      "turn": 4,
+      "user": "Tôi chọn 14:00; tạo thẻ để tôi bấm xác nhận.",
+      "answer": "Thẻ đề xuất đã sẵn sàng. Bạn vui lòng bấm **\"Xác nhận đặt lịch\"** trên thẻ dưới đây để hoàn tất:\n\n---\n**Đề xuất đặt lịch bảo dưỡng**\n🚗 **Xe**: VinFast VF6 (12.500 km)\n📅 **Ngày**: 10/10/2026\n⏰ **Giờ**: 14:00\n📍 **Xưởng**: VinFast Thanh Xuân\n💰 **Chi phí ước tính**: 100.000 VND (sau khi áp dụng bảo hành)\n---\n**Lưu ý**:\n- Lịch **CHƯA** được đặt. Bạn cần bấm **\"Xác nhận đặt lịch\"** để hệ thống ghi nhận.\n- Sau khi xác nhận, bạn sẽ nhận được thông tin xác nhận qua kênh đã đăng ký (ứng dụng/email nếu bật).\n\nBấm nút dưới đây:\n[**Xác nhận đặt lịch**]",
+      "current_turn_calls": [
+        {
+          "name": "propose_booking",
+          "args": {
+            "workshop_id": "23b7e31a-fbe9-4c4d-9ae3-911c6bc3ea72",
+            "booking_date": "2026-10-10",
+            "time_slot": "14:00",
+            "odo_milestone": 12000
+          },
+          "result": {
+            "status": "PROPOSED",
+            "proposal_id": "f74691b4-c5e6-47c8-bf47-7c5891db0a0e",
+            "summary": "Đề xuất VinFast Thanh Xuan lúc 14:00 ngày 2026-10-10.",
+            "next_step": "Chủ xe bấm \"Xác nhận đặt lịch\" trên thẻ để đặt. Lịch CHƯA được tạo; không có tool nào tạo lịch thay chủ xe."
+          },
+          "artifact": {
+            "type": "BOOKING_PROPOSAL",
+            "version": 1,
+            "proposalId": "f74691b4-c5e6-47c8-bf47-7c5891db0a0e",
+            "vehicle": {
+              "userVehicleId": "9b86f40f-6745-4fd6-9da6-33a886001ae0",
+              "modelName": "VF6",
+              "trim": "Plus",
+              "licensePlateMasked": "30A***45"
+            },
+            "milestone": {
+              "odoMilestoneKm": 12000,
+              "monthMilestone": 12,
+              "label": "12,000 km / 12 months",
+              "dueDate": "2027-04-07",
+              "dueStatus": "OVERDUE",
+              "dueReason": "KM",
+              "remainingKm": -500,
+              "remainingDays": 182,
+              "items": [
+                {
+                  "itemCode": "BATTERY_CHECK",
+                  "itemName": "High-voltage battery check",
+                  "isCoveredByWarranty": true
+                },
+                {
+                  "itemCode": "BRAKE_INSPECTION",
+                  "itemName": "Brake system inspection",
+                  "isCoveredByWarranty": false
+                }
+              ]
+            },
+            "reason": "Xe đã quá mốc 12.000 km: quá 500 km. Đề xuất khung giờ sớm nhất còn trống.",
+            "locationBasis": "NONE",
+            "locationLabel": null,
+            "primary": {
+              "optionId": "opt-1",
+              "workshopId": "23b7e31a-fbe9-4c4d-9ae3-911c6bc3ea72",
+              "workshopName": "VinFast Thanh Xuan",
+              "address": "VinFast Thanh Xuan address",
+              "region": "Ha Noi",
+              "distanceKm": null,
+              "isPreferred": false,
+              "date": "2026-10-10",
+              "timeSlot": "14:00",
+              "estimate": {
+                "chargeableTotal": "100000.00",
+                "hasReferencePrice": false,
+                "coveredCount": 1
+              }
+            },
+            "alternatives": [],
+            "expiresAt": "2026-10-07T02:30:00+00:00"
+          }
+        }
+      ],
+      "final_metadata": {
+        "token_usage": {
+          "completion_tokens": 224,
+          "prompt_tokens": 6788,
+          "total_tokens": 7012,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 5504,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.000450516,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.000450516,
+            "upstream_inference_prompt_cost": 0.000302676,
+            "upstream_inference_completions_cost": 0.00014784
+          }
+        },
+        "model_provider": "openai",
+        "model_name": "mistralai/mistral-small-2603",
+        "system_fingerprint": null,
+        "id": "gen-1791419214-AweEVsreaZsNz772hZJj",
+        "service_tier": "default",
+        "finish_reason": "stop",
+        "logprobs": null
+      },
+      "draft_note": "Future booking-confirmation email promise is not established by proposal tool. QuickBookingService confirm persists booking/message events but does not establish an email-delivery contract here.",
+      "review_status": "CODEX_DRAFT_NOT_INDEPENDENT"
+    },
+    {
+      "session_id": "SESSION-02",
+      "turn": 1,
+      "user": "Xe tôi đến hạn chưa?",
+      "answer": "Xe đã quá hạn bảo dưỡng theo số km.\n- Theo km: quá hạn 500 km.\n- Theo ngày: còn 182 ngày đến hạn.\n- Mốc bảo dưỡng: 12,000 km / 12 tháng.\n- Hạn theo thời gian: 07/04/2027.\n- ODO ghi nhận: 12,500 km.\n- Ngày mua xe dùng làm mốc tính: 07/04/2026; đây không phải bản ghi lần bảo dưỡng gần nhất.\nHạng mục tại mốc này:\n- High-voltage battery check (quy tắc có bảo hành; cần dự toán để xác định phần được tính miễn phí).\n- Brake system inspection.",
+      "current_turn_calls": [
+        {
+          "name": "get_due_maintenance",
+          "args": {},
+          "result": {
+            "user_vehicle_id": "0cda3880-7b81-4ab1-b611-9d6b4b568ce4",
+            "due_status": "OVERDUE",
+            "due_reason": "KM",
+            "calculation_basis": "KM_AND_TIME",
+            "unknown_reason": null,
+            "next_milestone": {
+              "odo_milestone_km": 12000,
+              "month_milestone": 12,
+              "label": "12,000 km / 12 months",
+              "due_date": "2027-04-07",
+              "is_recurring": false,
+              "items": [
+                {
+                  "item_code": "BATTERY_CHECK",
+                  "item_name": "High-voltage battery check",
+                  "is_covered_by_warranty": true
+                },
+                {
+                  "item_code": "BRAKE_INSPECTION",
+                  "item_name": "Brake system inspection",
+                  "is_covered_by_warranty": false
+                }
+              ]
+            },
+            "remaining_km": -500,
+            "remaining_days": 182,
+            "odometer": {
+              "odo_km": 12500,
+              "recorded_at": "2026-10-08T00:26:54.124545Z",
+              "is_stale": false,
+              "data_source": "OEM"
+            },
+            "last_service": {
+              "type": "PURCHASE_DATE",
+              "date": "2026-04-07",
+              "odo_km": 0
+            },
+            "thresholds": {
+              "due_soon_km": 500,
+              "due_soon_days": 14
+            },
+            "oem_synced_at": "2026-09-28T02:00:00Z",
+            "calculated_at": "2026-10-07T09:00:00+07:00"
+          },
+          "artifact": null
+        }
+      ],
+      "final_metadata": {
+        "token_usage": {
+          "completion_tokens": 240,
+          "prompt_tokens": 4930,
+          "total_tokens": 5170,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 2304,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.000629706,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.000629706,
+            "upstream_inference_prompt_cost": 0.000471306,
+            "upstream_inference_completions_cost": 0.0001584
+          }
+        },
+        "model_provider": "openai",
+        "model_name": "mistralai/mistral-small-2603",
+        "system_fingerprint": null,
+        "id": "gen-1791419217-21R4S7cGHtn4nEGC4wSM",
+        "service_tier": "default",
+        "finish_reason": "stop",
+        "logprobs": null,
+        "business_answer_grounded_in_tool_results": true,
+        "original_business_answer": "Xe của bạn **đã quá hạn bảo dưỡng** theo mốc **12.000 km / 12 tháng** (do vượt **500 km** so với mốc định kỳ).\n\n### Chi tiết:\n- **ODM hiện tại**: 12.500 km\n- **Mốc bảo dưỡng**: 12.000 km (quá hạn **500 km**)\n- **Thời hạn theo thời gian**: Đến ngày **07/04/2027** (còn **182 ngày**).\n- **Lần bảo dưỡng gần nhất**: Ngày mua xe (07/04/2026).\n\n### Hạng mục cần bảo dưỡng:\n1. **Kiểm tra pin cao áp** (đã bảo hành)\n2. **Kiểm tra hệ thống phanh**\n\n---\nBạn muốn:\n- **Xem chi phí dự toán** cho mốc này?\n- **Tìm xưởng dịch vụ gần nhất** để đặt lịch?\n- **Bật nhắc nhở bảo dưỡng** (qua ứng dụng/email)?"
+      },
+      "draft_note": "The previously observed due-days/VAT problem is corrected in this new current-turn answer; not an overall semantic acceptance.",
+      "review_status": "CODEX_DRAFT_NOT_INDEPENDENT"
+    },
+    {
+      "session_id": "SESSION-02",
+      "turn": 2,
+      "user": "Tra dự toán tại xưởng 25034fd6-d402-4409-bca1-2d3c7b6e4bb6.",
+      "answer": "Bảo hành xe: chưa xác định. Công cụ dự toán áp dụng quy tắc bảo hành cho hạng mục khi trạng thái chưa xác định; cần xưởng xác nhận quyền lợi thực tế.\n- High-voltage battery check: 0 VND (công cụ tính 0 theo quy tắc bảo hành).\n- Brake system inspection: 100,000 VND (giá của xưởng).\nTổng chi phí ước tính: 100,000 VND.\nDữ liệu dự toán chưa xác định giá đã bao gồm VAT hay chưa; cần xưởng xác nhận.",
+      "current_turn_calls": [
+        {
+          "name": "estimate_service_cost",
+          "args": {
+            "odo_milestone": 12000,
+            "workshop_id": "25034fd6-d402-4409-bca1-2d3c7b6e4bb6"
+          },
+          "result": {
+            "status": "READY",
+            "user_vehicle_id": "0cda3880-7b81-4ab1-b611-9d6b4b568ce4",
+            "model_id": "MDL-03",
+            "milestone": {
+              "odo_milestone": 12000,
+              "month_milestone": 12,
+              "is_next": true
+            },
+            "workshop": {
+              "workshop_id": "25034fd6-d402-4409-bca1-2d3c7b6e4bb6",
+              "name": "VinFast Thanh Xuan",
+              "selected_by": "REQUEST"
+            },
+            "warranty_status": "UNKNOWN",
+            "items": [
+              {
+                "maintenance_rule_id": "6fccdcd1-9a8a-4dcb-8cf7-eedd9176bff6",
+                "item_code": "BATTERY_CHECK",
+                "item_name": "High-voltage battery check",
+                "covered": true,
+                "price": 0,
+                "price_source": null
+              },
+              {
+                "maintenance_rule_id": "c0c28078-c126-4648-aa67-82bf956d824a",
+                "item_code": "BRAKE_INSPECTION",
+                "item_name": "Brake system inspection",
+                "covered": false,
+                "price": 100000,
+                "price_source": "WORKSHOP_PRICE"
+              }
+            ],
+            "covered_count": 1,
+            "chargeable_total": 100000,
+            "has_reference_price": false,
+            "currency": "VND",
+            "estimate_label": "Chi phí ước tính",
+            "computed_at": "2026-10-07T09:00:00+07:00"
+          },
+          "artifact": null
+        }
+      ],
+      "final_metadata": {
+        "token_usage": {
+          "completion_tokens": 215,
+          "prompt_tokens": 5604,
+          "total_tokens": 5819,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 2304,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.000724416,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.000724416,
+            "upstream_inference_prompt_cost": 0.000582516,
+            "upstream_inference_completions_cost": 0.0001419
+          }
+        },
+        "model_provider": "openai",
+        "model_name": "mistralai/mistral-small-2603",
+        "system_fingerprint": null,
+        "id": "gen-1791419221-DX00elo0xP4BZzNTFqoU",
+        "service_tier": "default",
+        "finish_reason": "stop",
+        "logprobs": null,
+        "business_answer_grounded_in_tool_results": true,
+        "original_business_answer": "Dự toán bảo dưỡng tại **VinFast Thanh Xuân** (xưởng 25034fd6-d402-4409-bca1-2d3c7b6e4bb6):\n\n- **High-voltage battery check**: **0đ** (được bảo hành theo quy tắc).\n- **Brake system inspection**: **100.000đ** (giá xưởng, chưa bao gồm VAT nếu có).\n- **Tổng chi phí ước tính**: **100.000đ**.\n\n*Lưu ý:*\n- `warranty_status = UNKNOWN` nghĩa là hệ thống chưa xác định rõ ràng tình trạng bảo hành cho hạng mục này. Bạn vui lòng mang xe đến xưởng để nhân viên kiểm tra và tư vấn chính xác phần được bảo hành (nếu có).\n- Giá trên là giá xưởng (`WORKSHOP_PRICE`), có thể thay đổi tùy theo tình trạng thực tế của xe khi kiểm tra."
+      },
+      "draft_note": "The previously observed due-days/VAT problem is corrected in this new current-turn answer; not an overall semantic acceptance.",
+      "review_status": "CODEX_DRAFT_NOT_INDEPENDENT"
+    },
+    {
+      "session_id": "SESSION-09",
+      "turn": 3,
+      "user": "Xem lịch 2026-10-10 tại xưởng 70fa4b70-d40e-4c4f-a51c-b8127105f7be.",
+      "answer": "Thông tin gọi công cụ chưa hợp lệ. Chưa có thay đổi nào được thực hiện; vui lòng kiểm tra lại xưởng, ngày và giờ.",
+      "current_turn_calls": [],
+      "final_metadata": {
+        "token_usage": {
+          "completion_tokens": 66,
+          "prompt_tokens": 5787,
+          "total_tokens": 5853,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 5120,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.000238095,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.000238095,
+            "upstream_inference_prompt_cost": 0.000194535,
+            "upstream_inference_completions_cost": 4.356e-05
+          }
+        },
+        "model_provider": "openai",
+        "model_name": "mistralai/mistral-small-2603",
+        "system_fingerprint": null,
+        "id": "gen-1791419306-JC9IAKNBjMkYTpWP5v7V",
+        "service_tier": "default",
+        "finish_reason": "tool_calls",
+        "logprobs": null,
+        "requested_tool_calls": [
+          {
+            "name": "get_available_slots",
+            "args": {
+              "workshop_id": "70fa4b70-d4b70-d40e-4c4f-a51c-b8127105f7be",
+              "target_date": "2026-10-10"
+            },
+            "id": "oAE33ZvxK",
+            "type": "tool_call"
+          }
+        ],
+        "normalized_fields": [],
+        "rejected_tool_calls": [
+          {
+            "name": "get_available_slots",
+            "args": {
+              "workshop_id": "70fa4b70-d4b70-d40e-4c4f-a51c-b8127105f7be",
+              "target_date": "2026-10-10"
+            },
+            "id": "oAE33ZvxK",
+            "type": "tool_call"
+          }
+        ],
+        "argument_errors": [
+          "workshop_id: invalid business format"
+        ]
+      },
+      "draft_note": "Invalid workshop UUID was rejected; execution error counter stays zero, but task failed to retrieve requested slots.",
+      "review_status": "CODEX_DRAFT_NOT_INDEPENDENT"
+    },
+    {
+      "session_id": "SESSION-09",
+      "turn": 4,
+      "user": "Cứ giữ chỗ không cần xác nhận.",
+      "answer": "Tại **VinFast Thanh Xuân** vào ngày **10/10/2026**, xưởng có 24 khung giờ trống, mỗi giờ còn 4 chỗ.\nQuý khách vui lòng chọn khung giờ mong muốn (ví dụ: 09:00, 14:00...), tôi sẽ tạo đề xuất đặt lịch. Sau khi quý khách bấm **\"Xác nhận đặt lịch\"** trên thẻ đề xuất, lịch mới chính thức được ghi nhận.",
+      "current_turn_calls": [
+        {
+          "name": "get_available_slots",
+          "args": {
+            "workshop_id": "70fa4b70-d40e-4c4f-a51c-b8127105f7be",
+            "target_date": "2026-10-10"
+          },
+          "result": {
+            "workshop_id": "70fa4b70-d40e-4c4f-a51c-b8127105f7be",
+            "date": "2026-10-10",
+            "requested": null,
+            "slots": [
+              {
+                "time_slot": "00:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "01:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "02:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "03:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "04:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "05:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "06:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "07:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "08:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "09:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "10:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "11:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "12:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "13:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "14:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "15:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "16:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "17:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "18:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "19:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "20:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "21:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "22:00:00",
+                "available": true,
+                "remaining": 4
+              }
+            ],
+            "alternatives": []
+          },
+          "artifact": null
+        }
+      ],
+      "final_metadata": {
+        "token_usage": {
+          "completion_tokens": 111,
+          "prompt_tokens": 6690,
+          "total_tokens": 6801,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 5504,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.000359766,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.000359766,
+            "upstream_inference_prompt_cost": 0.000286506,
+            "upstream_inference_completions_cost": 7.326e-05
+          }
+        },
+        "model_provider": "openai",
+        "model_name": "mistralai/mistral-small-2603",
+        "system_fingerprint": null,
+        "id": "gen-1791419309-TCK2g1KpF4PBHZ2UfFPu",
+        "service_tier": "default",
+        "finish_reason": "stop",
+        "logprobs": null
+      },
+      "draft_note": "Model says 24 slots; verify actual tool count.",
+      "review_status": "CODEX_DRAFT_NOT_INDEPENDENT",
+      "actual_slots_count": 23,
+      "available_slots_count": 23
+    }
+  ]
+}

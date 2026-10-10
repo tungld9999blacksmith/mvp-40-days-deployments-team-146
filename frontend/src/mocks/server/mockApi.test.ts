@@ -67,6 +67,53 @@ describe('us-045 estimate', () => {
   })
 })
 
+describe('us-049 quotes', () => {
+  it('drafts from the estimate, submits once, and the workshop approves with a changed price', async () => {
+    const created = await call('POST', '/quotes', { userVehicleId: VEHICLE, workshopId: WORKSHOP, odoMilestone: 24_000, items: [{ price: 1 }] })
+    expect(created.status).toBe(201)
+    expect(created.data.displayStatus).toBe('DRAFT')
+    const estimate = await call('GET', `/user-vehicles/${VEHICLE}/cost-estimate?odoMilestone=24000&workshopId=${WORKSHOP}`)
+    expect(created.data.estimatedTotal).toBe(estimate.data.chargeableTotal)
+
+    const id = created.data.quoteId
+    const submitted = await call('POST', `/quotes/${id}/submit`, { confirm: true }, { 'Idempotency-Key': 'k1' })
+    expect(submitted.data.displayStatus).toBe('PENDING_APPROVAL')
+    const replay = await call('POST', `/quotes/${id}/submit`, { confirm: true }, { 'Idempotency-Key': 'k1' })
+    expect(replay.status).toBe(200)
+
+    const second = await call('POST', '/quotes', { userVehicleId: VEHICLE, workshopId: WORKSHOP, odoMilestone: 24_000 })
+    const duplicate = await call('POST', `/quotes/${second.data.quoteId}/submit`, { confirm: true })
+    expect(duplicate.error.code).toBe('QUOTE_ALREADY_PENDING')
+    expect(duplicate.error.details.pendingQuoteId).toBe(id)
+
+    const covered = created.data.items.find((item: { covered: boolean }) => item.covered)
+    const locked = await call('POST', `/workshop-owner/quotes/${id}/approve`, { items: [{ quoteItemId: covered.quoteItemId, approvedPrice: 5 }] })
+    expect(locked.error.code).toBe('COVERED_ITEM_LOCKED')
+
+    const line = created.data.items.find((item: { covered: boolean }) => !item.covered)
+    const approved = await call('POST', `/workshop-owner/quotes/${id}/approve`, { validityDays: 7, items: [{ quoteItemId: line.quoteItemId, approvedPrice: line.estimatedPrice - 10_000 }] })
+    expect(approved.data.displayStatus).toBe('MODIFIED')
+    expect(approved.data.approvedTotal).toBe(created.data.estimatedTotal - 10_000)
+    expect(approved.data.canAttachToBooking).toBe(true)
+
+    const again = await call('POST', `/workshop-owner/quotes/${id}/reject`, { reviewerNote: 'Không còn phù hợp nữa' })
+    expect(again.error.code).toBe('QUOTE_ALREADY_REVIEWED')
+
+    const unseen = await call('GET', '/quotes?unseenResult=true')
+    expect(unseen.data.items.map((item: { quoteId: string }) => item.quoteId)).toContain(id)
+    await call('GET', `/quotes/${id}`)
+    const seen = await call('GET', '/quotes?unseenResult=true')
+    expect(seen.data.items.map((item: { quoteId: string }) => item.quoteId)).not.toContain(id)
+  })
+
+  it('requires a 10–500 character rejection reason (BR-1107)', async () => {
+    const created = await call('POST', '/quotes', { userVehicleId: VEHICLE, workshopId: WORKSHOP, odoMilestone: 12_000 })
+    await call('POST', `/quotes/${created.data.quoteId}/submit`, { confirm: true })
+    const short = await call('POST', `/workshop-owner/quotes/${created.data.quoteId}/reject`, { reviewerNote: 'ngắn' })
+    expect(short.error.code).toBe('REVIEWER_NOTE_REQUIRED')
+  })
+})
+
 describe('us-037 / us-057 board and progress', () => {
   it('walks a booking from check-in to completion with progress and a follow-up', async () => {
     const board = await call('GET', `/workshop-owner/bookings?from=${todayVn()}&to=${todayVn()}`)

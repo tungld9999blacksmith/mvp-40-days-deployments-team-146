@@ -1,0 +1,2557 @@
+[
+  {
+    "origin": {
+      "sample_id": "sample-002",
+      "configuration": "base",
+      "repeat": 1,
+      "case_id": "NEW-R02",
+      "original_row_sha256": "aae32fbef53b63ef98804fece555912ff7f5a201429711e958c497f2fadcdb6e",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+    },
+    "judgment": {
+      "sample_id": "sample-002",
+      "sample_sha256": "1c8bea44c8d3204c22cd15dc7b7b79f506f65552e9e20fc931bf3f2fe3cea2a5",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.0025722,
+      "request_payload_sha256": "51c818c2ea78680894f7f626f50351c70c4cf19802a5fe41bd73bbd79e4c3a38",
+      "request_schema_sha256": "9f44ce2c23c977578844cf747df5454ebf4414751d381f15a29643bd4a5bdbea",
+      "validation_schema_sha256": "847dc3ce0da235672d87f9603c24c8f9ee1a823158cb6ed10b79980fdb77ffc1",
+      "raw_response": {
+        "id": "gen-1791532453-UFRlx3Aa2ITXnpNfZiec",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Kiểm tra lịch sử sạc trong mục Lịch sử sạc\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E20\"\n      ]\n    },\n    {\n      \"claim\": \"Tìm trạm sạc gần nhất trong mục Bản đồ hoặc Pin và Sạc\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C2:E26\",\n        \"C2:E36\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời đã phản ánh chính xác thông tin từ các tài liệu được cung cấp.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E20\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn nhắc tới việc vào mục Lịch sử sạc để kiểm tra.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E26\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn đề cập tính năng Bản đồ hỗ trợ tìm trạm sạc.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TMVBLYsSi8OsHDgE9IKGt/fbFwg71Yh6KTFiPDPQHb0nrs3O7CMxsd7MUpMe+4u5cp1tkkICJnBQlKZBe0AvFaWpkhuhpvKJ8PrLP4o5IRHBMTaOCL6+2rtU=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791532453,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 324,
+          "prompt_tokens": 5874,
+          "total_tokens": 6198,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0025722,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0025722,
+            "upstream_inference_prompt_cost": 0.0017622,
+            "upstream_inference_completions_cost": 0.00081
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Kiểm tra lịch sử sạc trong mục Lịch sử sạc\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E20\"\n      ]\n    },\n    {\n      \"claim\": \"Tìm trạm sạc gần nhất trong mục Bản đồ hoặc Pin và Sạc\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C2:E26\",\n        \"C2:E36\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời đã phản ánh chính xác thông tin từ các tài liệu được cung cấp.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E20\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn nhắc tới việc vào mục Lịch sử sạc để kiểm tra.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E26\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn đề cập tính năng Bản đồ hỗ trợ tìm trạm sạc.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Kiểm tra lịch sử sạc trong mục Lịch sử sạc",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E20"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E20",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "- Bước 1: Vào mục Lịch sử sạc để kiểm tra thông tin những lần sạc pin trước đó;",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          },
+          {
+            "claim": "Tìm trạm sạc gần nhất trong mục Bản đồ hoặc Pin và Sạc",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C2:E26",
+              "C2:E36"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E26",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "Tính năng Bản đồ hỗ trợ tìm trạm sạc và xưởng dịch vụ gần nhất, đồng thời gợi",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              },
+              {
+                "evidence_id": "E36",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "Trong mục **Pin và Sạc**, ứng dụng cũng hiển thị danh sách trạm sạc gần nhất",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời đã phản ánh chính xác thông tin từ các tài liệu được cung cấp."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E20",
+            "support": "SUPPORTED",
+            "reason": "Đoạn văn nhắc tới việc vào mục Lịch sử sạc để kiểm tra.",
+            "resolved_evidence": {
+              "evidence_id": "E20",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "- Bước 1: Vào mục Lịch sử sạc để kiểm tra thông tin những lần sạc pin trước đó;",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          },
+          "2": {
+            "reference": "C2:E26",
+            "support": "SUPPORTED",
+            "reason": "Đoạn văn đề cập tính năng Bản đồ hỗ trợ tìm trạm sạc.",
+            "resolved_evidence": {
+              "evidence_id": "E26",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "Tính năng Bản đồ hỗ trợ tìm trạm sạc và xưởng dịch vụ gần nhất, đồng thời gợi",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                2
+              ],
+              "citation_index": 2
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE"
+    },
+    "producer": "63"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-003",
+      "configuration": "base",
+      "repeat": 1,
+      "case_id": "NEW-R03",
+      "original_row_sha256": "066a3894df9a34b0422e33d2b9e816c640f52a66537c54c91f9a348fbb30b362",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+    },
+    "judgment": {
+      "sample_id": "sample-003",
+      "sample_sha256": "a2f0a148be3ed7835e1dbdff68868be9bd81d40ab914efc0984503f3c1476205",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.0028184,
+      "request_payload_sha256": "ca44624a4875be81940189d12f861ba246721d72127bf8ab2d9d079a8a730fe6",
+      "request_schema_sha256": "13c3bb76e1d05689c4fc350a58843f7e00185a95b8f7f7f3bbe65cb765e0e16a",
+      "validation_schema_sha256": "e99745f44a7883a8aefdebd46ceb41a5bed1a82a4379aef65f54707e32883c10",
+      "raw_response": {
+        "id": "gen-1791532459-SaFKO84BVr7YxFlwzss0",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Các tài liệu nêu quy trình chung khi cần dịch vụ cứu hộ VinFast 24/7: liên hệ tổng đài 1900 23 23 89 để cung cấp thông tin cá nhân, vị trí xe và tình trạng hư hỏng.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C1:E19\"]\n    },\n    {\n      \"claim\": \"Tài liệu hướng dẫn liên hệ tổng đài 1900 23 23 89 hoặc nhà phân phối/xưởng dịch vụ khi cần hỗ trợ cứu hộ pin, cung cấp dòng xe, vị trí xe và tình trạng pin còn lại.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C2:E26\", \"C2:E27\", \"C2:E28\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác thông tin từ các tài liệu cứu hộ 24/7 và cứu hộ pin được cung cấp.\",\n    \"Phân biệt rõ ràng quy trình tổng quát và thông tin được hỏi trong ngữ cảnh.\",\n    \"Các trích dẫn chính xác với nội dung chứng cứ.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E19\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk S1 mô tả việc liên hệ tổng đài 1900 23 23 89 và cung cấp thông tin cá nhân, vị trí, tình trạng hư hỏng.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E26\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk S2 nêu cách yêu cầu hỗ trợ qua tổng đài hoặc nhà phân phối với thông tin dòng xe, vị trí và tình trạng pin.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TfUFLhp86b2LblnfCHZC9owOkhm5J4slcsQEA0RtTTDg6vHDIdLT83wFsSGSQJd/2MEvgAGqRsbhZwALu7cGbulEo6RY52MTOqNfz+NjDLwYdTzmoyDXqOe4=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791532459,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 482,
+          "prompt_tokens": 5378,
+          "total_tokens": 5860,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0028184,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0028184,
+            "upstream_inference_prompt_cost": 0.0016134,
+            "upstream_inference_completions_cost": 0.001205
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Các tài liệu nêu quy trình chung khi cần dịch vụ cứu hộ VinFast 24/7: liên hệ tổng đài 1900 23 23 89 để cung cấp thông tin cá nhân, vị trí xe và tình trạng hư hỏng.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C1:E19\"]\n    },\n    {\n      \"claim\": \"Tài liệu hướng dẫn liên hệ tổng đài 1900 23 23 89 hoặc nhà phân phối/xưởng dịch vụ khi cần hỗ trợ cứu hộ pin, cung cấp dòng xe, vị trí xe và tình trạng pin còn lại.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C2:E26\", \"C2:E27\", \"C2:E28\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác thông tin từ các tài liệu cứu hộ 24/7 và cứu hộ pin được cung cấp.\",\n    \"Phân biệt rõ ràng quy trình tổng quát và thông tin được hỏi trong ngữ cảnh.\",\n    \"Các trích dẫn chính xác với nội dung chứng cứ.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E19\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk S1 mô tả việc liên hệ tổng đài 1900 23 23 89 và cung cấp thông tin cá nhân, vị trí, tình trạng hư hỏng.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E26\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk S2 nêu cách yêu cầu hỗ trợ qua tổng đài hoặc nhà phân phối với thông tin dòng xe, vị trí và tình trạng pin.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Các tài liệu nêu quy trình chung khi cần dịch vụ cứu hộ VinFast 24/7: liên hệ tổng đài 1900 23 23 89 để cung cấp thông tin cá nhân, vị trí xe và tình trạng hư hỏng.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E19"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E19",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "Khi cần đến dịch vụ cứu hộ VinFast 24/7, đầu tiên khách hàng cần liên hệ với tổng đài 1900 23 23 89. Sau đó khách hàng cung cấp thông tin cá nhân, vị trí xảy ra sự cố và tình trạng hư hỏng xe để được hướng dẫn tự xử lý các vấn đề đơn giản.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          },
+          {
+            "claim": "Tài liệu hướng dẫn liên hệ tổng đài 1900 23 23 89 hoặc nhà phân phối/xưởng dịch vụ khi cần hỗ trợ cứu hộ pin, cung cấp dòng xe, vị trí xe và tình trạng pin còn lại.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C2:E26",
+              "C2:E27",
+              "C2:E28"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E26",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "Liên hệ Tổng đài Chăm sóc Khách hàng VinFast **1900 23 23 89** hoặc hệ thống",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              },
+              {
+                "evidence_id": "E27",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "nhà phân phối/xưởng dịch vụ VinFast. Khi liên hệ, cung cấp dòng xe, vị trí xe và",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              },
+              {
+                "evidence_id": "E28",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "tình trạng pin còn lại.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời phản ánh chính xác thông tin từ các tài liệu cứu hộ 24/7 và cứu hộ pin được cung cấp.",
+          "Phân biệt rõ ràng quy trình tổng quát và thông tin được hỏi trong ngữ cảnh.",
+          "Các trích dẫn chính xác với nội dung chứng cứ."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E19",
+            "support": "SUPPORTED",
+            "reason": "Chunk S1 mô tả việc liên hệ tổng đài 1900 23 23 89 và cung cấp thông tin cá nhân, vị trí, tình trạng hư hỏng.",
+            "resolved_evidence": {
+              "evidence_id": "E19",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "Khi cần đến dịch vụ cứu hộ VinFast 24/7, đầu tiên khách hàng cần liên hệ với tổng đài 1900 23 23 89. Sau đó khách hàng cung cấp thông tin cá nhân, vị trí xảy ra sự cố và tình trạng hư hỏng xe để được hướng dẫn tự xử lý các vấn đề đơn giản.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          },
+          "2": {
+            "reference": "C2:E26",
+            "support": "SUPPORTED",
+            "reason": "Chunk S2 nêu cách yêu cầu hỗ trợ qua tổng đài hoặc nhà phân phối với thông tin dòng xe, vị trí và tình trạng pin.",
+            "resolved_evidence": {
+              "evidence_id": "E26",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "Liên hệ Tổng đài Chăm sóc Khách hàng VinFast **1900 23 23 89** hoặc hệ thống",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                2
+              ],
+              "citation_index": 2
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE"
+    },
+    "producer": "63"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-004",
+      "configuration": "base",
+      "repeat": 1,
+      "case_id": "NEW-R04",
+      "original_row_sha256": "0ed9186c0e05bb665bc966d1b5f4a5e2c384f2c09a7120aee256b221d219753e",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+    },
+    "judgment": {
+      "sample_id": "sample-004",
+      "sample_sha256": "40d203c9f70b5d605682dc73931fe895768a861da048f6bf85b1c33693cd3854",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.0029478,
+      "request_payload_sha256": "f85a53ebfaf45179278b5ff100277da7ce759c8c60258a7a96f5ea12c6d68201",
+      "request_schema_sha256": "9da3177d5efedc14a8e3e7afcd3fbc2f8c25afefa6a8e6cb90091c3908a42395",
+      "validation_schema_sha256": "9990478397a1466db7fa78f2289ddf93fc535ccabdb1f5affbd650db15424cf0",
+      "raw_response": {
+        "id": "gen-1791532465-ZNjyh6g2aQxZneKlonNy",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Bảng lịch bảo dưỡng VF e34 ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E28\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác thông tin từ tài liệu bảo dưỡng và tuân thủ nguyên tắc không tự ý sửa đổi số liệu khi chưa xác minh.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E28\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn trích trong tài liệu 1 đúng là: Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0T+fIAY58u9VT3W9iL93T3P6L2JjRW2I6xz+oCiC2LyDd2k5Uh0IFepTr+TfiQ+SNDyfaSedYLZD6q6rIctiqUd9uxrkZH8HJbu/42ikubzu6lhnEYuE+s9Mk=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791532465,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 267,
+          "prompt_tokens": 7601,
+          "total_tokens": 7868,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0029478,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0029478,
+            "upstream_inference_prompt_cost": 0.0022803,
+            "upstream_inference_completions_cost": 0.0006675
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Bảng lịch bảo dưỡng VF e34 ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E28\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác thông tin từ tài liệu bảo dưỡng và tuân thủ nguyên tắc không tự ý sửa đổi số liệu khi chưa xác minh.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E28\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn trích trong tài liệu 1 đúng là: Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Bảng lịch bảo dưỡng VF e34 ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E28"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E28",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "| Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên |",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời phản ánh chính xác thông tin từ tài liệu bảo dưỡng và tuân thủ nguyên tắc không tự ý sửa đổi số liệu khi chưa xác minh."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E28",
+            "support": "SUPPORTED",
+            "reason": "Đoạn trích trong tài liệu 1 đúng là: Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km.",
+            "resolved_evidence": {
+              "evidence_id": "E28",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "| Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên |",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE"
+    },
+    "producer": "63"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-005",
+      "configuration": "base",
+      "repeat": 1,
+      "case_id": "NEW-R05",
+      "original_row_sha256": "32f514f18d77c5e01467bfd60e081b6e79e7e7221646f482c776dd63f64b787f",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+    },
+    "judgment": {
+      "sample_id": "sample-005",
+      "sample_sha256": "b6ba5843f333b375508457f00d68d35c69ca00a6c98871f733eef16595cd2b0d",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.0026585,
+      "request_payload_sha256": "4bbb772e695364f35fc9aea43bbc24868789e685c1410fd4d61da62825908833",
+      "request_schema_sha256": "500d1e8b8b2055f8c192505c911a39999f18dbe809aaa1f7787f843517b42e59",
+      "validation_schema_sha256": "1305c40c91b90abf5db5e5c6fe29bd56ae2cf12ff1d37420a165ecffafe95b6a",
+      "raw_response": {
+        "id": "gen-1791532470-7yGii8BOAsuLJ65YyN9i",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Tài liệu được cung cấp chưa xác định nội dung phân biệt điều kiện bảo hành pin VF6 giữa pin mới và pin thay thế.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E44\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác nội dung các đoạn tài liệu được cung cấp về bảo hành pin VF6 mà không bịa đặt thêm thông tin.\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Không có trích dẫn số nào được đính kèm trực tiếp trong câu trả lời.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TXLQLz6FPNHeUnG/HN3vnoD3iwr6evCv3uwPrjdokN6G/U/cdrWD91t1PJOdZRkBK63JkpvIsQyB9Fyg8Z3o4Iqvv0t7omv1JJJ/fN7UzJvfczvhv+lDbYXA=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791532470,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 224,
+          "prompt_tokens": 6995,
+          "total_tokens": 7219,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0026585,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0026585,
+            "upstream_inference_prompt_cost": 0.0020985,
+            "upstream_inference_completions_cost": 0.00056
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Tài liệu được cung cấp chưa xác định nội dung phân biệt điều kiện bảo hành pin VF6 giữa pin mới và pin thay thế.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E44\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác nội dung các đoạn tài liệu được cung cấp về bảo hành pin VF6 mà không bịa đặt thêm thông tin.\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Không có trích dẫn số nào được đính kèm trực tiếp trong câu trả lời.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Tài liệu được cung cấp chưa xác định nội dung phân biệt điều kiện bảo hành pin VF6 giữa pin mới và pin thay thế.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C0:E44"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E44",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "VinFast VF 6 có thời gian bảo hành (tùy theo điều kiện nào đến trước): - Bảo hành xe mới (Bao gồm hệ truyền động): 7 năm/160.000 km. - Bảo hành Pin cao áp (Mua lần đầu theo xe mới): 8 năm/160.000 km.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời phản ánh chính xác nội dung các đoạn tài liệu được cung cấp về bảo hành pin VF6 mà không bịa đặt thêm thông tin."
+        ],
+        "citation_reviews": {
+          "none": {
+            "reference": "NONE",
+            "support": "NOT_APPLICABLE",
+            "reason": "Không có trích dẫn số nào được đính kèm trực tiếp trong câu trả lời.",
+            "resolved_evidence": null
+          }
+        },
+        "citation_support": "FAIL",
+        "overall": "FAIL",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "FAIL"
+    },
+    "producer": "63"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-006",
+      "configuration": "base",
+      "repeat": 1,
+      "case_id": "NEW-R06",
+      "original_row_sha256": "810902c300b3c4189cbcffd40d34cf2d015261daf6ecfd5ce4762eb227b9e7f3",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+    },
+    "judgment": {
+      "sample_id": "sample-006",
+      "sample_sha256": "2a8ff375410e068407dac5a3474017b968d45d52727c6a4fdc65fc35d6aa89d8",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.00165668,
+      "request_payload_sha256": "fd7aaf7cec63acb8de3c04b80523c29348ac3b8f321be9fb0412356e17ce60e8",
+      "request_schema_sha256": "17a7112fd522628f20a6ebf8650bb2fd1e0acf35fca263e28c9c14fc9b7802f3",
+      "validation_schema_sha256": "e2c792ccefe8ea07debdf0f903476b4d66bdfed2078de876bdd39928c8d588d2",
+      "raw_response": {
+        "id": "gen-1791532475-GiOVxotBIu6NB8BIgJya",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Tài liệu hướng dẫn kiểm tra áp suất lốp bằng cách đối chiếu nhãn trên khung cửa ghế lái, sách hướng dẫn sử dụng và điều kiện tải trọng.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E18\",\n        \"C1:E19\",\n        \"C1:E20\",\n        \"C1:E21\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời tuân thủ đúng yêu cầu của người dùng, không tự điền số áp suất lốp mà trích dẫn đúng hướng dẫn từ tài liệu.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E19\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn trích nhắc đến nhãn áp suất lốp trên khung cửa ghế lái khớp với nội dung được viện dẫn.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TG83nYkrWuhUJOEJUaewo3cQJFuDxCc7uYAhPNeMVmF2EQdTsSsRrx7yLCCdjZYKv7jmv97GVeeQ9TS3x5Aug4tG4IUsYusrauupre1IrAaUPZjfN/xC5yr4=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791532475,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 272,
+          "prompt_tokens": 4764,
+          "total_tokens": 5036,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 1676,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.00165668,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.00165668,
+            "upstream_inference_prompt_cost": 0.00097668,
+            "upstream_inference_completions_cost": 0.00068
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Tài liệu hướng dẫn kiểm tra áp suất lốp bằng cách đối chiếu nhãn trên khung cửa ghế lái, sách hướng dẫn sử dụng và điều kiện tải trọng.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E18\",\n        \"C1:E19\",\n        \"C1:E20\",\n        \"C1:E21\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời tuân thủ đúng yêu cầu của người dùng, không tự điền số áp suất lốp mà trích dẫn đúng hướng dẫn từ tài liệu.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E19\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn trích nhắc đến nhãn áp suất lốp trên khung cửa ghế lái khớp với nội dung được viện dẫn.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Tài liệu hướng dẫn kiểm tra áp suất lốp bằng cách đối chiếu nhãn trên khung cửa ghế lái, sách hướng dẫn sử dụng và điều kiện tải trọng.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E18",
+              "C1:E19",
+              "C1:E20",
+              "C1:E21"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E18",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "Mức áp suất đúng không phải là một con số chung cho mọi xe. Người dùng phải đối chiếu:",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E19",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "1. Nhãn áp suất lốp trên khung cửa ghế lái.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E20",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "2. Sách hướng dẫn sử dụng của đúng mẫu và phiên bản xe.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E21",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "3. Điều kiện tải trọng được ghi trên nhãn hoặc trong sách hướng dẫn.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời tuân thủ đúng yêu cầu của người dùng, không tự điền số áp suất lốp mà trích dẫn đúng hướng dẫn từ tài liệu."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E19",
+            "support": "SUPPORTED",
+            "reason": "Đoạn trích nhắc đến nhãn áp suất lốp trên khung cửa ghế lái khớp với nội dung được viện dẫn.",
+            "resolved_evidence": {
+              "evidence_id": "E19",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "1. Nhãn áp suất lốp trên khung cửa ghế lái.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE"
+    },
+    "producer": "63"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-012",
+      "configuration": "base",
+      "repeat": 1,
+      "case_id": "NEW-B01",
+      "original_row_sha256": "bbf7dbc551ec8867879bb1084ea292dca34a3d5034ca0aa624f0bfb497ef83af",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+    },
+    "judgment": {
+      "sample_id": "sample-012",
+      "sample_sha256": "25d96c2de488e794d00368e593e346837cc1275db0eefad3d5a0f855f9c8e489",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": false,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.00338899,
+      "request_payload_sha256": "c843b49330ccc10375fcf4bbd17fec60b4228ba1d43ab3028bae46dda54441ef",
+      "request_schema_sha256": "c990dfeed65d7ccf2ffe2debea0e9a9d1ad674a4a30d434d06a14e0f7860d465",
+      "validation_schema_sha256": "273d4b25d1059b77b5e0c8a1b09de7dbdfca2cfc292af7eedfb6d7b8e214bbd5",
+      "raw_response": {
+        "id": "gen-1791532505-NacpnfKwBVJg0fSCKGb5",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"FAIL\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Xưởng có 23 khung giờ khả dụng với các giờ từ 00:00 đến 22:00 mỗi giờ còn 4 chỗ\",\n      \"support\": \"UNSUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E33\",\n        \"C0:E34\",\n        \"C0:E35\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời bịa đặt số lượng khung giờ trống và danh sách giờ (từ 00:00 đến 22:00) không khớp với kết quả tool get_available_slots thực tế trả về.\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Không có nguồn RAG nào được trích dẫn trong câu trả lời.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TXLWLQtyY0EU8y23S2NgJZcvxeEBMfn33huNXI4oKvx5iJn/Qovgaq7AKIx8oan9ZrL3U2JEi5zuQyPEVdeMlGJ+3OiOxv43MMsL5YocRg0MjPYMwO+4Jh+c=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791532505,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 265,
+          "prompt_tokens": 10675,
+          "total_tokens": 10940,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 1763,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.00338899,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.00338899,
+            "upstream_inference_prompt_cost": 0.00272649,
+            "upstream_inference_completions_cost": 0.0006625
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"FAIL\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Xưởng có 23 khung giờ khả dụng với các giờ từ 00:00 đến 22:00 mỗi giờ còn 4 chỗ\",\n      \"support\": \"UNSUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E33\",\n        \"C0:E34\",\n        \"C0:E35\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời bịa đặt số lượng khung giờ trống và danh sách giờ (từ 00:00 đến 22:00) không khớp với kết quả tool get_available_slots thực tế trả về.\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Không có nguồn RAG nào được trích dẫn trong câu trả lời.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "FAIL",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Xưởng có 23 khung giờ khả dụng với các giờ từ 00:00 đến 22:00 mỗi giờ còn 4 chỗ",
+            "support": "UNSUPPORTED",
+            "citation_refs": [
+              "C0:E33",
+              "C0:E34",
+              "C0:E35"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E33",
+                "source_id": "T2",
+                "kind": "tool_result",
+                "quote": "\"time_slot\": \"00:00:00\"",
+                "json_path": "$.slots[0].time_slot",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E34",
+                "source_id": "T2",
+                "kind": "tool_result",
+                "quote": "\"available\": true",
+                "json_path": "$.slots[0].available",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E35",
+                "source_id": "T2",
+                "kind": "tool_result",
+                "quote": "\"remaining\": 4",
+                "json_path": "$.slots[0].remaining",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời bịa đặt số lượng khung giờ trống và danh sách giờ (từ 00:00 đến 22:00) không khớp với kết quả tool get_available_slots thực tế trả về."
+        ],
+        "citation_reviews": {
+          "none": {
+            "reference": "NONE",
+            "support": "NOT_APPLICABLE",
+            "reason": "Không có nguồn RAG nào được trích dẫn trong câu trả lời.",
+            "resolved_evidence": null
+          }
+        },
+        "citation_support": "NOT_APPLICABLE",
+        "overall": "FAIL",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "FAIL"
+    },
+    "producer": "63"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-014",
+      "configuration": "base",
+      "repeat": 1,
+      "case_id": "NEW-B03",
+      "original_row_sha256": "604551f1d7e0f839943f3efea35f566777ec7a54d7161a24c33faa86c870b565",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+    },
+    "judgment": {
+      "sample_id": "sample-014",
+      "sample_sha256": "5cb2504fda2bbd0418e934c465b38b82921e07bbad1f30191a03a4c0999212df",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": false,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.0034164,
+      "request_payload_sha256": "109893ddfa9505084884c7d3949541d049325fe999a5da78cd84f9b1ab4a539b",
+      "request_schema_sha256": "8bde53e352271c2a8a62b91289109f5d57995d114729b71d65ec3680a43215c0",
+      "validation_schema_sha256": "b9f27d507032b459e430217b260a0268b99ba69bd098f628576d8bf5756a535e",
+      "raw_response": {
+        "id": "gen-1791532516-DVgWY2IOacejcZTKAzCT",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Ngày 08/10/2026, xưởng có 23 khung giờ khả dụng với 4 chỗ còn lại mỗi khung\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C0:E4\", \"C0:E5\", \"C0:E6\", \"C0:E70\", \"C0:E71\", \"C0:E72\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời nhầm lẫn tổng số khung giờ khả dụng từ tool trả về (có 23 slot từ 00:00 đến 22:00 nhưng thực tế có cả slot 23:00 trong tool hoặc đếm nhầm thành 23 khung giờ trong khi có 24 khung giờ tổng hoặc các slot không khả dụng đầy đủ).\",\n    \"Tuy nhiên đáp án tuân thủ đúng yêu cầu không tạo thẻ/propose khi chưa có lệnh.\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Không có citation số gắn trong phần trả lời.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0Tex2ouDgVz3KJjkzS+azmsj4kveMdlO3/cgwNvABvLy0/R9/Cw9kmb6ds8ZNJsmCrJXrDD71LBiUbGL57gwtfm9gyyhNei8bfx19gU6lpGfRiiVCoPfxq0Xg=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791532516,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 324,
+          "prompt_tokens": 8688,
+          "total_tokens": 9012,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0034164,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0034164,
+            "upstream_inference_prompt_cost": 0.0026064,
+            "upstream_inference_completions_cost": 0.00081
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Ngày 08/10/2026, xưởng có 23 khung giờ khả dụng với 4 chỗ còn lại mỗi khung\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C0:E4\", \"C0:E5\", \"C0:E6\", \"C0:E70\", \"C0:E71\", \"C0:E72\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời nhầm lẫn tổng số khung giờ khả dụng từ tool trả về (có 23 slot từ 00:00 đến 22:00 nhưng thực tế có cả slot 23:00 trong tool hoặc đếm nhầm thành 23 khung giờ trong khi có 24 khung giờ tổng hoặc các slot không khả dụng đầy đủ).\",\n    \"Tuy nhiên đáp án tuân thủ đúng yêu cầu không tạo thẻ/propose khi chưa có lệnh.\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Không có citation số gắn trong phần trả lời.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Ngày 08/10/2026, xưởng có 23 khung giờ khả dụng với 4 chỗ còn lại mỗi khung",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C0:E4",
+              "C0:E5",
+              "C0:E6",
+              "C0:E70",
+              "C0:E71",
+              "C0:E72"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E4",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"time_slot\": \"00:00:00\"",
+                "json_path": "$.slots[0].time_slot",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E5",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"available\": true",
+                "json_path": "$.slots[0].available",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E6",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"remaining\": 4",
+                "json_path": "$.slots[0].remaining",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E70",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"time_slot\": \"22:00:00\"",
+                "json_path": "$.slots[22].time_slot",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E71",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"available\": true",
+                "json_path": "$.slots[22].available",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E72",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"remaining\": 4",
+                "json_path": "$.slots[22].remaining",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời nhầm lẫn tổng số khung giờ khả dụng từ tool trả về (có 23 slot từ 00:00 đến 22:00 nhưng thực tế có cả slot 23:00 trong tool hoặc đếm nhầm thành 23 khung giờ trong khi có 24 khung giờ tổng hoặc các slot không khả dụng đầy đủ).",
+          "Tuy nhiên đáp án tuân thủ đúng yêu cầu không tạo thẻ/propose khi chưa có lệnh."
+        ],
+        "citation_reviews": {
+          "none": {
+            "reference": "NONE",
+            "support": "NOT_APPLICABLE",
+            "reason": "Không có citation số gắn trong phần trả lời.",
+            "resolved_evidence": null
+          }
+        },
+        "citation_support": "NOT_APPLICABLE",
+        "overall": "FAIL",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "FAIL"
+    },
+    "producer": "63"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-031",
+      "configuration": "agent_gemma",
+      "repeat": 1,
+      "case_id": "NEW-R01",
+      "original_row_sha256": "303452bdfea5cb8f4add4de55434dfe9e56ef1057be662798b7f03a689aeaa02",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+    },
+    "judgment": {
+      "sample_id": "sample-031",
+      "sample_sha256": "39a0b7c0e9206089aaaa56aeb193d077ebc4fc0ca4f8116c0898ea5bc02d94e4",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.0041876,
+      "request_payload_sha256": "c9e767d2473acc53a74f2983a13eda7964dfcdf2123344eb9e142e981ae2731d",
+      "request_schema_sha256": "3147dcdb5aa4e954151f1b07ce9e022b9cb353ba93415a3642cdb2ce9f31a012",
+      "validation_schema_sha256": "33f2ee0d27b3f5ad6315087715d52dcf82b18a8c0f7af000910a24b6b8c58cf5",
+      "raw_response": {
+        "id": "gen-1791533225-aEWlsHH8D5JOO0c3ysgc",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Tài liệu nêu các bước kiểm tra lốp trước khi vận hành bao gồm kiểm tra lốp non hơi hoặc biến dạng bất thường\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E96\"\n      ]\n    },\n    {\n      \"claim\": \"Kiểm tra mặt lốp có vết cắt, nứt, phồng, thủng hoặc vật lạ găm vào hay không\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E97\"\n      ]\n    },\n    {\n      \"claim\": \"Kiểm tra gai lốp có mòn không đều hoặc đã chạm vạch báo mòn hay không\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E98\"\n      ]\n    },\n    {\n      \"claim\": \"Kiểm tra van lốp và nắp van có đầy đủ, hư hỏng hoặc rò rỉ hay không\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E99\"\n      ]\n    },\n    {\n      \"claim\": \"Kiểm tra xe có rung, lệch lái hoặc xuất hiện tiếng ồn bất thường từ bánh xe hay không\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E100\"\n      ]\n    },\n    {\n      \"claim\": \"Nếu phát hiện lốp phồng, rách, hư hỏng nghiêm trọng hoặc xe mất ổn định thì không tiếp tục chạy tốc độ cao và đưa xe đến xưởng dịch vụ\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E101\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời bám sát tài liệu được cung cấp, phản ánh chính xác nội dung kiểm tra lốp trước khi lái xe.\",\n    \"Trích dẫn nguồn và các ý trong câu trả lời hoàn toàn khớp với văn bản trong chunk.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E101\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk C1:E101 chứa nội dung hướng dẫn xử lý khi phát hiện lốp hỏng nặng hoặc xe mất ổn định đúng như câu trả lời đề cập.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0Txj/YoCzeMQ6jyklslL9/QvFK47/HRp5akgCBJLO9Maokhzb1pOHRfKgPLKlVFl3vJ6K3u1nKNuPB1iyJdw+3X+ZmWIz1WzB7owZ2Ay3RO8TkG/rwlSV2G0o=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791533225,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 611,
+          "prompt_tokens": 8867,
+          "total_tokens": 9478,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0041876,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0041876,
+            "upstream_inference_prompt_cost": 0.0026601,
+            "upstream_inference_completions_cost": 0.0015275
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Tài liệu nêu các bước kiểm tra lốp trước khi vận hành bao gồm kiểm tra lốp non hơi hoặc biến dạng bất thường\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E96\"\n      ]\n    },\n    {\n      \"claim\": \"Kiểm tra mặt lốp có vết cắt, nứt, phồng, thủng hoặc vật lạ găm vào hay không\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E97\"\n      ]\n    },\n    {\n      \"claim\": \"Kiểm tra gai lốp có mòn không đều hoặc đã chạm vạch báo mòn hay không\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E98\"\n      ]\n    },\n    {\n      \"claim\": \"Kiểm tra van lốp và nắp van có đầy đủ, hư hỏng hoặc rò rỉ hay không\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E99\"\n      ]\n    },\n    {\n      \"claim\": \"Kiểm tra xe có rung, lệch lái hoặc xuất hiện tiếng ồn bất thường từ bánh xe hay không\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E100\"\n      ]\n    },\n    {\n      \"claim\": \"Nếu phát hiện lốp phồng, rách, hư hỏng nghiêm trọng hoặc xe mất ổn định thì không tiếp tục chạy tốc độ cao và đưa xe đến xưởng dịch vụ\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E101\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời bám sát tài liệu được cung cấp, phản ánh chính xác nội dung kiểm tra lốp trước khi lái xe.\",\n    \"Trích dẫn nguồn và các ý trong câu trả lời hoàn toàn khớp với văn bản trong chunk.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E101\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk C1:E101 chứa nội dung hướng dẫn xử lý khi phát hiện lốp hỏng nặng hoặc xe mất ổn định đúng như câu trả lời đề cập.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Tài liệu nêu các bước kiểm tra lốp trước khi vận hành bao gồm kiểm tra lốp non hơi hoặc biến dạng bất thường",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E96"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E96",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "- Lốp có bị non hơi hoặc biến dạng bất thường hay không.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          },
+          {
+            "claim": "Kiểm tra mặt lốp có vết cắt, nứt, phồng, thủng hoặc vật lạ găm vào hay không",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E97"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E97",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "- Mặt lốp có vết cắt, nứt, phồng, thủng hoặc vật lạ găm vào hay không.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          },
+          {
+            "claim": "Kiểm tra gai lốp có mòn không đều hoặc đã chạm vạch báo mòn hay không",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E98"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E98",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "- Gai lốp có mòn không đều hoặc đã chạm vạch báo mòn hay không.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          },
+          {
+            "claim": "Kiểm tra van lốp và nắp van có đầy đủ, hư hỏng hoặc rò rỉ hay không",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E99"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E99",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "- Van lốp và nắp van có đầy đủ, hư hỏng hoặc rò rỉ hay không.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          },
+          {
+            "claim": "Kiểm tra xe có rung, lệch lái hoặc xuất hiện tiếng ồn bất thường từ bánh xe hay không",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E100"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E100",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "- Xe có rung, lệch lái hoặc xuất hiện tiếng ồn bất thường từ bánh xe hay không.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          },
+          {
+            "claim": "Nếu phát hiện lốp phồng, rách, hư hỏng nghiêm trọng hoặc xe mất ổn định thì không tiếp tục chạy tốc độ cao và đưa xe đến xưởng dịch vụ",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E101"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E101",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "Nếu phát hiện lốp phồng, rách, hư hỏng nghiêm trọng hoặc xe mất ổn định, không tiếp tục chạy ở tốc độ cao. Đưa xe đến xưởng dịch vụ để kiểm tra.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời bám sát tài liệu được cung cấp, phản ánh chính xác nội dung kiểm tra lốp trước khi lái xe.",
+          "Trích dẫn nguồn và các ý trong câu trả lời hoàn toàn khớp với văn bản trong chunk."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E101",
+            "support": "SUPPORTED",
+            "reason": "Chunk C1:E101 chứa nội dung hướng dẫn xử lý khi phát hiện lốp hỏng nặng hoặc xe mất ổn định đúng như câu trả lời đề cập.",
+            "resolved_evidence": {
+              "evidence_id": "E101",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "Nếu phát hiện lốp phồng, rách, hư hỏng nghiêm trọng hoặc xe mất ổn định, không tiếp tục chạy ở tốc độ cao. Đưa xe đến xưởng dịch vụ để kiểm tra.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE"
+    },
+    "producer": "64"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-032",
+      "configuration": "agent_gemma",
+      "repeat": 1,
+      "case_id": "NEW-R02",
+      "original_row_sha256": "17af89b0b8804830a6602cf5d639c6764f95a362ce3cf68581ed17905c9e35a7",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+    },
+    "judgment": {
+      "sample_id": "sample-032",
+      "sample_sha256": "aa40b1d17e4aca89e4033168024a58c3069668dfdd8ffc4d0142d50bdbfcec3d",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.0026943,
+      "request_payload_sha256": "30421409d86e00f304002c2d0c68a67ea7f4861df1112c52e878057c81df9541",
+      "request_schema_sha256": "9f44ce2c23c977578844cf747df5454ebf4414751d381f15a29643bd4a5bdbea",
+      "validation_schema_sha256": "847dc3ce0da235672d87f9603c24c8f9ee1a823158cb6ed10b79980fdb77ffc1",
+      "raw_response": {
+        "id": "gen-1791533231-cHkuTl7BdoXToogGcFLN",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"FAIL\",\n  \"task_success\": \"FAIL\",\n  \"claims\": [\n    {\n      \"claim\": \"Câu trả lời cho rằng tài liệu không cung cấp quy trình chi tiết cách tìm điểm sạc trong khi Tài liệu 2 (quy_trinh_ung_dung_ALL_chk_0002) thực tế có nêu các bước chi tiết tìm trạm sạc.\",\n      \"support\": \"UNSUPPORTED\",\n      \"citation_refs\": [\n        \"C2:E30\",\n        \"C2:E31\",\n        \"C2:E32\",\n        \"C2:E33\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phủ nhận việc tài liệu có hướng dẫn tìm điểm sạc, nhưng S2 thực tế chứa quy trình chi tiết từng bước.\",\n    \"Bỏ sót thông tin có sẵn trong tài liệu được cung cấp.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E20\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Tài liệu 1 thực sự đề cập đến lịch sử sạc nhưng không liên quan đến tìm điểm sạc.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E30\",\n      \"support\": \"UNSUPPORTED\",\n      \"reason\": \"Tài liệu 2 có chứa các bước tìm trạm sạc chi tiết nhưng câu trả lời lại khẳng định ngược lại là không có.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TlqACk3O92lchRQDaw/clQ+Fb+K89PlMjAtagKQudZ5KXxbvykjMDBQ4Xz/bj3X24rorecT8ol5NNzSd72RaoRbJrRSDNOkmHIriAH5tbtot9260yP0LF3Ro=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791533231,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 375,
+          "prompt_tokens": 5856,
+          "total_tokens": 6231,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0026943,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0026943,
+            "upstream_inference_prompt_cost": 0.0017568,
+            "upstream_inference_completions_cost": 0.0009375
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"FAIL\",\n  \"task_success\": \"FAIL\",\n  \"claims\": [\n    {\n      \"claim\": \"Câu trả lời cho rằng tài liệu không cung cấp quy trình chi tiết cách tìm điểm sạc trong khi Tài liệu 2 (quy_trinh_ung_dung_ALL_chk_0002) thực tế có nêu các bước chi tiết tìm trạm sạc.\",\n      \"support\": \"UNSUPPORTED\",\n      \"citation_refs\": [\n        \"C2:E30\",\n        \"C2:E31\",\n        \"C2:E32\",\n        \"C2:E33\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phủ nhận việc tài liệu có hướng dẫn tìm điểm sạc, nhưng S2 thực tế chứa quy trình chi tiết từng bước.\",\n    \"Bỏ sót thông tin có sẵn trong tài liệu được cung cấp.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E20\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Tài liệu 1 thực sự đề cập đến lịch sử sạc nhưng không liên quan đến tìm điểm sạc.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E30\",\n      \"support\": \"UNSUPPORTED\",\n      \"reason\": \"Tài liệu 2 có chứa các bước tìm trạm sạc chi tiết nhưng câu trả lời lại khẳng định ngược lại là không có.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "FAIL",
+        "task_success": "FAIL",
+        "claims": [
+          {
+            "claim": "Câu trả lời cho rằng tài liệu không cung cấp quy trình chi tiết cách tìm điểm sạc trong khi Tài liệu 2 (quy_trinh_ung_dung_ALL_chk_0002) thực tế có nêu các bước chi tiết tìm trạm sạc.",
+            "support": "UNSUPPORTED",
+            "citation_refs": [
+              "C2:E30",
+              "C2:E31",
+              "C2:E32",
+              "C2:E33"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E30",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "Các bước tìm địa điểm hoặc trạm sạc:",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              },
+              {
+                "evidence_id": "E31",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "1. Mở **Bản đồ**, chọn địa điểm trên thanh gợi ý hoặc nhập địa điểm vào thanh",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              },
+              {
+                "evidence_id": "E32",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "tìm kiếm; người dùng cũng có thể tìm bằng giọng nói.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              },
+              {
+                "evidence_id": "E33",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "2. Ứng dụng hiển thị danh sách địa điểm gần nhất; chọn địa điểm mong muốn.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời phủ nhận việc tài liệu có hướng dẫn tìm điểm sạc, nhưng S2 thực tế chứa quy trình chi tiết từng bước.",
+          "Bỏ sót thông tin có sẵn trong tài liệu được cung cấp."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E20",
+            "support": "SUPPORTED",
+            "reason": "Tài liệu 1 thực sự đề cập đến lịch sử sạc nhưng không liên quan đến tìm điểm sạc.",
+            "resolved_evidence": {
+              "evidence_id": "E20",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "- Bước 1: Vào mục Lịch sử sạc để kiểm tra thông tin những lần sạc pin trước đó;",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          },
+          "2": {
+            "reference": "C2:E30",
+            "support": "UNSUPPORTED",
+            "reason": "Tài liệu 2 có chứa các bước tìm trạm sạc chi tiết nhưng câu trả lời lại khẳng định ngược lại là không có.",
+            "resolved_evidence": {
+              "evidence_id": "E30",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "Các bước tìm địa điểm hoặc trạm sạc:",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                2
+              ],
+              "citation_index": 2
+            }
+          }
+        },
+        "citation_support": "FAIL",
+        "overall": "FAIL",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "FAIL"
+    },
+    "producer": "64"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-033",
+      "configuration": "agent_gemma",
+      "repeat": 1,
+      "case_id": "NEW-R03",
+      "original_row_sha256": "d59c398784c0ad228b7752844db6a1d7a0cfe7a859f28068be85ab4c6eb05da8",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+    },
+    "judgment": {
+      "sample_id": "sample-033",
+      "sample_sha256": "6e8b3b24359f6e94e7cc2289308288ad6b560eb10680503f941280a207e94ab0",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.0026462,
+      "request_payload_sha256": "435e1d92735951c3381eaee54bbd5e79188fd36ea2e179bcbc12755d338e0e42",
+      "request_schema_sha256": "1834c2a52d14f55b9a4f0850f350f0044005e39610837bbbe560117037b7165b",
+      "validation_schema_sha256": "6c2beceaa75fa81727b2e007eefad6b08a70cfae330818e78ef5a9018557b7be",
+      "raw_response": {
+        "id": "gen-1791533237-rBpvV3boC0fdsbYkQSeD",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Xe hết pin HV và vị trí xe Khách hàng không gần các địa điểm có thể sạc được là điều kiện áp dụng\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E22\"\n      ]\n    },\n    {\n      \"claim\": \"Dịch vụ hỗ trợ xe ô tô điện hết pin giữa đường, không thể nạp năng lượng bằng bộ sạc di động hoặc trụ sạc công cộng\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C2:E29\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời chính xác, bám sát tài liệu được cung cấp và phân biệt rõ ràng các thông tin.\",\n    \"Các trích dẫn phù hợp với nguồn được cung cấp.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E22\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn trích nêu rõ điều kiện áp dụng là xe hết pin HV và không gần địa điểm sạc.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E29\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn trích xác nhận dịch vụ hỗ trợ xe hết pin giữa đường không thể nạp bằng bộ sạc di động hoặc trụ sạc công cộng.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0T71ITiF6h3C6F73MpCL/GQ0otIjhtQsg9rjTtLQKZKQN5ZiSlp7aJyNE8IR67DPF/lVoiIvJ1XiKY/MEGLCPifdwolfG2jf9QksQ31wGnHFkq0pIPuZlOmJM=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791533237,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 383,
+          "prompt_tokens": 5629,
+          "total_tokens": 6012,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0026462,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0026462,
+            "upstream_inference_prompt_cost": 0.0016887,
+            "upstream_inference_completions_cost": 0.0009575
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Xe hết pin HV và vị trí xe Khách hàng không gần các địa điểm có thể sạc được là điều kiện áp dụng\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E22\"\n      ]\n    },\n    {\n      \"claim\": \"Dịch vụ hỗ trợ xe ô tô điện hết pin giữa đường, không thể nạp năng lượng bằng bộ sạc di động hoặc trụ sạc công cộng\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C2:E29\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời chính xác, bám sát tài liệu được cung cấp và phân biệt rõ ràng các thông tin.\",\n    \"Các trích dẫn phù hợp với nguồn được cung cấp.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E22\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn trích nêu rõ điều kiện áp dụng là xe hết pin HV và không gần địa điểm sạc.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E29\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn trích xác nhận dịch vụ hỗ trợ xe hết pin giữa đường không thể nạp bằng bộ sạc di động hoặc trụ sạc công cộng.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Xe hết pin HV và vị trí xe Khách hàng không gần các địa điểm có thể sạc được là điều kiện áp dụng",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E22"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E22",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "- Điều kiện áp dụng: Xe hết pin HV và vị trí xe Khách hàng không gần các địa điểm có thể sạc được.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          },
+          {
+            "claim": "Dịch vụ hỗ trợ xe ô tô điện hết pin giữa đường, không thể nạp năng lượng bằng bộ sạc di động hoặc trụ sạc công cộng",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C2:E29"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E29",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "Dịch vụ hỗ trợ xe ô tô điện hết pin giữa đường, không thể nạp năng lượng bằng",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời chính xác, bám sát tài liệu được cung cấp và phân biệt rõ ràng các thông tin.",
+          "Các trích dẫn phù hợp với nguồn được cung cấp."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E22",
+            "support": "SUPPORTED",
+            "reason": "Đoạn trích nêu rõ điều kiện áp dụng là xe hết pin HV và không gần địa điểm sạc.",
+            "resolved_evidence": {
+              "evidence_id": "E22",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "- Điều kiện áp dụng: Xe hết pin HV và vị trí xe Khách hàng không gần các địa điểm có thể sạc được.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          },
+          "2": {
+            "reference": "C2:E29",
+            "support": "SUPPORTED",
+            "reason": "Đoạn trích xác nhận dịch vụ hỗ trợ xe hết pin giữa đường không thể nạp bằng bộ sạc di động hoặc trụ sạc công cộng.",
+            "resolved_evidence": {
+              "evidence_id": "E29",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "Dịch vụ hỗ trợ xe ô tô điện hết pin giữa đường, không thể nạp năng lượng bằng",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                2
+              ],
+              "citation_index": 2
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE"
+    },
+    "producer": "64"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-034",
+      "configuration": "agent_gemma",
+      "repeat": 1,
+      "case_id": "NEW-R04",
+      "original_row_sha256": "89fd2d2c0cc11d8e72600a782c75dea4424f5afc8c95282052cb6634bd2df91c",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+    },
+    "judgment": {
+      "sample_id": "sample-034",
+      "sample_sha256": "eaad0fa163a59deada8099bc52326bd1a2f0d41b7291a913a7b03a7d74361cae",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.0029983,
+      "request_payload_sha256": "f4e9a1ec049852ad904b87877c65bae59edbbf1b1a55696548be6807f3b560a6",
+      "request_schema_sha256": "4f9d6f338e6884055dc1d943762be7b731d9c7f81509b47d28cdec2bf6f02ca6",
+      "validation_schema_sha256": "a0f5fa06f28b522666ba80561313831d08d2b9792d91ea1dc87bd0aeef20cbbf",
+      "raw_response": {
+        "id": "gen-1791533242-ajB6PUercg4cdti18HYA",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Bảng được cung cấp ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C1:E30\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời bám sát nguồn, trích dẫn chính xác và từ chối tự sửa đổi con số khi chưa có kiểm chứng đầy đủ.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E30\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đúng dòng quy định nước làm mát pin/động cơ điện trong tài liệu.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TZlyv61gPdpPG/94J5Xcgf9Nj3GtMI0uHFO3QTzMQ56dWGA7r0Mv6Oc79ckQaeK22Wb+HUpWkKCGQlKI2xKRne4UNziytsn+h6bZ4QGTUrfaI2ynnwRdFstU=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791533242,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 238,
+          "prompt_tokens": 8011,
+          "total_tokens": 8249,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0029983,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0029983,
+            "upstream_inference_prompt_cost": 0.0024033,
+            "upstream_inference_completions_cost": 0.000595
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Bảng được cung cấp ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C1:E30\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời bám sát nguồn, trích dẫn chính xác và từ chối tự sửa đổi con số khi chưa có kiểm chứng đầy đủ.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E30\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đúng dòng quy định nước làm mát pin/động cơ điện trong tài liệu.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Bảng được cung cấp ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E30"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E30",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "| Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên |",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời bám sát nguồn, trích dẫn chính xác và từ chối tự sửa đổi con số khi chưa có kiểm chứng đầy đủ."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E30",
+            "support": "SUPPORTED",
+            "reason": "Đúng dòng quy định nước làm mát pin/động cơ điện trong tài liệu.",
+            "resolved_evidence": {
+              "evidence_id": "E30",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "| Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên |",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE"
+    },
+    "producer": "64"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-035",
+      "configuration": "agent_gemma",
+      "repeat": 1,
+      "case_id": "NEW-R05",
+      "original_row_sha256": "8cb796d00b00e48a45b9919645be7b5077f2a4215de9474b1a627741dda899f7",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+    },
+    "judgment": {
+      "sample_id": "sample-035",
+      "sample_sha256": "53241d908f067c2a68fc82cf233faf10d41625735a2b1a5aaa6d00dd4ce8879a",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.0038726,
+      "request_payload_sha256": "33928349c92c30ca154e4be3359398e9aa445996c68c1bc679cc4b92c454e5a3",
+      "request_schema_sha256": "7b89921011aa0054d11781f220fc34db08fc908c895c676f7aaf49faef6b87e3",
+      "validation_schema_sha256": "e8a8a8352c4f1ea4868e666c4043782a29c56414c936ea214fcf7cb042299f54",
+      "raw_response": {
+        "id": "gen-1791533247-iMPUFlmRfesrJou0q4bI",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Pin mới mua lần đầu theo xe mới của VF6 có thời hạn bảo hành là 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C1:E31\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời đã phân biệt rõ ràng giữa pin mới mua theo xe và pin thay thế dựa trên tài liệu.\",\n    \"Trích dẫn từ Sổ bảo hành VF6 chính xác tuyệt đối.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E31\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk S1 mô tả chính xác thời hạn bảo hành 8 năm hoặc 160.000 km cho pin mua lần đầu theo xe mới.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E104\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk S3 xác nhận chính sách bảo hành phụ tùng thay thế chung nhưng ngoại trừ pin cao áp.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0T8slAZkXDL4JfPTYeO+YLRJP3KTfmVfls0rNITOnSRxb4CUzpm8tUEfhj1nDwkyEr3zH5ECQAvPKiHsNz/4SS/pxmkvMhstYNNaap/ga6jzlW08A6tw34564=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791533247,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 314,
+          "prompt_tokens": 10292,
+          "total_tokens": 10606,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0038726,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0038726,
+            "upstream_inference_prompt_cost": 0.0030876,
+            "upstream_inference_completions_cost": 0.000785
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Pin mới mua lần đầu theo xe mới của VF6 có thời hạn bảo hành là 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C1:E31\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời đã phân biệt rõ ràng giữa pin mới mua theo xe và pin thay thế dựa trên tài liệu.\",\n    \"Trích dẫn từ Sổ bảo hành VF6 chính xác tuyệt đối.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E31\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk S1 mô tả chính xác thời hạn bảo hành 8 năm hoặc 160.000 km cho pin mua lần đầu theo xe mới.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E104\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk S3 xác nhận chính sách bảo hành phụ tùng thay thế chung nhưng ngoại trừ pin cao áp.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Pin mới mua lần đầu theo xe mới của VF6 có thời hạn bảo hành là 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E31"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E31",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "• Pin có thời hạn bảo hành là 8 năm kể từ Ngày Kích Hoạt Bảo Hành hoặc 160.000 km tùy theo điều kiện nào đến trước.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời đã phân biệt rõ ràng giữa pin mới mua theo xe và pin thay thế dựa trên tài liệu.",
+          "Trích dẫn từ Sổ bảo hành VF6 chính xác tuyệt đối."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E31",
+            "support": "SUPPORTED",
+            "reason": "Chunk S1 mô tả chính xác thời hạn bảo hành 8 năm hoặc 160.000 km cho pin mua lần đầu theo xe mới.",
+            "resolved_evidence": {
+              "evidence_id": "E31",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "• Pin có thời hạn bảo hành là 8 năm kể từ Ngày Kích Hoạt Bảo Hành hoặc 160.000 km tùy theo điều kiện nào đến trước.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          },
+          "2": {
+            "reference": "C2:E104",
+            "support": "SUPPORTED",
+            "reason": "Chunk S3 xác nhận chính sách bảo hành phụ tùng thay thế chung nhưng ngoại trừ pin cao áp.",
+            "resolved_evidence": {
+              "evidence_id": "E104",
+              "source_id": "S3",
+              "kind": "rag_chunk",
+              "quote": "hành 2 năm hoặc 40.000 km kể từ ngày mua, tùy điều kiện nào đến trước. Phụ",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                2
+              ],
+              "citation_index": 2
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE"
+    },
+    "producer": "64"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-036",
+      "configuration": "agent_gemma",
+      "repeat": 1,
+      "case_id": "NEW-R06",
+      "original_row_sha256": "170cc62b2e0819e9190b7e913f02e2b17aa67eacbd9efd0a92947ac7649742f5",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+    },
+    "judgment": {
+      "sample_id": "sample-036",
+      "sample_sha256": "bf724898521829b5f3bc744f4dfa06d3c02aa49da5780af824a96bfe1425bc46",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.0018795,
+      "request_payload_sha256": "c9fcc98d2db9b723f64bbe4455a25eccb00accb468d04bb5dcea596430f645dc",
+      "request_schema_sha256": "17a7112fd522628f20a6ebf8650bb2fd1e0acf35fca263e28c9c14fc9b7802f3",
+      "validation_schema_sha256": "e2c792ccefe8ea07debdf0f903476b4d66bdfed2078de876bdd39928c8d588d2",
+      "raw_response": {
+        "id": "gen-1791533253-apdRcsWLftur6Rg2oVKD",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\"correctness_from_available_evidence\": \"PASS\", \"faithfulness\": \"PASS\", \"task_success\": \"PASS\", \"claims\": [{\"claim\": \"Các tài liệu chỉ đề cập đến việc duy trì áp suất theo khuyến nghị của nhà sản xuất xe mà không cung cấp quy trình hoặc bước thực hiện chi tiết\", \"support\": \"SUPPORTED\", \"citation_refs\": [\"C1:E19\"]}], \"reasons\": [\"Câu trả lời phản ánh chính xác thông tin từ tài liệu khi xác nhận không có quy trình chi tiết cách kiểm tra áp suất lốp mà chỉ nêu việc duy trì áp suất theo khuyến nghị.\"], \"citation_reviews\": {\"1\": {\"reference\": \"C1:E19\", \"support\": \"SUPPORTED\", \"reason\": \"Đoạn trích thể hiện quy định duy trì áp suất đúng khuyến nghị nhà sản xuất, phù hợp với nhận định trong câu trả lời.\"}}}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0T+VFtEWJ7G6wgDjpV9e6QDfbDqyT3qrZgA7hfRifbJhqU/khMT0sVHC/X8CUy7FhquvDiCPrDE+8Fit7gBaA/tRvZNbU9mPZD8W96lNiL1KvRqmIV1vYgq7U=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791533253,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 195,
+          "prompt_tokens": 4640,
+          "total_tokens": 4835,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0018795,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0018795,
+            "upstream_inference_prompt_cost": 0.001392,
+            "upstream_inference_completions_cost": 0.0004875
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\"correctness_from_available_evidence\": \"PASS\", \"faithfulness\": \"PASS\", \"task_success\": \"PASS\", \"claims\": [{\"claim\": \"Các tài liệu chỉ đề cập đến việc duy trì áp suất theo khuyến nghị của nhà sản xuất xe mà không cung cấp quy trình hoặc bước thực hiện chi tiết\", \"support\": \"SUPPORTED\", \"citation_refs\": [\"C1:E19\"]}], \"reasons\": [\"Câu trả lời phản ánh chính xác thông tin từ tài liệu khi xác nhận không có quy trình chi tiết cách kiểm tra áp suất lốp mà chỉ nêu việc duy trì áp suất theo khuyến nghị.\"], \"citation_reviews\": {\"1\": {\"reference\": \"C1:E19\", \"support\": \"SUPPORTED\", \"reason\": \"Đoạn trích thể hiện quy định duy trì áp suất đúng khuyến nghị nhà sản xuất, phù hợp với nhận định trong câu trả lời.\"}}}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Các tài liệu chỉ đề cập đến việc duy trì áp suất theo khuyến nghị của nhà sản xuất xe mà không cung cấp quy trình hoặc bước thực hiện chi tiết",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E19"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E19",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "- Duy trì áp suất theo đúng khuyến nghị của nhà sản xuất xe.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời phản ánh chính xác thông tin từ tài liệu khi xác nhận không có quy trình chi tiết cách kiểm tra áp suất lốp mà chỉ nêu việc duy trì áp suất theo khuyến nghị."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E19",
+            "support": "SUPPORTED",
+            "reason": "Đoạn trích thể hiện quy định duy trì áp suất đúng khuyến nghị nhà sản xuất, phù hợp với nhận định trong câu trả lời.",
+            "resolved_evidence": {
+              "evidence_id": "E19",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "- Duy trì áp suất theo đúng khuyến nghị của nhà sản xuất xe.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE"
+    },
+    "producer": "64"
+  },
+  {
+    "origin": {
+      "sample_id": "sample-044",
+      "configuration": "agent_gemma",
+      "repeat": 1,
+      "case_id": "NEW-B03",
+      "original_row_sha256": "3cc28b7ec7fdf59c53debbff7fab0ca44cb02f5211f582f5d0e638029770715f",
+      "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+    },
+    "judgment": {
+      "sample_id": "sample-044",
+      "sample_sha256": "9faab6cfb32303c2e5d9f2560ed42a75c14a2e20ff2460787c2a8547940a755d",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": false,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "error": null,
+      "cost_usd": 0.0034367,
+      "request_payload_sha256": "ae8267821a69051a6ea5a7bf0e25ffd6ab36c63732816f2cabaad7c49be11e8e",
+      "request_schema_sha256": "8bde53e352271c2a8a62b91289109f5d57995d114729b71d65ec3680a43215c0",
+      "validation_schema_sha256": "b9f27d507032b459e430217b260a0268b99ba69bd098f628576d8bf5756a535e",
+      "raw_response": {
+        "id": "gen-1791533294-e6a0dSMdt7GGaCm2D53c",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Ngày 08/10/2026, xưởng có 23 khung giờ khả dụng từ 00:00 đến 22:00, mỗi giờ còn 4 chỗ\",\n      \"support\": \"UNSUPPORTED\",\n      \"citation_refs\": [\"C0:E1\", \"C0:E2\", \"C0:E4\", \"C0:E5\", \"C0:E6\", \"C0:E70\", \"C0:E71\", \"C0:E72\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời liệt kê 23 khung giờ nhưng dữ liệu tool thực tế có 23 slot từ 00:00 đến 22:00 (thực tế tool trả về 23 slot nhưng có thể số lượng hoặc các mốc thời gian không khớp hoàn toàn đúng với tổng số slot khả dụng thực tế trên toàn bộ dãy slot được trả về).\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Không có trích dẫn số nào được sử dụng trong câu trả lời.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TCHMhYSk9RLwZ37XKAeCICiyWgWCo5X5LkVcmOaz6P6xq4Gwge+tPeP3EVgtU/sWk6F0u55dN6fRZMXtDOibuyEOBUYjf32ua/HOLe2/WijEBjpvg2RPW6Ow=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791533294,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 332,
+          "prompt_tokens": 8689,
+          "total_tokens": 9021,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0034367,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0034367,
+            "upstream_inference_prompt_cost": 0.0026067,
+            "upstream_inference_completions_cost": 0.00083
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Ngày 08/10/2026, xưởng có 23 khung giờ khả dụng từ 00:00 đến 22:00, mỗi giờ còn 4 chỗ\",\n      \"support\": \"UNSUPPORTED\",\n      \"citation_refs\": [\"C0:E1\", \"C0:E2\", \"C0:E4\", \"C0:E5\", \"C0:E6\", \"C0:E70\", \"C0:E71\", \"C0:E72\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời liệt kê 23 khung giờ nhưng dữ liệu tool thực tế có 23 slot từ 00:00 đến 22:00 (thực tế tool trả về 23 slot nhưng có thể số lượng hoặc các mốc thời gian không khớp hoàn toàn đúng với tổng số slot khả dụng thực tế trên toàn bộ dãy slot được trả về).\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Không có trích dẫn số nào được sử dụng trong câu trả lời.\"\n    }\n  }\n}",
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "judge": {
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Ngày 08/10/2026, xưởng có 23 khung giờ khả dụng từ 00:00 đến 22:00, mỗi giờ còn 4 chỗ",
+            "support": "UNSUPPORTED",
+            "citation_refs": [
+              "C0:E1",
+              "C0:E2",
+              "C0:E4",
+              "C0:E5",
+              "C0:E6",
+              "C0:E70",
+              "C0:E71",
+              "C0:E72"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E1",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"workshop_id\": \"8801f15a-2c8d-4348-a57f-2eaa901762af\"",
+                "json_path": "$.workshop_id",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E2",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"date\": \"2026-10-08\"",
+                "json_path": "$.date",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E4",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"time_slot\": \"00:00:00\"",
+                "json_path": "$.slots[0].time_slot",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E5",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"available\": true",
+                "json_path": "$.slots[0].available",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E6",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"remaining\": 4",
+                "json_path": "$.slots[0].remaining",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E70",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"time_slot\": \"22:00:00\"",
+                "json_path": "$.slots[22].time_slot",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E71",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"available\": true",
+                "json_path": "$.slots[22].available",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E72",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"remaining\": 4",
+                "json_path": "$.slots[22].remaining",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời liệt kê 23 khung giờ nhưng dữ liệu tool thực tế có 23 slot từ 00:00 đến 22:00 (thực tế tool trả về 23 slot nhưng có thể số lượng hoặc các mốc thời gian không khớp hoàn toàn đúng với tổng số slot khả dụng thực tế trên toàn bộ dãy slot được trả về)."
+        ],
+        "citation_reviews": {
+          "none": {
+            "reference": "NONE",
+            "support": "NOT_APPLICABLE",
+            "reason": "Không có trích dẫn số nào được sử dụng trong câu trả lời.",
+            "resolved_evidence": null
+          }
+        },
+        "citation_support": "NOT_APPLICABLE",
+        "overall": "FAIL",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "FAIL"
+    },
+    "producer": "64"
+  }
+]

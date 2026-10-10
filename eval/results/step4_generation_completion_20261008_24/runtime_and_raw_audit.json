@@ -1,0 +1,1506 @@
+{
+  "pilot_mistral": [
+    {
+      "case_id": "M01",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Danh sách các hạng mục bảo dưỡng định kỳ tại mốc 15.000 km cho dòng xe VinFast VF8 gồm những hạng mục nào?",
+        "source_cited_doc_indexes": [
+          1,
+          2
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "M07",
+      "preprovider_gate": true,
+      "response_metadata": {
+        "reason": "coolant_source_value_unverified",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "literal_source_row": "Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên",
+        "source_rule_verified": false
+      },
+      "raw_contract_pass": false,
+      "citation_structure": null,
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "W02",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Thời hạn bảo hành của pin cao áp trên dòng xe VinFast VF6 là bao lâu?",
+        "source_cited_doc_indexes": [
+          2,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B11",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Quy trình cứu hộ pin cao áp cho xe điện VinFast hoạt động như thế nào?",
+        "source_cited_doc_indexes": [
+          1,
+          2,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B16",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Xe VinFast VF e34 sạc đầy bằng chế độ sạc thường (sạc AC) mất bao lâu?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "PR03",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "reason": "post_service_followup_source_disagreement",
+        "evidence_gate": true,
+        "original_generation_answer": "- Bước 1: Đặt lịch bảo dưỡng\n  + Khách hàng có thể đặt lịch trực tiếp tại xưởng dịch vụ hoặc thông qua Ứng dụng VinFast [Tài liệu 2] [Tài liệu 3].\n  + Khi đặt lịch tại xưởng, ứng dụng hiển thị danh sách địa điểm phù hợp; nếu chọn Mobile Service, khách nhập địa chỉ để kiểm tra khả dụng [Tài liệu 2].\n  + Khách hàng có hẹn được ưu tiên tiếp nhận và xe được bảo dưỡng đúng thời gian hẹn [Tài liệu 4].\n\n- Bước 2: Tiếp nhận xe\n  + Khách hàng được hướng dẫn đỗ xe ngay khi tới xưởng, sau đó được chào đón và ghi nhận yêu cầu [Tài liệu 4].\n  + Xe được phủ ghế, sàn, đặt mũ trạng thái trước mặt khách hàng và duy trì trong suốt thời gian dịch vụ [Tài liệu 4].\n  + Nhân viên kiểm tra xe, cung cấp báo giá các hạng mục bảo dưỡng/sửa chữa (nếu có) và xin chữ ký xác nhận của khách hàng [Tài liệu 1] [Tài liệu 4] [Tài liệu 5].\n\n- Bước 3: Thực hiện bảo dưỡng/sửa chữa\n  + Khách hàng được cập nhật tiến độ thực hiện dịch vụ trong thời gian thực [Tài liệu 1] [Tài liệu 4].\n  + Nếu phát sinh hạng mục mới, nhân viên thông báo và xin ý kiến khách hàng [Tài liệu 4].\n\n- Bước 4: Bàn giao xe\n  + Xe được rửa sạch sẽ trước khi giao (nếu khách hàng có nhu cầu) [Tài liệu 1] [Tài liệu 4].\n  + Khách hàng nhận xe tại khu vực được hướng dẫn [Tài liệu 1] [Tài liệu 4].\n  + Trường hợp sửa chữa khó, nhân viên tư vấn, giải thích kết quả tại xe và lái thử (nếu cần) [Tài liệu 4].\n\n- Bước 5: Chăm sóc sau bảo dưỡng\n  + Khách hàng được gọi điện ghi nhận phản hồi trong vòng 2–3 ngày sau khi bảo dưỡng [Tài liệu 1] [Tài liệu 4].\n  + Phản ánh, khiếu nại được phản hồi giải pháp trong 24 giờ [Tài liệu 4].",
+        "removed_followup_claims": [
+          "+ Khách hàng được gọi điện ghi nhận phản hồi trong vòng 2–3 ngày sau khi bảo dưỡng [Tài liệu 1] [Tài liệu 4]."
+        ],
+        "source_followup_rules": [
+          {
+            "original_index": 1,
+            "days": 2,
+            "sentence": "- Bước 5: Chăm sóc sau bảo dưỡng Khách hàng làm dịch vụ sẽ được nhân viên tư vấn gọi điện để ghi nhận phản hồi trong vòng 2 ngày sau khi bảo dưỡng xe."
+          },
+          {
+            "original_index": 4,
+            "days": 3,
+            "sentence": "Mọi Khách hàng làm dịch vụ sẽ được gọi điện để ghi nhận phản hồi/ ý kiến trong vòng 3 ngày sau khi xe ra xưởng."
+          }
+        ],
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Quy trình tiếp nhận xe bảo dưỡng định kỳ tại xưởng dịch vụ VinFast gồm những bước cụ thể nào?",
+        "source_cited_doc_indexes": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    }
+  ],
+  "full_mistral": [
+    {
+      "case_id": "M01",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Danh sách các hạng mục bảo dưỡng định kỳ tại mốc 15.000 km cho dòng xe VinFast VF8 gồm những hạng mục nào?",
+        "source_cited_doc_indexes": []
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": false,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "M02",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Xác định chu kỳ thay thế pin chìa khóa điều khiển (remote key fob) cho dòng xe VinFast VF e34.",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "M03",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của các dòng xe điện VinFast là bao lâu theo quy định?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "M07",
+      "preprovider_gate": true,
+      "response_metadata": {
+        "reason": "coolant_source_value_unverified",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "literal_source_row": "Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên",
+        "source_rule_verified": false
+      },
+      "raw_contract_pass": false,
+      "citation_structure": null,
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "M18",
+      "preprovider_gate": true,
+      "response_metadata": {
+        "reason": "maintenance_component_actions_missing",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "literal_component_labels": [
+          "Pin",
+          "Dây cáp của hệ thống điện áp cao",
+          "Cổng sạc"
+        ],
+        "source_rule_verified": false
+      },
+      "raw_contract_pass": false,
+      "citation_structure": null,
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "M23",
+      "preprovider_gate": true,
+      "response_metadata": {
+        "reason": "maintenance_period_mapping_missing",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "requested_milestone_km": 40000,
+        "source_rule_verified": false
+      },
+      "raw_contract_pass": false,
+      "citation_structure": null,
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "W01",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Chính sách bảo hành cho dòng xe VinFast VF8 là bao nhiêu năm?",
+        "source_cited_doc_indexes": [
+          1,
+          3
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "W02",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Thời hạn bảo hành của pin cao áp trên dòng xe VinFast VF6 là bao lâu?",
+        "source_cited_doc_indexes": [
+          2,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "W04",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "reason": "source_model_scope_conflict",
+        "evidence_gate": true,
+        "conflicting_source_indexes": [
+          1
+        ],
+        "source_cited_doc_indexes": [],
+        "original_generation_answer": "Chưa xác định được điều kiện bảo hành cụ thể cho tất cả dòng xe VinFast từ các đoạn tài liệu được cung cấp. \n\nCác điều kiện bảo hành được xác định rõ ràng cho một số dòng xe như sau:\n- **VF 8**: Thời hạn bảo hành là 10 năm hoặc 200.000 km tùy điều kiện nào đến trước kể từ ngày bán lẻ tới khách hàng [Tài liệu 1].\n- **VF 5, VF 6**: Thời hạn bảo hành là 7 năm hoặc 160.000 km tùy điều kiện nào đến trước [Tài liệu 2].\n- **VF 6 (chi tiết)**: Thời hạn bảo hành xe mới là 7 năm kể từ Ngày Kích Hoạt Bảo Hành hoặc 160.000 km tùy điều kiện nào đến trước [Tài liệu 4].\n- **VF MPV 7**: Thời hạn bảo hành xe mới là 7 năm kể từ Ngày Kích Hoạt Bảo Hành hoặc 160.000 km tùy điều kiện nào đến trước [Tài liệu 5].\n\nCác dòng xe khác không được đề cập trong tài liệu cung cấp. Để biết chính xác điều kiện bảo hành cho dòng xe của bạn, vui lòng cung cấp tên dòng xe hoặc liên hệ trực tiếp với Xưởng Dịch vụ VinFast gần nhất."
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "W12",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "reason": "source_model_scope_conflict",
+        "evidence_gate": true,
+        "conflicting_source_indexes": [
+          2
+        ],
+        "source_cited_doc_indexes": [],
+        "original_generation_answer": "Xe VinFast từng sử dụng cho mục đích thương mại sau khi chuyển chủ sẽ tiếp tục áp dụng chính sách bảo hành thương mại tương ứng với dòng xe đó. Cụ thể:\n\n- **VF 3, VF 7, VF 8, VF 9, VF 8 The All New**: Thời hạn bảo hành thương mại là **3 năm hoặc 100.000 km, tùy điều kiện nào đến trước** [Tài liệu 1].\n- **VF e34**: Thời hạn bảo hành thương mại là **10 năm hoặc 200.000 km, tùy điều kiện nào đến trước** [Tài liệu 2].\n- **VF 8**: Thời hạn bảo hành thương mại (bao gồm hệ truyền động) là **5 năm hoặc 100.000 km, tùy điều kiện nào đến trước** [Tài liệu 5].\n\nChính sách bảo hành thương mại vẫn được duy trì kể cả khi xe không còn sử dụng cho mục đích thương mại sau chuyển nhượng [Tài liệu 1] [Tài liệu 3] [Tài liệu 4] [Tài liệu 5]."
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "W20",
+      "preprovider_gate": true,
+      "response_metadata": {
+        "reason": "vehicle_warranty_elapsed_limit",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "warranty_years": 7,
+        "warranty_km": "160.000",
+        "user_age_years": 7,
+        "vehicle_eligibility_verified": false
+      },
+      "raw_contract_pass": false,
+      "citation_structure": null,
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B01",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "VinFast khuyến cáo giới hạn nhiệt độ bảo quản tối ưu cho xe điện là bao nhiêu?",
+        "source_cited_doc_indexes": [
+          1,
+          3
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B11",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Quy trình cứu hộ pin cao áp cho xe điện VinFast hoạt động như thế nào?",
+        "source_cited_doc_indexes": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B16",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Xe VinFast VF e34 sạc đầy bằng chế độ sạc thường (sạc AC) mất bao lâu?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B20",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Công suất sạc tối đa (AC và DC) của xe VinFast VF7 là bao nhiêu?",
+        "source_cited_doc_indexes": [
+          1,
+          2
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "P01",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Bảng giá dịch vụ sạc pin tại nhà cho xe điện VinFast sử dụng bộ sạc 3 kW là bao nhiêu?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "P05",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Giá của tấm che pin cao áp chính hãng cho dòng xe VinFast VF5 là bao nhiêu?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "PR01",
+      "preprovider_gate": true,
+      "response_metadata": {
+        "reason": "app_booking_steps_missing",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": []
+      },
+      "raw_contract_pass": false,
+      "citation_structure": null,
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "PR03",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "reason": "post_service_followup_source_disagreement",
+        "evidence_gate": true,
+        "original_generation_answer": "- Bước 1: Đặt lịch bảo dưỡng\n  + Khách hàng có thể đặt lịch qua Ứng dụng VinFast: bấm **Đặt dịch vụ** → chọn loại dịch vụ → chọn địa điểm xưởng dịch vụ → chọn thời gian mong muốn → xác nhận đặt lịch [Tài liệu 2].\n  + Khách hàng mua xe mới sẽ được nhắc lịch bảo dưỡng trước 10 ngày so với lịch dự kiến [Tài liệu 1].\n  + Đặt lịch trước ít nhất 4 tiếng sẽ được tiếp nhận và xác nhận hẹn [Tài liệu 1].\n\n- Bước 2: Tiếp nhận tại xưởng\n  + Khách hàng được hướng dẫn đỗ xe, chào đón và ghi nhận yêu cầu ngay khi ra khỏi xe [Tài liệu 4].\n  + Khách hàng có hẹn được ưu tiên tiếp nhận [Tài liệu 4].\n  + Xe được phủ ghế, sàn, đặt mũ trạng thái trước mặt khách hàng [Tài liệu 4].\n\n- Bước 3: Kiểm tra, báo giá và xác nhận\n  + Nhân viên kiểm tra xe, cung cấp báo giá các hạng mục bảo dưỡng/sửa chữa (nếu có) và xin chữ ký xác nhận của khách hàng [Tài liệu 1] [Tài liệu 5].\n  + Khách hàng được thông báo về các hạng mục phát sinh (nếu có) [Tài liệu 4].\n\n- Bước 4: Thực hiện bảo dưỡng/sửa chữa\n  + Khách hàng được cập nhật tiến độ thực hiện trong suốt quá trình [Tài liệu 1] [Tài liệu 4].\n  + Trường hợp sửa chữa khó, chẩn đoán khó hoặc sửa chữa lớn, khách hàng được tư vấn, giải thích tại xe và lái thử (nếu cần) [Tài liệu 4].\n\n- Bước 5: Bàn giao xe\n  + Xe được rửa sạch trước khi giao (nếu khách hàng có nhu cầu) [Tài liệu 1] [Tài liệu 4].\n  + Khách hàng nhận xe tại khu vực được hướng dẫn [Tài liệu 1].\n  + Khách hàng nhận đầy đủ thông tin quyết toán và ký xác nhận [Tài liệu 4].\n\n- Bước 6: Chăm sóc sau bảo dưỡng\n  + Khách hàng được gọi điện ghi nhận phản hồi trong vòng 2–3 ngày sau khi bảo dưỡng [Tài liệu 1] [Tài liệu 4].\n  + Phản ánh, khiếu nại được phản hồi giải pháp trong 24 giờ [Tài liệu 4].",
+        "removed_followup_claims": [
+          "+ Khách hàng được gọi điện ghi nhận phản hồi trong vòng 2–3 ngày sau khi bảo dưỡng [Tài liệu 1] [Tài liệu 4]."
+        ],
+        "source_followup_rules": [
+          {
+            "original_index": 1,
+            "days": 2,
+            "sentence": "- Bước 5: Chăm sóc sau bảo dưỡng Khách hàng làm dịch vụ sẽ được nhân viên tư vấn gọi điện để ghi nhận phản hồi trong vòng 2 ngày sau khi bảo dưỡng xe."
+          },
+          {
+            "original_index": 4,
+            "days": 3,
+            "sentence": "Mọi Khách hàng làm dịch vụ sẽ được gọi điện để ghi nhận phản hồi/ ý kiến trong vòng 3 ngày sau khi xe ra xưởng."
+          }
+        ],
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Quy trình tiếp nhận xe bảo dưỡng định kỳ tại xưởng dịch vụ VinFast gồm những bước cụ thể nào?",
+        "source_cited_doc_indexes": [
+          1,
+          2,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "PR07",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Tôi muốn biết số điện thoại hotline của xưởng dịch vụ VinFast để liên hệ hỗ trợ.",
+        "source_cited_doc_indexes": [
+          1,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "PR10",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Sau khi nhận xe trở lại từ xưởng bảo dưỡng của VinFast, khách hàng cần kiểm tra những hạng mục gì?",
+        "source_cited_doc_indexes": [
+          1,
+          2,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "G01",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Xe VinFast sắp đến mốc bảo dưỡng định kỳ thì cần thực hiện những thủ tục gì?",
+        "source_cited_doc_indexes": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "G03",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ bảo dưỡng trước và đến đúng hẹn tại hệ thống chăm sóc sau bán hàng xe điện VinFast?",
+        "source_cited_doc_indexes": [
+          2
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "G05",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Lý do tại sao chu kỳ bảo dưỡng định kỳ của ô tô điện dài hơn so với ô tô sử dụng động cơ xăng?",
+        "source_cited_doc_indexes": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "M10",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Nguyên nhân khiến lịch bảo dưỡng định kỳ của ô tô điện VinFast dài hơn so với ô tô sử dụng động cơ xăng là gì?",
+        "source_cited_doc_indexes": [
+          1,
+          2,
+          3
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "M25",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Việc không thực hiện bảo dưỡng định kỳ có ảnh hưởng đến quyền lợi bảo hành của xe điện VinFast không?",
+        "source_cited_doc_indexes": [
+          2,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "W08",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Các trường hợp tai nạn hoặc va chạm có thuộc phạm vi loại trừ bảo hành theo chính sách bảo hành của VinFast không?",
+        "source_cited_doc_indexes": [
+          1,
+          3,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B05",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "VinFast khuyến cáo như thế nào về việc để xe ô tô điện VinFast ở nơi ngập lụt?",
+        "source_cited_doc_indexes": [
+          1,
+          2,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "P11",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Dịch vụ cứu hộ pin xe điện VinFast có mất phí không?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "PR11",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "mistralai/mistral-small-2603",
+        "rewritten_query": "Dịch vụ cứu hộ 24/7 của VinFast có phạm vi hoạt động trên toàn quốc không?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    }
+  ],
+  "pilot_gemma": [
+    {
+      "case_id": "M01",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Danh sách các hạng mục bảo dưỡng định kỳ tại mốc 15.000 km cho dòng xe VinFast VF8 gồm những hạng mục nào?",
+        "source_cited_doc_indexes": [
+          1,
+          2
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "M07",
+      "preprovider_gate": true,
+      "response_metadata": {
+        "reason": "coolant_source_value_unverified",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "literal_source_row": "Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên",
+        "source_rule_verified": false
+      },
+      "raw_contract_pass": false,
+      "citation_structure": null,
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "W02",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Thời hạn bảo hành của pin cao áp trên dòng xe VinFast VF6 là bao lâu?",
+        "source_cited_doc_indexes": [
+          2,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B11",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Quy trình cứu hộ pin cao áp cho xe điện VinFast hoạt động như thế nào?",
+        "source_cited_doc_indexes": [
+          2,
+          3,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B16",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Xe VinFast VF e34 sạc đầy bằng chế độ sạc thường (sạc AC) mất bao lâu?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "PR03",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "reason": "post_service_followup_source_disagreement",
+        "evidence_gate": true,
+        "original_generation_answer": "Quy trình bảo dưỡng xe VinFast bao gồm các bước sau:\n\n- Bước 1: Nhắc bảo dưỡng và đặt hẹn. Khách hàng đăng ký dịch vụ sẽ được nhắc lịch trước 10 ngày so với khuyến cáo của VinFast [Tài liệu 1]. Khách hàng đặt lịch trước ít nhất 4 tiếng sẽ được tiếp nhận và xác nhận hẹn [Tài liệu 1].\n- Bước 2: Tiếp nhận và tư vấn. VinFast tiếp nhận yêu cầu và hướng dẫn khách hàng đến xưởng dịch vụ [Tài liệu 1]. Tại xưởng, khách hàng được nhận biết và hướng dẫn đỗ xe ngay khi tới, sau đó được chào đón, ghi nhận yêu cầu hoặc hướng dẫn chờ tiếp nhận ngay khi ra khỏi xe [Tài liệu 4]. Sau khi kiểm tra xe, nhân viên sẽ báo giá các chi tiết bảo dưỡng, sửa chữa (nếu có) và xin chữ ký xác nhận của khách hàng [Tài liệu 1] [Tài liệu 4] [Tài liệu 5].\n- Bước 3: Sửa chữa. Khách hàng được hỗ trợ sửa chữa, bảo dưỡng xe theo yêu cầu (nếu có) và luôn được cập nhật tiến độ trong thời gian thực hiện dịch vụ [Tài liệu 1] [Tài liệu 4].\n- Bước 4: Bàn giao xe. Xe được rửa sạch trước khi giao (nếu khách hàng có nhu cầu) [Tài liệu 1] [Tài liệu 4]. Khách hàng nhận xe tại khu vực được hướng dẫn [Tài liệu 1].\n- Bước 5: Chăm sóc sau bảo dưỡng. Nhân viên tư vấn sẽ gọi điện để ghi nhận phản hồi trong vòng 2 ngày [Tài liệu 1] hoặc trong vòng 3 ngày sau khi xe ra xưởng [Tài liệu 4].",
+        "removed_followup_claims": [
+          "Nhân viên tư vấn sẽ gọi điện để ghi nhận phản hồi trong vòng 2 ngày [Tài liệu 1] hoặc trong vòng 3 ngày sau khi xe ra xưởng [Tài liệu 4]."
+        ],
+        "source_followup_rules": [
+          {
+            "original_index": 1,
+            "days": 2,
+            "sentence": "- Bước 5: Chăm sóc sau bảo dưỡng Khách hàng làm dịch vụ sẽ được nhân viên tư vấn gọi điện để ghi nhận phản hồi trong vòng 2 ngày sau khi bảo dưỡng xe."
+          },
+          {
+            "original_index": 4,
+            "days": 3,
+            "sentence": "Mọi Khách hàng làm dịch vụ sẽ được gọi điện để ghi nhận phản hồi/ ý kiến trong vòng 3 ngày sau khi xe ra xưởng."
+          }
+        ],
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Quy trình tiếp nhận xe bảo dưỡng định kỳ tại xưởng dịch vụ VinFast gồm những bước cụ thể nào?",
+        "source_cited_doc_indexes": [
+          1,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    }
+  ],
+  "full_gemma": [
+    {
+      "case_id": "M01",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Danh sách các hạng mục bảo dưỡng định kỳ tại mốc 15.000 km cho dòng xe VinFast VF8 gồm những hạng mục nào?",
+        "source_cited_doc_indexes": [
+          1,
+          2
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "M02",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Xác định chu kỳ thay thế pin chìa khóa điều khiển (remote key fob) cho dòng xe VinFast VF e34.",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "M03",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của các dòng xe điện VinFast là bao lâu theo quy định?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "M07",
+      "preprovider_gate": true,
+      "response_metadata": {
+        "reason": "coolant_source_value_unverified",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "literal_source_row": "Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên",
+        "source_rule_verified": false
+      },
+      "raw_contract_pass": false,
+      "citation_structure": null,
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "M18",
+      "preprovider_gate": true,
+      "response_metadata": {
+        "reason": "maintenance_component_actions_missing",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "literal_component_labels": [
+          "Pin",
+          "Dây cáp của hệ thống điện áp cao",
+          "Cổng sạc"
+        ],
+        "source_rule_verified": false
+      },
+      "raw_contract_pass": false,
+      "citation_structure": null,
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "M23",
+      "preprovider_gate": true,
+      "response_metadata": {
+        "reason": "maintenance_period_mapping_missing",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "requested_milestone_km": 40000,
+        "source_rule_verified": false
+      },
+      "raw_contract_pass": false,
+      "citation_structure": null,
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "W01",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Chính sách bảo hành cho dòng xe VinFast VF8 là bao nhiêu năm?",
+        "source_cited_doc_indexes": [
+          1,
+          3
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "W02",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Thời hạn bảo hành của pin cao áp trên dòng xe VinFast VF6 là bao lâu?",
+        "source_cited_doc_indexes": [
+          2,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "W04",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "reason": "source_model_scope_conflict",
+        "evidence_gate": true,
+        "conflicting_source_indexes": [
+          1
+        ],
+        "source_cited_doc_indexes": [],
+        "original_generation_answer": "Các đoạn tài liệu được cung cấp chưa xác định cụ thể các \"điều kiện\" (như điều kiện về tình trạng xe, lỗi kỹ thuật, hay các quy định loại trừ) để được hưởng bảo hành. Tài liệu chỉ cung cấp thông tin về thời hạn bảo hành cho các dòng xe và bộ phận khác nhau:\n\n* **Thời hạn bảo hành chung cho xe:**\n    * Các dòng xe ô tô VinFast (bao gồm xe xăng và xe điện): 10 năm hoặc 200.000 km, tùy điều kiện nào đến trước [Tài liệu 2]. Riêng dòng VF 8 có thời hạn 10 năm hoặc 200.000 km [Tài liệu 1].\n    * Dòng VF 5, VF 6 và VF MPV 7: 7 năm hoặc 160.000 km, tùy điều kiện nào đến trước [Tài liệu 2] [Tài liệu 4] [Tài liệu 5].\n* **Bảo hành các bộ phận giới hạn:**\n    * **Pin (mua kèm xe mới):** Có thời hạn 10 năm không giới hạn quãng đường đối với một số trường hợp [Tài liệu 1]; hoặc 8 năm hoặc 160.000 km tùy điều kiện nào đến trước đối với dòng VF 6 và VF MPV 7 [Tài liệu 4] [Tài liệu 5].\n    * **Ắc quy 12V:** 1 năm kể từ Ngày Kích Hoạt Bảo Hành, không giới hạn quãng đường [Tài liệu 4] [Tài liệu 5].\n    * **Gỉ sét:** 7 năm kể từ Ngày Kích Hoạt Bảo Hành, không giới hạn quãng đường [Tài liệu 4] [Tài liệu 5].\n    * **Sơn ngoại thất:** 7 năm kể từ Ngày Kích Hoạt Bảo Hành, không giới hạn số km [Tài liệu 4] [Tài liệu 5].\n    * **Phụ tùng xe điện (không bao gồm ắc quy 12V và pin cao áp):** 2 năm hoặc 40.000 km kể từ ngày mua, tùy điều kiện nào đến trước [Tài liệu 3].\n* **Lưu ý về việc từ chối bảo hành:** Đối với vấn đề ăn mòn, việc không tuân thủ các hướng dẫn bảo vệ xe (như rửa gầm xe thường xuyên khi đi đường có muối, giữ thông thoáng lỗ thoát nước, xử lý vết xước/vết đá văng ngay lập tức...) có thể dẫn đến việc xe bị từ chối bảo hành [Tài liệu 4] [Tài liệu 5].\n\nĐể biết chính xác các điều kiện kỹ thuật và quy định cụ thể, quý khách nên tham khảo Sổ bảo hành hoặc liên hệ xưởng dịch vụ VinFast."
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "W12",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "reason": "source_model_scope_conflict",
+        "evidence_gate": true,
+        "conflicting_source_indexes": [
+          2
+        ],
+        "source_cited_doc_indexes": [],
+        "original_generation_answer": "Đối với xe VinFast từng được sử dụng cho mục đích thương mại (như taxi, Grab, Be, cho thuê, xe đưa đón, giao hàng hoặc hoạt động vận tải tương tự), chính sách bảo hành sẽ tiếp tục được duy trì và áp dụng cho chủ sở hữu tiếp theo sau khi chuyển nhượng [Tài liệu 1] [Tài liệu 2] [Tài liệu 3] [Tài liệu 4] [Tài liệu 5]. Cụ thể:\n* Đối với các dòng xe VF 3, VF 7, VF 8, VF 9 và VF 8 The All New: áp dụng thời hạn bảo hành thương mại là 3 năm hoặc 100.000 km, tùy điều kiện nào đến trước [Tài liệu 1]. Tuy nhiên, riêng đối với VF 8, thời hạn bảo hành xe được sử dụng cho mục đích thương mại là 5 năm hoặc 100.000 km, tùy điều kiện nào đến trước [Tài liệu 5].\n* Đối với pin: Nếu xe đã từng được sử dụng cho mục đích thương mại, chính sách bảo hành pin áp dụng cho xe sử dụng cho mục đích thương mại sẽ tiếp tục được duy trì và áp dụng cho chủ sở hữu mới [Tài liệu 5]. Thời hạn bảo hành pin cho xe thương mại là 10 năm hoặc 200.000 km, tùy điều kiện nào đến trước [Tài liệu 2] [Tài liệu 5]."
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "W20",
+      "preprovider_gate": true,
+      "response_metadata": {
+        "reason": "vehicle_warranty_elapsed_limit",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "warranty_years": 7,
+        "warranty_km": "160.000",
+        "user_age_years": 7,
+        "vehicle_eligibility_verified": false
+      },
+      "raw_contract_pass": false,
+      "citation_structure": null,
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B01",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "VinFast khuyến cáo giới hạn nhiệt độ bảo quản tối ưu cho xe điện là bao nhiêu?",
+        "source_cited_doc_indexes": [
+          1,
+          3
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B11",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Quy trình cứu hộ pin cao áp cho xe điện VinFast hoạt động như thế nào?",
+        "source_cited_doc_indexes": [
+          2,
+          3,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B16",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Xe VinFast VF e34 sạc đầy bằng chế độ sạc thường (sạc AC) mất bao lâu?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B20",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Công suất sạc tối đa (AC và DC) của xe VinFast VF7 là bao nhiêu?",
+        "source_cited_doc_indexes": [
+          1,
+          2
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "P01",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Bảng giá dịch vụ sạc pin tại nhà cho xe điện VinFast sử dụng bộ sạc 3 kW là bao nhiêu?",
+        "source_cited_doc_indexes": []
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "P05",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Giá của tấm che pin cao áp chính hãng cho dòng xe VinFast VF5 là bao nhiêu?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "PR01",
+      "preprovider_gate": true,
+      "response_metadata": {
+        "reason": "app_booking_steps_missing",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": []
+      },
+      "raw_contract_pass": false,
+      "citation_structure": null,
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "PR03",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "reason": "post_service_followup_source_disagreement",
+        "evidence_gate": true,
+        "original_generation_answer": "Quy trình bảo dưỡng xe VinFast bao gồm các bước sau:\n- Bước 1: Nhắc bảo dưỡng và đặt hẹn: Khách hàng được nhắc lịch trước 10 ngày so với khuyến cáo [Tài liệu 1]. Khách hàng đặt lịch trước ít nhất 4 tiếng sẽ được tiếp nhận và xác nhận hẹn [Tài liệu 1].\n- Bước 2: Tiếp nhận và tư vấn: Khách hàng được nhận biết và hướng dẫn đỗ xe ngay khi tới xưởng, được chào đón và ghi nhận yêu cầu [Tài liệu 4]. Nhân viên tiếp nhận yêu cầu, hướng dẫn khách hàng đến xưởng dịch vụ, sau khi kiểm tra xe sẽ báo giá các chi tiết bảo dưỡng, sửa chữa (nếu có) và xin chữ ký xác nhận của khách hàng [Tài liệu 1] [Tài liệu 4] [Tài liệu 5].\n- Bước 3: Sửa chữa: Khách hàng được hỗ trợ sửa chữa, bảo dưỡng theo yêu cầu và luôn được cập nhật tiến độ trong thời gian thực hiện dịch vụ [Tài liệu 1] [Tài liệu 4].\n- Bước 4: Bàn giao xe: Xe được rửa sạch trước khi giao (nếu khách hàng có nhu cầu) và khách hàng nhận xe tại khu vực được hướng dẫn [Tài liệu 1].\n- Bước 5: Chăm sóc sau bảo dưỡng: Nhân viên tư vấn gọi điện để ghi nhận phản hồi trong vòng 2 ngày sau khi bảo dưỡng xe [Tài liệu 1]. (Lưu ý: Một tài liệu khác nêu thời gian ghi nhận phản hồi là trong vòng 3 ngày sau khi xe ra xưởng [Tài liệu 4]).",
+        "removed_followup_claims": [
+          "- Bước 5: Chăm sóc sau bảo dưỡng: Nhân viên tư vấn gọi điện để ghi nhận phản hồi trong vòng 2 ngày sau khi bảo dưỡng xe [Tài liệu 1]."
+        ],
+        "source_followup_rules": [
+          {
+            "original_index": 1,
+            "days": 2,
+            "sentence": "- Bước 5: Chăm sóc sau bảo dưỡng Khách hàng làm dịch vụ sẽ được nhân viên tư vấn gọi điện để ghi nhận phản hồi trong vòng 2 ngày sau khi bảo dưỡng xe."
+          },
+          {
+            "original_index": 4,
+            "days": 3,
+            "sentence": "Mọi Khách hàng làm dịch vụ sẽ được gọi điện để ghi nhận phản hồi/ ý kiến trong vòng 3 ngày sau khi xe ra xưởng."
+          }
+        ],
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Quy trình tiếp nhận xe bảo dưỡng định kỳ tại xưởng dịch vụ VinFast gồm những bước cụ thể nào?",
+        "source_cited_doc_indexes": [
+          1,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": false,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "PR07",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Tôi muốn biết số điện thoại hotline của xưởng dịch vụ VinFast để liên hệ hỗ trợ.",
+        "source_cited_doc_indexes": [
+          1,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "PR10",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Sau khi nhận xe trở lại từ xưởng bảo dưỡng của VinFast, khách hàng cần kiểm tra những hạng mục gì?",
+        "source_cited_doc_indexes": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "G01",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Xe VinFast sắp đến mốc bảo dưỡng định kỳ thì cần thực hiện những thủ tục gì?",
+        "source_cited_doc_indexes": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "G03",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ bảo dưỡng trước và đến đúng hẹn tại hệ thống chăm sóc sau bán hàng xe điện VinFast?",
+        "source_cited_doc_indexes": [
+          2
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "G05",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Lý do tại sao chu kỳ bảo dưỡng định kỳ của ô tô điện dài hơn so với ô tô sử dụng động cơ xăng?",
+        "source_cited_doc_indexes": [
+          1,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": true,
+      "error": null
+    },
+    {
+      "case_id": "M10",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Nguyên nhân khiến lịch bảo dưỡng định kỳ của ô tô điện VinFast dài hơn so với ô tô sử dụng động cơ xăng là gì?",
+        "source_cited_doc_indexes": [
+          2,
+          3
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "M25",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Việc không thực hiện bảo dưỡng định kỳ có ảnh hưởng đến quyền lợi bảo hành của xe điện VinFast không?",
+        "source_cited_doc_indexes": [
+          2,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "W08",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Các trường hợp tai nạn hoặc va chạm có thuộc phạm vi loại trừ bảo hành theo chính sách bảo hành của VinFast không?",
+        "source_cited_doc_indexes": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "B05",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "VinFast khuyến cáo như thế nào về việc để xe ô tô điện VinFast ở nơi ngập lụt?",
+        "source_cited_doc_indexes": [
+          1,
+          2,
+          4
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "P11",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Dịch vụ cứu hộ pin xe điện VinFast có mất phí không?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    },
+    {
+      "case_id": "PR11",
+      "preprovider_gate": false,
+      "response_metadata": {
+        "model": "google/gemma-4-26b-a4b-it",
+        "rewritten_query": "Dịch vụ cứu hộ 24/7 của VinFast có phạm vi hoạt động trên toàn quốc không?",
+        "source_cited_doc_indexes": [
+          1
+        ]
+      },
+      "raw_contract_pass": true,
+      "citation_structure": {
+        "out_of_range_indexes": [],
+        "declared_and_answer_tags_match": true,
+        "scope": "STRUCTURAL_ONLY_NOT_CLAIM_SUPPORT"
+      },
+      "runtime_fallback_required": false,
+      "error": null
+    }
+  ]
+}

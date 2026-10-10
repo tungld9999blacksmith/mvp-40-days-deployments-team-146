@@ -78,9 +78,9 @@ def classify_by_rules(rating: int, comment: str | None, *, by: ClassifiedBy) -> 
 
 
 def apply_policy(result: Classification, rating: int) -> Classification:
-    """BR-906 on top of an LLM answer: ≤ 2 stars or low confidence ⇒ an issue."""
+    """BR-906 on top of an LLM answer: ≤ 2 stars, low confidence or a safety sign ⇒ an issue."""
     low = result.confidence is not None and result.confidence < LOW_CONFIDENCE
-    if (rating <= 2 or low) and not result.has_issue:
+    if (rating <= 2 or low or result.safety) and not result.has_issue:
         return Classification(
             result.intent, True, result.safety, result.classified_by, result.confidence, result.summary
         )

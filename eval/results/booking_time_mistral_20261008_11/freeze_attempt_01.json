@@ -1,0 +1,6 @@
+{
+  "status": "FAILED_BEFORE_LIVE",
+  "reason": "The helper compared a slash path literal against Windows backslash paths; only prompts.py had changed.",
+  "source_revision_written": false,
+  "correction": "Use the platform Path representation in the assertion; no dataset or runtime gate change."
+}

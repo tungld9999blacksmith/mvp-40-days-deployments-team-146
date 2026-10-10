@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Literal
 from urllib.parse import quote_plus
 
-from pydantic import AliasChoices, Field, model_validator
+from pydantic import AliasChoices, Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Single env file for the whole repo (backend, frontend, docker compose).
@@ -41,8 +41,30 @@ class Settings(BaseSettings):
 
     # LLM providers (standardized interface, see infrastructure/llm/)
     llm_provider: Literal["openai", "anthropic", "gemini", "grok", "deepseek", "openrouter"] = "openai"
+    # Empty stage overrides inherit the default provider/model for compatibility.
+    llm_orchestrator_provider: Literal["", "openai", "gemini", "openrouter"] = ""
+    llm_orchestrator_model: str = ""
+    llm_rewrite_provider: Literal["", "openai", "gemini", "openrouter"] = ""
+    llm_rewrite_model: str = ""
+    llm_rag_provider: Literal["", "openai", "gemini", "openrouter"] = ""
+    llm_rag_model: str = ""
+    llm_booking_provider: Literal["", "openai", "gemini", "openrouter"] = ""
+    llm_booking_model: str = ""
+    llm_booking_check_enabled: bool = False
+    llm_fallback_provider: Literal["", "gemini"] = ""
     openrouter_api_key: str = ""
     openrouter_model: str = "google/gemini-3.5-flash-lite"
+    # Optional role overrides; an unset/blank role keeps OPENROUTER_MODEL.
+    openrouter_agent_model: str | None = None
+    openrouter_rewrite_model: str | None = None
+    openrouter_rag_model: str | None = None
+    openrouter_write_model: str | None = None
+    # Optional comma-separated provider endpoint preferences. Stage overrides
+    # keep Mistral routing separate from a future write model's routing.
+    openrouter_endpoint_order: str = ""
+    openrouter_agent_endpoint_order: str = ""
+    openrouter_rewrite_endpoint_order: str = ""
+    openrouter_rag_endpoint_order: str = ""
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
     openrouter_max_tokens: int = Field(default=1024, ge=1)
     anthropic_api_key: str = ""
@@ -58,6 +80,23 @@ class Settings(BaseSettings):
     deepseek_api_key: str = ""
     deepseek_model: str = "deepseek-chat"
     deepseek_base_url: str = "https://api.deepseek.com"
+
+    @field_validator("openrouter_agent_model", "openrouter_rewrite_model", "openrouter_rag_model", "openrouter_write_model", mode="before")
+    @classmethod
+    def normalize_stage_model(cls, value):
+        if isinstance(value, str):
+            return value.strip() or None
+        return value
+
+    def openrouter_model_for_stage(self, stage: Literal["agent", "rewrite", "rag", "write"]) -> str:
+        if stage not in {"agent", "rewrite", "rag", "write"}:
+            raise ValueError(f"Unknown LLM stage: {stage}")
+        return getattr(self, "openrouter_" + stage + "_model") or self.openrouter_model
+
+    def openrouter_endpoints_for_stage(self, stage: Literal["agent", "rewrite", "rag", "write"]) -> tuple[str, ...]:
+        self.openrouter_model_for_stage(stage)  # Validate the stage name.
+        value = getattr(self, "openrouter_" + stage + "_endpoint_order", "") or self.openrouter_endpoint_order
+        return tuple(part.strip() for part in value.split(",") if part.strip())
 
     # Database
     database_url: str | None = None
@@ -96,7 +135,7 @@ class Settings(BaseSettings):
     # Maintenance due status (FEAT-VEH-001 BR-002, BR-006, BR-009)
     due_soon_km: int = Field(default=500, ge=0)
     due_soon_days: int = Field(default=14, ge=0)
-    maintenance_recurring_km: int = Field(default=12_000, ge=1)
+    maintenance_recurring_km: int = Field(default=15_000, ge=1)  # VinFast EV: every 15,000 km / 1 year since 2026-01-01
     maintenance_recurring_months: int = Field(default=12, ge=1)
     odo_stale_days: int = Field(default=30, ge=1)
 
@@ -105,6 +144,27 @@ class Settings(BaseSettings):
     reminder_job_hour: int = Field(default=8, ge=0, le=23)
     reminder_max_attempts: int = Field(default=3, ge=1)
     frontend_url: str = ""
+    # Main email is explicit; DEMO_EMAIL_MODE never enables sends on main.
+    email_mode: Literal["mock", "resend", "off"] = "mock"
+    email_from: str = ""
+    email_app_url: str = "http://localhost:5173"
+    resend_api_key: str = ""
+    resend_webhook_secret: str = ""
+    email_payload_retention_days: int = Field(default=30, ge=2)
+    # Prevent real-email mode from using emulator identities or a demo clock.
+    firebase_auth_emulator_host: str = ""
+    demo_now: str = ""
+    agent_checkpoint_mode: Literal["auto", "memory", "postgres"] = "auto"
+
+    # SMS channel (us-021 BR-506) through eSMS.vn: offered to owners only once
+    # ESMS_API_KEY, ESMS_SECRET_KEY and ESMS_BRANDNAME are filled in.
+    esms_api_key: str = ""
+    esms_secret_key: str = ""
+    esms_brandname: str = ""
+    esms_sms_type: str = "2"  # 2 = customer care (CSKH) brandname
+    esms_unicode: bool = False  # False: diacritics are stripped (cheaper, 160 chars/segment)
+    esms_sandbox: bool = False  # True: eSMS accepts the request but sends nothing
+    esms_timeout_seconds: float = Field(default=10.0, gt=0)
 
     # Booking by capacity & location (FEAT-BOOK-001, docs/specs/sprint-3/**/us-029*)
     slot_minutes: int = Field(default=60, ge=1)  # PQ-03
@@ -143,11 +203,25 @@ class Settings(BaseSettings):
     no_show_grace_minutes: int = Field(default=30, ge=0)  # BR-806
     slot_block_max_days_ahead: int = Field(default=30, ge=0)  # BR-809
 
+    # Quotes with workshop approval (docs/specs/sprint-3/**/us-049*)
+    quote_default_validity_days: int = Field(default=7, ge=1)
+    quote_max_validity_days: int = Field(default=30, ge=1)
+    quote_draft_refresh_hours: int = Field(default=24, ge=1)  # Q-1104
+    quote_draft_ttl_days: int = Field(default=7, ge=1)  # BR-1112 — purge job
+    # docs/designs/bao-gia-hai-tang.md — pricing flow of NEW bookings; each booking keeps
+    # the flow it was created with (booking.pricing_flow), so switching back is safe.
+    quote_flow: Literal["legacy", "two_tier"] = "legacy"
+    # Private bucket for photos of extra items (D16); signed URLs only.
+    booking_line_photo_bucket: str = "booking-line-photos"
+    booking_line_photo_url_ttl_seconds: int = Field(default=600, ge=60)
+
     # Post-service follow-up (docs/specs/sprint-4/**/us-041*)
     follow_up_delay_hours: int = Field(default=12, ge=0)  # BR-902
     follow_up_response_window_hours: int = Field(default=72, ge=1)  # BR-905
     follow_up_quiet_start_hour: int = Field(default=21, ge=0, le=23)
     follow_up_quiet_end_hour: int = Field(default=8, ge=0, le=23)
+    # AI-007 TOOL-702 — classify answers with `llm_provider`; off ⇒ keyword/rating rules only.
+    follow_up_llm_classifier_enabled: bool = False
 
     # Detailed service progress (docs/specs/sprint-4/**/us-057*)
     feature_service_progress_enabled: bool = True
@@ -203,13 +277,15 @@ class Settings(BaseSettings):
         )
 
     # Embedding engine (infrastructure/embedding — standardized multi-provider interface)
-    embedding_provider: Literal["openai", "gemini", "huggingface", "local"] = "openai"
+    embedding_provider: Literal["openai", "openrouter", "gemini", "huggingface", "local"] = "gemini"
     # Vector dimension every store/table is built for. MUST match the chosen
     # embedding model's output size (see infrastructure/embedding/base.py).
-    embedding_dimensions: int = Field(default=1024, ge=1)
+    embedding_dimensions: int = Field(default=3072, ge=1)
     embedding_batch_size: int = Field(default=128, ge=1)
     embedding_openai_model: str = "text-embedding-3-small"
     embedding_gemini_model: str = "gemini-embedding-001"
+    # OpenRouter /embeddings (OPENROUTER_API_KEY + OPENROUTER_BASE_URL); same model as Gemini by default.
+    embedding_openrouter_model: str = "google/gemini-embedding-001"
     huggingface_api_key: str = ""
     embedding_huggingface_model: str = "BAAI/bge-m3"
     # Local sentence-transformers model id (requires the optional dependency).
@@ -220,6 +296,10 @@ class Settings(BaseSettings):
     chat_rate_limit_per_minute: int = Field(default=10, ge=1)
     chat_rate_limit_per_day: int = Field(default=200, ge=1)
     chat_run_timeout_seconds: int = Field(default=30, ge=1)
+    # How long a stopped turn may take to clean up before its run lock is released anyway.
+    chat_run_cleanup_timeout_seconds: float = Field(default=15, gt=0)
+    # Per LLM request; keep well below the turn timeout so a fallback still fits.
+    llm_call_timeout_seconds: int = Field(default=10, ge=1)
     chat_run_lock_ttl_seconds: int = Field(default=60, ge=1)
     chat_history_page_size: int = Field(default=50, ge=1, le=100)
     chat_excerpt_max_messages: int = Field(default=20, ge=1)
@@ -251,7 +331,7 @@ class Settings(BaseSettings):
         default="",
         validation_alias=AliasChoices("qdrant_api_key", "QDRANT_API_KEY"),
     )
-    qdrant_collection_name: str = "ev_care_knowledge_base"
+    qdrant_collection_name: str = "ev_care_knowledge_base_3072"
     qdrant_prefer_grpc: bool = False
 
     # Redis (cache, locks, pub/sub, queue, ... — see infrastructure/redis/)

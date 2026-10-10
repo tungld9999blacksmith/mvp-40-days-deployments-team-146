@@ -1,0 +1,6 @@
+{
+  "error": "SQLite workshop helper omits hotline/onboarded_at required by migrated PostgreSQL ck_workshop_owner_fields",
+  "resolution": "Populate required fields on the new fixture before insertion; no constraint/runtime change",
+  "llm_calls": 0,
+  "old_results_changed": false
+}

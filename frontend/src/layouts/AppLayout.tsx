@@ -16,7 +16,7 @@ export interface NavItem {
   end?: boolean
   /** Not built yet: shown greyed with "Sắp có". */
   disabled?: boolean
-  /** Count shown as a pill (e.g. unread notifications); hidden when 0. */
+  /** Count shown as a pill (e.g. new quote results, unread notifications); hidden when 0. */
   badge?: number
 }
 

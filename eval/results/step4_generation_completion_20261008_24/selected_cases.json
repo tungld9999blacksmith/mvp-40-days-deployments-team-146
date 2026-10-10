@@ -1,0 +1,212 @@
+[
+  {
+    "id": "M01",
+    "query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "M02",
+    "query": "Pin chìa khóa điều khiển VF e34 thay theo chu kỳ nào?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "M03",
+    "query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "M07",
+    "query": "Nước làm mát pin và động cơ điện VF e34 cần thay hay kiểm tra định kỳ?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": "coolant_source_value_unverified",
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "M18",
+    "query": "Trong bảo dưỡng VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": "maintenance_component_actions_missing",
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "M23",
+    "query": "Xe VF e34 đến 40.000 km cần thay những phụ tùng gì?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": "maintenance_period_mapping_missing",
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "W01",
+    "query": "Chính sách bảo hành xe VF8 là bao nhiêu năm?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "W02",
+    "query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "W04",
+    "query": "Điều kiện để xe VinFast được bảo hành là gì?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "W12",
+    "query": "Xe VinFast từng dùng thương mại sau khi chuyển chủ áp dụng bảo hành nào?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "W20",
+    "query": "Xe VF3 dùng 7 năm vẫn còn trong bảo hành không?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": "vehicle_warranty_elapsed_limit",
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "B01",
+    "query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "B11",
+    "query": "Cứu hộ pin xe điện VinFast hoạt động như thế nào?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "B16",
+    "query": "Xe VF e34 sạc đầy bằng chế độ sạc thường mất bao lâu?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "B20",
+    "query": "Công suất sạc AC và DC tối đa của VinFast VF7 là bao nhiêu?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "P01",
+    "query": "Sạc tại nhà VinFast 3 kW có giá bao nhiêu?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "P05",
+    "query": "Tấm che pin cao áp VF5 chính hãng giá bao nhiêu?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "PR01",
+    "query": "Đặt lịch bảo dưỡng xe VinFast qua app như thế nào?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": "app_booking_steps_missing",
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "PR03",
+    "query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast như thế nào?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "PR07",
+    "query": "Xưởng dịch vụ VinFast có hotline nào để liên hệ?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "PR10",
+    "query": "Nhận xe lại sau bảo dưỡng tại xưởng VinFast cần kiểm tra gì không?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "G01",
+    "query": "Xe tôi sắp đến mốc bảo dưỡng rồi phải làm gì?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "G03",
+    "query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ trước và đến đúng hẹn?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "G05",
+    "query": "Vì sao lịch bảo dưỡng ô tô điện dài hơn xe xăng?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "M10",
+    "query": "Vì sao lịch bảo dưỡng ô tô điện VinFast dài hơn xe xăng?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "M25",
+    "query": "Không bảo dưỡng định kỳ có ảnh hưởng đến bảo hành không?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "W08",
+    "query": "Tai nạn hoặc va chạm có thuộc trường hợp loại trừ bảo hành VinFast không?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "B05",
+    "query": "VinFast khuyến cáo thế nào về việc để ô tô điện ở nơi ngập lụt?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "P11",
+    "query": "Dịch vụ cứu hộ pin xe điện VinFast có mất tiền không?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  },
+  {
+    "id": "PR11",
+    "query": "Cứu hộ 24/7 xe VinFast có phạm vi toàn quốc không?",
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "expected_preprovider_gate": null,
+    "golden_labels": "UNREVIEWED_DRAFT"
+  }
+]

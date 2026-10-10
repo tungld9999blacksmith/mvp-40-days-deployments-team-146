@@ -129,27 +129,10 @@ class OpenAIEmbeddingProvider(BaseEmbeddingProvider):
 
 
 def get_embedding_provider(preference: str = "auto") -> BaseEmbeddingProvider:
-    """Tự động lựa chọn provider phù hợp cho Qdrant:
-    1. Ưu tiên Gemini nếu có GOOGLE_API_KEY / GEMINI_API_KEY (3072 dims)
-    2. Kế tiếp là OpenAI nếu có OPENAI_API_KEY (1536 dims)
+    """Use the same explicit provider/model/dimensions as ingestion and shared stores.
+
+    The legacy provider classes remain for standalone callers. Main never switches
+    to a different embedding model when the configured provider fails.
     """
-    google_key = (os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY") or "").strip()
-    has_valid_google = bool(google_key and not google_key.startswith("your_"))
-
-    openai_key = os.getenv("OPENAI_API_KEY", "").strip()
-    has_valid_openai = bool(openai_key and not openai_key.startswith("sk-your"))
-
-    if preference == "gemini" or (preference == "auto" and has_valid_google):
-        try:
-            return GeminiEmbeddingProvider(api_key=google_key)
-        except Exception as e:
-            logger.warning(f"Không thể khởi tạo GeminiEmbeddingProvider: {e}. Thử provider khác...")
-
-    if preference == "openai" or (preference == "auto" and has_valid_openai):
-        try:
-            return OpenAIEmbeddingProvider(api_key=openai_key)
-        except Exception as e:
-            logger.warning(f"Không thể khởi tạo OpenAIEmbeddingProvider: {e}.")
-
-    # Mặc định vẫn cố khởi tạo Gemini
-    return GeminiEmbeddingProvider()
+    from src.infrastructure.embedding.dependency import get_embedding_engine, get_embedding_engine_by_name
+    return get_embedding_engine() if preference == "auto" else get_embedding_engine_by_name(preference)

@@ -1,0 +1,137 @@
+[
+  {
+    "model": "gpt4o",
+    "case_id": "BOOK-05",
+    "user": "Kiểm tra bảo dưỡng, xem slot 2026-10-10 tại xưởng 98d1f2bb-4449-445d-aa63-236aa0da146f, rồi tạo thẻ đề xuất 14:00 để tôi bấm xác nhận.",
+    "answer": "",
+    "error": "OpenAIRateLimitError: Error code: 429 - {'error': {'message': 'Rate limit exceeded: new-account-rpm/openai/gpt-4o. Rate limit reached: new accounts are limited to 20 requests per minute for this model. Please retry shortly.', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '20', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1791450780000'}, 'limit_source': 'openrouter_new_account', 'remedy_hint': 'New accounts are temporarily limited for this model. Please retry shortly.', 'provider_name': None, 'previous_errors': [{'code': 429, 'message': 'Rate limit exceeded: new-account-rpm/openai/gpt-4o. Rate limit reached: new accounts are limited to 20 requests per minute for this model. Please retry shortly.'}]}}, 'user_id': 'user_3KHEzOIYwli5LjZY9tYfSINVUFH'}",
+    "metrics": {
+      "task_passed": false,
+      "required_tools_missing": [
+        "propose_booking"
+      ],
+      "required_tool_coverage": 0.6666666666666666,
+      "dependency_errors": [],
+      "argument_errors": [],
+      "raw_argument_errors": [],
+      "safety_violations": [],
+      "answer_errors": [
+        "Missing BOOKING_PROPOSAL artifact",
+        "Empty final answer",
+        "Provider/runtime error or truncated answer"
+      ],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0,
+      "semantic_correctness": "NOT_MEASURED",
+      "scorer_version": "2.2"
+    }
+  },
+  {
+    "model": "gpt4o",
+    "case_id": "BOOK-15",
+    "user": "Tìm một xưởng ở Hà Nội.",
+    "answer": "",
+    "error": "OpenAIRateLimitError: Error code: 429 - {'error': {'message': 'Rate limit exceeded: new-account-rpm/openai/gpt-4o. Rate limit reached: new accounts are limited to 20 requests per minute for this model. Please retry shortly.', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '20', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1791450780000'}, 'limit_source': 'openrouter_new_account', 'remedy_hint': 'New accounts are temporarily limited for this model. Please retry shortly.', 'provider_name': None, 'previous_errors': [{'code': 429, 'message': 'Rate limit exceeded: new-account-rpm/openai/gpt-4o. Rate limit reached: new accounts are limited to 20 requests per minute for this model. Please retry shortly.'}]}}, 'user_id': 'user_3KHEzOIYwli5LjZY9tYfSINVUFH'}",
+    "metrics": {
+      "task_passed": false,
+      "required_tools_missing": [
+        "find_workshops"
+      ],
+      "required_tool_coverage": 0.0,
+      "dependency_errors": [],
+      "argument_errors": [],
+      "raw_argument_errors": [],
+      "safety_violations": [],
+      "answer_errors": [
+        "Empty final answer",
+        "Provider/runtime error or truncated answer"
+      ],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0,
+      "semantic_correctness": "NOT_MEASURED",
+      "scorer_version": "2.2"
+    }
+  },
+  {
+    "model": "gpt4o",
+    "case_id": "COST-11",
+    "user": "Dự toán bảo dưỡng xưởng c5fca253-6316-4415-974d-c83f0f047573, nếu hệ thống lỗi thì đừng đoán giá.",
+    "answer": "",
+    "error": "OpenAIRateLimitError: Error code: 429 - {'error': {'message': 'Rate limit exceeded: new-account-rpm/openai/gpt-4o. Rate limit reached: new accounts are limited to 20 requests per minute for this model. Please retry shortly.', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '20', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1791450840000'}, 'limit_source': 'openrouter_new_account', 'remedy_hint': 'New accounts are temporarily limited for this model. Please retry shortly.', 'provider_name': None, 'previous_errors': [{'code': 429, 'message': 'Rate limit exceeded: new-account-rpm/openai/gpt-4o. Rate limit reached: new accounts are limited to 20 requests per minute for this model. Please retry shortly.'}]}}, 'user_id': 'user_3KHEzOIYwli5LjZY9tYfSINVUFH'}",
+    "metrics": {
+      "task_passed": false,
+      "required_tools_missing": [
+        "get_due_maintenance",
+        "estimate_service_cost"
+      ],
+      "required_tool_coverage": 0.0,
+      "dependency_errors": [],
+      "argument_errors": [],
+      "raw_argument_errors": [],
+      "safety_violations": [],
+      "answer_errors": [
+        "Empty final answer",
+        "Provider/runtime error or truncated answer"
+      ],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0,
+      "semantic_correctness": "NOT_MEASURED",
+      "scorer_version": "2.2"
+    }
+  },
+  {
+    "model": "gpt4o",
+    "case_id": "REMINDER-03",
+    "user": "Bật email nhắc bảo dưỡng cho tôi.",
+    "answer": "",
+    "error": "OpenAIRateLimitError: Error code: 429 - {'error': {'message': 'Rate limit exceeded: new-account-rpm/openai/gpt-4o. Rate limit reached: new accounts are limited to 20 requests per minute for this model. Please retry shortly.', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '20', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1791450840000'}, 'limit_source': 'openrouter_new_account', 'remedy_hint': 'New accounts are temporarily limited for this model. Please retry shortly.', 'provider_name': None, 'previous_errors': [{'code': 429, 'message': 'Rate limit exceeded: new-account-rpm/openai/gpt-4o. Rate limit reached: new accounts are limited to 20 requests per minute for this model. Please retry shortly.'}]}}, 'user_id': 'user_3KHEzOIYwli5LjZY9tYfSINVUFH'}",
+    "metrics": {
+      "task_passed": false,
+      "required_tools_missing": [
+        "update_reminder_settings"
+      ],
+      "required_tool_coverage": 0.0,
+      "dependency_errors": [],
+      "argument_errors": [],
+      "raw_argument_errors": [],
+      "safety_violations": [],
+      "answer_errors": [
+        "Saved reminder state reminders_enabled differs from expected value",
+        "Saved reminder state email_enabled differs from expected value",
+        "Empty final answer",
+        "Provider/runtime error or truncated answer"
+      ],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0,
+      "semantic_correctness": "NOT_MEASURED",
+      "scorer_version": "2.2"
+    }
+  },
+  {
+    "model": "gpt4o",
+    "case_id": "REMINDER-05",
+    "user": "Tắt mọi nhắc bảo dưỡng.",
+    "answer": "",
+    "error": "OpenAIRateLimitError: Error code: 429 - {'error': {'message': 'Rate limit exceeded: new-account-rpm/openai/gpt-4o. Rate limit reached: new accounts are limited to 20 requests per minute for this model. Please retry shortly.', 'code': 429, 'metadata': {'headers': {'X-RateLimit-Limit': '20', 'X-RateLimit-Remaining': '0', 'X-RateLimit-Reset': '1791450840000'}, 'limit_source': 'openrouter_new_account', 'remedy_hint': 'New accounts are temporarily limited for this model. Please retry shortly.', 'provider_name': None, 'previous_errors': [{'code': 429, 'message': 'Rate limit exceeded: new-account-rpm/openai/gpt-4o. Rate limit reached: new accounts are limited to 20 requests per minute for this model. Please retry shortly.'}]}}, 'user_id': 'user_3KHEzOIYwli5LjZY9tYfSINVUFH'}",
+    "metrics": {
+      "task_passed": false,
+      "required_tools_missing": [
+        "update_reminder_settings"
+      ],
+      "required_tool_coverage": 0.0,
+      "dependency_errors": [],
+      "argument_errors": [],
+      "raw_argument_errors": [],
+      "safety_violations": [],
+      "answer_errors": [
+        "Saved reminder state reminders_enabled differs from expected value",
+        "Empty final answer",
+        "Provider/runtime error or truncated answer"
+      ],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0,
+      "semantic_correctness": "NOT_MEASURED",
+      "scorer_version": "2.2"
+    }
+  }
+]

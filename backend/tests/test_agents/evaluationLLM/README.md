@@ -1,5 +1,7 @@
 # EV Care Agent — OpenRouter LLM Benchmark
 
+> **Lịch sử, giữ nguyên kết quả.** Nội dung bên dưới mô tả benchmark 6 tools của phiên bản cũ. CLI hiện chỉ cho phép `--list`; không chạy/rescore ghi đè. Đánh giá graph 9 tools hiện tại bằng `../evaluate_agent.py`, xem `eval/datasets/README.md` ở gốc repo. Không diễn giải điểm tổng cũ thành tỷ lệ Booking hoàn thành.
+
 Benchmark này so sánh 10 model trong vai trò **AI Agent**, dùng system prompt và
 schema của 6 tool production hiện tại. Nó không chỉ gửi câu hỏi chat đơn lẻ.
 
@@ -30,7 +32,7 @@ item code, giá và argument sai kiểu không được tự sửa.
 
 ## Dataset
 
-`agent_cases.json` có đúng 30 case:
+`agent_cases.json` có đúng 33 case:
 
 | Nhóm | Số case |
 |---|---:|
@@ -41,6 +43,9 @@ item code, giá và argument sai kiểu không được tự sửa.
 | Multi-step | 4 |
 | Guardrail/adversarial | 3 |
 | Error/edge | 3 |
+| Pricing (giá gói + phát sinh, bao-gia-hai-tang D12) | 3 |
+
+Một case có thể khai báo `allowed_tools`: tool chỉ đọc được phép gọi nhưng không tính điểm (vd PRICE-02: đọc dòng giá rồi từ chối duyệt hộ).
 
 Các phép chấm deterministic kiểm tra tên tool, thứ tự, arguments, provenance của
 `item_codes`/`workshop_id`/slot, forbidden tool, confirmation trước write action,

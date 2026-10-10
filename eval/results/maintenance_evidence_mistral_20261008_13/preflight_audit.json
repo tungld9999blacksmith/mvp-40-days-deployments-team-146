@@ -1,0 +1,17 @@
+{
+  "rows": 3,
+  "errors": 0,
+  "provider_requests": 0,
+  "provider_raw_json_valid": 0,
+  "pre_provider_answers": 3,
+  "fallback_answers": 3,
+  "citation_membership_valid": 3,
+  "gate_reasons": {
+    "coolant_source_value_unverified": 1,
+    "maintenance_component_actions_missing": 1,
+    "maintenance_period_mapping_missing": 1
+  },
+  "provider_models": [],
+  "known_cost_usd": 0,
+  "cost_receipts_missing": 0
+}

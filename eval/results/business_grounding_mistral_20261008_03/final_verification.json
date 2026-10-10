@@ -1,0 +1,22 @@
+{
+  "all_protected_files_checked": 761,
+  "changed_or_missing": [],
+  "provenance": [
+    {
+      "run": "agent_v2_1_business_mistral_90_20261008_03",
+      "revision": "source_revision_after.json",
+      "matched_app_source_files": 4
+    },
+    {
+      "run": "agent_v2_1_business_sessions_mistral_20261008_03",
+      "revision": "source_revision_final.json",
+      "matched_app_source_files": 4
+    }
+  ],
+  "final_source_matches": true,
+  "review_turn_panels": 80,
+  "independent_labels": 0,
+  "mentor_reports_not_recreated": true,
+  "implementation_ruff": "PASSED",
+  "review_html_js_syntax": "PASSED"
+}

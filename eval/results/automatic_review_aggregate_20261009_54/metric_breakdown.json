@@ -1,0 +1,121 @@
+{
+  "base": {
+    "selected": 30,
+    "attempted": 30,
+    "combined_counts": {
+      "FAIL": 2,
+      "UNVERIFIABLE": 3,
+      "PASS": 25
+    },
+    "booking": {
+      "selected": 8,
+      "attempted": 8,
+      "automatic_counts": {
+        "PASS": 7,
+        "FAIL": 1
+      },
+      "technical_pass": 8,
+      "scope": "Technical runtime regression and automatic semantic labels have separate meanings."
+    },
+    "metrics": {
+      "correctness_from_available_evidence": {
+        "PASS": 29,
+        "FAIL": 1
+      },
+      "faithfulness": {
+        "PASS": 29,
+        "FAIL": 1
+      },
+      "citation_support": {
+        "FAIL": 1,
+        "PASS": 6,
+        "NOT_APPLICABLE": 23
+      },
+      "task_success": {
+        "PASS": 29,
+        "FAIL": 1
+      }
+    },
+    "fail_cases": [
+      {
+        "sample_id": "review-001",
+        "case_id": "RAG-001",
+        "metrics": {
+          "correctness_from_available_evidence": "PASS",
+          "faithfulness": "PASS",
+          "citation_support": "FAIL",
+          "task_success": "PASS"
+        },
+        "reasons": [
+          "Câu trả lời phản ánh chính xác nội dung các tài liệu tra cứu không chứa danh mục bảo dưỡng 15.000 km cụ thể cho VF8 và đề nghị liên hệ xưởng dịch vụ."
+        ]
+      },
+      {
+        "sample_id": "review-035",
+        "case_id": "BOOK-25",
+        "metrics": {
+          "correctness_from_available_evidence": "FAIL",
+          "faithfulness": "FAIL",
+          "citation_support": "NOT_APPLICABLE",
+          "task_success": "FAIL"
+        },
+        "reasons": [
+          "Câu trả lời từ chối và báo lỗi trong khi người dùng đang cung cấp thông tin ngày định đặt lịch (Thứ Bảy hoặc Chủ nhật), lẽ ra trợ lý nên tiếp tục hỏi thêm vị trí xưởng do find_workshops trước đó thiếu location_anchor."
+        ]
+      }
+    ]
+  },
+  "agent_gemma": {
+    "selected": 30,
+    "attempted": 30,
+    "combined_counts": {
+      "UNVERIFIABLE": 4,
+      "PASS": 25,
+      "FAIL": 1
+    },
+    "booking": {
+      "selected": 8,
+      "attempted": 8,
+      "automatic_counts": {
+        "FAIL": 1,
+        "PASS": 7
+      },
+      "technical_pass": 8,
+      "scope": "Technical runtime regression and automatic semantic labels have separate meanings."
+    },
+    "metrics": {
+      "correctness_from_available_evidence": {
+        "PASS": 29,
+        "FAIL": 1
+      },
+      "faithfulness": {
+        "PASS": 29,
+        "FAIL": 1
+      },
+      "citation_support": {
+        "PASS": 6,
+        "NOT_APPLICABLE": 24
+      },
+      "task_success": {
+        "PASS": 29,
+        "FAIL": 1
+      }
+    },
+    "fail_cases": [
+      {
+        "sample_id": "review-024",
+        "case_id": "BOOK-03",
+        "metrics": {
+          "correctness_from_available_evidence": "FAIL",
+          "faithfulness": "FAIL",
+          "citation_support": "NOT_APPLICABLE",
+          "task_success": "FAIL"
+        },
+        "reasons": [
+          "Model thiếu gọi công cụ propose_booking theo kịch bản bắt buộc của người dùng.",
+          "Model gọi thiếu get_available_slots và các bước đề xuất đặt lịch."
+        ]
+      }
+    ]
+  }
+}

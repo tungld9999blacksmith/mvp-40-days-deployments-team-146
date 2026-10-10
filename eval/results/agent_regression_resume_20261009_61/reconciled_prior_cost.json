@@ -1,0 +1,15 @@
+{
+  "pipeline": 0.14215904325,
+  "judge": 0,
+  "all": 0.14215904325,
+  "embedding_calls": 38,
+  "embedding_cost_usd": null,
+  "missing_pipeline_receipts": 0,
+  "missing_judge_receipts": 0,
+  "scope": "Known55-60 fees once, including paused Gemma21 and completed Mistral30; no duplicate reuse charge.",
+  "prior55_57_58_59_pipeline_usd": 0.09779879425,
+  "anchor": "eval\\results\\agent_regression_revision_20261009_60\\all_attempts_cost.json",
+  "unknown_inflight_cost_usd": null,
+  "unknown_inflight_budget_reserve_usd": 0.01,
+  "reserve_is_not_receipt_or_proven_cost_upper_bound": true
+}

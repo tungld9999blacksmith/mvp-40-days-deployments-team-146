@@ -23,7 +23,7 @@ function BookingHeader() {
   const milestone = useBookingMilestone()
   const segment = pathname.split('/').filter(Boolean)[1] ?? ''
   const step = STEP_BY_PATH[segment]
-  // With a workshop from the query (estimate), step 1 is skipped (FF AF-003).
+  // With a workshop from the query (estimate / quote), step 1 is skipped (FF AF-003).
   const skippedWorkshop = Boolean(params.workshopId) && segment !== 'workshops'
 
   return (

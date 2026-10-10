@@ -1,4 +1,4 @@
-import { AlertCircle, FileText, RotateCw, Sparkles } from 'lucide-react'
+import { AlertCircle, RotateCw } from 'lucide-react'
 import SafeMarkdown from '@/shared/ui/SafeMarkdown'
 import Spinner from '@/shared/ui/Spinner'
 import { cn } from '@/shared/ui/cn'
@@ -6,6 +6,7 @@ import { formatTime } from '@/shared/utils/format'
 import type { PendingUserMessage, StreamingState } from '../state/chatReducer'
 import type { CitationDto, MessageDto } from '../types'
 import MessageCard from './MessageCard'
+import RobotAvatar from '@/shared/ui/RobotAvatar'
 import { Link } from 'react-router-dom'
 
 const STAGE_TEXT: Record<string, string> = {
@@ -15,13 +16,7 @@ const STAGE_TEXT: Record<string, string> = {
   quick_booking: 'Đang tìm xưởng gần bạn và khung giờ trống...',
 }
 
-function AssistantAvatar() {
-  return (
-    <div className="w-8 h-8 rounded-xl bg-emerald/10 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden>
-      <Sparkles className="w-4 h-4 text-emerald" />
-    </div>
-  )
-}
+const ASSISTANT_BUBBLE = 'rounded-[22px] rounded-tl-md bg-card elevation-sm px-4 sm:px-5 py-3.5 sm:py-4 text-[15px] text-foreground leading-relaxed'
 
 export function citationLabel(citation: CitationDto): string {
   return `${citation.title} · v${citation.version}${citation.pageNumber ? ` · tr.${citation.pageNumber}` : ''}`
@@ -31,22 +26,24 @@ export function citationLabel(citation: CitationDto): string {
 function Citations({ citations, onOpen }: { citations: CitationDto[]; onOpen: (citation: CitationDto) => void }) {
   if (!citations.length) return null
   return (
-    <div className="mt-3">
-      <p className="text-xs font-semibold text-muted mb-1.5">Nguồn chính hãng</p>
-      <div className="flex flex-wrap gap-1.5">
-        {citations.map((citation, index) => (
-          <button
-            key={`${citation.title}-${citation.pageNumber}-${index}`}
-            type="button"
-            onClick={() => onOpen(citation)}
-            aria-label={`Nguồn: ${citation.title}, phiên bản ${citation.version}${citation.pageNumber ? `, trang ${citation.pageNumber}` : ''}`}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald/20 bg-emerald/10 px-2.5 py-1 text-xs font-mono text-emerald hover:bg-emerald/20 transition-colors text-left"
-          >
-            <FileText className="w-3.5 h-3.5 flex-shrink-0" aria-hidden />
-            {citationLabel(citation)}
-          </button>
-        ))}
-      </div>
+    <div className="mt-4 pt-3 border-t border-border flex flex-wrap items-center gap-1.5">
+      <p className="text-xs text-muted mr-1">Nguồn chính hãng</p>
+      {citations.map((citation, index) => (
+        <button
+          key={`${citation.title}-${citation.pageNumber}-${index}`}
+          type="button"
+          onClick={() => onOpen(citation)}
+          aria-label={`Nguồn: ${citation.title}, phiên bản ${citation.version}${citation.pageNumber ? `, trang ${citation.pageNumber}` : ''}`}
+          className="inline-flex items-center gap-1.5 min-h-8 rounded-full border border-border bg-card px-3 py-1 text-xs text-foreground hover:bg-card-hover hover:border-emerald/40 transition-colors text-left"
+        >
+          <span className="font-mono font-semibold text-emerald">{index + 1}</span>
+          <span>{citation.title}</span>
+          <span className="font-mono text-muted">
+            v{citation.version}
+            {citation.pageNumber ? ` · tr.${citation.pageNumber}` : ''}
+          </span>
+        </button>
+      ))}
     </div>
   )
 }
@@ -61,22 +58,21 @@ export function AssistantMessage({
   highlighted?: boolean
 }) {
   return (
-    <div className="flex gap-3 justify-start" data-seq={message.seq}>
+    <div className="flex gap-2.5 sm:gap-3 justify-start" data-seq={message.seq}>
       <span className="sr-only">Trợ lý:</span>
-      <AssistantAvatar />
-      <div className="max-w-[85%] sm:max-w-2xl min-w-0">
-        <div
-          className={cn(
-            'rounded-2xl rounded-tl-md bg-card border px-4 py-3 text-sm text-foreground leading-relaxed transition-colors',
-            highlighted ? 'border-emerald' : 'border-border',
-          )}
-        >
+      <RobotAvatar size={36} className="mt-0.5" />
+      <div className="max-w-[88%] sm:max-w-2xl min-w-0">
+        <div className={cn(ASSISTANT_BUBBLE, 'transition-shadow', highlighted && 'ring-2 ring-emerald')}>
           <SafeMarkdown text={message.content} />
           <Citations citations={message.citations} onOpen={onOpenCitation} />
           <MessageCard card={message.card} />
-          {message.refs.bookingId && <Link className="block mt-2 text-emerald" to={`/bookings/${encodeURIComponent(message.refs.bookingId)}`}>Xem lịch hẹn</Link>}
+          {message.refs.bookingId && (
+            <Link className="block mt-2 text-sm font-medium text-emerald hover:text-emerald-bright" to={`/bookings/${encodeURIComponent(message.refs.bookingId)}`}>
+              Xem lịch hẹn
+            </Link>
+          )}
         </div>
-        <p className="text-[11px] text-muted font-mono mt-1 ml-1">{formatTime(message.createdAt)}</p>
+        <p className="text-[11px] text-muted font-mono mt-1.5 ml-2">{formatTime(message.createdAt)}</p>
       </div>
     </div>
   )
@@ -84,17 +80,17 @@ export function AssistantMessage({
 
 export function StreamingMessage({ streaming }: { streaming: StreamingState }) {
   return (
-    <div className="flex gap-3 justify-start" aria-hidden>
-      <AssistantAvatar />
-      <div className="max-w-[85%] sm:max-w-2xl min-w-0 rounded-2xl rounded-tl-md bg-card border border-border px-4 py-3 text-sm text-foreground leading-relaxed elevation-sm">
+    <div className="flex gap-2.5 sm:gap-3 justify-start" aria-hidden>
+      <RobotAvatar size={36} mood={streaming.draft ? 'idle' : 'thinking'} className="mt-0.5" />
+      <div className={cn(ASSISTANT_BUBBLE, 'max-w-[88%] sm:max-w-2xl min-w-0')}>
         {streaming.draft ? (
           <p className="whitespace-pre-wrap">
             {streaming.draft}
-            <span className="inline-block w-1.5 h-4 ml-0.5 align-text-bottom bg-emerald animate-pulse" />
+            <span className="inline-block w-1.5 h-4 ml-0.5 align-text-bottom rounded-sm bg-emerald animate-pulse" />
           </p>
         ) : (
-          <span className="flex items-center gap-2 text-muted">
-            <Spinner className="w-3.5 h-3.5" />
+          <span className="flex items-center gap-2.5 text-sm text-muted">
+            <Spinner className="w-4 h-4 text-emerald" />
             {(streaming.stage && STAGE_TEXT[streaming.stage]) || 'Đang suy nghĩ...'}
           </span>
         )}
@@ -132,15 +128,15 @@ export function UserMessage({
       <div className="max-w-[85%] sm:max-w-xl flex flex-col items-end">
         <div
           className={cn(
-            'rounded-2xl rounded-tr-md px-4 py-3 text-sm text-foreground leading-relaxed whitespace-pre-wrap break-words border transition-colors',
-            failed ? 'bg-error/10 border-error/40' : 'bg-emerald/10 border-emerald/20',
+            'rounded-[22px] rounded-br-md px-4 sm:px-[18px] py-3 text-[15px] leading-relaxed whitespace-pre-wrap break-words transition-shadow',
+            failed ? 'bg-error-dim text-foreground border border-error/40' : 'bg-brand text-on-brand',
             status === 'sending' && 'opacity-70',
-            highlighted && 'border-emerald',
+            highlighted && 'ring-2 ring-emerald ring-offset-2 ring-offset-background',
           )}
         >
           {content}
         </div>
-        <div className="flex items-center gap-2 mt-1 mr-1 text-[11px]">
+        <div className="flex items-center gap-2 mt-1.5 mr-2 text-[11px]">
           {status === 'sending' ? (
             <Spinner className="w-3 h-3 text-muted" label="Đang gửi" />
           ) : failed || unanswered ? (

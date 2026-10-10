@@ -1,0 +1,72 @@
+{
+  "mode": "plain",
+  "model": "google/gemini-3.5-flash-lite",
+  "error": null,
+  "cost_usd": 3.7e-06,
+  "raw_response": {
+    "id": "gen-1791477305-UsbgKEx1U4DvlJspGqhk",
+    "choices": [
+      {
+        "finish_reason": "stop",
+        "index": 0,
+        "logprobs": null,
+        "message": {
+          "content": "OK",
+          "refusal": null,
+          "role": "assistant",
+          "annotations": null,
+          "audio": null,
+          "function_call": null,
+          "tool_calls": null,
+          "reasoning": null,
+          "reasoning_details": [
+            {
+              "type": "reasoning.text",
+              "signature": "AY89a18DnnYCxQjkMdaL4mdc3b/0/gG0CwEX7LwU01dLv5xIOLqvWag+d5KQqQ8GE3fQAdKA7jeM6Hv8Q8vQnEA/0HjxCzjEUZp3fbOi5vfvQdEC9w6bQN0Kc3c=",
+              "format": "google-gemini-v1",
+              "index": 0
+            }
+          ]
+        },
+        "native_finish_reason": "STOP"
+      }
+    ],
+    "created": 1791477305,
+    "model": "google/gemini-3.5-flash-lite",
+    "object": "chat.completion",
+    "metadata": null,
+    "moderation": null,
+    "service_tier": "default",
+    "system_fingerprint": null,
+    "usage": {
+      "completion_tokens": 1,
+      "prompt_tokens": 4,
+      "total_tokens": 5,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": null,
+        "text_tokens": null,
+        "image_tokens": 0
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "image_tokens": null,
+        "text_tokens": null,
+        "video_tokens": 0
+      },
+      "cost": 3.7e-06,
+      "is_byok": false,
+      "cost_details": {
+        "upstream_inference_cost": 3.7e-06,
+        "upstream_inference_prompt_cost": 1.2e-06,
+        "upstream_inference_completions_cost": 2.5e-06
+      }
+    },
+    "provider": "Google"
+  },
+  "text": "OK"
+}

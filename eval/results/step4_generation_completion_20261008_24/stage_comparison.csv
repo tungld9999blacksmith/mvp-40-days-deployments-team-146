@@ -1,0 +1,5 @@
+phase,model,selected,attempted,technical_pass,provider_calls,strict_raw_contract_pass,preprovider_cases,errors,provider_errors,average_generation_seconds,known_cost_usd_partial,missing_cost_receipts
+pilot,mistralai/mistral-small-2603,6,6,6,5,5,1,0,0,2.5050252400011233,0.003042138,0
+full,mistralai/mistral-small-2603,30,30,30,25,25,5,0,0,1.8704962519995751,0.013030908,0
+pilot,google/gemma-4-26b-a4b-it,6,6,6,5,5,1,0,0,3.261977900000056,0.001789916,0
+full,google/gemma-4-26b-a4b-it,30,30,30,25,25,5,0,0,3.9920141760000845,0.010831068,0

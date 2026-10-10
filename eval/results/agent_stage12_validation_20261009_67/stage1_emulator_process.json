@@ -1,0 +1,5 @@
+{
+    "port":  9096,
+    "pid":  2484,
+    "component":  "isolated_auth_emulator"
+}

@@ -1,0 +1,13 @@
+{
+  "source_hashes": {
+    "backend/src/agents/business_grounding.py": "2f1948bbf6bcea4ae28e6ea78a4757b8bea333a5dae84a5920dbfacfa56ff691",
+    "backend/src/agents/guardrails.py": "b6a0ff56bc15602dc6e48b8ca8750e7f3e550762414655d460decb90e7e6a590",
+    "backend/src/agents/prompts.py": "5d7fa1410e7d07bc4fa1a3faa7a4626b68afb82282a15ad6886cd1628f135947",
+    "backend/src/agents/orchestrator.py": "e91489da036f9e8a5b41710126f2750d89e300e10f2b6a2dd5c2b894c70affb5",
+    "backend/tests/test_agents/test_business_grounding.py": "329262b8b7245832dd8458098dc4eb6cc71f3368ba5bc5454ab9266c256c9a80",
+    "backend/tests/test_agents/test_agent_dependencies.py": "8c0324405f0a4ab8ef0549fb0f9ad75819ccd0c64ea14fb20e348b27c33e1034",
+    "backend/tests/test_agents/test_ev_care_tools.py": "8480c66b7bb46bf4094c5a22bbc68db86551be59ed2d9bcb93b88334c66212ea"
+  },
+  "test_expectation_changes": "Identity/graph tests now verify trusted facts and retained original answer rather than literal passthrough; stream fixture includes graph terminal response. Dataset/scorer unchanged.",
+  "evaluation_scope": "development only; pure current-turn maintenance/cost reads; mixed-tool final answers use prompt guidance, not deterministic rendering; stream buffers business tokens until terminal graph answer"
+}

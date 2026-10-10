@@ -1,15 +1,39 @@
 import { useEffect, useState } from 'react'
-import { CalendarClock, Car, MapPin, RotateCw, Timer, Wrench } from 'lucide-react'
+import { CalendarClock, Car, FileText, MapPin, RotateCw, Timer, Wrench } from 'lucide-react'
 import Button from '@/shared/ui/Button'
 import { Card, CardHeader, InfoRow } from '@/shared/ui/Card'
 import { TextArea } from '@/shared/ui/Field'
 import { cn } from '@/shared/ui/cn'
 import { formatCountdown, formatKm, formatLicensePlate, formatNumber } from '@/shared/utils/format'
 import type { MilestoneItem, VehicleSummary } from '@/features/vehicles/types'
+import type { PricingFlow } from '@/features/booking-lines/types'
 import { formatLongDay, NOTE_MAX_LENGTH, secondsLeft, slotLabel } from '../utils'
 
-/** Cost line of the card (FE §3.5): estimate of the same workshop + milestone, or none. */
-export type SummaryCost = { kind: 'LOADING' } | { kind: 'ESTIMATE'; amount: number } | { kind: 'NONE' }
+/** Cost line of the card (FE §3.5): approved quote, estimate of the same workshop + milestone, or none. */
+export type SummaryCost =
+  | { kind: 'LOADING' }
+  | { kind: 'QUOTE'; amount: number; quoteCode: string }
+  | { kind: 'ESTIMATE'; amount: number; hasReferencePrice?: boolean }
+  | { kind: 'NONE' }
+
+/** Tier-1 package price: settled workshop prices, or reference prices the workshop confirms at check-in. */
+function TwoTierCost({ cost }: { cost: SummaryCost | undefined }) {
+  if (!cost || cost.kind === 'LOADING') return <span className="text-muted">Đang tính…</span>
+  if (cost.kind !== 'ESTIMATE') return <span className="text-muted">Giá gói do xưởng báo khi nhận xe</span>
+  return (
+    <span className="flex flex-col items-end">
+      <span className="font-mono">{formatNumber(cost.amount)} ₫</span>
+      <span className="text-xs font-normal text-muted">
+        {cost.hasReferencePrice ? 'Có hạng mục giá tham khảo, xưởng xác nhận khi nhận xe' : 'Giá xưởng, chốt khi bạn đặt lịch'}
+      </span>
+    </span>
+  )
+}
+
+/** Short display code of a quote id. */
+export function quoteCode(quoteId: string): string {
+  return `BG-${quoteId.replace(/-/g, '').slice(0, 8).toUpperCase()}`
+}
 
 export interface BookingSummaryCardProps {
   workshop: { name: string; address: string | null }
@@ -18,6 +42,9 @@ export interface BookingSummaryCardProps {
   vehicle: VehicleSummary
   odoMilestone: number | null
   items: MilestoneItem[]
+  quoteId: string | null
+  /** Flow of new bookings; `two_tier` shows the package price instead of the quote rows. */
+  pricingFlow?: PricingFlow | null
   cost?: SummaryCost
   /** epoch ms; the card is unusable afterwards (FF EF-001). */
   tokenExpiresAt: number
@@ -60,7 +87,9 @@ function useSecondsLeft(until: number): number {
  * by itself: only `onConfirm` does (AC-FE-401). Shared with the chat card.
  */
 export default function BookingSummaryCard(props: BookingSummaryCardProps) {
-  const { workshop, date, timeSlot, vehicle, odoMilestone, items, tokenExpiresAt, submitting } = props
+  const { workshop, date, timeSlot, vehicle, odoMilestone, items, quoteId, tokenExpiresAt, submitting } = props
+  // bao-gia-hai-tang tier 1: the package price is set when the owner books; no quote row.
+  const twoTier = props.pricingFlow === 'two_tier'
   const left = useSecondsLeft(tokenExpiresAt)
   const expired = left <= 0
 
@@ -80,13 +109,36 @@ export default function BookingSummaryCard(props: BookingSummaryCardProps) {
           }
         />
         {odoMilestone !== null && <InfoRow label="Mốc bảo dưỡng" value={formatKm(odoMilestone)} />}
+        {!twoTier && (
         <InfoRow
-          label="Chi phí"
+          label="Báo giá"
           value={
-            props.cost?.kind === 'LOADING' ? (
+            props.cost?.kind === 'QUOTE' ? (
+              <span className="inline-flex items-center gap-1.5 font-mono">
+                <FileText className="w-3.5 h-3.5 text-muted" />
+                {props.cost.quoteCode}
+              </span>
+            ) : quoteId ? (
+              <span className="font-mono">{quoteCode(quoteId)}</span>
+            ) : (
+              <span className="text-muted">Không</span>
+            )
+          }
+        />
+        )}
+        <InfoRow
+          label={twoTier ? 'Giá gói' : 'Chi phí'}
+          value={
+            twoTier ? (
+              <TwoTierCost cost={props.cost} />
+            ) : props.cost?.kind === 'LOADING' ? (
               <span className="text-muted">Đang tính…</span>
+            ) : props.cost?.kind === 'QUOTE' ? (
+              `Theo báo giá đã duyệt: ${formatNumber(props.cost.amount)} ₫`
             ) : props.cost?.kind === 'ESTIMATE' ? (
               `Chi phí ước tính: ${formatNumber(props.cost.amount)} ₫`
+            ) : quoteId ? (
+              'Theo báo giá đã duyệt'
             ) : (
               <span className="text-muted">Chưa có ước tính</span>
             )

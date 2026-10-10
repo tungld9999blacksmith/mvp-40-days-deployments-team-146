@@ -1,5 +1,7 @@
 /** FEAT-BOARD-001 types — API Spec us-037 (API-WB-01 → 08). */
 import type { TicketStatus } from '@/features/bookings/types'
+import type { QuoteDisplayStatus } from '@/features/quotes/types'
+import type { BlockedAction, PricingFlow } from '@/features/booking-lines/types'
 
 export type BoardAction = 'ACCEPT' | 'REJECT' | 'CHECK_IN' | 'START' | 'COMPLETE' | 'CANCEL'
 export type BoardStatus = TicketStatus
@@ -14,6 +16,7 @@ export interface BoardItem {
   vehicle: { modelName: string; licensePlate: string }
   milestoneLabel: string | null
   estimatedCost: number | null
+  quote: { quoteId: string; status: QuoteDisplayStatus } | null
   attendanceConfirmedAt: string | null
   confirmDeadline: string | null
   allowedActions: BoardAction[]
@@ -40,6 +43,10 @@ export interface StatusEvent {
 
 export interface BoardDetail extends BoardItem {
   actualCost: number | null
+  /** bao-gia-hai-tang D7 — fixed when the booking was created. */
+  pricingFlow?: PricingFlow
+  /** OV9 — allowed actions the price lines block right now, with the reason to show. */
+  blockedActions?: BlockedAction[]
   note: string | null
   checkedInAt?: string | null
   currentStage?: string | null

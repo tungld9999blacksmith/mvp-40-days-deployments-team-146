@@ -1,5 +1,5 @@
+import asyncio
 import logging
-import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
@@ -22,6 +22,10 @@ from .modules.auth.route import oauth_router as auth_oauth_router
 from .modules.booking import BookingError
 from .modules.booking import status_for as booking_status_for
 from .modules.booking.route import router as booking_router
+from .modules.booking_line import BookingLineError
+from .modules.booking_line import status_for as booking_line_status_for
+from .modules.booking_line.route import router as booking_line_router
+from .modules.booking_line.route import workshop_router as booking_line_workshop_router
 from .modules.conversation import ConversationError
 from .modules.conversation import status_for as conversation_status_for
 from .modules.conversation.route import router as conversation_router
@@ -46,6 +50,10 @@ from .modules.oem_integration.route import router as oem_integration_router
 from .modules.quick_booking import QuickBookingError
 from .modules.quick_booking import status_for as quick_booking_status_for
 from .modules.quick_booking.route import router as quick_booking_router
+from .modules.quote import QuoteError
+from .modules.quote import status_for as quote_status_for
+from .modules.quote.route import router as quote_router
+from .modules.quote.route import workshop_router as quote_workshop_router
 from .modules.service_progress import ProgressError
 from .modules.service_progress import status_for as progress_status_for
 from .modules.user_vehicle.errors import UserVehicleError
@@ -75,6 +83,9 @@ from .modules.workshop_owner_onboarding.errors import (
 from .modules.workshop_owner_onboarding.route import (
     router as workshop_onboarding_router,
 )
+from .modules.workshop_pricing import PricingError
+from .modules.workshop_pricing import status_for as pricing_status_for
+from .modules.workshop_pricing.route import router as workshop_pricing_router
 
 
 @asynccontextmanager
@@ -92,9 +103,20 @@ async def lifespan(app: FastAPI):
         logging.getLogger(__name__).warning("Firebase Admin not initialized: %s", exc)
     redis_toolkit = get_redis_toolkit()
     await redis_toolkit.start()
-    yield
-    print("Shutting down...")
-    await redis_toolkit.close()
+    from .agents.checkpoint import checkpoint_lifespan
+
+    if settings.app_env != "test":
+        from .agents.tools.RAG.query.rag_tool import warm_up_rag_pipeline
+
+        # In the background: the API is up at once and the first question skips ~4 s.
+        asyncio.get_running_loop().run_in_executor(None, warm_up_rag_pipeline)
+
+    try:
+        async with checkpoint_lifespan(settings):
+            yield
+    finally:
+        print("Shutting down...")
+        await redis_toolkit.close()
 
 
 app = FastAPI(
@@ -118,13 +140,21 @@ configure_logging(
 )
 # httpx (used by the Qdrant client) logs every request at INFO.
 logging.getLogger("httpx").setLevel(logging.WARNING)
-frontend_url = os.getenv("FRONTEND_URL", "")
-# FRONTEND_URL=* disables the CORS restriction (any origin is echoed back, so
-# credentialed requests still work - a literal "*" is rejected by browsers).
-allow_all_origins = frontend_url.strip() == "*"
+
+
+def cors_allow_origins(cors_origins: str, frontend_url: str) -> list[str]:
+    """Allowed origins: comma-separated ``CORS_ORIGINS`` plus ``FRONTEND_URL``, without trailing slashes."""
+    values = [*cors_origins.split(","), frontend_url]
+    return sorted({value.strip().rstrip("/") for value in values if value.strip()})
+
+
+allowed_origins = cors_allow_origins(settings.cors_origins, settings.frontend_url)
+# "*" in either variable disables the CORS restriction (any origin is echoed back,
+# so credentialed requests still work - a literal "*" is rejected by browsers).
+allow_all_origins = "*" in allowed_origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[] if allow_all_origins else [frontend_url],
+    allow_origins=[] if allow_all_origins else allowed_origins,
     allow_origin_regex=".*" if allow_all_origins else None,
     allow_credentials=True,
     allow_methods=["*"],
@@ -154,6 +184,11 @@ app.include_router(quick_booking_router, prefix="/api/v1")
 app.include_router(conversation_workshop_router, prefix="/api/v1")
 app.include_router(conversation_ws_router, prefix="/api/v1")
 app.include_router(workshop_board_router, prefix="/api/v1")
+app.include_router(quote_router, prefix="/api/v1")
+app.include_router(quote_workshop_router, prefix="/api/v1")
+app.include_router(booking_line_router, prefix="/api/v1")
+app.include_router(booking_line_workshop_router, prefix="/api/v1")
+app.include_router(workshop_pricing_router, prefix="/api/v1")
 app.include_router(follow_up_router, prefix="/api/v1")
 
 
@@ -255,6 +290,24 @@ async def board_error_handler(request: Request, exc: BoardError) -> JSONResponse
     return _domain_error_response(request, exc, board_status_for)
 
 
+@app.exception_handler(BookingLineError)
+async def booking_line_error_handler(request: Request, exc: BookingLineError) -> JSONResponse:
+    """Two-tier booking pricing errors (docs/designs/bao-gia-hai-tang.md)."""
+    return _domain_error_response(request, exc, booking_line_status_for)
+
+
+@app.exception_handler(PricingError)
+async def pricing_error_handler(request: Request, exc: PricingError) -> JSONResponse:
+    """Workshop price list errors (bao-gia-hai-tang D14)."""
+    return _domain_error_response(request, exc, pricing_status_for)
+
+
+@app.exception_handler(QuoteError)
+async def quote_error_handler(request: Request, exc: QuoteError) -> JSONResponse:
+    """Quote errors (us-049)."""
+    return _domain_error_response(request, exc, quote_status_for)
+
+
 @app.exception_handler(FollowUpError)
 async def follow_up_error_handler(request: Request, exc: FollowUpError) -> JSONResponse:
     """Post-service follow-up errors (us-041)."""
@@ -323,6 +376,7 @@ _ONBOARDING_PREFIXES = (
     "/api/v1/integrations/oem",
     "/api/v1/bookings",
     "/api/v1/workshops",
+    "/api/v1/quotes",
     "/api/v1/follow-ups",
 )
 

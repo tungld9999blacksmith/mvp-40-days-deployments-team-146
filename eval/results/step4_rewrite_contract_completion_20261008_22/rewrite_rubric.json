@@ -1,0 +1,12 @@
+{
+  "status": "DEVELOPMENT_DRAFT_NOT_ACCEPTANCE",
+  "raw_contract": "exact seven prompt fields, strict JSON/types/enums, no duplicate keys or Markdown",
+  "pilot_gate": "all 5 attempted, exact requested model, no provider/retrieval errors, no truncation, strict raw contract, no runtime fallback, 3 declared input anchors matched",
+  "anchor_scope": "literal model/context resolution, literal milestone and explicit out-of-scope only; not semantic preservation accuracy",
+  "category": "golden draft agreement only, no category supplied to retriever; subsystem not semantically scored",
+  "retrieval": "existing unverified document IDs on 24 golden cases only; hit@1/3/5 and MRR over top-5 selected anchor chunks before expansion; chunk recall unmeasured",
+  "full_run": "one fresh 30-query development run per pilot-eligible model; pilot repeats not pooled as independent cases",
+  "stop": "first provider/model/retrieval error, first truncation, or changed corpus/source/env; no hidden retries",
+  "review": "DEFERRED_BY_USER; keep human labels blank",
+  "acceptance_thresholds": "NOT_APPROVED"
+}

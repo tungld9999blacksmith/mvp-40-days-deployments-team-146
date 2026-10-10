@@ -2,13 +2,40 @@
 
 import pytest
 from fastapi.testclient import TestClient
+from mock_ev_system.db import get_session
 from mock_ev_system.main import app
+from mock_ev_system.models import CenterType, ServiceCenter
+from sqlalchemy.pool import StaticPool
+from sqlmodel import Session, create_engine
 
 
 @pytest.fixture(scope="module")
 def mock_client():
-    with TestClient(app) as client:
+    # Verify against known records, independent of .env's demo-manager overrides
+    # or a developer's persistent mock DB. No application lifespan seeding here.
+    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    ServiceCenter.__table__.create(engine)
+    with Session(engine) as session:
+        session.add(ServiceCenter(
+            center_id="SC-01", name="VinFast Thăng Long", region="Hà Nội", type=CenterType.dealer,
+            manager_email="ha.tran.sc01@example.com", manager_national_id="001190000101",
+        ))
+        session.commit()
+
+    def isolated_session():
+        with Session(engine) as session:
+            yield session
+
+    previous = dict(app.dependency_overrides)
+    app.dependency_overrides[get_session] = isolated_session
+    client = TestClient(app)
+    try:
         yield client
+    finally:
+        client.close()
+        app.dependency_overrides.clear()
+        app.dependency_overrides.update(previous)
+        engine.dispose()
 
 
 # Manager record for SC-01 (VinFast Thăng Long).

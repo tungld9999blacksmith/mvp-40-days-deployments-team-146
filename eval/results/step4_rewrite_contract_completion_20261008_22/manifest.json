@@ -1,0 +1,132 @@
+{
+  "scope": "step4_rewrite_full_development_completion_after_embedding_503",
+  "models": {
+    "mistral": "mistralai/mistral-small-2603",
+    "gemma": "google/gemma-4-26b-a4b-it",
+    "gemini_lite": "google/gemini-3.5-flash-lite"
+  },
+  "selected_ids": [
+    "M01",
+    "M02",
+    "M03",
+    "M07",
+    "M18",
+    "M23",
+    "W01",
+    "W02",
+    "W04",
+    "W12",
+    "W20",
+    "B01",
+    "B11",
+    "B16",
+    "B20",
+    "P01",
+    "P05",
+    "PR01",
+    "PR03",
+    "PR07",
+    "PR10",
+    "G01",
+    "G03",
+    "G05",
+    "MAINT-01",
+    "MAINT-10",
+    "MAINT-13",
+    "BOOK-11",
+    "BOOK-22",
+    "GUARD-13"
+  ],
+  "pilot_ids": [
+    "M01",
+    "W02",
+    "G01",
+    "MAINT-10",
+    "GUARD-13"
+  ],
+  "golden_sha256": "391be9d939a554ef9dc60a7b0d22a15b00ebe6c64104700f969374b85f88301f",
+  "dataset_sha256": "f6701548ba038adbbe5b4298c78b338c0798e1f115f76bca1dd0843a59bf13db",
+  "env_sha256": "d0d9ac252a9ce04595c67a850cb8c7781b540d15eae27fbec069809d61d35e53",
+  "source_revision_sha256": "65871abe0fd5fce2eae57c7d1e7bc216d554bee5e7da197958b23d546de2c8fb",
+  "selected_cases_sha256": "cbde079a1be491ed4896111cf80b0c38222d229505bc75572c5fecfd91608a28",
+  "rubric_sha256": "73ba8ece8c46177ccbee28d2cb3a79f1327dc62e2087fa145b121970293d5655",
+  "prompt_sha256": "2cbb2cda57e34e5996bef063becdbe70883d4a600789f40cfeb7a1d3ea033f00",
+  "configuration": {
+    "temperature": 0,
+    "max_tokens": 500,
+    "timeout": 60,
+    "sdk_retries": 0,
+    "delay_seconds": 3,
+    "top_k": 5,
+    "top_candidates": 20,
+    "category_override": null,
+    "neighbors": "rank metrics before expansion",
+    "embedding_provider": "gemini",
+    "embedding_model": "gemini-embedding-001",
+    "embedding_dimensions": 3072,
+    "collection": "ev_care_knowledge_base_3072",
+    "routing": {
+      "mistral": [
+        "mistral/us",
+        "mistral/eu"
+      ],
+      "gemma": [],
+      "gemini_lite": []
+    },
+    "response_format": "json_schema",
+    "require_parameters": true,
+    "rewrite_payload_schema": "RewritePayload, seven required fields, additionalProperties=false"
+  },
+  "semantic_review": "DEFERRED",
+  "production_acceptance": false,
+  "side_effects": {
+    "email": false,
+    "production_db_write": false,
+    "corpus_write": false,
+    "env_write": false,
+    "generation_calls": false,
+    "write_reviewer": false
+  },
+  "previous_master": "eval\\results\\step4_rewrite_contract_network_20261008_21",
+  "previous_master_closed_check": {
+    "files_verified": 20,
+    "unchanged": true,
+    "changed": []
+  },
+  "user_authorized_env_update": "Gemini key added after Rewrite-only pilots; credentials not included in artifacts",
+  "prior_pilots_all_failed_raw_contract_or_anchor_gate": true,
+  "continuation_rule": "Same five-query pilot for all three; fresh full 30 only for pilot-eligible models",
+  "gpt4o": "EXCLUDED_ALL_STAGES",
+  "generation_calls": false,
+  "intentional_changes": [
+    "Production Rewrite prompt distinguishes literal maintenance milestones from ODO/warranty/range",
+    "OpenAI-compatible Rewrite requests seven-field strict JSON schema; OpenRouter requires supporting endpoints",
+    "Observation wrapper forwards provider_name so structured request reaches the adapter"
+  ],
+  "baseline_comparison": "Historical plain-text request is a different revision; compare failure cases, not causal model quality",
+  "production_model_change": false,
+  "app_restarted": false,
+  "offline_validation": "eval\\results\\step4_rewrite_contract_revision_20261008_20\\offline_validation.json",
+  "runtime_prompt_schema_request_changed_since_failed_preflight": false,
+  "network": "Approved network escalation for read-only Qdrant/Gemini query embedding/OpenRouter synthetic Rewrite",
+  "previous_failed_run": "Preserved 0/5 before model/embedding calls; sandbox Qdrant connection refused",
+  "fresh_run": "Gemma full 30 in new producer; do not pool first successful case with recovery",
+  "borrowed_closed_pilots": {
+    "mistral": "step4_rewrite_contract_pilot_mistral_20261008_21",
+    "gemma": "step4_rewrite_contract_pilot_gemma_20261008_21",
+    "gemini_lite": "step4_rewrite_contract_pilot_gemini_lite_20261008_21"
+  },
+  "borrowed_closed_full_results": {
+    "mistral": "step4_rewrite_contract_full_mistral_20261008_21",
+    "gemini_lite": "step4_rewrite_contract_full_gemini_lite_20261008_21"
+  },
+  "all_borrowed_source_prompt_schema_rubric_config_unchanged": true,
+  "failed_attempt": {
+    "run": "step4_rewrite_contract_full_gemma_20261008_21",
+    "attempted": 2,
+    "rewrite_receipt_usd": 0.00019188,
+    "cause": "Gemini query embedding 503; provider Rewrite succeeded"
+  },
+  "report_spend_scope": "Selected pilots/full runs; original failed Gemma attempt additionally accounted in all_attempts_cost.json and NHAN_XET_REWRITE.md",
+  "runtime_changed": false
+}

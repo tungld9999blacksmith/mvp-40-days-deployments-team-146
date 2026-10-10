@@ -1,0 +1,16 @@
+{
+  "six_complete_full_repeats": true,
+  "technical_pass": 180,
+  "full_observations": 180,
+  "independent_case_count": 30,
+  "dataset_usage": "DEVELOPMENT_REGRESSION_NOT_HOLDOUT",
+  "known_cost_including_old55_through60": {
+    "pipeline": 0.25706310225,
+    "judge": 0,
+    "all": 0.25706310225
+  },
+  "unknown_inflight_cost_usd": null,
+  "embedding_cost_usd": null,
+  "paused_gemma21_not_merged": true,
+  "judge_status": "NOT_YET_RUN"
+}

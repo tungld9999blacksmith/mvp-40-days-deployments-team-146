@@ -1,0 +1,437 @@
+{
+  "scope": "STRUCTURED_TARGETED_CHECKS_NOT_FULL_SEMANTIC_REVIEW",
+  "checks": [
+    {
+      "session_id": "SESSION-01",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-01",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-01",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-01",
+      "turn": 4,
+      "check": "proposal card time/name and no email promise",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-02",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-02",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-02",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-03",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-03",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-03",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-04",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-04",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-04",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-05",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-05",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-05",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-05",
+      "turn": 4,
+      "check": "proposal card time/name and no email promise",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-06",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-06",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-06",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-06",
+      "turn": 4,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-06",
+      "turn": 4,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-07",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-07",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-07",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-08",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-08",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-08",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-08",
+      "turn": 4,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-09",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-09",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-09",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-10",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-10",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-10",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-10",
+      "turn": 4,
+      "check": "proposal card time/name and no email promise",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-11",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-11",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-11",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-12",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-12",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-12",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-13",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-13",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-13",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-13",
+      "turn": 4,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-14",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-14",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-14",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-15",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-15",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-15",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-16",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-16",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-16",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-17",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-17",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-17",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-18",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-18",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-18",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-19",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-19",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-19",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-20",
+      "turn": 2,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-20",
+      "turn": 3,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-20",
+      "turn": 3,
+      "check": "executed read ID matches explicit fixture user ID",
+      "passed": true
+    },
+    {
+      "session_id": "SESSION-20",
+      "turn": 4,
+      "check": "available slot count",
+      "expected_count": 23,
+      "passed": true
+    }
+  ],
+  "independent_labels": 0
+}

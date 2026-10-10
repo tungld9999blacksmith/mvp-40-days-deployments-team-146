@@ -1,0 +1,5 @@
+{"event": "preflight_passed", "run": "agent_v2_1_reminder_preflight_mistral_20261008_01", "model": ["mistralai/mistral-small-2603"], "next_stage": "reminder_20_x_3"}
+{"event": "default_batch_stopped_429", "run": "agent_v2_1_reminder_mistral_60_20261008_01", "planned_cases": 60, "attempted": 1, "passed": 0, "provider_errors": 1, "sessions_started": false}
+{"event": "routed_preflight_passed", "run": "agent_v2_1_reminder_routed_preflight_mistral_20261008_02", "endpoint_order": ["mistral/us", "mistral/eu"], "next_stage": "routed_reminder_60"}
+{"event": "routed_reminder_60_completed", "run": "agent_v2_1_reminder_routed_mistral_60_20261008_02", "passed": 60, "provider_errors": 0, "next_stage": "sessions_20"}
+{"event": "sessions_completed_pending_human_review", "sessions": 20, "turns": 80, "errors": 0, "write_safety_passed": 20}

@@ -9,8 +9,10 @@ from datetime import date, datetime, time
 from enum import StrEnum
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, StrictBool, StrictInt
 from pydantic.alias_generators import to_camel
+
+from src.common.money import Money
 
 
 class CamelModel(BaseModel):
@@ -42,6 +44,12 @@ class NotificationSettingsOut(CamelModel):
     reminder_lead_days: int
     default_reminder_lead_days: int
     channels: list[ChannelSettingOut]
+    email_recipient: str | None = None
+    email_verified: bool = False
+    email_suppressed: bool = False
+    email_transport: str = "off"
+    email_scope: str = "MAINTENANCE_REMINDER"
+    scope: str = "ALL_OWNED_VEHICLES"
 
 
 class NotificationSettingsEnvelope(CamelModel):
@@ -49,14 +57,16 @@ class NotificationSettingsEnvelope(CamelModel):
 
 
 class ChannelChangeIn(CamelModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="forbid")
     channel: NotificationChannel
-    enabled: bool
+    enabled: StrictBool
 
 
 class NotificationSettingsUpdateIn(CamelModel):
-    reminders_enabled: bool | None = None
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="forbid")
+    reminders_enabled: StrictBool | None = None
     # Range is checked in the service so the error code is INVALID_LEAD_DAYS (API-NOTI-002).
-    reminder_lead_days: int | None = None
+    reminder_lead_days: StrictInt | None = None
     channels: list[ChannelChangeIn] | None = None
 
 
@@ -66,6 +76,14 @@ class ReminderRefOut(CamelModel):
     level: str  # EARLY | WARNING | URGENT | EXPIRED
     odo_milestone_km: int
     resolved: bool
+    resolution_reason: str | None = None
+
+
+class QuoteRefOut(CamelModel):
+    quote_id: UUID
+    status: str  # APPROVED | REJECTED
+    approved_total: Money | None = None
+    workshop_name: str | None = None
 
 
 class BookingRefOut(CamelModel):
@@ -78,26 +96,52 @@ class BookingRefOut(CamelModel):
     workshop_name: str | None = None
 
 
+class BookingReminderRefOut(CamelModel):
+    booking_id: UUID
+    booking_code: str
+    booking_date: date
+    time_slot: time
+    workshop_name: str | None = None
+
+
 class FollowUpRefOut(CamelModel):
     follow_up_id: UUID
     booking_id: UUID
     workshop_name: str | None = None
 
 
+class BookingLineRefOut(CamelModel):
+    """A two-tier price line waiting for the owner, or a reference price the workshop confirmed."""
+
+    booking_id: UUID
+    booking_code: str
+    line_id: UUID
+    kind: str  # PACKAGE | EXTRA
+    status: str  # PROPOSED | CONFIRMED
+    item_name: str
+    price: Money
+    is_safety_critical: bool = False
+    workshop_name: str | None = None
+
+
 class NotificationOut(CamelModel):
     """One feed entry; exactly one of the ``*Ref`` blocks matches ``kind``.
 
-    ``unread`` is true only for a survey waiting for an answer — the other
-    kinds have no read state.
+    ``unread`` is true only for a reviewed quote not opened yet, a survey waiting
+    for an answer, an appointment reminder the owner has not acted on and a price
+    line waiting for the owner's decision — the other kinds have no read state.
     """
 
     id: str
-    kind: str  # MAINTENANCE_REMINDER | BOOKING_UPDATE | FOLLOW_UP
+    kind: str  # MAINTENANCE_REMINDER | QUOTE_RESULT | BOOKING_UPDATE | BOOKING_REMINDER | FOLLOW_UP | BOOKING_LINE
     occurred_at: datetime
     unread: bool
     reminder: ReminderRefOut | None = None
+    quote: QuoteRefOut | None = None
     booking: BookingRefOut | None = None
+    booking_reminder: BookingReminderRefOut | None = None
     follow_up: FollowUpRefOut | None = None
+    booking_line: BookingLineRefOut | None = None
 
 
 class NotificationFeedOut(CamelModel):

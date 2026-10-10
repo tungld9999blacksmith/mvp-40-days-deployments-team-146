@@ -1,0 +1,906 @@
+{
+  "interrupted_raw_run_preserved": true,
+  "pause_gap": true,
+  "mapping": [
+    {
+      "case_id": "BOOK-01",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-02",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-03",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-04",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-05",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-06",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-07",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-08",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-09",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-10",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-11",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-12",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-13",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-14",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-15",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-16",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-17",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-18",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-19",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-20",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-21",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-22",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-23",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-24",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-25",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-26",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-27",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-28",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-29",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-30",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-31",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-32",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-33",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-34",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-35",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-36",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-37",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-38",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-39",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-40",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-41",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-42",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-43",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-44",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-45",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-46",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-47",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-48",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-49",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-50",
+      "effective_repeat": 1,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-01",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-02",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-03",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-04",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-05",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-06",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-07",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-08",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-09",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-10",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-11",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-12",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-13",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-14",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-15",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-16",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-17",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-18",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-19",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-20",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-21",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-22",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-23",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-24",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-25",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-26",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-27",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-28",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-29",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-30",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-31",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-32",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-33",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-34",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-35",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-36",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-37",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-38",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-39",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-40",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-41",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-42",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-43",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-44",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-45",
+      "effective_repeat": 2,
+      "raw_repeat": 2,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_mistral_150_20261008_04"
+    },
+    {
+      "case_id": "BOOK-46",
+      "effective_repeat": 2,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r2_tail_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-47",
+      "effective_repeat": 2,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r2_tail_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-48",
+      "effective_repeat": 2,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r2_tail_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-49",
+      "effective_repeat": 2,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r2_tail_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-50",
+      "effective_repeat": 2,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r2_tail_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-01",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-02",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-03",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-04",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-05",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-06",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-07",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-08",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-09",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-10",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-11",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-12",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-13",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-14",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-15",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-16",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-17",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-18",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-19",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-20",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-21",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-22",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-23",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-24",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-25",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-26",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-27",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-28",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-29",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-30",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-31",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-32",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-33",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-34",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-35",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-36",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-37",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-38",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-39",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-40",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-41",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-42",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-43",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-44",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-45",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-46",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-47",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-48",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-49",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    },
+    {
+      "case_id": "BOOK-50",
+      "effective_repeat": 3,
+      "raw_repeat": 1,
+      "source_run": "eval\\results\\agent_v2_1_booking_grounding_resume_r3_mistral_20261008_05"
+    }
+  ]
+}

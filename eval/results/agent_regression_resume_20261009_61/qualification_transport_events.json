@@ -1,0 +1,116 @@
+[
+  {
+    "method": "get_collection",
+    "attempt": 1,
+    "seconds": 1.4842881000004127,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.190683299999364,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.320554699999775,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.3683611000014935,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.3057751000014832,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.2852380000003905,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.23163729999942,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.1970144999977492,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.194342200000392,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.1546002000031876,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.635912299996562,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.1040453999994497,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.3245711000017764,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.605151100000512,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.2049068999986048,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.178652200000215,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.496678299998166,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.2543506000001798,
+    "error_type": null
+  },
+  {
+    "method": "scroll",
+    "attempt": 1,
+    "seconds": 1.1501491000017268,
+    "error_type": null
+  }
+]

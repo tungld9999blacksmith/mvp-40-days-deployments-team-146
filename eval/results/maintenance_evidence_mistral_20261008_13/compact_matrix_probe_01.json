@@ -1,0 +1,7 @@
+{
+  "expected_ragged": false,
+  "actual_ragged": true,
+  "passed": false,
+  "body": "| Km hoặc Tháng tương ứng | 12.000 | 24.000 | 40.000 |\n|Pin||||\n|Cổng sạc|KT|KT|KT|",
+  "code_changed": false
+}

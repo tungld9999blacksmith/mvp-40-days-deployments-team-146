@@ -1,0 +1,665 @@
+[
+  {
+    "origin": {
+      "sample_id": "review-001",
+      "configuration": "base",
+      "case_id": "RAG-001",
+      "original_row_sha256": "ffd5d77f92d962f2ce840aa551d4ebb8abf221f21d0f01f514ef707cc5e1c926"
+    },
+    "judgment": {
+      "sample_id": "review-001",
+      "sample_sha256": "2e383fc8be8a81390ac77215609be59f90b5138415b89fcb91174636e1ef2d5e",
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "control_expected": null,
+      "source_authority": "UNVERIFIABLE",
+      "error": null,
+      "cost_usd": 0.0020153,
+      "request_payload_sha256": "32f2b7b404f16982709da11d7d20b790903f6a4e28f94e5062dba089431dc3df",
+      "request_schema_sha256": "c5b045dc491f674309e34b3bee42ea2f61f12cea0be1c8d1b4d48bda4f14ffbc",
+      "validation_schema_sha256": "6598b514cfe1bb4be2eb63b109bad916ea95454831bb79cc33592801b94193f2",
+      "raw_response": {
+        "id": "gen-1791478159-SxuSotOqa3IHMlqFqJld",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"overall\": \"PASS\",\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"citation_support\": \"NOT_APPLICABLE\",\n  \"task_success\": \"PASS\",\n  \"claims\": [],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác việc tài liệu cung cấp chưa liệt kê chi tiết các hạng mục cụ thể cho mốc 15.000 km của xe VF8.\"\n  ]\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0Tn6gmFAAQ/hlRK7uSu+txOrkdVPemrqZSAdvnfHmo2tj73RX0z72ghjuUlZFUp0z1AJS/71TOqyODPZRlqTvfCL82jg15exaKELW+OwOyPlzyM8TSAs9kk24=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791478159,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 116,
+          "prompt_tokens": 5751,
+          "total_tokens": 5867,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0020153,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0020153,
+            "upstream_inference_prompt_cost": 0.0017253,
+            "upstream_inference_completions_cost": 0.00029
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"overall\": \"PASS\",\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"citation_support\": \"NOT_APPLICABLE\",\n  \"task_success\": \"PASS\",\n  \"claims\": [],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác việc tài liệu cung cấp chưa liệt kê chi tiết các hạng mục cụ thể cho mốc 15.000 km của xe VF8.\"\n  ]\n}",
+      "judge": {
+        "overall": "PASS",
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "citation_support": "NOT_APPLICABLE",
+        "task_success": "PASS",
+        "claims": [],
+        "reasons": [
+          "Câu trả lời phản ánh chính xác việc tài liệu cung cấp chưa liệt kê chi tiết các hạng mục cụ thể cho mốc 15.000 km của xe VF8."
+        ]
+      },
+      "automated_status": "UNVERIFIABLE",
+      "latency_seconds": 1.6777073000012024
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-002",
+      "configuration": "agent_gemma",
+      "case_id": "RAG-001",
+      "original_row_sha256": "6e06ccfd692b565cc8c1f95272430d539541ecfcd8fc62cbf0adace7fa94f076"
+    },
+    "judgment": {
+      "sample_id": "review-002",
+      "sample_sha256": "68f281a70212ae027b537a847e85c3e39e7761cd35ed2cd08909f034ebfb9ecb",
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "control_expected": null,
+      "source_authority": "UNVERIFIABLE",
+      "error": null,
+      "cost_usd": 0.0030909,
+      "request_payload_sha256": "9d108b6cbde8633bf94fb4c8bb2d3fce70705e0c392c2b9bdc37bb83ab77ec97",
+      "request_schema_sha256": "5f9061dbc08190457bd976f4ed1e5a758527c2c890f59ec7dbe0772b115a8e51",
+      "validation_schema_sha256": "4091f5d2cc5e15fc3deec97253d428132e1f117a8b33670d1d6ad09c6de25415",
+      "raw_response": {
+        "id": "gen-1791478164-PrDpZUFWGI7mWLMCeHak",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"overall\": \"FAIL\",\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"FAIL\",\n  \"citation_support\": \"FAIL\",\n  \"task_success\": \"FAIL\",\n  \"claims\": [\n    {\n      \"claim\": \"Chưa có danh mục chi tiết các hạng mục cụ thể cho mốc 15.000 km của dòng xe VF8 được cung cấp trong tài liệu tra cứu.\",\n      \"support\": \"UNSUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E1\"\n      ]\n    },\n    {\n      \"claim\": \"Xe của bạn hiện đã đạt 12.500 km, nghĩa là bạn đã quá hạn mốc bảo dưỡng 12.000 km.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E2\",\n        \"C0:E6\",\n        \"C0:E17\",\n        \"C0:E19\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Trợ lý trả lời thiếu hạng mục bảo dưỡng của mốc 15.000 km xe điện trong khi nguồn có đề cập tối ưu mốc bảo dưỡng ô tô điện 15.000 km, đồng thời viện dẫn sai mã định danh bằng chứng.\"\n  ]\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0Tw1Uks58TgwgDLgxgrf7/wkDhf4OZTsx+Fv2MfQ4weapFEixjXQ5K5MJFGNIlQGSxOnrlgTS6YCJnU0r1Pxh+H32RWqio9H2MotSWNF4VRzrHU5MgWnvT9RU=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791478164,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 318,
+          "prompt_tokens": 7653,
+          "total_tokens": 7971,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0030909,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0030909,
+            "upstream_inference_prompt_cost": 0.0022959,
+            "upstream_inference_completions_cost": 0.000795
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"overall\": \"FAIL\",\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"FAIL\",\n  \"citation_support\": \"FAIL\",\n  \"task_success\": \"FAIL\",\n  \"claims\": [\n    {\n      \"claim\": \"Chưa có danh mục chi tiết các hạng mục cụ thể cho mốc 15.000 km của dòng xe VF8 được cung cấp trong tài liệu tra cứu.\",\n      \"support\": \"UNSUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E1\"\n      ]\n    },\n    {\n      \"claim\": \"Xe của bạn hiện đã đạt 12.500 km, nghĩa là bạn đã quá hạn mốc bảo dưỡng 12.000 km.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E2\",\n        \"C0:E6\",\n        \"C0:E17\",\n        \"C0:E19\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Trợ lý trả lời thiếu hạng mục bảo dưỡng của mốc 15.000 km xe điện trong khi nguồn có đề cập tối ưu mốc bảo dưỡng ô tô điện 15.000 km, đồng thời viện dẫn sai mã định danh bằng chứng.\"\n  ]\n}",
+      "judge": {
+        "overall": "FAIL",
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "FAIL",
+        "citation_support": "FAIL",
+        "task_success": "FAIL",
+        "claims": [
+          {
+            "claim": "Chưa có danh mục chi tiết các hạng mục cụ thể cho mốc 15.000 km của dòng xe VF8 được cung cấp trong tài liệu tra cứu.",
+            "support": "UNSUPPORTED",
+            "citation_refs": [
+              "C0:E1"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E1",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"user_vehicle_id\": \"b7e3d6b4-0018-4942-a8f2-fd9f43b611e9\"",
+                "json_path": "$.user_vehicle_id",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              }
+            ]
+          },
+          {
+            "claim": "Xe của bạn hiện đã đạt 12.500 km, nghĩa là bạn đã quá hạn mốc bảo dưỡng 12.000 km.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C0:E2",
+              "C0:E6",
+              "C0:E17",
+              "C0:E19"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E2",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"due_status\": \"OVERDUE\"",
+                "json_path": "$.due_status",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E6",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"odo_milestone_km\": 12000",
+                "json_path": "$.next_milestone.odo_milestone_km",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E17",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"remaining_km\": -500",
+                "json_path": "$.remaining_km",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E19",
+                "source_id": "T1",
+                "kind": "tool_result",
+                "quote": "\"odo_km\": 12500",
+                "json_path": "$.odometer.odo_km",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Trợ lý trả lời thiếu hạng mục bảo dưỡng của mốc 15.000 km xe điện trong khi nguồn có đề cập tối ưu mốc bảo dưỡng ô tô điện 15.000 km, đồng thời viện dẫn sai mã định danh bằng chứng."
+        ]
+      },
+      "automated_status": "FAIL",
+      "latency_seconds": 2.2221095000004425
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-003",
+      "configuration": "base",
+      "case_id": "RAG-007",
+      "original_row_sha256": "206a00af1165bf138a8235960e39a4d8808fea068fde33ee39376598e2db1781"
+    },
+    "judgment": {
+      "sample_id": "review-003",
+      "sample_sha256": "70138edb1ed8079036618e86e4ce1bcd15098c81ae60298fcad0212a2b80a4f1",
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "control_expected": null,
+      "source_authority": "UNVERIFIABLE",
+      "error": null,
+      "cost_usd": 0.0022782,
+      "request_payload_sha256": "f54e60099ac858ec5d88b3ff3911d66fd4ad1e8c5f962796956320566a5d0c0f",
+      "request_schema_sha256": "1f0109680fe4a05c1920f169b6d70b286b355738f37bc703ea0527f993b965af",
+      "validation_schema_sha256": "62873b383bb1362818ebbdce152d65970cfcf26e10980de011223cae5aeaced0",
+      "raw_response": {
+        "id": "gen-1791478169-WbqlxQtJCUD003XhIprW",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"overall\": \"PASS\",\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"citation_support\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Bảng được cung cấp ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C1:E21\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời đã trích dẫn chính xác thông tin từ tài liệu và xử lý cẩn thận với trạng thái không chắc chắn của nguồn.\"\n  ]\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0T2SVxUhsyLoq07oppgTDjgc+ZkZ5l40LcewEmPtro/aoetZD6a/qzcbAQCc9RGV2st2h8B8hivibyghKml6+8Z1p0JdOBLiwlYbNqh+M+e6ZgrOl6D3yDBG0=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791478169,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 189,
+          "prompt_tokens": 6019,
+          "total_tokens": 6208,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0022782,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0022782,
+            "upstream_inference_prompt_cost": 0.0018057,
+            "upstream_inference_completions_cost": 0.0004725
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"overall\": \"PASS\",\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"citation_support\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Bảng được cung cấp ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C1:E21\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời đã trích dẫn chính xác thông tin từ tài liệu và xử lý cẩn thận với trạng thái không chắc chắn của nguồn.\"\n  ]\n}",
+      "judge": {
+        "overall": "PASS",
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "citation_support": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Bảng được cung cấp ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E21"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E21",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "| Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên |",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời đã trích dẫn chính xác thông tin từ tài liệu và xử lý cẩn thận với trạng thái không chắc chắn của nguồn."
+        ]
+      },
+      "automated_status": "UNVERIFIABLE",
+      "latency_seconds": 1.7215407000003324
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-004",
+      "configuration": "agent_gemma",
+      "case_id": "RAG-007",
+      "original_row_sha256": "14dd7b0a251d43f83ee1f79ae8b155b0bb5fc30de911a14abdd6504523dce9e2"
+    },
+    "judgment": {
+      "sample_id": "review-004",
+      "sample_sha256": "e02a5a6935bd5ff400a42674caef8e8988e72f32faba78d9e241530d06b01dcb",
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "control_expected": null,
+      "source_authority": "UNVERIFIABLE",
+      "error": null,
+      "cost_usd": 0.0022838,
+      "request_payload_sha256": "d9971a10f89c018ac183fd8f85684ca9063d735b80dff82c0dab3f78a43de320",
+      "request_schema_sha256": "35c89d8a97f14b629c1697b848ccfd87e2cb7113fefcaba61bde2825c771264a",
+      "validation_schema_sha256": "114677d93b012ba581aa29971984636b6c2cbfd21c35d8cec790a90cd036a1b9",
+      "raw_response": {
+        "id": "gen-1791478174-O3nGPIdGz5iZpGaKuQmU",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"overall\": \"PASS\",\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"citation_support\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Bảng được cung cấp ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E21\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời trích dẫn chính xác từ tài liệu bảo dưỡng xe VF e34 và phản ánh đúng trạng thái nguồn cần thận trọng đối chiếu.\"\n  ]\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TszKf6kIE2b5NKiRtledF0iWPHng1yfkIezc/zKl8+7mrfrw3a6zKULVl9i/OZbB2fATQipKLkRWFBxiC+yjQdXlk0Z2c5/+bIpytdrEoFEUjWBo37/ccbhY=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791478174,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 197,
+          "prompt_tokens": 5971,
+          "total_tokens": 6168,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0022838,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0022838,
+            "upstream_inference_prompt_cost": 0.0017913,
+            "upstream_inference_completions_cost": 0.0004925
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"overall\": \"PASS\",\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"citation_support\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Bảng được cung cấp ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E21\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời trích dẫn chính xác từ tài liệu bảo dưỡng xe VF e34 và phản ánh đúng trạng thái nguồn cần thận trọng đối chiếu.\"\n  ]\n}",
+      "judge": {
+        "overall": "PASS",
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "citation_support": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Bảng được cung cấp ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E21"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E21",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "| Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên |",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời trích dẫn chính xác từ tài liệu bảo dưỡng xe VF e34 và phản ánh đúng trạng thái nguồn cần thận trọng đối chiếu."
+        ]
+      },
+      "automated_status": "UNVERIFIABLE",
+      "latency_seconds": 1.7952296000003116
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-031",
+      "configuration": "base",
+      "case_id": "BOOK-19",
+      "original_row_sha256": "7ddce3d077e1227761f93be4e6d7972a3bb566917950708aa8e88f4fd1f561cc"
+    },
+    "judgment": {
+      "sample_id": "review-031",
+      "sample_sha256": "91e6c64b6623b1084ffcdc25f1aa581d61c86fe14bd1a5bd61c84ae39fa6eac9",
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": false,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "control_expected": null,
+      "source_authority": "NOT_APPLICABLE",
+      "error": null,
+      "cost_usd": 0.0029399,
+      "request_payload_sha256": "8f3fb9c16710bc596bcef8c109d5a9366b71bafca85a2295b88c3221bb387a44",
+      "request_schema_sha256": "9017ae0063034e6b86560be5e225d9d9108495ecb638dea3dc4719257bc6bd70",
+      "validation_schema_sha256": "812aaef3415504fe833ecd8510e38d4c6b5c9d0c6d43003766b16da8cd2df056",
+      "raw_response": {
+        "id": "gen-1791478198-BDkHJ2uXpjcXCxHlFWnw",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\"overall\": \"FAIL\", \"correctness_from_available_evidence\": \"FAIL\", \"faithfulness\": \"FAIL\", \"citation_support\": \"UNVERIFIABLE\", \"task_success\": \"FAIL\", \"claims\": [{\"claim\": \"Đã tạo thẻ đề xuất tại VinFast Ha Dong\", \"support\": \"UNSUPPORTED\", \"citation_refs\": [\"C0:E104\"]}], \"reasons\": [\"Câu trả lời khẳng định đã tạo thẻ tại VinFast Ha Dong nhưng bằng chứng tool output chỉ có tóm tắt chung chung không chứa tên cơ sở dịch vụ cụ thể này, dẫn đến sai lệch thông tin và vi phạm quy tắc.\", \"Thiếu viện dẫn chính xác từ chunk bằng chứng phù hợp cho từng phần của nhận định.\"]}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TSOigu/JcAfQ5XGG8uNPUe7M4Lnxww+ATiq3aPZz2MHdO8BxJtYF5VPM/yAXETv8UKhkOLbx5ML/8olH36itMuVgjGLLosAyKu74pPjhaSyWpBMNCxqgRrTA=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791478198,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 161,
+          "prompt_tokens": 8458,
+          "total_tokens": 8619,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0029399,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0029399,
+            "upstream_inference_prompt_cost": 0.0025374,
+            "upstream_inference_completions_cost": 0.0004025
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\"overall\": \"FAIL\", \"correctness_from_available_evidence\": \"FAIL\", \"faithfulness\": \"FAIL\", \"citation_support\": \"UNVERIFIABLE\", \"task_success\": \"FAIL\", \"claims\": [{\"claim\": \"Đã tạo thẻ đề xuất tại VinFast Ha Dong\", \"support\": \"UNSUPPORTED\", \"citation_refs\": [\"C0:E104\"]}], \"reasons\": [\"Câu trả lời khẳng định đã tạo thẻ tại VinFast Ha Dong nhưng bằng chứng tool output chỉ có tóm tắt chung chung không chứa tên cơ sở dịch vụ cụ thể này, dẫn đến sai lệch thông tin và vi phạm quy tắc.\", \"Thiếu viện dẫn chính xác từ chunk bằng chứng phù hợp cho từng phần của nhận định.\"]}",
+      "judge": {
+        "overall": "FAIL",
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "FAIL",
+        "citation_support": "UNVERIFIABLE",
+        "task_success": "FAIL",
+        "claims": [
+          {
+            "claim": "Đã tạo thẻ đề xuất tại VinFast Ha Dong",
+            "support": "UNSUPPORTED",
+            "citation_refs": [
+              "C0:E104"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E104",
+                "source_id": "T3",
+                "kind": "tool_result",
+                "quote": "\"summary\": \"Đề xuất VinFast Ha Dong lúc 15:00 ngày 2026-10-10.\"",
+                "json_path": "$.summary",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời khẳng định đã tạo thẻ tại VinFast Ha Dong nhưng bằng chứng tool output chỉ có tóm tắt chung chung không chứa tên cơ sở dịch vụ cụ thể này, dẫn đến sai lệch thông tin và vi phạm quy tắc.",
+          "Thiếu viện dẫn chính xác từ chunk bằng chứng phù hợp cho từng phần của nhận định."
+        ]
+      },
+      "automated_status": "FAIL",
+      "latency_seconds": 1.8791808000005403
+    }
+  }
+]

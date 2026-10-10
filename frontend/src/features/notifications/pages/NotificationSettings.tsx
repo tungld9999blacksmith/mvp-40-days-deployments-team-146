@@ -83,6 +83,15 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
           toast.show('Kênh này chưa được hỗ trợ.', 'error')
           onReload()
           break
+        case 'EMAIL_NOT_VERIFIED':
+          toast.show('Cần email đăng nhập đã xác minh để bật nhận email.', 'error')
+          break
+        case 'EMAIL_TEST_RECIPIENT_MISMATCH':
+          toast.show('Tài khoản demo phải dùng email trùng địa chỉ gửi thử đã cấu hình.', 'error')
+          break
+        case 'EMAIL_SUPPRESSED':
+          toast.show('Địa chỉ email đang bị chặn do lỗi giao nhận trước đó.', 'error')
+          break
         case 'NETWORK_ERROR':
         case 'TIMEOUT_ERROR':
           toast.show('Không có kết nối mạng. Vui lòng thử lại.', 'error')
@@ -154,7 +163,23 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
 
         <Card className={cn('p-6 transition-opacity', off && 'opacity-50')}>
           <p className="text-sm font-semibold text-foreground">Kênh nhận thông báo</p>
-          <p className="text-sm text-muted mt-1 mb-4">Nhắc bảo dưỡng luôn hiện trong mục Thông báo của ứng dụng. Các kênh bên ngoài dưới đây sẽ được hỗ trợ sau.</p>
+          <p className="text-sm text-muted mt-1 mb-4">
+            Nhắc bảo dưỡng luôn hiện trong mục Thông báo. Cài đặt áp dụng cho tất cả xe của tài khoản.{' '}
+            {saved.channels.some(channel => channel.available)
+              ? 'Bật thêm kênh bên dưới để nhận nhắc cả khi không mở ứng dụng.'
+              : 'Các kênh bên ngoài dưới đây sẽ được hỗ trợ sau.'}
+          </p>
+          {saved.emailTransport && <div className="text-sm text-muted mb-4 space-y-2">
+            <p>Email nhận: <span className="font-medium text-foreground">{saved.emailRecipient ?? 'Chưa có email'}</span>{saved.emailTransport !== 'resend_test' && <> · {saved.emailVerified ? 'Đã xác minh' : 'Chưa xác minh'}</>}</p>
+            <p>Email chỉ dùng cho nhắc mốc bảo dưỡng. {saved.emailTransport === 'resend_test' ? 'Địa chỉ gửi thử nhận tối đa một email nhắc mới trong 7 ngày.' : 'Mỗi xe nhận tối đa một email nhắc mới trong 7 ngày.'}</p>
+            {saved.emailSuppressed && <p className="text-error">Địa chỉ này đang bị chặn do lỗi giao nhận.</p>}
+            {saved.emailTransport === 'mock' && <p>Đang mô phỏng gửi email. <Link to="/notifications/demo-email" className="text-emerald underline">Mở hộp thư demo</Link></p>}
+            {saved.emailTransport === 'resend_test' && <>
+              <p>Gửi email thật qua Resend với dữ liệu demo. Thư chỉ gửi khi bạn bấm “Gửi thử email thật”.</p>
+              {!saved.emailTestRecipientMatched && <p>Tài khoản demo cần dùng email trùng địa chỉ gửi thử đã cấu hình.</p>}
+              <Link to="/notifications/demo-email" className="text-emerald underline">Mở email demo và gửi thử</Link>
+            </>}
+          </div>}
           <NotificationChannelList
             channels={saved.channels}
             values={form.channels}
@@ -163,7 +188,7 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
           />
         </Card>
 
-        <Notice icon={<Info className="w-4 h-4" />}>Thay đổi áp dụng từ lần kiểm tra kế tiếp (08:00 hằng ngày).</Notice>
+        <Notice icon={<Info className="w-4 h-4" />}>Thay đổi áp dụng từ lần kiểm tra nhắc bảo dưỡng kế tiếp.</Notice>
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 lg:left-60 z-30 bg-surface border-t border-border">

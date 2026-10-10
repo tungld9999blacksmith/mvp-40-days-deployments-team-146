@@ -1,0 +1,10 @@
+{
+  "eval\\results\\agent_v2_1_business_preflight_mistral_20261008_03\\case_results.jsonl": "27f043c568514bc2170fe448720f5b0c8a607dca05cc34eef69f541e1747573c",
+  "eval\\results\\agent_v2_1_business_preflight_mistral_20261008_03\\comparison.json": "c5eab218249470cb60c10a02fa73441a47accabe0fc77a99b0f1b04dadff0c36",
+  "eval\\results\\agent_v2_1_business_preflight_mistral_20261008_03\\human_review.csv": "0d97c8155f1aa916f58bb91b2532b39be629d192c136a9bb6194e9f38a1280fc",
+  "eval\\results\\agent_v2_1_business_preflight_mistral_20261008_03\\manifest.json": "c46695ecb55cd28d459017e48027726e765ed7158e614073681bfb8ea97904bb",
+  "eval\\results\\agent_v2_1_business_preflight_mistral_20261008_03\\preservation.json": "aaf0e3edd744802f4e7d3f5ab5ec169b6799e63bebed543e38affd20492d2f79",
+  "eval\\results\\agent_v2_1_business_preflight_mistral_20261008_03\\report.md": "e00f3d14f454169d7216f39769b094a434873ffc66288f701578e000ad6db3ec",
+  "eval\\results\\agent_v2_1_business_preflight_mistral_20261008_03\\review_model_key.json": "a69114f929960bb3434f0d0e79c5efa07d7b7469e47b2c3ef90a4438dd3c6762",
+  "eval\\results\\agent_v2_1_business_preflight_mistral_20261008_03\\schema_snapshot.json": "dfa6356252bc863602524dc247e3f6a8c3428a3281e9533d3eaba09138b9d11c"
+}

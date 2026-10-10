@@ -59,8 +59,8 @@ class MockVehicleService:
             "lastService": {
                 "serviceDate": v["lastServiceDate"],
                 "odoKm": v["lastServiceOdo"],
-                "source": "OEM",
-                "centerName": "Xưởng hãng giả lập SC-02",
+                "source": v.get("lastServiceSource", "OEM"),
+                "centerName": v.get("lastServiceCenter", "Xưởng hãng giả lập SC-02"),
             },
         }
 

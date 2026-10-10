@@ -1,0 +1,21 @@
+{
+  "Generation": {
+    "mistral": {
+      "pilot_eligible": true,
+      "full_technical_eligible": true,
+      "review": "DEFERRED_BY_USER",
+      "production_change": false
+    },
+    "gemma": {
+      "pilot_eligible": true,
+      "full_technical_eligible": true,
+      "review": "DEFERRED_BY_USER",
+      "production_change": false
+    }
+  },
+  "Rewrite": "Mistral retained per completed Rewrite screening",
+  "Agent": "Existing Mistral/Gemma technical shortlist, no new Agent calls",
+  "Write": "INACTIVE",
+  "GPT4o": "EXCLUDED_ALL_STAGES",
+  "application_model_change": false
+}

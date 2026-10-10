@@ -1,0 +1,9 @@
+{
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_agent_gemma\\case_results.jsonl": "46774f2bed5270e2ae44e1252c8ce7016911db9912c9dca11384536f7d2de5e6",
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_agent_gemma\\corpus_after.json": "0a8410bfdfc2aaf7ab636991041163a0a8281b8a7457adef5ba0899ae0251d19",
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_agent_gemma\\corpus_before.json": "261327cb1a732162eee5783567bebb6141d08a67ccc73726da63a6360e603f6e",
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_agent_gemma\\manifest.json": "82804b5ff60faa317a26640bdf6e82e3c3018fb6d47fd31561c583a68be4043f",
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_agent_gemma\\metrics.json": "e147d2a06ddd961a399b0f6d8a9205ce1eca0512980f92ad70354445dbb075ba",
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_agent_gemma\\preservation.json": "e9caa006f0b613077d44786f66ab708b8eb647b66394dca0d29ced8d194ebef0",
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_agent_gemma\\resolved_components.json": "0e39da2db61d103dd17ab24c7e9a59bd154687b1d523a48d743d9961efdeb995"
+}

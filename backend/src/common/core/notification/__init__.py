@@ -1,5 +1,6 @@
 """Notification domain: owner notification preferences and reminder delivery results."""
 
+from .email import EmailOutbox, EmailSuppression, EmailVehicleGate, EmailWebhookEvent
 from .event_delivery import (
     BookingReminder,
     BookingReminderDelivery,
@@ -18,6 +19,10 @@ __all__ = [
     "BookingReminderStatus",
     "FollowUpDelivery",
     "DeliveryStatus",
+    "EmailOutbox",
+    "EmailSuppression",
+    "EmailVehicleGate",
+    "EmailWebhookEvent",
     "ReminderDelivery",
     "ReminderDeliveryRepository",
     "UserNotificationChannel",

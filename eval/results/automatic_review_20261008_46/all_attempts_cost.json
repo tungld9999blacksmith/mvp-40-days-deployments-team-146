@@ -1,0 +1,8 @@
+{
+  "current_known_receipts_usd": 0.030009599999999997,
+  "prior_judge_known_receipts_usd": 0.14865859,
+  "provider_probe_known_receipts_usd": 0.0009075,
+  "total_judge_known_receipts_usd": 0.17957569,
+  "missing_receipts": 4,
+  "agent_rag_embedding_calls": 0
+}

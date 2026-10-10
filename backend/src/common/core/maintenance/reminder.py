@@ -8,12 +8,14 @@ from enum import Enum, StrEnum
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
+    JSON,
     Boolean,
     CheckConstraint,
     Column,
     DateTime,
     ForeignKey,
     Integer,
+    String,
     UniqueConstraint,
     func,
 )
@@ -59,6 +61,8 @@ def _enum_values(enum_cls: type[Enum]) -> list[str]:
 
 class Reminder(SQLModel, table=True):
     __tablename__ = "reminder"
+    details: dict | None = Field(default=None, sa_column=Column(JSON, nullable=True))
+    resolution_reason: str | None = Field(default=None, sa_column=Column(String(32), nullable=True))
     __table_args__ = (
         CheckConstraint("target_odo_milestone > 0", name="ck_reminder_target_odo_milestone"),
         CheckConstraint("snooze_count >= 0", name="ck_reminder_snooze_count"),

@@ -514,13 +514,14 @@ def _seed_warranty_claims(session: Session) -> None:
 
 
 def _seed_maintenance_schedules(session: Session) -> None:
-    # Áp dụng chung cho tất cả model (EV maintenance khá giống nhau)
+    # Áp dụng chung cho tất cả model: từ 01/01/2026 VinFast bảo dưỡng ô tô điện mỗi
+    # 15.000 km hoặc 1 năm (data/knowledge/processed/toi_uu_moc_bao_duong_ALL_cleaned.md).
     milestones: list[tuple[int, int, str]] = [
-        (10_000, 6, "Bảo dưỡng định kỳ 10.000km / 6 tháng"),
-        (20_000, 12, "Bảo dưỡng định kỳ 20.000km / 12 tháng"),
-        (40_000, 24, "Bảo dưỡng lớn 40.000km / 24 tháng"),
-        (60_000, 36, "Bảo dưỡng lớn 60.000km / 36 tháng"),
-        (80_000, 48, "Bảo dưỡng toàn diện 80.000km / 48 tháng"),
+        (15_000, 12, "Bảo dưỡng định kỳ 15.000km / 12 tháng"),
+        (30_000, 24, "Bảo dưỡng định kỳ 30.000km / 24 tháng"),
+        (45_000, 36, "Bảo dưỡng lớn 45.000km / 36 tháng"),
+        (60_000, 48, "Bảo dưỡng lớn 60.000km / 48 tháng"),
+        (75_000, 60, "Bảo dưỡng toàn diện 75.000km / 60 tháng"),
     ]
 
     model_ids = [
@@ -556,19 +557,19 @@ def _seed_maintenance_schedules(session: Session) -> None:
 
 
 def _seed_maintenance_items(session: Session) -> None:
-    # Items cho mốc 10k (MS-001 cho MDL-01, pattern lặp)
+    # Items cho mốc 15k (MS-001 cho MDL-01, pattern lặp)
     # Chỉ seed items cho model MDL-01 (VF5) làm mẫu, các model khác tương tự
     items: list[MaintenanceItem] = []
     counter = 0
 
-    # Mốc 10k (MS-001)
-    items_10k: list[tuple[str, bool, int]] = [
+    # Mốc 15k (MS-001)
+    items_15k: list[tuple[str, bool, int]] = [
         ("Kiểm tra & bổ sung dung dịch làm mát", True, 200_000),
         ("Kiểm tra hệ thống phanh", True, 0),
         ("Kiểm tra lốp & áp suất", False, 150_000),
         ("Kiểm tra hệ thống treo", True, 0),
     ]
-    for name, warranty, price in items_10k:
+    for name, warranty, price in items_15k:
         counter += 1
         items.append(
             MaintenanceItem(
@@ -580,15 +581,15 @@ def _seed_maintenance_items(session: Session) -> None:
             )
         )
 
-    # Mốc 20k (MS-002)
-    items_20k: list[tuple[str, bool, int]] = [
+    # Mốc 30k (MS-002)
+    items_30k: list[tuple[str, bool, int]] = [
         ("Thay lọc gió điều hòa", False, 350_000),
         ("Kiểm tra & bổ sung dung dịch làm mát", True, 200_000),
         ("Kiểm tra hệ thống phanh", True, 0),
         ("Kiểm tra bình ắc-quy 12V", True, 0),
         ("Kiểm tra hệ thống sạc", True, 0),
     ]
-    for name, warranty, price in items_20k:
+    for name, warranty, price in items_30k:
         counter += 1
         items.append(
             MaintenanceItem(
@@ -600,8 +601,8 @@ def _seed_maintenance_items(session: Session) -> None:
             )
         )
 
-    # Mốc 40k (MS-003)
-    items_40k: list[tuple[str, bool, int]] = [
+    # Mốc 45k (MS-003)
+    items_45k: list[tuple[str, bool, int]] = [
         ("Thay lọc gió điều hòa", False, 350_000),
         ("Thay dung dịch làm mát", False, 800_000),
         ("Thay dung dịch phanh", False, 450_000),
@@ -609,7 +610,7 @@ def _seed_maintenance_items(session: Session) -> None:
         ("Kiểm tra hệ thống treo & gầm", True, 0),
         ("Cân bằng & đảo lốp", False, 300_000),
     ]
-    for name, warranty, price in items_40k:
+    for name, warranty, price in items_45k:
         counter += 1
         items.append(
             MaintenanceItem(
@@ -641,8 +642,8 @@ def _seed_maintenance_items(session: Session) -> None:
             )
         )
 
-    # Mốc 80k (MS-005)
-    items_80k: list[tuple[str, bool, int]] = [
+    # Mốc 75k (MS-005)
+    items_75k: list[tuple[str, bool, int]] = [
         ("Thay lọc gió điều hòa", False, 350_000),
         ("Thay dung dịch làm mát", False, 800_000),
         ("Thay dung dịch phanh", False, 450_000),
@@ -651,7 +652,7 @@ def _seed_maintenance_items(session: Session) -> None:
         ("Kiểm tra toàn diện hệ thống điện cao áp", True, 0),
         ("Cân chỉnh hệ thống ADAS", True, 0),
     ]
-    for name, warranty, price in items_80k:
+    for name, warranty, price in items_75k:
         counter += 1
         items.append(
             MaintenanceItem(

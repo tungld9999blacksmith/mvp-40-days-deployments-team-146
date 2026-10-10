@@ -1,9 +1,9 @@
 /**
  * Demo mode: reminder settings and the in-app feed (us-021 API-NOTI-001 → 003). Like the backend,
  * the feed has no table of its own: it is derived from the vehicle due status, the owner's booking
- * events and the post-service surveys.
+ * events, the 24h appointment reminders and the post-service surveys.
  */
-import { visibleCode } from './bookings'
+import { apptOf, visibleCode } from './bookings'
 import { bodyOf, fail, ok, route } from './core'
 import { getDb, save, type MockBooking } from './db'
 import { dueOf, ownerVehicle } from './vehicles'
@@ -12,7 +12,11 @@ const GROUP = 'notifications'
 const DEFAULT_LEAD_DAYS = 7
 const FEED_DAYS = 90
 const CHANNELS = ['ZALO', 'TELEGRAM', 'SMS', 'EMAIL']
+// Like a backend with email (Resend) and eSMS configured; the demo owner has an email and a phone number.
+const AVAILABLE = new Set(['SMS', 'EMAIL'])
 const OPEN_STATES = ['pending', 'confirmed', 'checked_in', 'in_progress']
+const REMINDED_STATES = ['confirmed', 'checked_in', 'in_progress', 'completed']
+const REMINDER_LEAD_MS = 24 * 3_600_000
 const FEED_STATUSES: Record<string, 'CONFIRMED' | 'CANCELLED' | 'COMPLETED'> = {
   CONFIRMED: 'CONFIRMED',
   CANCELLED: 'CANCELLED',
@@ -25,8 +29,11 @@ function settingsView() {
     remindersEnabled: settings.remindersEnabled,
     reminderLeadDays: settings.reminderLeadDays,
     defaultReminderLeadDays: DEFAULT_LEAD_DAYS,
-    // External channels are not built yet: in-app only ("Sắp có").
-    channels: CHANNELS.map(channel => ({ channel, enabled: false, available: false, status: 'COMING_SOON' })),
+    channels: CHANNELS.map(channel =>
+      AVAILABLE.has(channel)
+        ? { channel, enabled: Boolean(settings.channels[channel]), available: true, status: 'CONNECTED' }
+        : { channel, enabled: false, available: false, status: 'COMING_SOON' },
+    ),
   }
 }
 
@@ -77,6 +84,33 @@ function bookingItems(booking: MockBooking) {
     }))
 }
 
+/** us-033 24h reminder, derived like the backend: confirmed booking whose reminder time has passed (us-069 BR-1707). */
+function bookingReminderItems(booking: MockBooking) {
+  if (!REMINDED_STATES.includes(booking.status)) return []
+  const appt = new Date(apptOf(booking)).getTime()
+  const remindAt = appt - REMINDER_LEAD_MS
+  if (Date.now() < remindAt) return []
+  const workshop = getDb().workshops.find(item => item.workshopId === booking.workshopId)
+  return [
+    {
+      id: `booking-reminder:${booking.bookingId}`,
+      kind: 'BOOKING_REMINDER' as const,
+      occurredAt: new Date(remindAt).toISOString(),
+      unread: booking.status === 'confirmed' && !booking.attendanceConfirmedAt && appt > Date.now(),
+      reminder: null,
+      booking: null,
+      bookingReminder: {
+        bookingId: booking.bookingId,
+        bookingCode: visibleCode(booking) ?? booking.bookingCode,
+        bookingDate: booking.bookingDate,
+        timeSlot: booking.timeSlot,
+        workshopName: workshop?.name ?? null,
+      },
+      followUp: null,
+    },
+  ]
+}
+
 function followUpItems() {
   const db = getDb()
   return db.followUps
@@ -102,8 +136,16 @@ export function registerNotificationRoutes() {
   route(GROUP, 'GET', '/notification-settings', () => ok(settingsView()))
 
   route(GROUP, 'PUT', '/notification-settings', req => {
-    const body = bodyOf<{ remindersEnabled: boolean; reminderLeadDays: number }>(req)
+    const body = bodyOf<{
+      remindersEnabled: boolean
+      reminderLeadDays: number
+      channels?: { channel: string; enabled: boolean }[]
+    }>(req)
     const settings = getDb().notificationSettings
+    const unavailable = body.channels?.find(change => change.enabled && !AVAILABLE.has(change.channel))
+    if (unavailable) {
+      return fail(422, 'CHANNEL_NOT_AVAILABLE', 'Kênh này chưa được hỗ trợ.')
+    }
     if (body.reminderLeadDays !== undefined) {
       if (!Number.isInteger(body.reminderLeadDays) || body.reminderLeadDays < 0 || body.reminderLeadDays > 30) {
         return fail(400, 'INVALID_REQUEST', 'Số ngày nhắc trước phải từ 0 đến 30.', { field: 'reminderLeadDays' })
@@ -111,6 +153,7 @@ export function registerNotificationRoutes() {
       settings.reminderLeadDays = body.reminderLeadDays
     }
     if (typeof body.remindersEnabled === 'boolean') settings.remindersEnabled = body.remindersEnabled
+    for (const change of body.channels ?? []) settings.channels[change.channel] = change.enabled
     save()
     return ok(settingsView())
   })
@@ -118,7 +161,7 @@ export function registerNotificationRoutes() {
   route(GROUP, 'GET', '/notifications', () => {
     const since = Date.now() - FEED_DAYS * 86_400_000
     const own = getDb().bookings.filter(booking => booking.ownerSelf)
-    const items = [reminderItem(), ...own.flatMap(bookingItems), ...followUpItems()]
+    const items = [reminderItem(), ...own.flatMap(bookingItems), ...own.flatMap(bookingReminderItems), ...followUpItems()]
       .filter(item => item !== null)
       .filter(item => new Date(item.occurredAt).getTime() >= since)
       .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt))

@@ -6,6 +6,7 @@
 import { upcomingSlotsToday } from './board'
 import { CONFIRM_DEADLINE_HOURS, demoPhone, SLOT_TIMES } from './bookings'
 import { scheduleFollowUp } from './crm'
+import { newQuote } from './quotes'
 import { activeWorkshopAccount } from './workshopAccount'
 import {
   addDays,
@@ -153,6 +154,7 @@ function makeBooking(options: {
     confirmationMode: mode,
     odoMilestone: options.odoMilestone === undefined ? 12_000 : options.odoMilestone,
     estimatedCost: null,
+    quoteId: null,
     actualCost: options.actualCost ?? null,
     note: options.note ?? null,
     attendanceConfirmedAt: options.attendance ? hoursAgo(3) : null,
@@ -162,6 +164,23 @@ function makeBooking(options: {
     reschedules: [],
     progress,
   }
+}
+
+function customerVehicle(index: number, workshop: MockWorkshop): MockVehicle {
+  const customer = CUSTOMERS[index % CUSTOMERS.length]
+  return {
+    userVehicleId: `demo-vehicle-${index}`,
+    modelId: /VF\s?(e?\d+)/i.exec(customer.modelName)?.[0].replace(/\s/g, '').toUpperCase() ?? 'VF',
+    modelName: customer.modelName,
+    licensePlate: customer.licensePlate,
+    nextOdoMilestone: 24_000,
+    nextItems: [],
+    warrantyStatus: hashIndex(workshop.workshopId, index) ? 'ACTIVE' : 'EXPIRED',
+  }
+}
+
+function hashIndex(seed: string, index: number): boolean {
+  return (seed.charCodeAt(index % seed.length) + index) % 4 !== 0
 }
 
 export function ensureSeeded() {
@@ -189,7 +208,29 @@ export function ensureSeeded() {
   const mine = { customer: owner, vehicle: { modelName: ownerVehicle.modelName, licensePlate: ownerVehicle.licensePlate }, userVehicleId: ownerVehicle.userVehicleId, ownerSelf: true }
   const milestone = ownerVehicle.nextOdoMilestone ?? 12_000
 
-  // ---------------------------------------------------------- owner: bookings
+  // ---------------------------------------------------------- owner: quotes + bookings
+  const approved = newQuote(ownerVehicle, workshop.workshopId, milestone, { ownerSelf: true, customer: owner })
+  approved.status = 'approved'
+  approved.submittedAt = hoursAgo(80)
+  approved.reviewedAt = hoursAgo(60)
+  approved.expiresAt = new Date(Date.now() + 4 * 86_400_000).toISOString()
+  approved.createdAt = hoursAgo(82)
+  approved.resultSeenAt = hoursAgo(50)
+  approved.reviewerNote = 'Giá thay dầu phanh theo bảng giá mới của xưởng.'
+  approved.items.forEach((item, index) => {
+    item.approvedPrice = !item.covered && index === approved.items.length - 1 ? Math.max(item.estimatedPrice - 30_000, 0) : item.estimatedPrice
+    if (item.approvedPrice !== item.estimatedPrice) item.reviewerNote = 'Giá xưởng'
+  })
+  approved.approvedTotal = approved.items.reduce((sum, item) => sum + (item.approvedPrice ?? 0), 0)
+
+  const rejected = newQuote(ownerVehicle, DEMO_WORKSHOP.workshopId, milestone + 12_000, { ownerSelf: true, customer: owner })
+  rejected.status = 'rejected'
+  rejected.createdAt = hoursAgo(30)
+  rejected.submittedAt = hoursAgo(29)
+  rejected.reviewedAt = hoursAgo(5)
+  rejected.reviewerNote = 'Xe cần kiểm tra pin cao áp trước khi báo giá mốc này, mời anh/chị mang xe qua xưởng.'
+  db.quotes.push(approved, rejected)
+
   const upcomingSlot = SLOT_TIMES[1]
   // Workshops close on Sundays in the mock: keep demo appointments on open days.
   const openDay = (offset: number) => {
@@ -197,6 +238,8 @@ export function ensureSeeded() {
     return new Date(`${day}T12:00:00+07:00`).getUTCDay() === 0 ? addDays(day, 1) : day
   }
   const upcoming = makeBooking({ ...mine, workshopId: workshop.workshopId, status: 'confirmed', date: openDay(3), slot: upcomingSlot, odoMilestone: milestone, createdHoursAgo: 50 })
+  upcoming.quoteId = approved.quoteId
+  approved.bookingId = upcoming.bookingId
 
   const done = makeBooking({
     ...mine,
@@ -232,7 +275,7 @@ function ownFollowUp(done: MockBooking) {
   followUp.scheduledAt = hoursAgo(20)
 }
 
-/** Other customers of the workshop: today's Board, requests to confirm, answered surveys. */
+/** Other customers of the workshop: today's Board, requests to confirm, quotes to review, answered surveys. */
 function seedBoard(workshop: MockWorkshop) {
   const db = getDb()
   const today = todayVn()
@@ -262,6 +305,24 @@ function seedBoard(workshop: MockWorkshop) {
   const pastC = makeBooking({ ...person(5), workshopId: workshop.workshopId, status: 'completed', date: addDays(today, -6), slot: '10:00', createdHoursAgo: 180, stages: STAGES, actualCost: 1_150_000 })
 
   db.bookings.push(...board, pastA, pastB, pastC)
+
+  // Quotes waiting on the Portal (us-049), plus one already approved.
+  const pendingQuotes = [0, 2].map((index, order) => {
+    const quote = newQuote(customerVehicle(index, workshop), workshop.workshopId, 24_000, { ownerSelf: false, customer: person(index).customer })
+    quote.status = 'pending_approval'
+    quote.createdAt = hoursAgo(order === 0 ? 31 : 4)
+    quote.submittedAt = hoursAgo(order === 0 ? 30 : 3)
+    return quote
+  })
+  const reviewed = newQuote(customerVehicle(5, workshop), workshop.workshopId, 24_000, { ownerSelf: false, customer: person(5).customer })
+  reviewed.status = 'approved'
+  reviewed.createdAt = hoursAgo(50)
+  reviewed.submittedAt = hoursAgo(49)
+  reviewed.reviewedAt = hoursAgo(45)
+  reviewed.expiresAt = new Date(Date.now() + 2 * 86_400_000).toISOString()
+  reviewed.items.forEach(item => (item.approvedPrice = item.estimatedPrice))
+  reviewed.approvedTotal = reviewed.estimatedTotal
+  db.quotes.push(...pendingQuotes, reviewed)
 
   for (const [booking, rating, comment, safety] of [
     [pastA, 2, 'Về nhà thấy phanh trước kêu khi dừng, hơi rung ở tốc độ thấp.', true],

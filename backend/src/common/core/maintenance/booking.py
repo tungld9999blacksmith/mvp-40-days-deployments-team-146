@@ -36,6 +36,13 @@ class BookingStatus(StrEnum):
     CANCELLED = "cancelled"
 
 
+class PricingFlow(StrEnum):
+    """How a booking is priced, fixed when it is created (bao-gia-hai-tang D7)."""
+
+    LEGACY = "legacy"  # us-049: an approved quote may be attached
+    TWO_TIER = "two_tier"  # booking_line: package lines + extras the owner approves
+
+
 def _enum_values(enum_cls: type[Enum]) -> list[str]:
     return [member.value for member in enum_cls]
 
@@ -43,6 +50,7 @@ def _enum_values(enum_cls: type[Enum]) -> list[str]:
 class Booking(SQLModel, table=True):
     __tablename__ = "booking"
     __table_args__ = (
+        CheckConstraint("pricing_flow IN ('legacy', 'two_tier')", name="ck_booking_pricing_flow"),
         CheckConstraint("estimated_cost IS NULL OR estimated_cost >= 0", name="ck_booking_estimated_cost"),
         CheckConstraint("actual_cost IS NULL OR actual_cost >= 0", name="ck_booking_actual_cost"),
         CheckConstraint("odo_milestone IS NULL OR odo_milestone > 0", name="ck_booking_odo_milestone"),
@@ -81,6 +89,11 @@ class Booking(SQLModel, table=True):
     source_message_id: UUID | None = Field(
         default=None,
         sa_column=Column(ForeignKey("chat_message.id", ondelete="SET NULL"), nullable=True),
+    )
+    # Read by every two-tier check, so turning QUOTE_FLOW off only affects new bookings.
+    pricing_flow: PricingFlow = Field(
+        default=PricingFlow.LEGACY,
+        sa_column=Column(String(16), nullable=False, server_default="legacy"),
     )
 
     created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))

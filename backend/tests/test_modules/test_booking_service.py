@@ -520,3 +520,20 @@ async def test_contended_reschedule_slot_returns_service_unavailable(session, to
             await service.reschedule(user, booking_id, token)
     session.expire_all()
     assert session.get(Booking, booking_id).time_slot == SLOT
+
+
+@pytest.mark.asyncio
+async def test_availability_with_slot_maps_redis_outage_to_service_unavailable(session, toolkit, day, monkeypatch):
+    """Redis down while issuing the confirmation token → 503 SERVICE_UNAVAILABLE, not a raw 500."""
+    from redis.exceptions import ConnectionError as RedisConnectionError
+
+    user = add_owner(session)
+    workshop = add_workshop(session)
+    add_hours(session, workshop)
+
+    async def redis_down(*args, **kwargs):
+        raise RedisConnectionError("Error 10061 connecting to localhost:6379.")
+
+    monkeypatch.setattr(toolkit.redis, "set", redis_down)
+    with pytest.raises(errors.ServiceUnavailableError):
+        await _service(session, toolkit).check_availability(user, workshop.id, day, SLOT, with_alternatives=False)

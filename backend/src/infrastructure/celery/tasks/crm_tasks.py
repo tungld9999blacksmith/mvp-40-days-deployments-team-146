@@ -1,7 +1,9 @@
-"""Celery tasks for post-service care.
+"""Celery tasks for post-service care and quotes.
 
 - ``follow_up.send_due`` — open and send due follow-ups, retry deliveries (us-041 JOB-FU-001).
 - ``follow_up.close_expired`` — close follow-ups unanswered for 72h (us-041 JOB-FU-002).
+- ``quote.purge_stale_drafts`` — delete drafts older than the TTL (us-049 JOB-QT-01).
+- ``booking_line.purge_pending_photos`` — delete unattached extra-item photos > 24h (bao-gia-hai-tang OV5).
 
 Each task opens its own DB session in the worker process.
 """
@@ -53,5 +55,35 @@ def close_expired_follow_ups_task() -> int:
     session = next(get_session())
     try:
         return close_expired(session, response_window_hours=get_settings().follow_up_response_window_hours)
+    finally:
+        session.close()
+
+
+@celery.task(name="quote.purge_stale_drafts")
+def purge_stale_quote_drafts_task() -> int:
+    from src.config import get_settings
+    from src.infrastructure.supabase.db import get_session
+    from src.modules.quote.jobs import purge_stale_drafts
+
+    session = next(get_session())
+    try:
+        return purge_stale_drafts(session, ttl_days=get_settings().quote_draft_ttl_days)
+    finally:
+        session.close()
+
+
+@celery.task(name="booking_line.purge_pending_photos")
+def purge_pending_line_photos_task() -> int:
+    from src.infrastructure.supabase.db import get_session
+    from src.modules.booking_line.dependency import get_line_photos
+
+    photos = get_line_photos()
+    if photos is None:
+        return 0
+    session = next(get_session())
+    try:
+        removed = photos.purge_pending(session)
+        logger.info("booking_line.purge_pending_photos", extra={"removed": removed})
+        return removed
     finally:
         session.close()

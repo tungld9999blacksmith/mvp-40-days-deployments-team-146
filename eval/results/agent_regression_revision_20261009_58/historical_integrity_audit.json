@@ -1,0 +1,22 @@
+{
+  "sealed_manifest": "eval/results/step5_frozen_transport_20261009_57/closed_master_hashes.json",
+  "files_verified": 36,
+  "changed": [
+    {
+      "path": "eval\\results\\step5_frozen_transport_20261009_57\\pilot_agent_gemma\\case_results.jsonl",
+      "sealed_sha256": "f1c52ee515e60685d179624f4d4d3ab661d2aefac88e033f2e6a75f8f042f67b",
+      "observed_sha256": "74f357699cd9a88c4761ef43e61116e59e0d20a125c378ae08785fb2cf2f01ba"
+    },
+    {
+      "path": "eval\\results\\step5_frozen_transport_20261009_57\\pilot_agent_gemma\\closed_run_hashes.json",
+      "sealed_sha256": "90723f57ceebb65e9fd41761dbddced1fce9495ea91bf79747bd51bf5576a828",
+      "observed_sha256": "48bfb5b21299fee2d55e88279c48629768610ecb28f4b00d697137813321bec8"
+    },
+    {
+      "path": "eval\\results\\step5_frozen_transport_20261009_57\\pilot_agent_gemma\\metrics.json",
+      "sealed_sha256": "5877f5316a0048d224fa98225cf53cbe7109a13bdfae2a5fe53fed9f0593a752",
+      "observed_sha256": "30b5952b1384f3c009d1cb441ae6143307ffb3d86b779f94fdb1d4be71ef923f"
+    }
+  ],
+  "policy": "Existing57 seal remains invalid for these3 replaced pilot files. Preserve all current files and old manifests; no fabricated restoration or amended historical seal. Snapshot current history only for future change detection."
+}

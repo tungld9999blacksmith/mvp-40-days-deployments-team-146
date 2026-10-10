@@ -42,7 +42,7 @@ async def test_orchestrator_uses_injected_graph_loader_and_trusted_identity():
             {"event": "on_tool_start", "name": "get_due_maintenance", "data": {"input": {}}},
             {"event": "on_tool_end", "name": "get_due_maintenance", "data": {"output": {"due": True}}},
             {"event": "on_chat_model_stream", "data": {"chunk": AIMessageChunk(content="Answer")}},
-            {"event": "on_chain_end", "data": {"output": {"citations": citations}}},
+            {"event": "on_chain_end", "data": {"output": {"citations": citations, "response": "Answer"}}},
         ]
     )
     orchestrator = AgentOrchestrator(runner, loader)
@@ -165,7 +165,10 @@ def test_graph_composition_is_cached_and_respects_empty_tool_list(monkeypatch):
     dependency.get_agent_graph.cache_clear()
     try:
         assert dependency.get_agent_graph() is dependency.get_agent_graph()
-        build.assert_called_once_with(llm=llm, tools=[], checkpointer=checkpointer)
+        build.assert_called_once_with(
+            llm=llm, tools=[], checkpointer=checkpointer, use_llm_fallback=True,
+            tool_call_reviewer=dependency.review_tool_call if dependency.get_settings().llm_booking_check_enabled else None,
+        )
     finally:
         dependency.get_agent_graph.cache_clear()
 

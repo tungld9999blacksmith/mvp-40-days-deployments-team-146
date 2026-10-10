@@ -4,6 +4,23 @@
 
 - [ ] **P1 · Connection pool** Async booking paths (`create_hold`, `reschedule`, `find_nearby`, `check_availability`) keep the request `Session` idle in transaction while waiting on Redis locks and tokens (up to ~2s per lock). `require_active_vehicle_owner` shares that session and its SELECT opens the transaction. Same failure mode as the 2026-10-06 Supavisor outage. Fix: end the read transaction (`session.rollback()`) at the end of each read-only threadpool helper in `BookingService`, as `OemWebhookService._find_vehicle_id` does, and add a test that no lock is awaited while `session.in_transaction()`.
 
+## Quote / booking_line (from /plan-eng-review on develop, 2026-10-09)
+
+- [ ] **P2 · Kênh ghi quyết định phát sinh qua điện thoại** Bản đầu của báo giá hai tầng (`docs/designs/bao-gia-hai-tang.md`, D1) chỉ cho chủ xe duyệt dòng phát sinh trên app. Nếu phỏng vấn chủ xe/CVDV (The Assignment) cho thấy chủ xe quen trả lời qua điện thoại, thêm kênh xưởng ghi hộ (`decided_via = PHONE`, tên người xác nhận), báo chủ xe ngay, nút "Tôi không đồng ý" trước khi hoàn tất, và định nghĩa cách xưởng giải quyết tranh chấp (giữ, huỷ dòng hay để chủ xe quyết lại; ảnh hưởng `actual_cost`; gỡ cờ) — concern R2-2. Why: booking two_tier bị kẹt khi chủ xe không mở app. Depends on: kết quả The Assignment; Bước 2 đã ship.
+- [ ] **P2 · Design review màn Bảng giá + nhãn giá đặt lịch** /plan-design-review 2026-10-09 chỉ review các màn HITL (D1 = B). Màn Bảng giá cho chủ xưởng (T7: sao chép giá tham khảo + chỉnh %, sửa từng dòng, lỗi chồng khoảng hiệu lực) và nhãn "Giá xưởng · đã chốt" / "xưởng xác nhận khi nhận xe" ở màn Đặt lịch chưa có thiết kế. Why: tránh kỹ sư tự thiết kế lệch DESIGN.md. Depends on: chạy trước khi làm T7.
+
+## Two-tier pricing (from /qa on develop, 2026-10-10)
+
+Reports: `.gstack/qa-reports/run-20261009T201844Z/` and `.gstack/qa-reports/run-20261010T080327Z/`.
+
+- [ ] **P1 · Bật `QUOTE_FLOW=two_tier` sau M5 (12/10)** Code, migration `d2a8c6e4f1b7` và bucket `booking-line-photos` đã sẵn trên môi trường dùng chung; QA lượt 2 đạt. Bật: `railway variables --service <backend> --set QUOTE_FLOW=two_tier` (backend tự redeploy), deploy frontend `develop` mới (cần `GET /api/v1/pricing-flow` để ẩn luồng báo giá cũ). Tắt lại: `QUOTE_FLOW=legacy`; booking two_tier đang mở vẫn đi hết luồng hai tầng. Sau khi bật: thử một booking thật từ đầu tới Hoàn tất, xem feed và email.
+- [x] **ISSUE-009 Trợ lý chat để lộ trạng thái thô "(`APPROVED`)"** — Fixed on develop, 2026-10-10: `get_booking_lines` trả nhãn tiếng Việt ("Đã đồng ý", "Không làm", "Đang làm"…).
+- [x] **ISSUE-003 Một dịch vụ hiện nhiều lần trên Bảng giá** — Fixed by /qa on develop, 2026-10-10 (46d69ae: gộp theo tên, đặt giá một lần cho cả nhóm mã).
+- [x] **ISSUE-002 Nút "Đặt giá"/"Sửa" trùng tên truy cập** — Fixed by /qa on develop, 2026-10-10 (46d69ae).
+- [x] **ISSUE-004 Dòng giá tham khảo đã xác nhận vẫn ghi "Giá tham khảo"** — Fixed by /qa on develop, 2026-10-10 (240318b).
+- [x] **ISSUE-005 Giá phát sinh "Không làm" không gạch trên bảng điều phối** — Fixed by /qa on develop, 2026-10-10 (d5d3a3b).
+- [x] **ISSUE-006 Bước xác nhận đặt lịch two_tier vẫn ghi "Báo giá: Không"** — Fixed by /qa on develop, 2026-10-10 (240318b).
+
 ## Design (from /design-review on develop, 2026-10-04)
 
 All design-review findings are fixed; decisions are logged in DESIGN.md.

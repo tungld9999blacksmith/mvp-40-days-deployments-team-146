@@ -1,0 +1,54 @@
+{
+  "phases": {
+    "pilot": {
+      "attempted": 8,
+      "selected": 8,
+      "complete_without_errors": true,
+      "known_cost_usd": 0.0142498,
+      "missing_receipts": 0,
+      "eligible_under_new_budget": true,
+      "budget_estimate_usd": 0.22137724249999996,
+      "budget_estimate_origin": "Larger52 pilot12, aggregate contract changed; estimate only, actual sequential full stop0.25USD."
+    },
+    "full": {
+      "phase": "full",
+      "selected_answers": 60,
+      "attempted_answers": 60,
+      "complete_without_errors": true,
+      "counts": {
+        "FAIL": 3,
+        "UNVERIFIABLE": 7,
+        "PASS": 50
+      },
+      "errored_answers": 0,
+      "unattempted_answers": 0,
+      "known_cost_usd": 0.14307257000000004,
+      "missing_receipts": 0,
+      "human_calibrated": false,
+      "independent_human_labels": 0,
+      "production_acceptance": false
+    }
+  },
+  "configurations": {
+    "base": {
+      "selected": 30,
+      "attempted": 30,
+      "counts": {
+        "FAIL": 2,
+        "UNVERIFIABLE": 3,
+        "PASS": 25
+      }
+    },
+    "agent_gemma": {
+      "selected": 30,
+      "attempted": 30,
+      "counts": {
+        "UNVERIFIABLE": 4,
+        "PASS": 25,
+        "FAIL": 1
+      }
+    }
+  },
+  "human_calibrated": false,
+  "production_acceptance": false
+}

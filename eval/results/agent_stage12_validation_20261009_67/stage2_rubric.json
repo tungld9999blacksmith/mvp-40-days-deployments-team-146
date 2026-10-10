@@ -1,0 +1,9 @@
+{
+  "technical": "Unchanged evaluation_v2 scorer, required tools, args, writes and reminder state",
+  "diagnostic": "Revision66 procedure/citation/fallback metadata and strict raw generation JSON; no semantic judge",
+  "selection": "12 previously exposed development cases; not holdout; one attempt per case",
+  "cache": "Post-neighbor-expansion evidence and previous final QueryAnalysis; original_query updated to fresh tool input",
+  "generation": "Fresh Mistral if runtime permits generation; deterministic gate cases may use zero generation requests",
+  "cap": "Stop at observed receipt .04 USD or missing/error receipt; .004 prospective reserve/request is not guaranteed maximum billing",
+  "provider": "SDK retries disabled; no automatic failed-case reruns"
+}

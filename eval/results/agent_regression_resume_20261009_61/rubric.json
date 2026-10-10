@@ -1,0 +1,7 @@
+{
+  "status": "DEVELOPMENT_REGRESSION_NOT_HOLDOUT",
+  "scorer": "unchanged2.2 with same declarative multi-workshop/alternative-read assertions",
+  "quality": "Keep task failures in denominator; stop on safety/provider/retrieval/missing-receipt/budget failures.",
+  "semantic": "Blind component judge; no human/source certification. Dataset used to fix58/59, no independent generalization claim.",
+  "freeze": "No runtime/prompt/dataset/scorer changes across repeats; no paid case retries or repairs."
+}

@@ -1,0 +1,5 @@
+{
+  "exit_code": 1,
+  "reason": "Report check initially allowed NOT_MEASURED only; RAG scorer legitimately emits NEEDS_HUMAN_REVIEW, which is also an unreviewed status. No labels or producer rows changed.",
+  "artifacts_created_by_failed_builder": false
+}

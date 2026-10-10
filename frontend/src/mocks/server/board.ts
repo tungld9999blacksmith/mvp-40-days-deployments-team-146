@@ -20,6 +20,7 @@ import {
   confirmDeadlineOf,
   costOf,
   currentStageOf,
+  detachQuotes,
   EMERGENCY_SLOTS,
   isClosedDay,
   nextStagesOf,
@@ -27,6 +28,7 @@ import {
   occupiedCount,
   progressView,
   pushEvent,
+  quoteBadge,
   SLOT_TIMES,
   TOTAL_TECHNICIANS,
   upper,
@@ -82,6 +84,7 @@ function boardItem(booking: MockBooking) {
     vehicle: booking.vehicle,
     milestoneLabel: booking.odoMilestone ? `Mốc ${new Intl.NumberFormat('vi-VN').format(booking.odoMilestone)} km` : null,
     estimatedCost: costOf(booking).amount,
+    quote: quoteBadge(booking),
     attendanceConfirmedAt: booking.attendanceConfirmedAt,
     confirmDeadline: confirmDeadlineOf(booking),
     allowedActions: boardActions(booking),
@@ -219,6 +222,7 @@ export function registerBoardRoutes() {
       const deadline = confirmDeadlineOf(booking)
       if ((deadline && now > new Date(deadline).getTime()) || now >= appt) {
         pushEvent(booking, 'cancelled', 'SYSTEM', 'CONFIRM_DEADLINE', 'CONFIRM_DEADLINE_PASSED')
+        detachQuotes(booking.bookingId)
         save()
         return fail(409, 'CONFIRM_DEADLINE_PASSED', 'Yêu cầu đã quá hạn xác nhận.')
       }
@@ -241,6 +245,7 @@ export function registerBoardRoutes() {
 
     const source = body.action === 'CHECK_IN' && body.source === 'QR_SCAN' ? 'QR_SCAN' : 'BOARD'
     pushEvent(booking, transition.to, 'WORKSHOP_OWNER', source, reasons ? body.reasonCode ?? null : null, reasons ? note : null)
+    if (body.action === 'REJECT' || body.action === 'CANCEL') detachQuotes(booking.bookingId)
     let effects: Record<string, unknown> | null = null
     if (body.action === 'ACCEPT') effects = { reminderScheduled: true }
     if (body.action === 'CHECK_IN') {

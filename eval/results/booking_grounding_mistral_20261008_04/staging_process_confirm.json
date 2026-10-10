@@ -1,0 +1,14 @@
+{
+  "booking_count": 1,
+  "booking_id": "b9e8ae6c-504f-4258-949a-b3ea72267f97",
+  "message_count": 2,
+  "replayed": false,
+  "proposal_card_survived": true,
+  "mode": "confirm",
+  "process_id": 21320,
+  "scope": "SYNTHETIC_PROCESS_RESTART_NOT_HTTP_OR_UI",
+  "database_port": 35432,
+  "redis_port": 36379,
+  "llm_called": false,
+  "email_sent": false
+}

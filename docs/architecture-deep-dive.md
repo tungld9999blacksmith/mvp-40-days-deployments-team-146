@@ -207,7 +207,7 @@ Mọi lỗi trả về cùng một dạng:
 { "error": { "code": "SLOT_FULL", "message": "...", "details": {}, "traceId": "..." } }
 ```
 
-`traceId` trùng với header `X-Request-ID` và xuất hiện trong log, giúp truy vết một yêu cầu xuyên qua API → dịch vụ → agent. Mỗi module có lỗi riêng (`errors.py`) và bảng ánh xạ sang mã HTTP.
+`traceId` trùng với header `X-Request-ID` và xuất hiện trong log, giúp truy vết một yêu cầu xuyên qua API → dịch vụ → agent. Mỗi module có lỗi riêng (`errors.py`) và bảng ánh xạ sang mã HTTP. Danh mục mã lỗi đầy đủ, quy tắc hiển thị lỗi ở frontend và các khoảng trống đã biết: [specs/platform/error-handling.md](specs/platform/error-handling.md).
 
 ### 4.2 Hành vi khi một phụ thuộc gặp sự cố
 

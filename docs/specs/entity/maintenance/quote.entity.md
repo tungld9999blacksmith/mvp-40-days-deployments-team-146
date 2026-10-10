@@ -1,6 +1,6 @@
 # Entity Specification — `quote` (Báo giá bảo dưỡng — HITL)
 
-> **Đã loại khỏi phạm vi (02/10/2026).** Chức năng báo giá có chủ xưởng duyệt (F5b, us-049, AI-005) đã bị bỏ khỏi sản phẩm: code backend/frontend đã gỡ, bảng `quote`, `quote_item` được xoá bởi migration `backend/alembic/versions/a3c7e9f1b2d4_drop_quote_support_ticket_discord.py`. Tài liệu giữ lại để tham khảo lịch sử, **không dùng để triển khai**.
+> **Đưa lại vào phạm vi (07/10/2026, PRD v3.8).** Báo giá có chủ xưởng duyệt (F5b, us-049, AI-005) là chức năng MVP trở lại: bảng `quote`, `quote_item` được tạo lại bởi migration `backend/alembic/versions/b4e6f8a1c3d5_restore_quote_hitl.py`; code backend/frontend đã khôi phục. Tài liệu này là đặc tả để triển khai.
 
 > **Domain:** Maintenance · **Tổng quan lược đồ:** [core.entity.md](../core.entity.md)
 >
@@ -15,11 +15,11 @@
 | Business Name | Báo giá |
 | Table | `quote` |
 | Domain | Maintenance |
-| Version | `v1.1` |
+| Version | `v1.2` |
 | Status | `Draft` |
 | Owner | Backend Team |
 | Created Date | `2026-09-27` |
-| Updated Date | `2026-09-27` |
+| Updated Date | `2026-10-07` |
 
 ---
 
@@ -79,6 +79,7 @@ Xe VF6 mốc 12.000 km tại VinFast Cầu Giấy: AI ước tính 1.250.000 VN�
 | `workshop_id` | `uuid` | Yes | No | - | FK → `workshop.id` | Xưởng báo giá và duyệt `[Đề xuất]` |
 | `odo_milestone` | `integer` | No | Yes | - | `> 0` | Mốc bảo dưỡng liên quan (khớp `maintenance_rule.odo_milestone`); `NULL` = báo giá ngoài mốc |
 | `booking_id` | `uuid` | No | Yes | - | FK → `booking.id` `ON DELETE SET NULL` | Lịch hẹn thực hiện báo giá này |
+| `source_message_id` | `uuid` | No | Yes | - | FK → `chat_message.id` `ON DELETE SET NULL` | Tin nhắn chat yêu cầu lập báo giá, khi nháp được tạo từ trợ lý AI (BR-ENT-460) |
 | `status` | `quote_status_enum` | Yes | No | `draft` | `draft / pending_approval / approved / rejected` | Trạng thái HITL |
 | `estimated_total` | `numeric(12,2)` | Yes | No | - | `>= 0` | Tổng giá ước tính (AI) |
 | `approved_total` | `numeric(12,2)` | No | Yes | - | `>= 0` | Tổng sau khi chủ xưởng duyệt |
@@ -86,6 +87,8 @@ Xe VF6 mốc 12.000 km tại VinFast Cầu Giấy: AI ước tính 1.250.000 VN�
 | `reviewer_note` | `text` | No | Yes | - | | Ghi chú của người duyệt |
 | `reviewed_at` | `timestamptz` | No | Yes | - | | Thời điểm duyệt / từ chối |
 | `expires_at` | `timestamptz` | No | Yes | - | Bắt buộc khi `approved`; `> reviewed_at` | Hạn hiệu lực của báo giá đã duyệt (Q-410) |
+| `submitted_at` | `timestamptz` | No | Yes | - | Bắt buộc khi `status ≠ draft`; `<= reviewed_at` | Thời điểm chủ xe gửi duyệt (us-049 BR-1103); dùng sắp danh sách chờ và đo thời gian duyệt |
+| `result_seen_at` | `timestamptz` | No | Yes | - | Chỉ có nghĩa khi `approved` / `rejected` | Lúc chủ xe mở báo giá đã có kết quả; `NULL` ⇒ hiện badge kết quả trên Home (us-049 BR-1109) |
 | `created_at` | `timestamptz` | Yes | No | `now()` | | |
 | `updated_at` | `timestamptz` | Yes | No | `now()` | | |
 
@@ -108,6 +111,14 @@ Gán khi chủ xưởng duyệt: `expires_at = reviewed_at + thời hạn hiệu
 ## `odo_milestone`
 
 Thay cho `maintenance_rule_id`: `maintenance_rule` là bảng phẳng (mỗi dòng một hạng mục), nên một mốc gồm nhiều dòng. Liên kết từng hạng mục nằm ở `quote_item.maintenance_rule_id`.
+
+## `estimated_total` và các dòng `quote_item`
+
+Backend tự tính khi tạo nháp: Quote Service gọi Cost Estimation Service (F5) với (xe, xưởng, mốc) rồi snapshot từng dòng vào `quote_item` (us-049 BR-1101). API và AI Agent **không** gửi giá hay danh sách dòng. `estimated_total = Σ quote_item.estimated_price`. Nếu bảng giá thay đổi trước khi gửi duyệt, nháp được tính lại và API trả `QUOTE_DRAFT_REFRESHED` để chủ xe xem lại.
+
+## `submitted_at`, `result_seen_at`
+
+`submitted_at` ghi khi `draft → pending_approval`. `result_seen_at` ghi lần đầu chủ xe mở chi tiết báo giá sau khi xưởng duyệt hoặc từ chối; mở lại không đổi giá trị.
 
 ## `booking_id`
 
@@ -205,6 +216,9 @@ stateDiagram-v2
 * `CHECK (status <> 'approved' OR (approved_total IS NOT NULL AND expires_at IS NOT NULL))`.
 * `CHECK (expires_at IS NULL OR (reviewed_at IS NOT NULL AND expires_at > reviewed_at))`.
 * `CHECK (booking_id IS NULL OR status = 'approved')`.
+* `CHECK (odo_milestone IS NULL OR odo_milestone > 0)` (`ck_quote_odo_milestone`).
+* `CHECK (status = 'draft' OR submitted_at IS NOT NULL)` (`ck_quote_submitted_at`), `CHECK (reviewed_at IS NULL OR submitted_at IS NULL OR reviewed_at >= submitted_at)` (`ck_quote_reviewed_after_submit`).
+* Unique partial index `uq_quote_pending_per_milestone (user_vehicle_id, workshop_id, odo_milestone) WHERE status = 'pending_approval'`: mỗi (xe, xưởng, mốc) chỉ có một báo giá chờ duyệt (us-049 BR-1104). Vi phạm ⇒ `QUOTE_ALREADY_PENDING`.
 
 ---
 
@@ -212,8 +226,9 @@ stateDiagram-v2
 
 | Query | Fields | Frequency | Required Index |
 | --- | --- | --- | --- |
-| Báo giá chờ duyệt của xưởng | `workshop_id`, `status` | Cao | Yes |
-| Báo giá của một xe | `user_vehicle_id`, `created_at` | Cao | Yes |
+| Báo giá chờ duyệt của xưởng | `workshop_id`, `status` | Cao | `ix_quote_workshop_status` |
+| Báo giá của một xe | `user_vehicle_id`, `created_at` | Cao | `ix_quote_user_vehicle_created` |
+| Chặn trùng chờ duyệt | `user_vehicle_id`, `workshop_id`, `odo_milestone` | Mỗi lần gửi duyệt | `uq_quote_pending_per_milestone` (partial unique) |
 
 ---
 
@@ -221,7 +236,7 @@ stateDiagram-v2
 
 | Actor / Role | Read | Create | Update | Delete |
 | --- | ---: | ---: | ---: | ---: |
-| Chủ xe | ✅ (xe của mình) | ✅ (qua AI Agent) | ✅ (gửi duyệt khi `draft`) | ✅ (chỉ `draft`) |
+| Chủ xe | ✅ (xe của mình) | ✅ (UI hoặc qua AI Agent) | ✅ (gửi duyệt khi `draft`; ghi `result_seen_at`) | ✅ (chỉ `draft`) |
 | Chủ xưởng | ✅ (xưởng mình) | ❌ | ✅ (duyệt / từ chối) | ❌ |
 | AI Agent | ✅ | ✅ | ✅ (khi `draft`) | ❌ |
 
@@ -252,3 +267,4 @@ stateDiagram-v2
 | --- | --- | --- | --- |
 | `v1.0` | `2026-09-27` | Team 4 Người | Tạo mới từ bản ERD sinh tự động, chỉnh theo quy ước core v1.1 |
 | `v1.1` | `2026-09-27` | Team 4 Người | Thêm `expires_at`, BR-ENT-426 (Q-410); chốt người duyệt là chủ xưởng (Q-411) |
+| `v1.2` | `2026-10-07` | Team 4 Người | Gộp phần mở rộng của us-049 entity spec và đồng bộ với code (báo cáo 03/10, C-07): thêm `source_message_id`, `submitted_at`, `result_seen_at`; ghi rõ backend tự tính dòng và tổng (BR-1101); thêm CHECK `ck_quote_odo_milestone`, `ck_quote_submitted_at`, `ck_quote_reviewed_after_submit` và unique partial index chờ duyệt |

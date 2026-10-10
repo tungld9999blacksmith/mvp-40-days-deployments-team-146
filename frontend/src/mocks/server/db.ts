@@ -1,10 +1,11 @@
 /**
  * In-browser state of the mock API. Persisted in localStorage so the owner app and the
- * Workshop Portal opened in the same browser see the same bookings and follow-ups.
+ * Workshop Portal opened in the same browser see the same bookings, quotes and follow-ups.
  * Statuses are stored in the backend's lower-case form and mapped at the API boundary.
  */
 
 export type BookingState = 'pending' | 'confirmed' | 'checked_in' | 'in_progress' | 'completed' | 'cancelled'
+export type QuoteState = 'draft' | 'pending_approval' | 'approved' | 'rejected'
 export type Stage = 'CHECKED_IN' | 'INSPECTING' | 'SERVICING' | 'WAITING_PARTS' | 'QUALITY_CHECK' | 'READY_FOR_PICKUP'
 
 export interface MockWorkshop {
@@ -90,6 +91,7 @@ export interface MockBooking {
   confirmationMode: 'AUTO' | 'MANUAL'
   odoMilestone: number | null
   estimatedCost: number | null
+  quoteId: string | null
   actualCost: number | null
   note: string | null
   attendanceConfirmedAt: string | null
@@ -100,6 +102,39 @@ export interface MockBooking {
   events: StatusEvent[]
   reschedules: { from: { date: string; timeSlot: string }; to: { date: string; timeSlot: string }; source: string; at: string }[]
   progress: ProgressEntry[]
+}
+
+export interface MockQuoteItem {
+  quoteItemId: string
+  itemCode: string
+  itemName: string
+  covered: boolean
+  priceSource: 'WORKSHOP_PRICE' | 'REFERENCE_PRICE' | null
+  estimatedPrice: number
+  approvedPrice: number | null
+  reviewerNote: string | null
+}
+
+export interface MockQuote {
+  quoteId: string
+  status: QuoteState
+  userVehicleId: string
+  workshopId: string
+  odoMilestone: number
+  ownerSelf: boolean
+  customer: { fullName: string; phone: string }
+  vehicle: { modelName: string; licensePlate: string }
+  items: MockQuoteItem[]
+  estimatedTotal: number
+  approvedTotal: number | null
+  createdAt: string
+  submittedAt: string | null
+  reviewedAt: string | null
+  expiresAt: string | null
+  reviewerNote: string | null
+  bookingId: string | null
+  resultSeenAt: string | null
+  hasConversation: boolean
 }
 
 export interface MockFollowUp {
@@ -225,12 +260,13 @@ export interface MockDb {
   workshops: MockWorkshop[]
   vehicles: MockVehicle[]
   bookings: MockBooking[]
+  quotes: MockQuote[]
   followUps: MockFollowUp[]
   slotBlocks: MockSlotBlock[]
   tokens: MockToken[]
   holdTokens: MockHoldToken[]
   confirmationMode: 'AUTO' | 'MANUAL'
-  /** Idempotency-Key → stored response (API-BR-03, API-BT-04). */
+  /** Idempotency-Key → stored response (API-BR-03, API-BT-04, API-QT-04). */
   idempotency: Record<string, { status: number; body: unknown }>
   /** Demo mode only: the accounts of the demo Google identity. */
   account: MockOwnerAccount
@@ -239,7 +275,7 @@ export interface MockDb {
 }
 
 const STORAGE_KEY = 'evcare.mockApi.v1'
-const VERSION = 3
+const VERSION = 4
 
 export const DEMO_EMAIL = 'demo.evcare@gmail.com'
 
@@ -289,6 +325,7 @@ function empty(): MockDb {
     workshops: [],
     vehicles: [],
     bookings: [],
+    quotes: [],
     followUps: [],
     slotBlocks: [],
     tokens: [],

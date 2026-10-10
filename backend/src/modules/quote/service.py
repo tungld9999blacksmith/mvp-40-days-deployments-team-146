@@ -73,7 +73,7 @@ class QuoteService:
     def __init__(
         self,
         session: Session,
-        estimator: CostEstimationService,
+        estimator: CostEstimationService | None,  # None: read-only use (``details``), never drafts
         *,
         config: QuoteConfig = QuoteConfig(),
         clock: Callable[[], datetime] = _utc_now,
@@ -232,6 +232,49 @@ class QuoteService:
         self._db.refresh(quote)
         logger.info("quote.created", extra={"quote_id": str(quote.id), "workshop_id": str(workshop.id)})
         return schemas.QuoteOut(**self._detail(quote))
+
+    # ── AI-005 TOOL-501 ─────────────────────────────────────────────────
+    def draft_from_chat(
+        self,
+        user: VehicleUser,
+        payload: schemas.CreateQuoteRequest,
+        *,
+        source_message_id: UUID | None,
+    ) -> tuple[schemas.QuoteOut, bool]:
+        """Return (quote, reused): the open quote of this (vehicle, workshop, milestone), else a new draft.
+
+        Asking twice in a chat must not pile up drafts, and a pending quote is reported,
+        never drafted again (TOOL-501). A reused draft made on the estimate page gets the
+        chat message, so the workshop can read the conversation once it is submitted.
+        """
+        vehicle = self._owned_vehicle(user, payload.user_vehicle_id)
+        for status in (QuoteStatus.PENDING_APPROVAL, QuoteStatus.DRAFT):
+            quote = self._db.exec(
+                select(Quote)
+                .where(
+                    Quote.user_vehicle_id == vehicle.id,
+                    Quote.workshop_id == payload.workshop_id,
+                    Quote.odo_milestone == payload.odo_milestone,
+                    Quote.status == status,
+                )
+                .order_by(Quote.created_at.desc())
+            ).first()
+            if quote is None:
+                continue
+            if status == QuoteStatus.DRAFT and quote.source_message_id is None and source_message_id is not None:
+                quote.source_message_id = source_message_id
+                self._db.add(quote)
+                self._db.commit()
+                self._db.refresh(quote)
+            return schemas.QuoteOut(**self._detail(quote)), True
+        return self.create(user, payload, source_message_id=source_message_id), False
+
+    def details(self, quote_ids: list[UUID]) -> dict[UUID, schemas.QuoteOut]:
+        """Current state of these quotes, read only (live chat cards; caller checks ownership)."""
+        if not quote_ids:
+            return {}
+        rows = self._db.exec(select(Quote).where(Quote.id.in_(quote_ids))).all()
+        return {q.id: schemas.QuoteOut(**self._detail(q)) for q in rows}
 
     # ── API-QT-02 ───────────────────────────────────────────────────────
     def list_for_owner(

@@ -202,7 +202,7 @@ Trước khi dán lên Railway, **rà lại các giá trị**:
 | Biến | Giá trị trên staging |
 |---|---|
 | `APP_ENV` | `production` — config chỉ nhận `development` / `production` / `test`. Đặt `staging` app sẽ lỗi validate; giá trị khác `production` còn bật bypass header `X-User-Id` của dev |
-| `CORS_ORIGINS`, `FRONTEND_URL` | Domain frontend staging thật |
+| `CORS_ORIGINS`, `FRONTEND_URL` | Domain frontend staging thật, không có `/` cuối. CORS cho phép hợp của hai biến (`CORS_ORIGINS` nhận nhiều origin, phân tách bằng dấu phẩy). `FRONTEND_URL` còn dùng cho link trong email và QR. Đặt `*` ở một trong hai biến sẽ tắt giới hạn CORS, không dùng trên staging |
 | `OEM_API_BASE_URL` | **Xoá khỏi `.railway.env`** — đặt ở mức service `backend`/`worker` trỏ vào mock (Bước 5b) |
 | `DATABASE_*`, `SUPABASE_*` | Supabase của staging |
 | `FIREBASE_CREDENTIAL_JSON` | Nội dung file service account JSON, 1 dòng, bọc trong `'...'` |

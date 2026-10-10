@@ -16,6 +16,7 @@ import { track } from '@/shared/utils/track'
 import { addDays, formatLongDay, slotLabel, todayVn } from '@/features/bookings/utils'
 import { getBoard, getBoardBooking, transitionBooking } from '../api'
 import BoardBookingDetail, { DeadlineBadge } from '../components/BoardBookingDetail'
+import { POLL_MS, shouldPoll } from '@/features/booking-lines/logic'
 import type { BoardAction, BoardData, BoardDetail, BoardItem, BoardStatus, TransitionResult } from '../types'
 
 const STATUSES: BoardStatus[] = ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']
@@ -88,6 +89,7 @@ export default function WorkshopBoard() {
   const [detailError, setDetailError] = useState<ApiError | null>(null)
   const [dialogError, setDialogError] = useState<string | null>(null)
   const [progressKey, setProgressKey] = useState(0)
+  const [linesKey, setLinesKey] = useState(0)
   const [inactive, setInactive] = useState(false)
   const [searchText, setSearchText] = useState(q)
   const controller = useRef<AbortController | null>(null)
@@ -162,6 +164,24 @@ export default function WorkshopBoard() {
     void loadDetail(bookingId)
   }, [bookingId, loadDetail])
 
+  // OV3 — while the car is at the workshop, follow the owner's decisions: every 15 s and
+  // when the tab is shown again. Typed prices / reasons live in PricingCard and survive.
+  const openStatus = detail?.status
+  useEffect(() => {
+    if (!bookingId) return
+    const refresh = () => {
+      if (!shouldPoll(openStatus, document.visibilityState === 'visible')) return
+      void loadDetail(bookingId)
+      setLinesKey(key => key + 1)
+    }
+    const timer = shouldPoll(openStatus, true) ? window.setInterval(refresh, POLL_MS) : undefined
+    document.addEventListener('visibilitychange', refresh)
+    return () => {
+      if (timer) window.clearInterval(timer)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [bookingId, openStatus, loadDetail])
+
   useEffect(() => {
     if (detailError && isApiError(detailError, 'BOOKING_NOT_FOUND')) {
       toast.show('Không tìm thấy lịch hẹn.', 'warning')
@@ -201,7 +221,7 @@ export default function WorkshopBoard() {
           source: 'BOARD',
         })
         applyResult(result, item.status)
-        // The transition returns only the changed fields: refresh history and stage.
+        // The transition returns only the changed fields: refresh history, quote and stage.
         if (detail?.bookingId === item.bookingId) void loadDetail(item.bookingId)
         if (action === 'CHECK_IN' || action === 'START') setProgressKey(key => key + 1)
         track('booking_transition', { action, reasonCode: extra.reasonCode ?? null, source: 'BOARD' })
@@ -238,6 +258,15 @@ export default function WorkshopBoard() {
         if (code === 'WORKSHOP_INACTIVE') {
           setInactive(true)
           return true
+        }
+        // bao-gia-hai-tang D6 / D8 / RR1 — price lines still open: show why and reload them.
+        if (code === 'BOOKING_LINES_UNSETTLED' || code === 'BOOKING_LINES_UNCONFIRMED' || code === 'ACTUAL_COST_MISMATCH') {
+          const message = isApiError(reason) ? reason.message : 'Còn hạng mục chưa chốt giá.'
+          if (action === 'COMPLETE') setDialogError(message)
+          else toast.show(message, 'warning')
+          void loadDetail(item.bookingId)
+          setLinesKey(key => key + 1)
+          return false
         }
         if (code === 'BOOKING_NOT_FOUND') {
           toast.show('Không tìm thấy lịch hẹn.', 'warning')
@@ -564,6 +593,8 @@ export default function WorkshopBoard() {
             readOnly={inactive}
             dialogError={dialogError}
             progressKey={progressKey}
+            linesKey={linesKey}
+            onLinesChanged={() => void loadDetail(detail.bookingId)}
             onAction={(action, extra) => act(detail, action, extra)}
           />
         ) : detailError && !isApiError(detailError, 'BOOKING_NOT_FOUND') ? (

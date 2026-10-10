@@ -43,12 +43,16 @@ def seed_store(store: DemoStore) -> None:
 def ensure_user(store: DemoStore, claims: dict) -> dict:
     uid = str(claims["uid"])
     if uid in store.users:
+        # Refresh trusted identity claims on every authenticated request.
+        store.users[uid]["email"] = claims.get("email")
+        store.users[uid]["emailVerified"] = claims.get("email_verified") is True
         return store.users[uid]
     user_id = max((user["userId"] for user in store.users.values()), default=0) + 1
     user = {
         "userId": user_id,
         "uid": uid,
         "email": claims.get("email"),
+        "emailVerified": claims.get("email_verified") is True,
         "displayName": claims.get("name") or "Chủ xe demo",
         "avatarUrl": claims.get("picture"),
         "fullName": claims.get("name") or "Chủ xe demo",

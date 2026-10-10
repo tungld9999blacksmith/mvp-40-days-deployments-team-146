@@ -1,0 +1,11 @@
+{
+  "resume_tests": {
+    "passed": 7,
+    "failed": 0,
+    "command": "pytest eval/test_agent_regression_resume.py -q"
+  },
+  "ruff": "PASS",
+  "application_source_changed": false,
+  "reused_runtime_validation": "revisions58/59: 219 focused runtime tests, 96 reminder preservation tests; revision60:5 bounded read retry tests",
+  "new_model_calls": 0
+}

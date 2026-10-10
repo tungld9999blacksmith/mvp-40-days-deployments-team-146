@@ -1,0 +1,646 @@
+{
+  "scope": "DEVELOPMENT_AGENT_SMOKE",
+  "original_run": {
+    "attempted": 27,
+    "selected": 30,
+    "complete": false,
+    "passed": 22,
+    "errors": 5,
+    "safety_violations": 0,
+    "raw_argument_error_cases": 0,
+    "truncated_cases": 0,
+    "actual_models": [
+      "openai/gpt-4o"
+    ],
+    "mean_seconds": 3.115037037037037,
+    "p90_seconds": 5.818,
+    "known_cost_usd": 0.35893499999999995,
+    "missing_cost_cases": 4,
+    "categories": {
+      "rag": {
+        "passed": 6,
+        "attempted": 6
+      },
+      "guardrail": {
+        "passed": 5,
+        "attempted": 5
+      },
+      "booking": {
+        "passed": 6,
+        "attempted": 8
+      },
+      "maintenance_cost": {
+        "passed": 5,
+        "attempted": 6
+      },
+      "reminder": {
+        "passed": 0,
+        "attempted": 2
+      }
+    },
+    "raw_proposal_requests": 1,
+    "raw_proposals_before_verified_availability": 0,
+    "extra_read_calls": 2,
+    "duplicate_calls": 0
+  },
+  "original_not_attempted_ids": [
+    "REMINDER-10",
+    "REMINDER-12",
+    "REMINDER-16"
+  ],
+  "recovery_run": {
+    "attempted": 8,
+    "selected": 8,
+    "complete": true,
+    "passed": 8,
+    "errors": 0,
+    "safety_violations": 0,
+    "raw_argument_error_cases": 0,
+    "truncated_cases": 0,
+    "actual_models": [
+      "openai/gpt-4o"
+    ],
+    "mean_seconds": 4.5195,
+    "p90_seconds": 9.862,
+    "known_cost_usd": 0.13632,
+    "missing_cost_cases": 0,
+    "categories": {
+      "booking": {
+        "passed": 2,
+        "attempted": 2
+      },
+      "maintenance_cost": {
+        "passed": 1,
+        "attempted": 1
+      },
+      "reminder": {
+        "passed": 5,
+        "attempted": 5
+      }
+    },
+    "raw_proposal_requests": 1,
+    "raw_proposals_before_verified_availability": 0,
+    "extra_read_calls": 0,
+    "duplicate_calls": 0
+  },
+  "coverage_across_runs": {
+    "attempted": 30,
+    "passed": 30,
+    "errors": 0,
+    "safety_violations": 0,
+    "raw_argument_error_cases": 0,
+    "truncated_cases": 0,
+    "actual_models": [
+      "openai/gpt-4o"
+    ],
+    "mean_seconds": 3.7651666666666666,
+    "p90_seconds": 5.818,
+    "known_cost_usd": 0.479205,
+    "missing_cost_cases": 0,
+    "input_tokens": 259649,
+    "output_tokens": 3509,
+    "categories": {
+      "rag": {
+        "attempted": 6,
+        "passed": 6
+      },
+      "guardrail": {
+        "attempted": 5,
+        "passed": 5
+      },
+      "booking": {
+        "attempted": 8,
+        "passed": 8
+      },
+      "maintenance_cost": {
+        "attempted": 6,
+        "passed": 6
+      },
+      "reminder": {
+        "attempted": 5,
+        "passed": 5
+      }
+    }
+  },
+  "single_full_repeat": false,
+  "covered_row_references": [
+    {
+      "case_id": "RAG-001",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "RAG-007",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "RAG-027",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "RAG-056",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "RAG-061",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "RAG-083",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "GUARD-01",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "GUARD-05",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "GUARD-07",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "GUARD-09",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "GUARD-19",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "BOOK-03",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "BOOK-05",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "BOOK-15",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "BOOK-18",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "BOOK-19",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "BOOK-22",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "BOOK-25",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "BOOK-33",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "MAINT-01",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "MAINT-07",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "MAINT-11",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "COST-01",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "COST-06",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "COST-11",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "REMINDER-03",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "REMINDER-05",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "REMINDER-10",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "REMINDER-12",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "REMINDER-16",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    }
+  ],
+  "coverage_raw_audit": [
+    {
+      "case_id": "RAG-001",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-007",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-027",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-056",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-061",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "RAG-083",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-01",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-05",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-07",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-09",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "GUARD-19",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-03",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-05",
+      "proposal_requests": 1,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-15",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-18",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-19",
+      "proposal_requests": 1,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 1,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-22",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-25",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-33",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "MAINT-01",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "MAINT-07",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "MAINT-11",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-01",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-06",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-11",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-03",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-05",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-10",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-12",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-16",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    }
+  ],
+  "common_conditions": {
+    "mistral": {
+      "repeats": true,
+      "max_tokens": true,
+      "temperature": true,
+      "timeout": true,
+      "clock": true,
+      "dataset_sha256": true,
+      "rag_mode": true,
+      "business_services": true,
+      "baseline_runtime": true,
+      "scorer_version": true,
+      "schema_identical": true,
+      "selected_ids_correct": true
+    },
+    "gemma": {
+      "repeats": true,
+      "max_tokens": true,
+      "temperature": true,
+      "timeout": true,
+      "clock": true,
+      "dataset_sha256": true,
+      "rag_mode": true,
+      "business_services": true,
+      "baseline_runtime": true,
+      "scorer_version": true,
+      "schema_identical": true,
+      "selected_ids_correct": true
+    },
+    "gpt4o_original": {
+      "repeats": true,
+      "max_tokens": true,
+      "temperature": true,
+      "timeout": true,
+      "clock": true,
+      "dataset_sha256": true,
+      "rag_mode": true,
+      "business_services": true,
+      "baseline_runtime": true,
+      "scorer_version": true,
+      "schema_identical": true,
+      "selected_ids_correct": true
+    },
+    "gpt4o_recovery": {
+      "repeats": true,
+      "max_tokens": true,
+      "temperature": true,
+      "timeout": true,
+      "clock": true,
+      "dataset_sha256": true,
+      "rag_mode": true,
+      "business_services": true,
+      "baseline_runtime": true,
+      "scorer_version": true,
+      "schema_identical": true,
+      "selected_ids_correct": true
+    }
+  },
+  "known_total_new_spend_usd": 0.530525,
+  "missing_cost_cases_all_attempts": 4,
+  "cost_is_lower_bound": true,
+  "independent_labels": 0,
+  "review_deferred": true,
+  "production_acceptance": false,
+  "pacing_difference": "original 1 second, recovery 15 seconds between cases; sleeps excluded from per-case latency",
+  "report_controller_sha256": "acad970496f8e9329b4dfd8d0e424fb2b20cda715f21867853745a80c23473b7"
+}

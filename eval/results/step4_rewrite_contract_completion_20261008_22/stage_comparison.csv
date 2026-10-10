@@ -1,0 +1,7 @@
+phase,model,selected,attempted,raw_contract_pass,anchor_all_match,errors,runtime_fallback_cases,rewrite_mean_seconds,known_rewrite_cost_usd,document_hit_at_5,document_mrr,scored_golden_cases,pilot_eligible
+pilot,mistralai/mistral-small-2603,5,5,5,5,0,0,1.3218354200012983,0.000859254,1.0,0.75,3,True
+full,mistralai/mistral-small-2603,30,30,30,30,0,0,1.1266699166664087,0.0031730654999999994,0.9583333333333334,0.84375,24,False
+pilot,google/gemma-4-26b-a4b-it,5,5,5,5,0,0,2.403552180001134,0.000429908,1.0,1.0,3,True
+full,google/gemma-4-26b-a4b-it,30,30,30,30,0,0,4.038562896666796,0.003073575999999999,0.9583333333333334,0.9166666666666666,24,False
+pilot,google/gemini-3.5-flash-lite,5,5,5,5,0,0,1.3393704199996137,0.0027114,1.0,0.8333333333333334,3,True
+full,google/gemini-3.5-flash-lite,30,30,30,30,0,0,1.3527672066668552,0.0165336,0.9583333333333334,0.875,24,False

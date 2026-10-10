@@ -1,0 +1,78 @@
+{
+  "checks": [
+    {
+      "check": "unauthenticated_denied",
+      "passed": true,
+      "detail": 401
+    },
+    {
+      "check": "firebase_real_settings_0",
+      "passed": true,
+      "detail": 200
+    },
+    {
+      "check": "proposal_created_0",
+      "passed": true,
+      "detail": {
+        "status": 201,
+        "body": null
+      }
+    },
+    {
+      "check": "proposal_unconfirmed_0",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "firebase_real_settings_1",
+      "passed": true,
+      "detail": 200
+    },
+    {
+      "check": "proposal_created_1",
+      "passed": true,
+      "detail": {
+        "status": 201,
+        "body": null
+      }
+    },
+    {
+      "check": "proposal_unconfirmed_1",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "no_booking_before_confirm",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "competing_proposals_same_slot",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "other_owner_cannot_confirm",
+      "passed": true,
+      "detail": 404
+    },
+    {
+      "check": "reminder_update",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "partial_update_preserves_lead_and_email",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "passed": 12,
+  "total": 12,
+  "backend": "src.main:app",
+  "firebase": "real custom-token auth",
+  "database": "isolated PostgreSQL",
+  "redis": "isolated real Redis",
+  "llm": "stub",
+  "real_emails_sent": 0
+}

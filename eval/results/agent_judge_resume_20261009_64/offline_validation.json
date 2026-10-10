@@ -1,0 +1,11 @@
+{
+  "resume_tests": {
+    "passed": 6,
+    "failed": 0
+  },
+  "ruff": "PASS",
+  "original63_input_hashes_and_source_verified": true,
+  "pilot_requests_replayed": 0,
+  "negative_prior_labels_retained": true,
+  "application_env_source_changed": false
+}

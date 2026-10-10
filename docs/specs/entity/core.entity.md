@@ -2,7 +2,6 @@
 
 > **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
 >
-> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
 > - Phiếu hỗ trợ (`support_ticket`): **đã bỏ**. Phản hồi hỏi thăm có vấn đề chỉ được phân loại và ghi trên `follow_up` (`has_issue`); app hiện lời khuyên an toàn và hotline xưởng, không tạo phiếu, không có màn phiếu cho chủ xe hay xưởng.
 > - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
 
@@ -199,13 +198,15 @@ flowchart TD
 
 # 11. Exception Flow
 
-## EF-001 — Lịch hẹn hết hạn giữ slot (Hold slot expiration)
+## EF-001 — Lịch hẹn `pending` quá hạn xưởng xác nhận
 
-**Condition:** Lịch hẹn ở trạng thái `pending` vượt quá thời gian `hold_expires_at`.
+> Cập nhật 07/10/2026 theo us-029 BR-010, BR-015 và [booking.entity.md](maintenance/booking.entity.md) BR-ENT-402. Bản cũ ghi "quá `hold_expires_at` ⇒ `cancelled`", không còn đúng.
 
-**System Behavior:** Hệ thống chuyển `booking.status` sang `cancelled`.
+**Condition:** Lịch hẹn `pending` tại xưởng chế độ `manual` mà chủ xưởng chưa chấp nhận/từ chối khi tới hạn chót: `BOOKING_WS_CONFIRM_DEADLINE_HOURS` (mặc định 12 giờ từ lúc giữ chỗ) hoặc giờ hẹn, lấy mốc đến trước. Việc vượt `hold_expires_at` (10 phút) **không** phải điều kiện huỷ: đó chỉ là hết cửa sổ để chủ xe tự huỷ giữ chỗ.
 
-**User Experience:** Hiển thị thông báo slot đặt tạm thời đã hết hạn, mời người dùng chọn lại khung giờ.
+**System Behavior:** Hệ thống chuyển `booking.status` sang `cancelled`, giải phóng chỗ và ghi `booking_status_event` với actor `system`.
+
+**User Experience:** Chủ xe nhận thông báo xưởng chưa xác nhận kịp, kèm lời mời chọn lại khung giờ hoặc xưởng khác.
 
 ## EF-002 — Báo giá bị từ chối
 

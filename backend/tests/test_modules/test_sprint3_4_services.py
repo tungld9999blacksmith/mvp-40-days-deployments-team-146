@@ -229,6 +229,23 @@ async def test_follow_up_satisfied_and_window(world):
         await service.respond(user, late.id, 4, "ok")
 
 
+@pytest.mark.asyncio
+async def test_ticket_links_the_follow_up_of_a_completed_booking(world):
+    session, user, vehicle, _, workshop = world
+    upcoming = add_booking(session, user, vehicle, workshop, d=TODAY + timedelta(days=2))
+    assert _tickets(session).get_ticket(user, upcoming.id).follow_up is None
+
+    done = add_booking(session, user, vehicle, workshop, d=TODAY, status=BookingStatus.COMPLETED, code="EVC-0003")
+    follow_up = _sent_follow_up(session, done)
+    link = _tickets(session).get_ticket(user, done.id).follow_up
+    assert link.follow_up_id == follow_up.id and link.status == "SENT" and link.can_respond
+
+    await FollowUpService(session, clock=lambda: NOW).respond(user, follow_up.id, 5, None)
+    link = _tickets(session).get_ticket(user, done.id).follow_up
+    assert link.status == "CLOSED" and not link.can_respond
+    assert not _tickets(session, now=NOW + timedelta(hours=80)).get_ticket(user, done.id).follow_up.can_respond
+
+
 # ── us-057 service progress ─────────────────────────────────────────────────
 @pytest.mark.asyncio
 async def test_progress_order_and_note(world):

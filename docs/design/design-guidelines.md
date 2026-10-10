@@ -73,9 +73,11 @@ Pill, sentence case, sans font, leading dot (or icon), `text-xs font-medium ring
 ## Navigation
 Two roles, same shell:
 - **Owner**: Tổng quan → Xe của tôi → Lịch sử → Đặt lịch → AI Trợ lý → Thông báo
-- **Technician**: Dashboard → Lịch hẹn → Thông báo → Khách hàng
+- **Technician**: Dashboard → Báo giá → Thông báo → Khách hàng
+
+"Technician" here is the workshop owner (Chủ xưởng, `workshop_owner`), not a separate staff role. See PRD §4.
 
 ## Prototype Flow
 Login → Owner Dashboard → Vehicle Detail / AI Assistant / Booking
 AI Assistant → Maintenance Estimate → Booking → Booking Success
-Login (Technician) → Tech Dashboard → Workshop Board → Booking detail → Accept
+Login (Technician) → Tech Dashboard → Pending Quotes → Quote Review → Approve

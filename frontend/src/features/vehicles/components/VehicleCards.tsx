@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Car, ChevronRight, Gauge, History, ShieldCheck } from 'lucide-react'
+import { BatteryCharging, Car, ChevronRight, Cog, Cpu, Gauge, History, ShieldCheck, type LucideIcon } from 'lucide-react'
 import type { ApiError } from '@/shared/api/client'
 import Badge from '@/shared/ui/Badge'
-import { Card, CardHeader, InfoRow } from '@/shared/ui/Card'
+import { Card, CardHeader } from '@/shared/ui/Card'
 import PlateTile from '@/shared/ui/PlateTile'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
+import { cn } from '@/shared/ui/cn'
 import { ErrorState, Notice } from '@/shared/ui/States'
 import { vehicleDisplayName, warrantyComponentLabel } from '@/shared/domain/labels'
-import { formatDate, formatKm, formatLicensePlate, formatNumber, formatTimeDayMonth } from '@/shared/utils/format'
+import { formatDate, formatKm, formatNumber, formatTimeDayMonth } from '@/shared/utils/format'
 import type { Odometer, VehicleProfile, VehicleSummary } from '../types'
+import { warrantyTimeline } from '../utils/warrantyTimeline'
 import { vehiclePhotoSrc } from '../utils/vehiclePhoto'
 
 /** Structural placeholder when there is no photo for the model (design style §5.1). */
@@ -75,41 +77,6 @@ export function VehicleSummaryCard({ vehicle }: { vehicle: VehicleSummary }) {
   )
 }
 
-function number(value: number | string | null, unit: string): string {
-  if (value === null || value === '') return '—'
-  const parsed = typeof value === 'number' ? value : Number(value)
-  return Number.isNaN(parsed) ? '—' : `${formatNumber(parsed)} ${unit}`
-}
-
-/** Vehicle profile — identity & specs (US-017 FE §4.4). */
-export function VehicleIdentityCard({ profile }: { profile: VehicleProfile }) {
-  const name = vehicleDisplayName(profile.modelName, profile.trim)
-  return (
-    <Card className="p-6">
-      <div className="flex items-start justify-between gap-4 mb-5">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">{name}</h2>
-          <PlateTile plate={profile.licensePlate} className="mt-2" />
-        </div>
-        <Badge tone="success">Đã xác thực</Badge>
-      </div>
-      <CarPhoto label={name} modelName={profile.modelName} modelId={profile.modelId} tall />
-      <div className="mt-5">
-        <InfoRow label="Mẫu xe / phiên bản" value={[profile.modelName, profile.trim].filter(Boolean).join(' ') || '—'} />
-        <InfoRow label="Màu" value={profile.color ?? '—'} />
-        <InfoRow label="Năm sản xuất" value={profile.productionYear ?? '—'} mono />
-        <InfoRow label="Số VIN" value={profile.vinMasked} mono />
-        <InfoRow label="Biển số" value={formatLicensePlate(profile.licensePlate)} mono />
-        <InfoRow label="Dung lượng pin" value={number(profile.batteryCapacityKwh, 'kWh')} mono />
-        <InfoRow label="Công suất động cơ" value={number(profile.motorPowerKw, 'kW')} mono />
-      </div>
-      <p className="text-xs text-muted mt-4">
-        Dữ liệu do hãng cung cấp. Nếu thông tin chưa đúng, vui lòng liên hệ hãng hoặc xưởng dịch vụ.
-      </p>
-    </Card>
-  )
-}
-
 /** Current ODO from the manufacturer — read-only, no edit (BR-003, AC-005). */
 export function OdometerCard({ odometer }: { odometer: Odometer | null }) {
   return (
@@ -117,11 +84,11 @@ export function OdometerCard({ odometer }: { odometer: Odometer | null }) {
       <CardHeader title="Số km hiện tại" icon={<Gauge className="w-4 h-4 text-muted" />} />
       {odometer ? (
         <>
-          <p className="text-3xl font-extrabold font-mono text-foreground">
+          <p className="font-plate text-5xl font-bold leading-none text-foreground">
             {formatNumber(odometer.odoKm)}
-            <span className="text-base font-normal text-muted ml-1">km</span>
+            <span className="text-xl text-muted ml-1.5">km</span>
           </p>
-          <p className="text-xs text-muted mt-2">
+          <p className="text-xs text-muted mt-2.5">
             Hãng cập nhật lúc <span className="font-mono">{formatTimeDayMonth(odometer.recordedAt)}</span>
           </p>
           {odometer.isStale && (
@@ -137,76 +104,125 @@ export function OdometerCard({ odometer }: { odometer: Odometer | null }) {
   )
 }
 
+const WEEKDAY_SHORT = new Intl.DateTimeFormat('vi-VN', { weekday: 'short', timeZone: 'Asia/Ho_Chi_Minh' })
+
+/** Calendar-page tile: weekday strip, day, month/year. */
+function DayTile({ date }: { date: string }) {
+  const [year, month, day] = date.slice(0, 10).split('-')
+  return (
+    <div className="w-[60px] flex-shrink-0 rounded-xl overflow-hidden border border-border text-center" aria-hidden>
+      <p className="bg-foreground text-background text-[11px] font-bold py-0.5">{WEEKDAY_SHORT.format(new Date(`${date.slice(0, 10)}T12:00:00+07:00`))}</p>
+      <p className="font-plate text-[26px] font-bold leading-tight text-foreground pt-0.5">{day}</p>
+      <p className="text-[10px] text-muted pb-1">
+        {month}/{year}
+      </p>
+    </div>
+  )
+}
+
 export function LastServiceCard({ lastService }: { lastService: VehicleProfile['lastService'] }) {
   return (
-    <Card>
+    <Card className="flex flex-col">
       <CardHeader title="Lần bảo dưỡng gần nhất" icon={<History className="w-4 h-4 text-muted" />} />
       {lastService ? (
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-sm font-medium text-foreground">
+        <div className="flex items-center gap-3.5">
+          <DayTile date={lastService.serviceDate} />
+          <div className="min-w-0 space-y-1">
+            <p className="text-sm font-semibold text-foreground">{lastService.centerName ?? 'Xưởng dịch vụ chính hãng'}</p>
+            <p className="text-xs text-muted">
               <span className="font-mono">{formatDate(lastService.serviceDate)}</span>
-              {lastService.odoKm !== null && <span className="font-mono text-muted"> · {formatKm(lastService.odoKm)}</span>}
+              {lastService.odoKm !== null && <span className="font-mono"> · {formatKm(lastService.odoKm)}</span>}
             </p>
-            <p className="text-sm text-muted mt-1">{lastService.centerName ?? 'Xưởng dịch vụ chính hãng'}</p>
+            <Badge tone="neutral">{lastService.source === 'EV_CARE' ? 'Qua EV Care' : 'Hãng ghi nhận'}</Badge>
           </div>
-          <Badge tone="neutral">{lastService.source === 'EV_CARE' ? 'Qua EV Care' : 'Hãng ghi nhận'}</Badge>
         </div>
       ) : (
         <p className="text-sm text-muted">Chưa có lịch sử bảo dưỡng — mốc được tính từ ngày mua.</p>
       )}
+      <Link
+        to="/history"
+        className="mt-auto pt-4 inline-flex items-center gap-1 text-sm font-medium text-emerald hover:text-emerald-bright transition-colors"
+      >
+        Xem lịch sử dịch vụ <ChevronRight className="w-3.5 h-3.5" aria-hidden />
+      </Link>
     </Card>
   )
 }
 
+const WARRANTY_ICONS: Record<string, LucideIcon> = {
+  BATTERY: BatteryCharging,
+  MOTOR: Cog,
+  CHASSIS: Car,
+  ELECTRONICS: Cpu,
+}
+
+const TIMELINE_BADGE = {
+  active: { tone: 'success', label: 'Còn hiệu lực' },
+  ending: { tone: 'warning', label: 'Sắp hết hạn' },
+  ended: { tone: 'neutral', label: 'Hết hiệu lực' },
+} as const
+
+/** One tile per warranty line; the bar shows time used, the backend's `isActive` decides the status. */
 export function WarrantyCard({ warranties }: { warranties: VehicleProfile['warranties'] }) {
+  const now = new Date()
+  const activeCount = warranties.filter(warranty => warranty.isActive).length
   return (
-    <Card className="p-0 overflow-hidden">
-      <div className="px-5 pt-5">
-        <CardHeader title="Bảo hành" icon={<ShieldCheck className="w-4 h-4 text-muted" />} />
-      </div>
+    <Card>
+      <CardHeader
+        title="Bảo hành"
+        action={warranties.length > 0 ? <span className="text-xs text-muted">{activeCount}/{warranties.length} hạng mục còn hiệu lực</span> : <ShieldCheck className="w-4 h-4 text-muted" />}
+      />
       {warranties.length === 0 ? (
-        <p className="text-sm text-muted px-5 pb-5">Chưa có thông tin bảo hành từ hãng.</p>
+        <p className="text-sm text-muted">Chưa có thông tin bảo hành từ hãng.</p>
       ) : (
-        <>
-          <table className="hidden sm:table w-full text-sm">
-            <thead>
-              <tr className="border-y border-border">
-                {['Hạng mục', 'Hết hạn', 'Giới hạn km', 'Trạng thái'].map(heading => (
-                  <th key={heading} className="px-5 py-2.5 text-left text-xs font-medium text-muted">
-                    {heading}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {warranties.map(warranty => (
-                <tr key={warranty.component} className="border-b border-border last:border-b-0">
-                  <td className="px-5 py-3 text-foreground">{warrantyComponentLabel(warranty.component)}</td>
-                  <td className="px-5 py-3 font-mono text-muted">{formatDate(warranty.endDate)}</td>
-                  <td className="px-5 py-3 font-mono text-muted">{warranty.kmLimit ? formatKm(warranty.kmLimit) : 'Không giới hạn'}</td>
-                  <td className="px-5 py-3">
-                    <Badge tone={warranty.isActive ? 'success' : 'neutral'}>{warranty.isActive ? 'Còn hiệu lực' : 'Hết hiệu lực'}</Badge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <ul className="sm:hidden px-5 pb-5 space-y-3">
-            {warranties.map(warranty => (
-              <li key={warranty.component} className="rounded-xl border border-border p-3">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+          {warranties.map(warranty => {
+            const timeline = warrantyTimeline(warranty, now)
+            const badge = TIMELINE_BADGE[timeline.tone]
+            const Icon = WARRANTY_ICONS[warranty.component] ?? ShieldCheck
+            const label = warrantyComponentLabel(warranty.component)
+            return (
+              <li key={warranty.component} className="rounded-2xl bg-background p-4 flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-medium text-foreground">{warrantyComponentLabel(warranty.component)}</span>
-                  <Badge tone={warranty.isActive ? 'success' : 'neutral'}>{warranty.isActive ? 'Còn hiệu lực' : 'Hết hiệu lực'}</Badge>
+                  <span
+                    className={cn(
+                      'w-9 h-9 rounded-xl bg-card flex items-center justify-center',
+                      timeline.tone === 'ending' ? 'text-warning' : timeline.tone === 'ended' ? 'text-muted' : 'text-emerald',
+                    )}
+                  >
+                    <Icon className="w-[18px] h-[18px]" aria-hidden />
+                  </span>
+                  <Badge tone={badge.tone}>{badge.label}</Badge>
                 </div>
-                <p className="text-xs text-muted font-mono mt-1.5">
-                  Đến {formatDate(warranty.endDate)} · {warranty.kmLimit ? formatKm(warranty.kmLimit) : 'Không giới hạn km'}
-                </p>
+                <div>
+                  <p className="text-[15px] font-bold text-foreground">{label}</p>
+                  <p className="text-xs text-muted mt-0.5">
+                    Đến <span className="font-mono text-foreground">{formatDate(warranty.endDate)}</span> ·{' '}
+                    <span className="font-mono">{warranty.kmLimit ? formatKm(warranty.kmLimit) : 'Không giới hạn km'}</span>
+                  </p>
+                </div>
+                <div>
+                  <div
+                    role="progressbar"
+                    aria-label={`Thời gian bảo hành ${label} đã dùng`}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={Math.round(timeline.usedRatio * 100)}
+                    className="h-1.5 rounded-full bg-border overflow-hidden"
+                  >
+                    <div
+                      className={cn('h-full rounded-full', timeline.tone === 'ending' ? 'bg-warning' : timeline.tone === 'ended' ? 'bg-muted' : 'bg-emerald')}
+                      style={{ width: `${timeline.usedRatio * 100}%` }}
+                    />
+                  </div>
+                  <p className={cn('text-xs font-semibold mt-1.5', timeline.tone === 'ending' ? 'text-warning' : 'text-foreground')}>{timeline.remainingText}</p>
+                </div>
               </li>
-            ))}
-          </ul>
-        </>
+            )
+          })}
+        </ul>
       )}
+      <p className="text-xs text-muted mt-4">Dữ liệu do hãng cung cấp. Nếu thông tin chưa đúng, vui lòng liên hệ hãng hoặc xưởng dịch vụ.</p>
     </Card>
   )
 }

@@ -142,6 +142,8 @@ components:
 
 **Product context:** Vietnamese-language web app (React 19 + Tailwind v4) for private VinFast owners: maintenance due status, AI assistant, cost estimate, booking. The Workshop Portal (technicians) shares the same shell. The real competitor is the official VinFast app.
 
+**Roles:** exactly two user roles, the vehicle owner (Chủ xe) and the workshop owner (Chủ xưởng). "Technician" / "Kỹ thuật viên" in screens, wireframes and the `/technician/*` routes means the workshop owner, the `workshop_owner` account in specs and API. It is not a third role. UI copy may say "Kỹ thuật viên"; specs and permission rules say "Chủ xưởng". See PRD §4.
+
 **Mode per surface:** Owner app and Workshop Portal are Operate surfaces. Login is the one Persuade surface.
 
 **Layout is fixed.** This system restyles the existing structure (240px sidebar, 64px topbar, card grid, booking flows). It does not move screens, menus or flows. Layout changes need their own decision.
@@ -200,17 +202,23 @@ Tailwind radius tokens are overridden: `rounded-xl` = 10px (buttons, inputs, nav
 - **HomeCarousel** (`features/dashboard/components/HomeCarousel.tsx`): slides only from real data or real features (`homeSlides.ts`): maintenance (known milestone; readouts for km and days left, from `sm` up), booking (only when nothing is upcoming), assistant (always, with suggested questions from `sm` up). No promotional slide until there is a real source of offers.
 - **Login brand panel** (`AuthBrandPanel.tsx`): banner tokens, white logo, green highlight phrase.
 - **PlateTile** (`shared/ui/PlateTile.tsx`): white plate, ink border, Barlow Condensed.
+- **VehicleHero** (`features/vehicles/components/VehicleHero.tsx`): the ink panel of Xe của tôi, built from banner tokens like the Home banner: mono uppercase labels, name, PlateTile, masked VIN, a readout grid (ODO, next milestone in `amber-400` when km caused the alert, battery, motor) and the model photo on the ink stage. Below it: maintenance card (2/3) beside ODO and last-service cards, then warranty tiles with a time-used bar (`warrantyTimeline`, display only; `isActive` from the backend decides the status).
 - **Buttons**: primary `bg-brand` + `text-on-brand`; secondary card + border; danger error text and border.
 - **Quick actions**: green-tint icon tile (`bg-emerald-dim text-emerald`) beside the label from `sm` up.
+- **Robot mascot** (`shared/ui/RobotAvatar.tsx`): the AI assistant's face. White head with ink outline, ink face screen, `#19C37D` eyes, `#007A52` ears, pink cheeks; fixed colours in both themes like PlateTile. Moods: `idle` (message avatar), `thinking` (amber antenna light while streaming), `happy`, `wave` (empty chat). `RobotAvatar` puts it on an `bg-emerald-dim` disc, with an optional online dot. It stands for the assistant only: chat, and "Hỏi trợ lý" buttons that open it.
+- **PhotoUploadTile** (`shared/ui/PhotoUploadTile.tsx`): 72px `rounded-xl` tile, border `{colors.border}`, error border `{colors.error}` with "Tải lại" below; a progress ring over the preview while uploading; `PhotoAddTile` is the dashed "Thêm ảnh" tile that opens the camera on phones (`capture`). Hidden at three photos.
+- **DecisionSheet** (pattern, not a component): the `Dialog` (bottom sheet at 390px, `rounded-3xl`) that confirms a money decision, e.g. "Thêm {hạng mục} · {giá}? Tổng mới {tổng}"; its confirm button is `button-primary`, "Huỷ" is secondary. Declining a safety item uses the same sheet as `alertdialog` with a danger button.
+- **Decision rows** (`features/bookings/components/DecisionCard.tsx`): lines in one card with `divide-y divide-border`, no nested cards, no coloured left border; prices `font-mono`; safety items carry a warning `Badge` with `ShieldAlert` and the text "Hạng mục an toàn"; photo thumbnails 56px `rounded-xl`, tap to open large.
+- **Chat** (`features/assistant`): user bubbles `bg-brand text-on-brand`, 22px radius with a 6px tail corner; assistant answers in `bg-card elevation-sm` cards with no border; sources as pills under a hairline; composer is a floating `rounded-3xl` card with a round send button; proposal card has a green-tint header and a calendar date tile.
 
 ## Do's and Don'ts
 
 - Do use `bg-brand` + `text-on-brand` for primary fills and `text-emerald` for green text.
 - Do render the real logo through `<Logo />` and plates through `<PlateTile />`.
-- Do keep the banner the only ink block on a page, with real data and a working action on every slide.
+- Do keep one ink block per page at most (Home banner, Xe của tôi hero), with real data only; the Home banner needs a working action on every slide.
 - Do check both themes and 390px width before merging UI changes.
 - Don't use gradients, glows, blur blobs or gradient text.
-- Don't use mono uppercase labels outside the banner; elsewhere labels are sentence case.
+- Don't use mono uppercase labels outside ink panels (Home banner, vehicle hero); elsewhere labels are sentence case.
 - Don't use the logo green `#00A86B` as text on light surfaces.
 - Don't change layout or navigation as part of a visual change.
 
@@ -235,4 +243,8 @@ Tailwind radius tokens are overridden: `rounded-xl` = 10px (buttons, inputs, nav
 | 2026-10-04 | Banner slides centre vertically; below `sm` the readouts and the assistant questions are hidden | On phones they repeated the headline and the AI card, and made the banner 507px tall with 180px empty under the short slide. (design review FINDING-012) |
 | 2026-10-04 | Workshop › Lịch hẹn: status count cards and status chips merge into one row of count-filter buttons (multi-select) | The six cards and six chips repeated each other and took three rows on phones. (design review FINDING-013) |
 | 2026-10-04 | Owner nav: "Lịch hẹn" → "Lịch hẹn của tôi" (ticket icon), "Đặt lịch" → "Đặt lịch bảo dưỡng" | Two adjacent calendar items read alike; labels now match the page titles. Order and routes unchanged. (design review FINDING-016) |
+| 2026-10-08 | Xe của tôi: ink hero (variant B) replaces the identity card; layout becomes hero → maintenance (2/3) + ODO/last service → warranty tiles | User chose variant B on the design canvas; specs moved into the hero readouts, warranty table became tiles with remaining time. |
+| 2026-10-08 | AI assistant restyle: robot mascot avatar, green user bubbles, borderless answer cards, floating composer, starter cards on the empty chat | User found the chat plain and asked for a cute robot avatar; approved on the design canvas. Layout (chat column + 320px vehicle panel) unchanged. |
+| 2026-10-09 | Quyết định về tiền: hai nút cùng trọng lượng trên dòng ("Đồng ý" / "Không làm", cả hai `button-secondary`, "Đồng ý" có icon `Check` xanh); nút chính chỉ trong bước xác nhận (DecisionSheet) | Chủ xe không bị đẩy về phía đồng ý; bước xác nhận mới là chỗ cam kết tiền (bao-gia-hai-tang 12A). |
+| 2026-10-09 | Workshop Portal thêm mục "Bảng giá" (`/technician/price-list`) dưới "Sức chứa" | Màn mới cho chủ xưởng tự quản lý giá (bao-gia-hai-tang D14); thứ tự các mục cũ giữ nguyên. |
 | 2026-10-04 | Workshop › Sức chứa cells lead with seats left (16px mono); booked and locked lines only when non-zero; full slots read "Hết chỗ" | 56 identical three-line 11px cells hid the few slots that mattered. (design review FINDING-018) |

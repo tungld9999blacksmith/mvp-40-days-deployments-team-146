@@ -1,7 +1,8 @@
-import { CalendarClock, Car } from 'lucide-react'
+import { BatteryCharging, CalendarClock, CircleDot, ShieldCheck, Wrench, type LucideIcon } from 'lucide-react'
+import PlateTile from '@/shared/ui/PlateTile'
 import Spinner from '@/shared/ui/Spinner'
 import { vehicleDisplayName } from '@/shared/domain/labels'
-import { formatKm, formatLicensePlate, formatTimeDayMonth } from '@/shared/utils/format'
+import { formatKm, formatNumber, formatTimeDayMonth } from '@/shared/utils/format'
 import DueStatusBadge from '@/features/vehicles/components/DueStatusBadge'
 import { useMaintenanceStatus } from '@/features/vehicles/hooks/useVehicleQueries'
 import { remainingParts } from '@/features/vehicles/utils/maintenanceFormat'
@@ -14,6 +15,17 @@ export const SUGGESTED_QUESTIONS = [
   'Chính sách bảo hành pin thế nào?',
   'Bao lâu cần kiểm tra lốp?',
 ]
+
+const QUESTION_ICONS: LucideIcon[] = [Wrench, ShieldCheck, BatteryCharging, CircleDot]
+
+function Readout({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="rounded-2xl bg-card px-3.5 py-3">
+      <p className="font-plate font-bold text-[32px] leading-none text-foreground">{value}</p>
+      <p className="mt-1 text-xs text-muted">{label}</p>
+    </div>
+  )
+}
 
 /**
  * Vehicle context shown next to the chat (US-025 FE §4.5). Display only — nothing
@@ -38,30 +50,50 @@ export default function ChatContextPanel({
   const data = status.data
   const parts = data && data.dueStatus !== 'UNKNOWN' ? remainingParts(data) : []
 
+  // Big readouts only while counting down; overdue and unknown states keep the sentence form.
+  const countdown = data && data.dueStatus !== 'UNKNOWN' && (data.remainingKm ?? 0) > 0 && (data.remainingDays ?? 0) > 0
+
   return (
     <div className="p-5 space-y-6">
       <section>
-        <p className="text-[13px] font-semibold text-muted mb-3">Thông tin xe</p>
-        <div className="bg-card border border-border rounded-2xl p-4 space-y-3 elevation-sm">
+        <p className="text-[13px] font-semibold text-muted mb-3">Xe đang hỏi</p>
+        <div className="bg-background rounded-[20px] p-4 space-y-4">
           {vehicle ? (
             <>
-              <div className="flex items-center gap-2.5">
-                <Car className="w-4 h-4 text-emerald" aria-hidden />
-                <span className="text-sm font-semibold text-foreground">{vehicleDisplayName(vehicle.modelName, vehicle.trim)}</span>
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-base font-extrabold tracking-tight text-foreground">{vehicleDisplayName(vehicle.modelName, vehicle.trim)}</p>
+                  {data?.odometer && (
+                    <p className="text-xs text-muted mt-0.5">
+                      ODO <span className="font-mono text-foreground">{formatKm(data.odometer.odoKm)}</span>
+                    </p>
+                  )}
+                </div>
+                {vehicle.licensePlate && <PlateTile plate={vehicle.licensePlate} size="sm" className="flex-shrink-0" />}
               </div>
-              <p className="text-xs font-mono text-muted">{formatLicensePlate(vehicle.licensePlate)}</p>
               {data ? (
-                <div className="space-y-2 pt-1">
-                  <DueStatusBadge status={data.dueStatus} />
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <DueStatusBadge status={data.dueStatus} />
+                    {data.nextMilestone && (
+                      <span className="text-xs text-muted">
+                        Mốc <span className="font-mono text-foreground">{formatKm(data.nextMilestone.odoMilestoneKm)}</span>
+                      </span>
+                    )}
+                  </div>
                   {data.unknownReason === 'OEM_DATA_NOT_SYNCED' ? (
                     <p className="text-xs text-muted">Đang lấy dữ liệu từ hãng...</p>
+                  ) : countdown ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      <Readout value={formatNumber(data.remainingKm ?? 0)} label="km còn lại" />
+                      <Readout value={formatNumber(data.remainingDays ?? 0)} label="ngày còn lại" />
+                    </div>
                   ) : (
                     parts.length > 0 && <p className="text-sm font-mono text-foreground">{parts.map(part => part.text).join(' · ')}</p>
                   )}
                   {data.odometer && (
                     <p className="text-xs text-muted">
-                      ODO <span className="font-mono text-foreground">{formatKm(data.odometer.odoKm)}</span> · Hãng cập nhật{' '}
-                      <span className="font-mono">{formatTimeDayMonth(data.odometer.recordedAt)}</span>
+                      Hãng cập nhật <span className="font-mono">{formatTimeDayMonth(data.odometer.recordedAt)}</span>
                     </p>
                   )}
                 </div>
@@ -77,29 +109,37 @@ export default function ChatContextPanel({
 
       {showSuggestions && (
         <section>
-          <p className="text-[13px] font-semibold text-muted mb-3">Câu hỏi gợi ý</p>
+          <p className="text-[13px] font-semibold text-muted mb-3">Hỏi nhanh</p>
           <div className="space-y-2">
             <button
               type="button"
               disabled={disabled || !vehicle}
               onClick={onQuickBooking}
-              className="w-full text-left rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm text-foreground hover:bg-card-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="w-full min-h-12 text-left rounded-2xl bg-brand text-on-brand px-3 py-2.5 text-[13px] font-semibold hover:bg-emerald-bright transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
             >
-              <CalendarClock className="w-3.5 h-3.5 text-emerald flex-shrink-0" aria-hidden />
+              <span className="w-8 h-8 rounded-[10px] bg-card text-emerald flex items-center justify-center flex-shrink-0">
+                <CalendarClock className="w-4 h-4" aria-hidden />
+              </span>
               {QUICK_BOOKING_LABEL}
             </button>
             {!vehicle && <p className="text-xs text-muted">Liên kết xe để đặt lịch.</p>}
-            {SUGGESTED_QUESTIONS.map(question => (
-              <button
-                key={question}
-                type="button"
-                disabled={disabled}
-                onClick={() => onAsk(question)}
-                className="w-full text-left rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm text-foreground hover:bg-card-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {question}
-              </button>
-            ))}
+            {SUGGESTED_QUESTIONS.map((question, index) => {
+              const Icon = QUESTION_ICONS[index] ?? Wrench
+              return (
+                <button
+                  key={question}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onAsk(question)}
+                  className="w-full min-h-12 text-left rounded-2xl bg-background px-3 py-2.5 text-[13px] font-medium text-foreground hover:bg-card-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
+                >
+                  <span className="w-8 h-8 rounded-[10px] bg-card text-emerald flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-4 h-4" aria-hidden />
+                  </span>
+                  {question}
+                </button>
+              )
+            })}
           </div>
         </section>
       )}

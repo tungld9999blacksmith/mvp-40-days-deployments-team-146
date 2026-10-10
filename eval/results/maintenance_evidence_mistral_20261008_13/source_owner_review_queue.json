@@ -1,0 +1,132 @@
+{
+  "status": "PENDING_INDEPENDENT_SOURCE_OWNER",
+  "previous_queue": {
+    "status": "PENDING_SOURCE_OWNER",
+    "qdrant_mutated": false,
+    "issues": [
+      {
+        "id": "TABLE_COOLANT",
+        "cases": [
+          "M07",
+          "M18",
+          "M23"
+        ],
+        "issue": "Flattened columns; coolant12.000km/120months may be malformed. Do not silently convert to120.000km or extrapolate intervals."
+      },
+      {
+        "id": "MODEL_METADATA",
+        "cases": [
+          "W01",
+          "W04",
+          "W12",
+          "W18"
+        ],
+        "issue": "VFe34 document metadata contains VF8 policy text; exact model/version provenance must be recovered."
+      },
+      {
+        "id": "POLICY_SCOPE_VERSION",
+        "cases": [
+          "W01",
+          "W04",
+          "W10",
+          "W12",
+          "W14",
+          "W18"
+        ],
+        "issue": "New vs replacement, private vs commercial, vehicle vs battery durations/activation dates cannot be merged as fleet-wide policy; some same-scope sources lack effective versions."
+      },
+      {
+        "id": "CHARGING_START_SOC",
+        "cases": [
+          "B16"
+        ],
+        "issue": "42kWh at3.3kW in8-10hours lacks startingSOC/usable capacity; 42/3.3 approximately12.7hours before losses for full capacity. Verify original statement; do not repair from assumption."
+      },
+      {
+        "id": "FOLLOWUP_DAYS",
+        "cases": [
+          "PR03"
+        ],
+        "issue": "Source versions say2days and3days. Need version authority, not synthesized2-3day promise."
+      },
+      {
+        "id": "LEASE_SCOPE",
+        "cases": [
+          "B17",
+          "B19"
+        ],
+        "issue": "Battery FAQ compensation statements originate in rental terms; normalization and generation must retain that scope."
+      },
+      {
+        "id": "GOLDEN_EXPECTED_DOC",
+        "cases": [
+          "P01",
+          "P11"
+        ],
+        "issue": "Expected document or historical answer differs from evidence meaning; independent rubric review required, no automatic rescoring old results."
+      },
+      {
+        "id": "SYSTEM_CAPABILITIES",
+        "cases": [
+          "PR02",
+          "PR08"
+        ],
+        "issue": "VinFast manuals cannot establish EV Care AI/HITL capability. Distinguish app manual advice from orchestrator tools/confirmation contract."
+      }
+    ]
+  },
+  "current_changes": {
+    "PR03": "Final answer must present2-day post-maintenance and3-day post-workshop statements separately. No current deadline selected; version/scope authority still unverified.",
+    "W20": "Source-relative conditional vehicle expiry logic implemented; no real-vehicle eligibility or current-policy certification.",
+    "M07": "Quote the source row literally;12.000km is not silently replaced with120.000km. Source validity and actual replacement schedule remain unverified.",
+    "M18": "Literal component labels retained; missing action/period cells are not filled. No confirmed schedule.",
+    "M23": "No mandatory replacement list at40.000km is inferred from missing period columns."
+  },
+  "review_questions": [
+    {
+      "issue": "FOLLOWUP_DAYS",
+      "question": "Which dated/versioned source governs post-maintenance feedback? Does2days after maintenance vs3days after workshop departure refer to different service scope or effective versions?",
+      "needed_fields": [
+        "official_source_url_or_repository_path",
+        "version_effective_date",
+        "service_scope",
+        "approved_rule",
+        "reviewer"
+      ]
+    },
+    {
+      "issue": "MODEL_METADATA",
+      "question": "VFe34 local PDF page17 states VF8 warranty. Provide the correct official vehicle manual/version; do not correct the model name by inference.",
+      "evidence": "../schema_source_mistral_20261008_08/local_pdf_source_audit_02.json",
+      "needed_fields": [
+        "official_pdf_url_or_path",
+        "vehicle_model",
+        "manual_version",
+        "approved_ingestion_scope",
+        "reviewer"
+      ]
+    },
+    {
+      "issue": "TABLE_COOLANT",
+      "cases": [
+        "M07",
+        "M18",
+        "M23"
+      ],
+      "evidence": "local_source_audit.json",
+      "question": "Please provide the original complete same-model maintenance table and effective version. Confirm the coolant row120months/12.000km, the air-conditioning row60.000/12.000/180.000km, and per-period actions including40.000km. Do not approve guessed replacements of digits.",
+      "needed_fields": [
+        "official_source_url_or_repository_path",
+        "table_page_or_section",
+        "vehicle_model",
+        "effective_version",
+        "approved_coolant_rule",
+        "approved_period_matrix",
+        "reviewer"
+      ]
+    }
+  ],
+  "source_owner_approval": false,
+  "qdrant_mutated": false,
+  "independent_review_labels": 0
+}

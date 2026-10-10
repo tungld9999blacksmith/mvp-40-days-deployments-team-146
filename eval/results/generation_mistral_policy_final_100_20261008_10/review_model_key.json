@@ -1,0 +1,4 @@
+{
+  "model_A": "google/gemma-4-26b-a4b-it",
+  "model_B": "mistralai/mistral-small-2603"
+}

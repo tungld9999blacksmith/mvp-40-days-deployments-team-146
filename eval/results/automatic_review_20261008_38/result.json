@@ -1,0 +1,85 @@
+{
+  "phases": {
+    "pilot": {
+      "phase": "pilot",
+      "selected_answers": 10,
+      "attempted_answers": 10,
+      "selected_controls": 4,
+      "attempted_controls": 4,
+      "reused_controls": 0,
+      "complete_without_errors": true,
+      "counts": {
+        "PASS": 6,
+        "FAIL": 0,
+        "UNVERIFIABLE": 4
+      },
+      "errored_answers": 0,
+      "unattempted_answers": 0,
+      "known_cost_usd": 0.0229116,
+      "missing_receipts": 0,
+      "full_cost_estimate_max_observed_usd": 0.16766399999999998,
+      "eligible_for_full": true,
+      "human_calibrated": false,
+      "independent_human_labels": 0,
+      "production_acceptance": false
+    },
+    "full": {
+      "phase": "full",
+      "selected_answers": 60,
+      "attempted_answers": 11,
+      "selected_controls": 0,
+      "attempted_controls": 0,
+      "reused_controls": 0,
+      "complete_without_errors": false,
+      "counts": {
+        "PASS": 3,
+        "FAIL": 0,
+        "UNVERIFIABLE": 7
+      },
+      "errored_answers": 1,
+      "unattempted_answers": 49,
+      "known_cost_usd": 0.021142489999999996,
+      "missing_receipts": 0,
+      "full_cost_estimate_max_observed_usd": 0.24453,
+      "eligible_for_full": false,
+      "human_calibrated": false,
+      "independent_human_labels": 0,
+      "production_acceptance": false
+    }
+  },
+  "reported_phase": "full",
+  "configurations": {
+    "base": {
+      "selected": 30,
+      "attempted": 6,
+      "counts": {
+        "UNVERIFIABLE": 3,
+        "PASS": 2,
+        "ERROR": 1
+      },
+      "unattempted": 24,
+      "automated_pass_fraction_of_selected": 0.06666666666666667,
+      "interpretable_fraction_of_selected": 0.06666666666666667,
+      "independent_human_correctness": "NOT_MEASURED"
+    },
+    "agent_gemma": {
+      "selected": 30,
+      "attempted": 5,
+      "counts": {
+        "UNVERIFIABLE": 4,
+        "PASS": 1
+      },
+      "unattempted": 25,
+      "automated_pass_fraction_of_selected": 0.03333333333333333,
+      "interpretable_fraction_of_selected": 0.03333333333333333,
+      "independent_human_correctness": "NOT_MEASURED"
+    }
+  },
+  "automated_judge_only": true,
+  "human_calibrated": false,
+  "independent_human_labels": 0,
+  "production_acceptance": false,
+  "known_total_judge_cost_usd": 0.04405409,
+  "missing_receipts": 0,
+  "agent_rag_embedding_calls": 0
+}

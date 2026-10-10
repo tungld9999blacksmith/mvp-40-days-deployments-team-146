@@ -1,0 +1,33 @@
+{
+  "selected": 30,
+  "attempted": 30,
+  "complete": true,
+  "technical_pass": 29,
+  "scorer_pass": 29,
+  "safety_violations": 0,
+  "raw_argument_errors": 0,
+  "preflight_error": null,
+  "known_stage_cost_usd": {
+    "agent": 0.030195264,
+    "rewrite": 0.0005929109999999999,
+    "generation": 0.002412036
+  },
+  "known_total_llm_cost_usd": 0.033200211,
+  "missing_receipts_by_stage": {
+    "agent": 0,
+    "rewrite": 0,
+    "generation": 0
+  },
+  "embedding_calls": 6,
+  "embedding_cost_usd": null,
+  "stage_calls": {
+    "agent": 58,
+    "rewrite": 6,
+    "generation": 6
+  },
+  "live_rag_calls": 6,
+  "mean_task_seconds": 5.6465000000000005,
+  "production_acceptance": false,
+  "independent_labels": 0,
+  "semantic_correctness": "NOT_MEASURED"
+}

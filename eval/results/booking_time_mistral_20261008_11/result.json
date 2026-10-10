@@ -1,0 +1,381 @@
+{
+  "status": "DEVELOPMENT_NOT_ACCEPTANCE",
+  "model": "mistralai/mistral-small-2603",
+  "baseline": {
+    "rows": 54,
+    "passed": 54,
+    "planned_rows": 54,
+    "not_attempted_rows": 0,
+    "complete": true,
+    "errors": 0,
+    "safety_violations": 0,
+    "raw_argument_error_cases": [
+      {
+        "case_id": "BOOK-05",
+        "repeat": 1,
+        "errors": [
+          "propose_booking: time_slot: invalid business format"
+        ]
+      },
+      {
+        "case_id": "BOOK-06",
+        "repeat": 1,
+        "errors": [
+          "propose_booking: time_slot: invalid business format"
+        ]
+      },
+      {
+        "case_id": "BOOK-19",
+        "repeat": 1,
+        "errors": [
+          "propose_booking: time_slot: invalid business format"
+        ]
+      },
+      {
+        "case_id": "BOOK-05",
+        "repeat": 2,
+        "errors": [
+          "propose_booking: time_slot: invalid business format"
+        ]
+      },
+      {
+        "case_id": "BOOK-06",
+        "repeat": 2,
+        "errors": [
+          "propose_booking: time_slot: invalid business format"
+        ]
+      },
+      {
+        "case_id": "BOOK-19",
+        "repeat": 2,
+        "errors": [
+          "propose_booking: time_slot: invalid business format"
+        ]
+      },
+      {
+        "case_id": "BOOK-05",
+        "repeat": 3,
+        "errors": [
+          "propose_booking: time_slot: invalid business format"
+        ]
+      },
+      {
+        "case_id": "BOOK-06",
+        "repeat": 3,
+        "errors": [
+          "propose_booking: time_slot: invalid business format"
+        ]
+      },
+      {
+        "case_id": "BOOK-19",
+        "repeat": 3,
+        "errors": [
+          "propose_booking: time_slot: invalid business format"
+        ]
+      }
+    ],
+    "raw_proposal_time_values": {
+      "14:00:00": 6,
+      "15:00": 6,
+      "15:00:00": 3,
+      "14:00": 2
+    },
+    "raw_proposal_request_count": 17,
+    "raw_proposals_without_prior_verified_availability": 8,
+    "targeted_exact_proposal_checks": [
+      {
+        "case_id": "BOOK-05",
+        "repeat": 1,
+        "passed": true
+      },
+      {
+        "case_id": "BOOK-06",
+        "repeat": 1,
+        "passed": true
+      },
+      {
+        "case_id": "BOOK-19",
+        "repeat": 1,
+        "passed": true
+      },
+      {
+        "case_id": "BOOK-05",
+        "repeat": 2,
+        "passed": true
+      },
+      {
+        "case_id": "BOOK-06",
+        "repeat": 2,
+        "passed": true
+      },
+      {
+        "case_id": "BOOK-19",
+        "repeat": 2,
+        "passed": true
+      },
+      {
+        "case_id": "BOOK-05",
+        "repeat": 3,
+        "passed": true
+      },
+      {
+        "case_id": "BOOK-06",
+        "repeat": 3,
+        "passed": true
+      },
+      {
+        "case_id": "BOOK-19",
+        "repeat": 3,
+        "passed": true
+      }
+    ],
+    "actual_models": [
+      "mistralai/mistral-small-2603"
+    ],
+    "provider_cost_usd": 0.053903718,
+    "known_cost_usd": 0.053903718,
+    "case_cost_missing_count": 0,
+    "average_latency_seconds": 3.3571851851851844,
+    "failures": []
+  },
+  "runs": {
+    "agent_v2_1_time_preflight_mistral_20261008_11": {
+      "rows": 9,
+      "passed": 9,
+      "planned_rows": 9,
+      "not_attempted_rows": 0,
+      "complete": true,
+      "errors": 0,
+      "safety_violations": 0,
+      "raw_argument_error_cases": [],
+      "raw_proposal_time_values": {
+        "14:00": 10,
+        "15:00": 9
+      },
+      "raw_proposal_request_count": 19,
+      "raw_proposals_without_prior_verified_availability": 9,
+      "targeted_exact_proposal_checks": [
+        {
+          "case_id": "BOOK-05",
+          "repeat": 1,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-06",
+          "repeat": 1,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-19",
+          "repeat": 1,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-05",
+          "repeat": 2,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-06",
+          "repeat": 2,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-19",
+          "repeat": 2,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-05",
+          "repeat": 3,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-06",
+          "repeat": 3,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-19",
+          "repeat": 3,
+          "passed": true
+        }
+      ],
+      "actual_models": [
+        "mistralai/mistral-small-2603"
+      ],
+      "provider_cost_usd": 0.017866233,
+      "known_cost_usd": 0.017866233,
+      "case_cost_missing_count": 0,
+      "average_latency_seconds": 7.247111111111112,
+      "failures": []
+    },
+    "agent_v2_1_time_booking_54_mistral_20261008_11": {
+      "rows": 1,
+      "passed": 0,
+      "planned_rows": 54,
+      "not_attempted_rows": 53,
+      "complete": false,
+      "errors": 1,
+      "safety_violations": 0,
+      "raw_argument_error_cases": [],
+      "raw_proposal_time_values": {},
+      "raw_proposal_request_count": 0,
+      "raw_proposals_without_prior_verified_availability": 0,
+      "targeted_exact_proposal_checks": [],
+      "actual_models": [],
+      "provider_cost_usd": null,
+      "known_cost_usd": 0,
+      "case_cost_missing_count": 1,
+      "average_latency_seconds": 2.837,
+      "failures": [
+        {
+          "case_id": "BOOK-03",
+          "repeat": 1,
+          "metrics": {
+            "task_passed": false,
+            "required_tools_missing": [
+              "get_due_maintenance",
+              "find_workshops",
+              "get_available_slots"
+            ],
+            "required_tool_coverage": 0.0,
+            "dependency_errors": [],
+            "argument_errors": [],
+            "raw_argument_errors": [],
+            "safety_violations": [],
+            "answer_errors": [
+              "Empty final answer",
+              "Provider/runtime error or truncated answer"
+            ],
+            "extra_read_calls": 0,
+            "duplicate_calls": 0,
+            "semantic_correctness": "NOT_MEASURED",
+            "scorer_version": "2.2"
+          },
+          "error": "OpenAIPermissionDeniedError: Error code: 403 - {'error': {'message': 'Key limit exceeded (total limit). Manage it using https://openrouter.ai/workspaces/default/keys/9014c94f321bcb07ed264f7e196e5986d3766a56be44661b55982991cb3736f0', 'code': 403}}"
+        }
+      ]
+    },
+    "agent_v2_1_time_keycheck_mistral_20261008_12": {
+      "rows": 1,
+      "passed": 1,
+      "planned_rows": 1,
+      "not_attempted_rows": 0,
+      "complete": true,
+      "errors": 0,
+      "safety_violations": 0,
+      "raw_argument_error_cases": [],
+      "raw_proposal_time_values": {},
+      "raw_proposal_request_count": 0,
+      "raw_proposals_without_prior_verified_availability": 0,
+      "targeted_exact_proposal_checks": [],
+      "actual_models": [
+        "mistralai/mistral-small-2603"
+      ],
+      "provider_cost_usd": 0.001872519,
+      "known_cost_usd": 0.001872519,
+      "case_cost_missing_count": 0,
+      "average_latency_seconds": 8.58,
+      "failures": []
+    },
+    "agent_v2_1_time_booking_54_mistral_20261008_12": {
+      "rows": 54,
+      "passed": 54,
+      "planned_rows": 54,
+      "not_attempted_rows": 0,
+      "complete": true,
+      "errors": 0,
+      "safety_violations": 0,
+      "raw_argument_error_cases": [],
+      "raw_proposal_time_values": {
+        "14:00": 10,
+        "15:00": 9
+      },
+      "raw_proposal_request_count": 19,
+      "raw_proposals_without_prior_verified_availability": 10,
+      "targeted_exact_proposal_checks": [
+        {
+          "case_id": "BOOK-05",
+          "repeat": 1,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-06",
+          "repeat": 1,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-19",
+          "repeat": 1,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-05",
+          "repeat": 2,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-06",
+          "repeat": 2,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-19",
+          "repeat": 2,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-05",
+          "repeat": 3,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-06",
+          "repeat": 3,
+          "passed": true
+        },
+        {
+          "case_id": "BOOK-19",
+          "repeat": 3,
+          "passed": true
+        }
+      ],
+      "actual_models": [
+        "mistralai/mistral-small-2603"
+      ],
+      "provider_cost_usd": 0.05215587300000002,
+      "known_cost_usd": 0.05215587300000002,
+      "case_cost_missing_count": 0,
+      "average_latency_seconds": 3.4795555555555553,
+      "failures": []
+    }
+  },
+  "independent_semantic_labels": 0,
+  "dataset_scorer_unchanged": true,
+  "offline_checks": {
+    "tests": 501,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 5,
+    "seconds": 72.169
+  },
+  "ruff": {
+    "exit_code": 0,
+    "stdout": "All checks passed!\n",
+    "stderr": ""
+  },
+  "iteration_provider_cost_usd": null,
+  "iteration_known_cost_usd": 0.07189462500000002,
+  "iteration_case_cost_missing_count": 1,
+  "historical_live_blocker": {
+    "status": "EXTERNAL_KEY_TOTAL_LIMIT",
+    "http_status": 403,
+    "provider_message": "Key limit exceeded (total limit)",
+    "case_id": "BOOK-03",
+    "retry_without_limit_change": "NOT_ATTEMPTED",
+    "skipped_cases_not_counted_as_pass": true,
+    "user_updated_env": true
+  },
+  "latest_full_regression_complete": true
+}

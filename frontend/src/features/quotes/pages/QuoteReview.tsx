@@ -1,221 +1,448 @@
-import { initialServices } from '@/mocks/quote-review'
-import type { ServiceItem } from '../types'
-import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Car, CheckCircle2, X, Plus, Trash2, AlertTriangle, Edit3 } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Link, Navigate, useBlocker, useNavigate, useSearchParams } from 'react-router-dom'
+import { ArrowLeft, Car, CheckCircle2, Clock, FileX2, Phone, ShieldCheck, User, XCircle } from 'lucide-react'
+import { isApiError, type ApiError } from '@/shared/api/client'
+import Badge from '@/shared/ui/Badge'
+import Button from '@/shared/ui/Button'
+import { Card, CardHeader, InfoRow } from '@/shared/ui/Card'
+import Dialog from '@/shared/ui/Dialog'
+import { SelectInput, TextArea } from '@/shared/ui/Field'
+import { SkeletonCard } from '@/shared/ui/Skeleton'
+import { EmptyState, ErrorState, Notice } from '@/shared/ui/States'
+import { useToast } from '@/shared/ui/Toast'
+import { cn } from '@/shared/ui/cn'
+import { formatDate, formatKm, formatLicensePlate, formatNumber, formatTimeDayMonth } from '@/shared/utils/format'
+import { track } from '@/shared/utils/track'
 import ConversationExcerptPanel from '@/features/assistant/components/ConversationExcerptPanel'
+import { formatVnd } from '@/features/estimate/utils'
+import { approveQuote, getWorkshopQuote, rejectQuote } from '../api'
+import QuoteStatusBadge from '../components/QuoteStatusBadge'
+import RejectDialog from '../components/RejectDialog'
+import type { QuoteItem, WorkshopQuoteDetail } from '../types'
+import { hasConversation, isWaitingLong, waitingHours } from '../utils'
 
+const MAX_PRICE = 1_000_000_000
+const VALIDITY_OPTIONS = [1, 3, 5, 7, 10, 14, 21, 30]
+
+/** Digits only; `''` keeps the estimated price (FE §4.3). */
+function parsePrice(raw: string): number | null {
+  const digits = raw.replace(/\D/g, '')
+  return digits ? Number(digits) : null
+}
+
+function PriceInput({
+  item,
+  value,
+  onChange,
+  error,
+  disabled,
+}: {
+  item: QuoteItem
+  value: string
+  onChange: (value: string) => void
+  error?: string
+  disabled?: boolean
+}) {
+  const [focused, setFocused] = useState(false)
+  const parsed = parsePrice(value)
+  const shown = focused || parsed === null ? value : formatNumber(parsed)
+  return (
+    <div>
+      <input
+        inputMode="numeric"
+        aria-label={`Giá duyệt cho ${item.itemName}`}
+        placeholder={formatNumber(item.estimatedPrice)}
+        value={shown}
+        disabled={disabled}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        onChange={event => onChange(event.target.value.replace(/[^\d]/g, ''))}
+        className={cn(
+          'w-32 bg-card border rounded-lg px-3 py-1.5 text-sm text-right font-mono text-foreground placeholder:text-muted/70 focus:outline-none focus:border-emerald/60 focus:ring-4 focus:ring-emerald/15',
+          error ? 'border-error' : 'border-border',
+        )}
+      />
+      {error && <p className="text-xs text-error mt-1 text-right">{error}</p>}
+    </div>
+  )
+}
+
+/** SCR-1112 / SCR-1113 — review a quote of the workshop (API-QT-12 → 14). */
 export default function QuoteReview() {
-  const navigate = useNavigate()
-  // The quote page is still mock data; the excerpt (US-025 SCR-605) needs a real quote id.
   const quoteId = useSearchParams()[0].get('quoteId')
-  const [services, setServices] = useState<ServiceItem[]>(initialServices)
-  const [techNote, setTechNote] = useState('')
-  const [approved, setApproved] = useState(false)
+  const navigate = useNavigate()
+  const toast = useToast()
+  const [quote, setQuote] = useState<WorkshopQuoteDetail | null>(null)
+  const [error, setError] = useState<ApiError | null>(null)
+  const [prices, setPrices] = useState<Record<string, string>>({})
+  const [notes, setNotes] = useState<Record<string, string>>({})
+  const [validityDays, setValidityDays] = useState(7)
+  const [reviewerNote, setReviewerNote] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [dialog, setDialog] = useState<'approve' | 'reject' | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [rejectError, setRejectError] = useState<string | null>(null)
+  const [done, setDone] = useState(false)
+  const stayRef = useRef<HTMLButtonElement>(null)
+  // Read at navigation time: the review just succeeded, leaving must not be blocked.
+  const doneRef = useRef(false)
 
-  const total = services.filter(s => s.included).reduce((sum, s) => sum + s.price, 0)
+  const load = useCallback(() => {
+    if (!quoteId) return
+    setError(null)
+    getWorkshopQuote(quoteId)
+      .then(data => {
+        setQuote(data)
+        setPrices({})
+        setNotes({})
+      })
+      .catch((reason: unknown) => setError(isApiError(reason) ? reason : null))
+  }, [quoteId])
 
-  function toggle(id: number) {
-    setServices(prev => prev.map(s => s.id === id ? { ...s, included: !s.included } : s))
-  }
+  useEffect(load, [load])
 
-  function updatePrice(id: number, val: string) {
-    const n = parseInt(val.replace(/\D/g, '')) || 0
-    setServices(prev => prev.map(s => s.id === id ? { ...s, price: n } : s))
-  }
+  const pending = quote?.displayStatus === 'PENDING_APPROVAL'
+  const dirty = pending && !done && (Object.values(prices).some(Boolean) || Object.values(notes).some(Boolean) || reviewerNote.trim() !== '' || validityDays !== 7)
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) => dirty && !doneRef.current && currentLocation.pathname !== nextLocation.pathname,
+  )
 
-  function removeItem(id: number) {
-    setServices(prev => prev.filter(s => s.id !== id))
-  }
+  const draftTotal = useMemo(() => {
+    if (!quote) return 0
+    return quote.items.reduce((sum, item) => (item.covered ? sum : sum + (parsePrice(prices[item.quoteItemId] ?? '') ?? item.estimatedPrice)), 0)
+  }, [quote, prices])
 
-  function addItem() {
-    setServices(prev => [...prev, {
-      id: Date.now(), name: 'Hạng mục mới', desc: 'Mô tả...', price: 0,
-      aiSuggested: false, included: true, editing: true,
-    }])
-  }
+  if (!quoteId) return <Navigate to="/technician/quotes" replace />
 
-  function handleApprove() {
-    setApproved(true)
-    setTimeout(() => navigate('/technician/quotes'), 1500)
-  }
-
-  if (approved) {
+  if (error && !quote) {
     return (
-      <div className="min-h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-20 h-20 rounded-full bg-emerald/10 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="w-10 h-10 text-emerald" />
-          </div>
-          <h2 className="text-xl font-bold text-foreground mb-2">Báo giá đã được phê duyệt</h2>
-          <p className="text-muted text-sm">Khách hàng sẽ nhận thông báo ngay.</p>
-        </div>
+      <div className="p-4 sm:p-6 xl:p-8 max-w-3xl">
+        <Card>
+          {isApiError(error, 'QUOTE_NOT_FOUND') ? (
+            <EmptyState
+              icon={<FileX2 className="w-5 h-5" />}
+              title="Không tìm thấy báo giá"
+              action={<Button onClick={() => navigate('/technician/quotes')}>Về danh sách báo giá</Button>}
+            />
+          ) : (
+            <ErrorState traceId={error.traceId} onRetry={load} />
+          )}
+        </Card>
       </div>
     )
   }
 
-  return (
-    <div className="p-6 xl:p-8 max-w-5xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Review Quote</h1>
-        <p className="text-muted text-sm mt-1">Xem xét và phê duyệt báo giá bảo dưỡng từ AI</p>
-      </div>
-
-      {quoteId && (
-        <div className="mb-5">
-          <ConversationExcerptPanel source={{ type: 'quote', id: quoteId }} />
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {/* Main review */}
+  if (!quote) {
+    return (
+      <div className="p-4 sm:p-6 xl:p-8 grid gap-5 lg:grid-cols-3" aria-busy>
         <div className="lg:col-span-2 space-y-4">
-          {/* Vehicle info */}
-          <div className="rounded-2xl p-5 flex items-center gap-4 bg-card border border-border">
-            <div className="w-12 h-12 rounded-xl bg-card flex items-center justify-center flex-shrink-0 border border-border">
-              <Car className="w-6 h-6 text-muted" />
-            </div>
-            <div className="flex-1">
-              <div className="text-sm font-semibold text-foreground">VinFast VF6</div>
-              <div className="text-xs text-muted font-mono mt-0.5">30A-12345 • Nguyễn Văn A</div>
-              <div className="text-xs text-muted mt-0.5">19,500 km</div>
-            </div>
-            <span className="px-2 py-0.5 rounded-full text-xs font-semibold text-warning bg-warning/10 font-mono uppercase">
-              Pending
-            </span>
-          </div>
-
-          {/* AI suggested services */}
-          <div className="rounded-2xl overflow-hidden bg-card border border-border">
-            <div className="px-5 py-4 flex items-center gap-2 border-b border-border">
-              <span className="text-sm font-semibold text-foreground">AI Suggested Services</span>
-              <span className="ml-auto text-xs text-muted">{services.filter(s => s.included).length} / {services.length} hạng mục</span>
-            </div>
-
-            <div className="divide-y divide-border">
-              {services.map(svc => (
-                <div key={svc.id} className={`px-5 py-4 flex items-start gap-3 transition-colors ${!svc.included ? 'opacity-50' : ''}`}>
-                  {/* Checkbox */}
-                  <button
-                    onClick={() => toggle(svc.id)}
-                    className={`w-5 h-5 rounded-md flex items-center justify-center mt-0.5 flex-shrink-0 transition-all ${
-                      svc.included ? 'bg-emerald' : 'bg-card border border-border'
-                    }`}
-                  >
-                    {svc.included && <CheckCircle2 className="w-3 h-3 text-background" />}
-                  </button>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-foreground">{svc.name}</span>
-                      {svc.aiSuggested && (
-                        <span className="px-1.5 py-0.5 rounded text-xs text-emerald bg-emerald/10 font-medium">AI</span>
-                      )}
-                    </div>
-                    <div className="text-xs text-muted mt-0.5">{svc.desc}</div>
-                  </div>
-
-                  {/* Editable price */}
-                  <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <input
-                      type="text"
-                      value={svc.price.toLocaleString()}
-                      onChange={e => updatePrice(svc.id, e.target.value)}
-                      className="w-32 bg-background border border-border rounded-lg px-2.5 py-1 text-sm text-right text-foreground font-mono focus:outline-none focus:ring-1 focus:ring-emerald/40"
-                    />
-                    <span className="text-xs text-muted">VND</span>
-                    {!svc.aiSuggested && (
-                      <button onClick={() => removeItem(svc.id)} className="text-muted hover:text-error transition-colors">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Add item */}
-            <div className="px-5 py-3 border-t border-border">
-              <button
-                onClick={addItem}
-                className="flex items-center gap-2 text-xs text-muted hover:text-emerald transition-colors py-1"
-              >
-                <Plus className="w-3.5 h-3.5" /> Thêm hạng mục
-              </button>
-            </div>
-          </div>
-
-          {/* Total */}
-          <div className="rounded-2xl px-5 py-4 flex items-center justify-between bg-emerald/5 border border-emerald/15">
-            <span className="text-sm font-semibold text-foreground">Tổng chi phí</span>
-            <span className="text-xl font-bold text-emerald font-mono">{total.toLocaleString()} VND</span>
-          </div>
-
-          {/* Tech note */}
-          <div>
-            <label className="text-sm font-medium text-foreground mb-2 block">Ghi chú kỹ thuật viên</label>
-            <textarea
-              value={techNote}
-              onChange={e => setTechNote(e.target.value)}
-              rows={3}
-              placeholder="Ghi chú thêm về tình trạng xe, lưu ý đặc biệt..."
-              className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground resize-none focus:outline-none focus:ring-1 focus:ring-emerald/40 transition-all"
-            />
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex gap-3">
-            <button
-              onClick={() => navigate('/technician/quotes')}
-              className="px-5 py-2.5 rounded-xl text-sm font-semibold text-error border border-error/20 hover:bg-error/10 transition-all"
-            >
-              <div className="flex items-center gap-2"><X className="w-4 h-4" /> Reject</div>
-            </button>
-            <button
-              onClick={() => {}}
-              className="px-5 py-2.5 rounded-xl text-sm font-medium text-muted hover:text-foreground bg-card border border-border transition-all"
-            >
-              Save Changes
-            </button>
-            <button
-              onClick={handleApprove}
-              className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-emerald text-background hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-            >
-              <CheckCircle2 className="w-4 h-4" /> Approve Quote
-            </button>
-          </div>
+          <SkeletonCard lines={6} />
         </div>
-
-        {/* Sidebar */}
-        <div className="space-y-4">
-          <div className="rounded-2xl p-5 bg-card border border-border">
-            <p className="text-xs font-semibold uppercase tracking-widest text-muted mb-4">Thông tin khách hàng</p>
-            <div className="space-y-3">
-              {[
-                ['Khách hàng', 'Nguyễn Văn A'],
-                ['Model', 'VinFast VF6'],
-                ['Biển số', '30A-12345'],
-                ['Mileage', '19,500 km'],
-                ['Ngày yêu cầu', '17/09/2026'],
-              ].map(([k, v]) => (
-                <div key={k} className="flex flex-col gap-0.5">
-                  <span className="text-xs text-muted">{k}</span>
-                  <span className="text-sm text-foreground font-medium">{v}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-2xl p-4 bg-warning/5 border border-warning/15">
-            <div className="flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-warning mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-muted leading-relaxed">
-                Sau khi phê duyệt, khách hàng sẽ nhận thông báo và có thể đặt lịch bảo dưỡng.
-              </p>
-            </div>
-          </div>
-        </div>
+        <SkeletonCard lines={4} />
       </div>
+    )
+  }
+
+  const current = quote
+  const changedLines = current.items.filter(item => !item.covered && parsePrice(prices[item.quoteItemId] ?? '') !== null && parsePrice(prices[item.quoteItemId] ?? '') !== item.estimatedPrice)
+
+  function validate(): boolean {
+    const errors: Record<string, string> = {}
+    for (const item of current.items) {
+      const price = parsePrice(prices[item.quoteItemId] ?? '')
+      if (price !== null && price > MAX_PRICE) errors[item.quoteItemId] = 'Tối đa 1.000.000.000 ₫'
+      if ((notes[item.quoteItemId] ?? '').length > 255) errors[`note:${item.quoteItemId}`] = 'Tối đa 255 ký tự'
+    }
+    setFieldErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  async function approve() {
+    setSubmitting(true)
+    try {
+      const items = current.items
+        .filter(item => !item.covered)
+        .map(item => ({ item, price: parsePrice(prices[item.quoteItemId] ?? ''), note: (notes[item.quoteItemId] ?? '').trim() }))
+        .filter(({ item, price, note }) => (price !== null && price !== item.estimatedPrice) || note)
+        .map(({ item, price, note }) => ({ quoteItemId: item.quoteItemId, approvedPrice: price ?? item.estimatedPrice, ...(note ? { note } : {}) }))
+      const result = await approveQuote(current.quoteId, {
+        validityDays,
+        ...(reviewerNote.trim() ? { reviewerNote: reviewerNote.trim() } : {}),
+        items,
+      })
+      track('quote_reviewed', { decision: 'APPROVE', modifiedLines: changedLines.length, validityDays, waitingHours: waitingHours(current) })
+      doneRef.current = true
+      setDone(true)
+      setDialog(null)
+      toast.show(`Đã duyệt báo giá — tổng ${formatVnd(result.approvedTotal ?? draftTotal)}.`, 'success')
+      navigate('/technician/quotes')
+    } catch (reason) {
+      setDialog(null)
+      if (isApiError(reason, 'QUOTE_ALREADY_REVIEWED')) {
+        toast.show('Báo giá đã được xử lý.', 'info')
+        load()
+      } else if (isApiError(reason) && reason.code === 'COVERED_ITEM_LOCKED') {
+        const lineId = reason.details?.quoteItemId
+        if (typeof lineId === 'string') setFieldErrors({ [lineId]: 'Không sửa giá dòng bảo hành.' })
+      } else {
+        toast.show('Tạm thời chưa duyệt được, thử lại nhé.', 'error')
+      }
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function reject(reason: string) {
+    setSubmitting(true)
+    setRejectError(null)
+    try {
+      await rejectQuote(current.quoteId, reason)
+      track('quote_reviewed', { decision: 'REJECT', modifiedLines: 0, validityDays: null, waitingHours: waitingHours(current) })
+      doneRef.current = true
+      setDone(true)
+      setDialog(null)
+      toast.show('Đã từ chối báo giá.', 'success')
+      navigate('/technician/quotes')
+    } catch (failure) {
+      if (isApiError(failure, 'REVIEWER_NOTE_REQUIRED')) {
+        setRejectError('Lý do từ chối cần 10–500 ký tự.')
+      } else if (isApiError(failure, 'QUOTE_ALREADY_REVIEWED')) {
+        setDialog(null)
+        toast.show('Báo giá đã được xử lý.', 'info')
+        load()
+      } else {
+        toast.show('Tạm thời chưa thực hiện được, thử lại nhé.', 'error')
+      }
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="p-4 sm:p-6 xl:p-8 max-w-6xl">
+      <Link to="/technician/quotes" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground mb-3">
+        <ArrowLeft className="w-4 h-4" /> Báo giá
+      </Link>
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">Duyệt báo giá</h1>
+          <p className="text-muted mt-1">Mốc {formatKm(current.odoMilestone)} · {current.modelName}</p>
+        </div>
+        <QuoteStatusBadge status={current.displayStatus} />
+      </div>
+
+      <div className="grid gap-5 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-4">
+          {!pending && (
+            <Notice tone="info" title="Báo giá đã được xử lý">
+              {current.reviewedAt ? `Lúc ${formatTimeDayMonth(current.reviewedAt)}. ` : ''}Màn này chỉ để xem.
+            </Notice>
+          )}
+
+          <Card className="p-0 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-xs text-muted">
+                    <th className="px-4 py-3 font-medium">Hạng mục</th>
+                    <th className="px-4 py-3 font-medium text-right">Giá ước tính</th>
+                    <th className="px-4 py-3 font-medium text-right">Giá duyệt</th>
+                    <th className="px-4 py-3 font-medium">Ghi chú dòng</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {current.items.map(item => (
+                    <tr key={item.quoteItemId} className="border-b border-border last:border-0 align-top">
+                      <td className="px-4 py-3">
+                        <p className="text-foreground">{item.itemName}</p>
+                        {item.covered ? (
+                          <Badge tone="success" icon={<ShieldCheck className="w-3 h-3" />} className="mt-1">
+                            Bảo hành
+                          </Badge>
+                        ) : (
+                          <p className="text-xs text-muted mt-0.5">{item.priceSource === 'REFERENCE_PRICE' ? 'Giá tham khảo của hãng *' : 'Giá xưởng'}</p>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono text-muted whitespace-nowrap">{formatVnd(item.estimatedPrice)}</td>
+                      <td className="px-4 py-3 text-right">
+                        {item.covered ? (
+                          <span className="font-mono text-muted">0 ₫</span>
+                        ) : pending ? (
+                          <PriceInput
+                            item={item}
+                            value={prices[item.quoteItemId] ?? ''}
+                            error={fieldErrors[item.quoteItemId]}
+                            disabled={submitting}
+                            onChange={value => setPrices(previous => ({ ...previous, [item.quoteItemId]: value }))}
+                          />
+                        ) : (
+                          <span className="font-mono text-foreground">{formatVnd(item.approvedPrice ?? item.estimatedPrice)}</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 min-w-[160px]">
+                        {item.covered ? null : pending ? (
+                          <input
+                            aria-label={`Ghi chú cho ${item.itemName}`}
+                            maxLength={255}
+                            value={notes[item.quoteItemId] ?? ''}
+                            disabled={submitting}
+                            onChange={event => setNotes(previous => ({ ...previous, [item.quoteItemId]: event.target.value }))}
+                            placeholder="Tuỳ chọn"
+                            className="w-full bg-card border border-border rounded-lg px-3 py-1.5 text-sm text-foreground placeholder:text-muted/70 focus:outline-none focus:border-emerald/60"
+                          />
+                        ) : (
+                          <span className="text-xs text-muted">{item.reviewerNote ?? ''}</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          <Card className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div>
+                <p className="text-xs text-muted">Tổng ước tính</p>
+                <p className="font-mono text-lg text-foreground mt-0.5">{formatVnd(current.estimatedTotal)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted">{pending ? 'Tổng duyệt (tạm tính)' : 'Tổng duyệt'}</p>
+                <p className="font-mono text-lg font-semibold text-emerald mt-0.5">{formatVnd(pending ? draftTotal : current.approvedTotal ?? current.estimatedTotal)}</p>
+              </div>
+              {pending ? (
+                <SelectInput label="Thời hạn hiệu lực" value={String(validityDays)} onChange={event => setValidityDays(Number(event.target.value))} disabled={submitting}>
+                  {VALIDITY_OPTIONS.map(days => (
+                    <option key={days} value={days}>
+                      {days} ngày
+                    </option>
+                  ))}
+                </SelectInput>
+              ) : (
+                current.expiresAt && (
+                  <div>
+                    <p className="text-xs text-muted">Hiệu lực đến</p>
+                    <p className="text-lg text-foreground mt-0.5">{formatDate(current.expiresAt)}</p>
+                  </div>
+                )
+              )}
+            </div>
+            {pending ? (
+              <TextArea
+                label="Ghi chú của chủ xưởng"
+                optional
+                rows={3}
+                maxLength={500}
+                value={reviewerNote}
+                disabled={submitting}
+                onChange={event => setReviewerNote(event.target.value)}
+                aside={<span className="text-xs text-muted font-mono">{reviewerNote.length}/500</span>}
+                helper="Khách sẽ đọc được ghi chú này."
+              />
+            ) : (
+              current.reviewerNote && (
+                <div>
+                  <p className="text-xs text-muted mb-1">{current.displayStatus === 'REJECTED' ? 'Lý do từ chối' : 'Ghi chú của chủ xưởng'}</p>
+                  <p className="text-sm text-foreground whitespace-pre-wrap">{current.reviewerNote}</p>
+                </div>
+              )
+            )}
+          </Card>
+
+          {pending && (
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+              <Button variant="danger" icon={<XCircle className="w-4 h-4" />} onClick={() => setDialog('reject')} disabled={submitting}>
+                Từ chối
+              </Button>
+              <Button
+                icon={<CheckCircle2 className="w-4 h-4" />}
+                onClick={() => validate() && setDialog('approve')}
+                disabled={submitting}
+              >
+                Duyệt
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <aside className="space-y-4">
+          <Card>
+            <CardHeader title="Khách hàng" icon={<User className="w-4 h-4 text-muted" />} />
+            <InfoRow label="Tên" value={current.customer.fullName} />
+            <InfoRow
+              label="Điện thoại"
+              value={
+                current.customer.phone ? (
+                  <a href={`tel:${current.customer.phone}`} className="inline-flex items-center gap-1 text-emerald hover:text-emerald-bright">
+                    <Phone className="w-3.5 h-3.5" /> {current.customer.phone}
+                  </a>
+                ) : (
+                  '—'
+                )
+              }
+            />
+            <InfoRow label="Xe" value={<span className="inline-flex items-center gap-1.5"><Car className="w-3.5 h-3.5 text-muted" />{current.modelName}</span>} />
+            <InfoRow label="Biển số" value={formatLicensePlate(current.plateNumber)} mono />
+            <InfoRow label="Gửi lúc" value={current.submittedAt ? formatTimeDayMonth(current.submittedAt) : '—'} />
+            {isWaitingLong(current) && (
+              <div className="pt-3">
+                <Badge tone="error" icon={<Clock className="w-3.5 h-3.5" />}>
+                  Chờ &gt; 24h
+                </Badge>
+              </div>
+            )}
+          </Card>
+          {hasConversation(current) && <ConversationExcerptPanel source={{ type: 'quote', id: current.quoteId }} />}
+        </aside>
+      </div>
+
+      <Dialog
+        open={dialog === 'approve'}
+        onClose={() => !submitting && setDialog(null)}
+        title="Duyệt báo giá?"
+        description={
+          <>
+            Tổng duyệt (tạm tính): <strong className="text-foreground font-mono">{formatVnd(draftTotal)}</strong>
+            {changedLines.length > 0 ? ` · ${changedLines.length} dòng điều chỉnh giá` : ''} · hiệu lực {validityDays} ngày.
+          </>
+        }
+        dismissable={!submitting}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setDialog(null)} disabled={submitting}>
+              Xem lại
+            </Button>
+            <Button loading={submitting} loadingText="Đang duyệt…" onClick={() => void approve()}>
+              Duyệt
+            </Button>
+          </>
+        }
+      />
+      <RejectDialog
+        open={dialog === 'reject'}
+        onClose={() => setDialog(null)}
+        onConfirm={reason => void reject(reason)}
+        submitting={submitting}
+        serverError={rejectError}
+      />
+      <Dialog
+        open={blocker.state === 'blocked'}
+        onClose={() => blocker.reset?.()}
+        title="Rời trang khi chưa duyệt?"
+        description="Giá và ghi chú bạn đã nhập sẽ không được lưu."
+        initialFocusRef={stayRef}
+        footer={
+          <>
+            <Button ref={stayRef} variant="secondary" onClick={() => blocker.reset?.()}>
+              Ở lại
+            </Button>
+            <Button variant="danger" onClick={() => blocker.proceed?.()}>
+              Rời trang
+            </Button>
+          </>
+        }
+      />
     </div>
   )
 }

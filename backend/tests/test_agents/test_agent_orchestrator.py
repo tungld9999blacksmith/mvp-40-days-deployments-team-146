@@ -83,6 +83,7 @@ def seeded(monkeypatch, session, toolkit):
 
 
 @pytest.mark.asyncio
+@pytest.mark.live
 async def test_vf6_demo_walkthrough(seeded):
     """Chủ xe VF6 (11.500 km) hỏi cần làm gì, giá bao nhiêu, và nhờ tìm lịch chiều thứ Bảy."""
     user, vehicle = seeded

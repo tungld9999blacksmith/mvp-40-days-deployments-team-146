@@ -1,0 +1,6 @@
+{
+  "error": "Retry helper attempted to recreate the already committed synthetic workshop owner",
+  "resolution": "Reuse that fixture owner; insert only the missing workshop",
+  "llm_calls": 0,
+  "old_results_changed": false
+}

@@ -1,0 +1,45 @@
+{
+  "mode": "SYNTHETIC_TOOL_RESULT_VARIANT_OFFLINE",
+  "data": {
+    "status": "READY",
+    "user_vehicle_id": "7bfcaf0c-ed8f-4b33-86c1-97c571f6106b",
+    "model_id": "MDL-03",
+    "milestone": {
+      "odo_milestone": 12000,
+      "month_milestone": 12,
+      "is_next": true
+    },
+    "workshop": {
+      "workshop_id": "f34b616b-8909-40b5-90bd-ca8a89358b53",
+      "name": "VinFast Thanh Xuan",
+      "selected_by": "REQUEST"
+    },
+    "warranty_status": "UNKNOWN",
+    "items": [
+      {
+        "maintenance_rule_id": "f2f25ebf-8730-44ba-87d2-bf7698e77df0",
+        "item_code": "BATTERY_CHECK",
+        "item_name": "High-voltage battery check",
+        "covered": true,
+        "price": 0,
+        "price_source": null
+      },
+      {
+        "maintenance_rule_id": "c842b2bf-e559-4876-9767-ddaf13bb7363",
+        "item_code": "BRAKE_INSPECTION",
+        "item_name": "Brake system inspection",
+        "covered": true,
+        "price": 0,
+        "price_source": null
+      }
+    ],
+    "covered_count": 2,
+    "chargeable_total": 0,
+    "has_reference_price": false,
+    "currency": "VND",
+    "estimate_label": "Chi phí ước tính",
+    "computed_at": "2026-10-07T09:00:00+07:00"
+  },
+  "answer": "Bảo hành xe: chưa xác định. Công cụ dự toán áp dụng quy tắc bảo hành cho hạng mục khi trạng thái chưa xác định; cần xưởng xác nhận quyền lợi thực tế.\n- High-voltage battery check: 0 VND (công cụ tính 0 theo quy tắc bảo hành).\n- Brake system inspection: 0 VND (công cụ tính 0 theo quy tắc bảo hành).\nTổng chi phí ước tính: 0 VND. Theo giá xưởng trong dữ liệu dự toán.\nDữ liệu dự toán chưa xác định giá đã bao gồm VAT hay chưa; cần xưởng xác nhận.",
+  "issue": "Total label attributes zero to workshop price even though all item price_source values are null."
+}

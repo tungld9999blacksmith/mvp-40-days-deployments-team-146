@@ -1,0 +1,51 @@
+{
+  "producer": "eval\\results\\step4_rewrite_contract_full_gemma_20261008_21",
+  "metrics": {
+    "selected": 30,
+    "attempted": 2,
+    "complete": false,
+    "raw_contract_pass": 2,
+    "provider_errors": 0,
+    "truncated_cases": 0,
+    "errors": 1,
+    "runtime_fallback_cases": 0,
+    "anchor_all_match": 2,
+    "category_draft_agreement": {
+      "matched": 2,
+      "scored": 2
+    },
+    "actual_models": [
+      "google/gemma-4-26b-a4b-it"
+    ],
+    "rewrite_mean_seconds": 3.42253460000029,
+    "rewrite_p90_seconds": 3.5557356999997864,
+    "total_mean_seconds": 4.361035850000917,
+    "known_rewrite_cost_usd": 0.00019188,
+    "missing_rewrite_receipts": 0,
+    "embedding_calls": 2,
+    "embedding_cost_usd": null,
+    "reranker_cost_usd": "NOT_MEASURED_IF_REMOTE",
+    "retrieval": {
+      "scored_golden_cases": 2,
+      "attempted": 2,
+      "errors": 1,
+      "document_hit_at_1": 1.0,
+      "document_hit_at_3": 1.0,
+      "document_hit_at_5": 1.0,
+      "document_mrr": 1.0,
+      "evidence_chunk_recall": "NOT_MEASURED_WITHOUT_GOLDEN_CHUNK_IDS"
+    },
+    "semantic_preservation": "NOT_MEASURED",
+    "independent_labels": 0,
+    "production_acceptance": false,
+    "preflight_error": null,
+    "corpus_verified_after": true,
+    "pilot_eligible": false
+  },
+  "closed_check": {
+    "files_verified": 9,
+    "unchanged": true,
+    "changed": []
+  },
+  "failure_not_pooled_or_rescored": true
+}

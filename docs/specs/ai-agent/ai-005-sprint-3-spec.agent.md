@@ -1,6 +1,6 @@
 # AI-Agent Specification — AI-005 Quote HITL Agent
 
-> **Đã loại khỏi phạm vi (02/10/2026).** Chức năng báo giá có chủ xưởng duyệt (F5b, us-049, AI-005) đã bị bỏ khỏi sản phẩm: code backend/frontend đã gỡ, bảng `quote`, `quote_item` được xoá bởi migration `backend/alembic/versions/a3c7e9f1b2d4_drop_quote_support_ticket_discord.py`. Tài liệu giữ lại để tham khảo lịch sử, **không dùng để triển khai**.
+> **Đưa lại vào phạm vi (07/10/2026, PRD v3.8).** Báo giá có chủ xưởng duyệt (F5b, us-049, AI-005) là chức năng MVP trở lại: bảng `quote`, `quote_item` được tạo lại bởi migration `backend/alembic/versions/b4e6f8a1c3d5_restore_quote_hitl.py`; code backend/frontend đã khôi phục. Tài liệu này là đặc tả để triển khai.
 
 > Đặc tả hành vi của **Quote HITL Agent** — lập báo giá nháp từ dự toán và đưa vào quy trình **chủ xưởng duyệt** (Human-in-the-Loop).
 >
@@ -19,7 +19,7 @@
 | Agent Spec ID                   | `AI-005` |
 | Agent Name                      | Quote HITL Agent (`quote_agent`) |
 | Feature / Use Case              | F5b — Báo giá HITL |
-| Document Version                | `v1.0` |
+| Document Version                | `v1.1` |
 | Status                          | `Draft` |
 | Product / Project               | EV Care — AI Agent Chăm sóc sau bán & lịch bảo dưỡng xe điện |
 | Agent Owner                     | AI Team |
@@ -27,7 +27,7 @@
 | Reviewer                        | Tech Lead |
 | Stakeholders                    | PO, Backend, Frontend (Workshop Portal), Chủ xưởng |
 | Created Date                    | `2026-09-28` |
-| Updated Date                    | `2026-09-28` |
+| Updated Date                    | `2026-10-07` |
 | Related Functional Spec         | [us-049 FF](../sprint-3/feature-functional/us-049-sprint-3-spec.ff.md) |
 | Related API Spec                | [us-049 API](../sprint-3/api/us-049-sprint-3-spec.api.md) |
 | Related Entity Spec             | [quote](../entity/maintenance/quote.entity.md) · [quote_item](../entity/maintenance/quote_item.entity.md) |
@@ -130,7 +130,7 @@ Quote ở `pending_approval`, chủ xe biết đang chờ xưởng duyệt.
 
 ### 5.4 Postconditions
 
-- `quote` + `quote_item` tạo; `estimated_total = SUM(estimated_price)` (BR-ENT-414).
+- `quote` + `quote_item` do backend tạo; `estimated_total = SUM(estimated_price)` (BR-ENT-414). Agent đọc lại dòng và tổng từ kết quả TOOL-501 để hiển thị, không dùng số của dự toán cũ.
 - `message.meta.quote_id` lưu.
 
 ## UC-AI-502 — Thông báo kết quả duyệt
@@ -277,7 +277,7 @@ Không có dự toán hợp lệ → không lập báo giá; nói rõ lý do (vd
 
 | Tool ID | Tool Name | Purpose | Input | Output | Required |
 | --- | --- | --- | --- | --- | ---: |
-| `TOOL-501` | `create_draft_quote` | Tạo quote `draft` từ dự toán | `user_vehicle_id`, `workshop_id`, `odo_milestone`, `items[]` | `quote_id`, `estimated_total` | Yes |
+| `TOOL-501` | `create_draft_quote` | Tạo quote `draft`; backend tự tính dòng và giá từ dự toán F5 | `user_vehicle_id`, `workshop_id`, `odo_milestone` | `quote_id`, `estimated_total`, `items[]` (do backend tính) | Yes |
 | `TOOL-502` | `submit_quote` | `draft → pending_approval` | `quote_id`, `confirmation_token` | trạng thái | Yes |
 | `TOOL-503` | `get_quote_status` | Trạng thái + chi tiết | `quote_id` hoặc `user_vehicle_id` | status, `approved_total`, dòng sửa, `reviewer_note`, `expires_at` | Yes |
 
@@ -295,11 +295,13 @@ Khi đã có quote `pending_approval` cùng xe + xưởng + mốc → báo trạ
 
 **Required parameters**
 
-- `items[]` lấy nguyên từ `estimate.items` (`maintenance_rule_id`, `item_code`, `item_name`, `estimated_price`).
+- `user_vehicle_id`, `workshop_id`, `odo_milestone` (> 0). Gọi `POST /api/v1/quotes` với đúng 3 trường này.
+- **Không** truyền `items[]` hay giá. Backend tự gọi Cost Estimation Service (F5) và snapshot từng dòng vào `quote_item` (us-049 BR-1101); trường thừa client gửi lên bị bỏ qua. Lý do: LLM không được tự đặt giá (PRD §7).
 
 **Validation before call**
 
-- ≥ 1 dòng (BR-ENT-416); xưởng `active`.
+- Đã có dự toán hợp lệ cho (xe, xưởng, mốc) trong lượt hội thoại (AI-003); xưởng `active`.
+- Backend từ chối nếu mốc không có định mức (`NO_MAINTENANCE_RULE`, `MILESTONE_NOT_FOUND`) hoặc xưởng ngừng hoạt động (`WORKSHOP_INACTIVE`). Agent báo lý do, không thử tự ghép dòng.
 
 **Expected result**
 
@@ -892,6 +894,7 @@ Câu trả lời chứa nguyên văn `reviewer_note` (AC-F5b-02).
 | Version | Date | Author | Change |
 | --- | --- | --- | --- |
 | `v1.0` | `2026-09-28` | Team 4 Người | Initial version từ proposal AI-005 |
+| `v1.1` | `2026-10-07` | Team 4 Người | Đồng bộ với API thật (báo cáo 03/10, C-07 / L-05): TOOL-501 chỉ nhận (xe, xưởng, mốc), không nhận `items[]`; backend tự tính dòng từ F5 (us-049 BR-1101); bổ sung mã lỗi khi tạo nháp |
 
 ---
 

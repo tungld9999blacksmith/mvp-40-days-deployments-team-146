@@ -1,0 +1,27 @@
+{
+  "Rewrite": {
+    "mistral": {
+      "pilot_eligible": true,
+      "full_technical_checks_pass": true,
+      "semantic_review": "DEFERRED_BY_USER",
+      "production_change": false
+    },
+    "gemma": {
+      "pilot_eligible": true,
+      "full_technical_checks_pass": true,
+      "semantic_review": "DEFERRED_BY_USER",
+      "production_change": false
+    },
+    "gemini_lite": {
+      "pilot_eligible": true,
+      "full_technical_checks_pass": true,
+      "semantic_review": "DEFERRED_BY_USER",
+      "production_change": false
+    }
+  },
+  "Agent": "Prior Mistral/Gemma shortlist; no new calls",
+  "Generation": "Existing Mistral/Gemma pilots; next stage pending Rewrite results",
+  "Write": "INACTIVE",
+  "gpt4o": "EXCLUDED_ALL_STAGES",
+  "qwen": "RESERVE_NOT_CALLED"
+}

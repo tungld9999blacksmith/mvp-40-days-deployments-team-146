@@ -1,0 +1,43 @@
+{
+  "scope": "BLIND_AUTOMATED_REVIEW_SAVED_60_DEVELOPMENT_ANSWERS",
+  "model": "google/gemini-3.5-flash-lite",
+  "previous": "eval\\results\\rag_evidence_preservation_full_20261008_29",
+  "samples_sha256": "7a9d01073bd2a796b08f8b15e3e489399644414a71a6eedf3b7518139ed1c5e5",
+  "rubric_sha256": "883d7cfba66a2e0d7d14c0d7b167e1f285aa2bce777ce69226e0335d5c21c111",
+  "env_sha256": "d0d9ac252a9ce04595c67a850cb8c7781b540d15eae27fbec069809d61d35e53",
+  "pilot_ids": [
+    "review-001",
+    "review-002",
+    "review-003",
+    "review-004",
+    "review-011",
+    "review-012",
+    "review-013",
+    "review-014",
+    "review-031",
+    "review-032",
+    "review-051",
+    "review-052"
+  ],
+  "controls": 4,
+  "selected": 60,
+  "temperature": 0,
+  "max_tokens": 2400,
+  "timeout_seconds": 60,
+  "sdk_retries": 0,
+  "delay_seconds": 3,
+  "pilot_observed_receipt_limit_usd": 0.05,
+  "full_estimated_receipt_limit_usd": 0.2,
+  "expansion_gate": "Fresh4controls and12answers including long multi-chunk RAG083, guard01, booking and reminder; all references/schema/citation coverage/receipts valid. Mean actual-answer receipt*60 plus15% contingency <=0.20USD; actual full receipts stop at0.20USD. Record max-case*60 estimate too, not a quality criterion. No filtering of negative/unknown judgments.",
+  "budget_estimate_method": "mean_actual_pilot_answer_receipt_times60_plus15percent",
+  "budget_contingency_fraction": 0.15,
+  "api_response_format": {
+    "type": "json_schema",
+    "strict": true
+  },
+  "schema_delivery": "keyword-sanitized API schema, full schema in payload.output_schema and mandatory local validation",
+  "provider_probe": "eval/results/automatic_review_schema_probe_20261008_45",
+  "full_scope": "Fresh judge pass over all 60 saved answers; pilot not pooled. No original Agent/RAG rerun, no embedding/retrieval/write reviewer/real email/DB mutation",
+  "production_acceptance": false,
+  "gpt4o": "EXCLUDED"
+}

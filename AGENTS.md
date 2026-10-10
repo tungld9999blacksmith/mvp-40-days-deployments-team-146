@@ -1,11 +1,19 @@
 # Quy ước khởi động dự án
 
 Khi người dùng nói "chạy dự án", "chạy project" hoặc yêu cầu tương đương mà
-không chỉ định thành phần khác, khởi động cả backend thật và frontend thật của
-EV Care.
+không chỉ định thành phần khác, khởi động Redis, backend thật và frontend thật
+của EV Care.
 
 - Backend: entry point `src.main:app`, chạy từ thư mục `backend`, cổng `8000`.
 - Dùng cấu hình hiện có trong `.env` ở gốc repository.
+- Redis: kiểm tra kết nối theo cấu hình Redis trong `.env` trước khi chạy
+  backend; nếu đã kết nối được thì dùng dịch vụ đang chạy. Nếu cấu hình trỏ
+  Redis local và dịch vụ chưa chạy, từ gốc repository chạy
+  `docker compose -f docker-compose.infra.yaml up -d --no-deps redis`.
+  Lệnh này chỉ bật service `redis`, cổng `6379`, không bật mock hãng xe hay
+  backend Docker. Kiểm tra `docker exec p146_redis redis-cli ping` trả `PONG`.
+  Nếu Docker chưa sẵn sàng, cổng bị chiếm hoặc Redis theo `.env` không kết nối
+  được, báo đúng lỗi; không tự đổi cấu hình Redis hay ghi đè `.env`.
 - Ưu tiên Python trong `backend/.venv`; lệnh tương đương:
   `uv run uvicorn src.main:app --reload --host 127.0.0.1 --port 8000`.
 - Frontend: chạy từ gốc repository bằng
@@ -16,9 +24,10 @@ EV Care.
 - Nếu BE/FE thật đã chạy đúng cổng và cấu hình, kiểm tra rồi dùng tiến trình đó;
   chỉ khởi động thành phần còn thiếu.
 - Không dùng `src.demo.main:app` hoặc tự chuyển sang chế độ demo.
-- Không tự khởi động Firebase Emulator, Docker stack hoặc Celery
-  trong yêu cầu khởi động mặc định này. Chỉ chạy thêm thành phần khi người dùng
-  yêu cầu; có thể dùng các dịch vụ phụ trợ đang chạy sẵn.
+- Không tự khởi động Firebase Emulator, toàn bộ Docker stack, mock hãng xe
+  hoặc Celery trong yêu cầu khởi động mặc định này. Redis là thành phần mặc
+  định theo lệnh riêng ở trên; các thành phần khác chỉ chạy thêm khi người dùng
+  yêu cầu, hoặc dùng dịch vụ đang chạy sẵn.
 - Kiểm tra `http://localhost:8000/health` và `http://localhost:5173`; báo địa chỉ
   frontend `http://localhost:5173` và API docs `http://localhost:8000/docs`.
   Nếu dịch vụ phụ trợ không kết nối được, báo
@@ -223,7 +232,20 @@ chạy riêng với dev server. Bản build cần host/proxy chuyển `/api` và
 đến backend và hỗ trợ SPA fallback; cấu hình proxy `server` của Vite chỉ áp dụng
 cho dev server.
 
-### 7. Dịch vụ phụ trợ và Docker (chạy khi được yêu cầu)
+### 7. Redis mặc định, dịch vụ phụ trợ và Docker
+
+**Chỉ Redis — chạy trước BE trong yêu cầu "chạy dự án", từ gốc repo:**
+
+Kiểm tra Redis theo `.env` và dùng lại nếu đã kết nối được. Với Redis local
+chưa chạy, dùng:
+
+```powershell
+docker compose -f docker-compose.infra.yaml up -d --no-deps redis
+docker exec p146_redis redis-cli ping # Kết quả mong đợi: PONG.
+```
+
+Giữ nguyên `.env` và volume dữ liệu. Các stack và dịch vụ còn lại dưới đây
+chỉ chạy khi người dùng yêu cầu.
 
 **Chỉ hạ tầng Redis + mock hãng xe, BE vẫn chạy bằng terminal — từ gốc repo:**
 

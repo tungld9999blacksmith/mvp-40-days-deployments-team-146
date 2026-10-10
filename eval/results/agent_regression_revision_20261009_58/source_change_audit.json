@@ -1,0 +1,10 @@
+{
+  "changed_paths": [
+    "backend/src/agents/booking_policy.py",
+    "backend/src/agents/guardrails.py",
+    "backend/src/agents/prompts.py",
+    "backend/src/agents/reminder_intent.py",
+    "backend/src/agents/tools/reminder_tools.py"
+  ],
+  "old_source_preserved": true
+}

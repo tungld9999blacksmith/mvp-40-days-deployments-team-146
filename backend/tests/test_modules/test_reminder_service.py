@@ -120,7 +120,7 @@ async def test_reminds_two_days_before_by_default_ac501(session, vehicle, zalo_o
     assert delivery.channel is ReminderChannel.ZALO
     assert delivery.status is DeliveryStatus.SENT and delivery.attempts == 1
     (_, message) = zalo.calls[0]
-    assert "12,000 km / 12 months" in message.body and "30A12345" not in message.body
+    assert "12.000 km / 12 tháng" in message.body and "30A12345" not in message.body
 
 
 @pytest.mark.asyncio
@@ -170,7 +170,7 @@ async def test_overdue_sends_expired_once_ac504(session, vehicle, zalo_on):
     assert first.created_level is ReminderLevel.EXPIRED and first.deliveries_sent == 1
     assert second.created_level is None and second.deliveries_sent == 0
     assert len(zalo.calls) == 1
-    assert "overdue" in zalo.calls[0][1].body
+    assert "đã quá hạn" in zalo.calls[0][1].body
 
 
 # ── Idempotency (BR-502, AC-503) ────────────────────────────────────────────

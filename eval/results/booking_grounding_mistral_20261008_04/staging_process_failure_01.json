@@ -1,0 +1,11 @@
+{
+  "mode": "propose",
+  "status": "FAILED",
+  "source": "staging_process_restart.py",
+  "error": "psycopg.errors.CheckViolation: workshop violates ck_workshop_owner_fields",
+  "cause": "SQLite fixture workshop sets owner_id but omits hotline and onboarded_at required by actual migration",
+  "database": "p146_eval_booking",
+  "production_data_used": false,
+  "booking_count_before_confirm": 0,
+  "next_attempt": "staging_process_restart_v2.py; valid synthetic workshop; no constraint disabled"
+}

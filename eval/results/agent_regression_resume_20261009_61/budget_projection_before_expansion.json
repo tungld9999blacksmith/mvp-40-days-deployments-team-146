@@ -1,0 +1,11 @@
+{
+  "known_prior55_through60_usd": 0.14215904325,
+  "remaining_five_full_receipt_estimate_usd": 0.11355180771428572,
+  "judge180_plus_controls_estimate_usd": 0.44346751,
+  "estimated_known_receipts_after_completion_usd": 0.6991783609642857,
+  "unknown_inflight_cost_usd": null,
+  "unknown_budget_reserve_usd": 0.01,
+  "embedding_cost_usd": null,
+  "cap_known_receipts_usd": 0.75,
+  "basis": "ObservedMistral60 full and Gemma60 partial mean scaled to30; judge54 full60 scaled to180 with pilot overhead. Estimate only, not invoice or acceptance. Shared cap includes all55-60 old fees once."
+}

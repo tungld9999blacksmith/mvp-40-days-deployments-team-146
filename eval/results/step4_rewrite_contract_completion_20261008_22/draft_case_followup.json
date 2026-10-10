@@ -1,0 +1,39 @@
+{
+  "mistral": {
+    "category_draft_disagreements": [
+      "B01",
+      "B11",
+      "PR07",
+      "G05"
+    ],
+    "document_hit_at_5_misses": [
+      "P01"
+    ],
+    "raw_contract_failures": [],
+    "input_anchor_failures": []
+  },
+  "gemma": {
+    "category_draft_disagreements": [
+      "B01",
+      "B11",
+      "G01",
+      "G03"
+    ],
+    "document_hit_at_5_misses": [
+      "P01"
+    ],
+    "raw_contract_failures": [],
+    "input_anchor_failures": []
+  },
+  "gemini_lite": {
+    "category_draft_disagreements": [
+      "B11",
+      "G03"
+    ],
+    "document_hit_at_5_misses": [
+      "P01"
+    ],
+    "raw_contract_failures": [],
+    "input_anchor_failures": []
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "new_aggregation_tests": {
+    "command": ".venv/Scripts/python.exe -m pytest eval/test_automatic_review_aggregate.py -q",
+    "passed": 5,
+    "failed": 0,
+    "executed_before_prepare": true
+  },
+  "ruff": {
+    "command": ".venv/Scripts/python.exe -m ruff check eval/automatic_review_aggregate.py eval/test_automatic_review_aggregate.py",
+    "passed": true,
+    "executed_before_prepare": true
+  },
+  "paid_pilot": {
+    "fresh_calls": 8,
+    "controls": 6,
+    "controls_qualified": 6,
+    "errors": 0
+  },
+  "limitations": "No browser, production email/DB or staging integration; automatic labels uncalibrated."
+}

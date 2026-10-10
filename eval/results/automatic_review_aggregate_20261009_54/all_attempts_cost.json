@@ -1,0 +1,15 @@
+{
+  "current52_judge_known_receipts_usd": 0.046483989999999996,
+  "current52_missing_receipts": 0,
+  "all_judge_known_receipts_usd": 0.5493820899999999,
+  "all_judge_missing_receipts": 4,
+  "current_user_turn_known_receipts_usd": 0.28453369775000004,
+  "pipeline48_49_known_receipts_usd": 0.06466193775000001,
+  "embedding_calls": 22,
+  "embedding_cost_usd": null,
+  "boundary": "Pipeline48/49 plus judge50-54 attempts, including errors/controls. No duplicate pilot charges. Only fresh54 full labels used for quality; not project bill.",
+  "current53_judge_known_receipts_usd": 0.0029072,
+  "current53_missing_receipts": 0,
+  "current54_judge_known_receipts_usd": 0.15732237000000004,
+  "current54_missing_receipts": 0
+}

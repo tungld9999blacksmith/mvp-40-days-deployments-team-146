@@ -1,0 +1,8 @@
+{
+  "sandbox_attempt": {
+    "status": "FAILED",
+    "error": "WinError10061 while connecting through restricted environment; no LLM or embedding calls"
+  },
+  "escalated_read_only_qualification": "REQUESTED",
+  "old_results_overwritten": false
+}

@@ -15,6 +15,14 @@ export interface NotificationSettings {
   reminderLeadDays: number
   defaultReminderLeadDays: number
   channels: ChannelSetting[]
+  emailRecipient?: string | null
+  emailVerified?: boolean
+  emailSuppressed?: boolean
+  emailScope?: 'MAINTENANCE_REMINDER'
+  scope?: 'ALL_OWNED_VEHICLES'
+  emailTransport?: 'mock' | 'resend' | 'resend_test' | 'off'
+  emailTestRecipientMatched?: boolean | null
+  emailTestManualOnly?: boolean
 }
 
 export interface NotificationSettingsUpdate {
@@ -31,15 +39,16 @@ export interface SettingsForm {
 }
 
 // ── API-NOTI-003 in-app feed (derived from existing records, no read state) ──
-export type NotificationKind = 'MAINTENANCE_REMINDER' | 'BOOKING_UPDATE' | 'FOLLOW_UP'
+export type NotificationKind = 'MAINTENANCE_REMINDER' | 'QUOTE_RESULT' | 'BOOKING_UPDATE' | 'BOOKING_REMINDER' | 'FOLLOW_UP' | 'BOOKING_LINE'
 
 export interface NotificationItem {
   id: string
   kind: NotificationKind
   occurredAt: string
-  /** Only a survey waiting for an answer. */
+  /** Only a reviewed quote not opened yet, a survey waiting for an answer and an appointment reminder not acted on. */
   unread: boolean
-  reminder: { userVehicleId: string; level: 'EARLY' | 'WARNING' | 'URGENT' | 'EXPIRED'; odoMilestoneKm: number; resolved: boolean } | null
+  reminder: { userVehicleId: string; level: 'EARLY' | 'WARNING' | 'URGENT' | 'EXPIRED'; odoMilestoneKm: number; resolved: boolean; resolutionReason?: string | null } | null
+  quote?: { quoteId: string; status: 'APPROVED' | 'REJECTED'; approvedTotal: number | string | null; workshopName: string | null } | null
   booking: {
     bookingId: string
     bookingCode: string
@@ -49,10 +58,59 @@ export interface NotificationItem {
     timeSlot: string
     workshopName: string | null
   } | null
+  /** us-033 24h appointment reminder (us-069 BR-1707). */
+  bookingReminder?: { bookingId: string; bookingCode: string; bookingDate: string; timeSlot: string; workshopName: string | null } | null
   followUp: { followUpId: string; bookingId: string; workshopName: string | null } | null
+  /** Two-tier price line waiting for the owner, or a reference price the workshop confirmed (bao-gia-hai-tang). */
+  bookingLine?: {
+    bookingId: string
+    bookingCode: string
+    lineId: string
+    kind: 'PACKAGE' | 'EXTRA'
+    status: 'PROPOSED' | 'CONFIRMED'
+    itemName: string
+    price: number | string
+    isSafetyCritical: boolean
+    workshopName: string | null
+  } | null
 }
 
 export interface NotificationFeed {
   items: NotificationItem[]
   unreadCount: number
+}
+
+export interface ReminderContext {
+  reminderId: string
+  userVehicleId: string
+  level: 'EARLY' | 'WARNING' | 'URGENT' | 'EXPIRED'
+  odoMilestoneKm: number
+  resolved: boolean
+  resolutionReason: string | null
+  snapshotAvailable?: boolean
+  details: {
+    reason: 'KM' | 'TIME' | 'BOTH'
+    dueDate: string
+    monthMilestone: number | null
+    remainingKm: number | null
+    remainingDays: number | null
+    odometerKm: number | null
+    odometerRecordedAt: string | null
+    odometerStale: boolean
+    items: { itemCode: string; itemName: string }[]
+  }
+  currentStatus: import('@/features/vehicles/types').MaintenanceStatus
+  hasCurrentBooking?: boolean
+  deliveries: { id: string; channel?: string; status: string; deliveryState: string | null; attempts: number; errorCode: string | null; sentAt: string | null; mode?: string | null }[]
+}
+
+export interface DemoEmail {
+  id: string
+  reminderId: string
+  status: string
+  deliveryState: string | null
+  attempts: number
+  errorCode: string | null
+  sentAt: string | null
+  payload: { subject: string; body: string; html: string; link: string }
 }

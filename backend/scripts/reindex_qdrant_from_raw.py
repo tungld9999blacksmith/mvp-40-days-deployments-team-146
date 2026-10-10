@@ -20,7 +20,7 @@ from dotenv import load_dotenv
 
 load_dotenv(ROOT / ".env")
 
-from src.agents.tools.RAG.ingestion import (  # noqa: E402
+from src.agents.tools.RAG.ingestion import (
     DocumentChunker,
     IngestionEngine,
     QdrantVectorStore,

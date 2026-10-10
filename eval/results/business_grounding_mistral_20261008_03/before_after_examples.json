@@ -1,0 +1,120 @@
+[
+  {
+    "session_id": "SESSION-02",
+    "turn": 1,
+    "before_answer": "Xe của bạn **đã quá hạn bảo dưỡng** theo mốc **12.000 km / 12 tháng** (quá hạn **500 km** và **182 ngày**).\n\n**Lý do:** Đến hạn theo số km (12.500 km > 12.000 km), mặc dù hạn theo thời gian (12 tháng) vẫn còn 6 tháng nữa.\n\n---\n**Các hạng mục cần thực hiện:**\n1. **Kiểm tra pin cao thế** (đã bao gồm bảo hành)\n2. **Kiểm tra hệ thống phanh**\n\n---\nBạn muốn:\n- **Xem chi phí dự kiến** cho đợt bảo dưỡng này?\n- **Tìm xưởng dịch vụ gần nhất** để đặt lịch?\n- **Hướng dẫn bảo dưỡng chi tiết**?",
+    "tool_results": [
+      {
+        "name": "get_due_maintenance",
+        "args": {},
+        "result": {
+          "user_vehicle_id": "7bfcaf0c-ed8f-4b33-86c1-97c571f6106b",
+          "due_status": "OVERDUE",
+          "due_reason": "KM",
+          "calculation_basis": "KM_AND_TIME",
+          "unknown_reason": null,
+          "next_milestone": {
+            "odo_milestone_km": 12000,
+            "month_milestone": 12,
+            "label": "12,000 km / 12 months",
+            "due_date": "2027-04-07",
+            "is_recurring": false,
+            "items": [
+              {
+                "item_code": "BATTERY_CHECK",
+                "item_name": "High-voltage battery check",
+                "is_covered_by_warranty": true
+              },
+              {
+                "item_code": "BRAKE_INSPECTION",
+                "item_name": "Brake system inspection",
+                "is_covered_by_warranty": false
+              }
+            ]
+          },
+          "remaining_km": -500,
+          "remaining_days": 182,
+          "odometer": {
+            "odo_km": 12500,
+            "recorded_at": "2026-10-07T23:49:57.951656Z",
+            "is_stale": false,
+            "data_source": "OEM"
+          },
+          "last_service": {
+            "type": "PURCHASE_DATE",
+            "date": "2026-04-07",
+            "odo_km": 0
+          },
+          "thresholds": {
+            "due_soon_km": 500,
+            "due_soon_days": 14
+          },
+          "oem_synced_at": "2026-09-28T02:00:00Z",
+          "calculated_at": "2026-10-07T09:00:00+07:00"
+        },
+        "artifact": null
+      }
+    ],
+    "after_answer": "Xe đã quá hạn bảo dưỡng theo số km.\n- Theo km: quá hạn 500 km.\n- Theo ngày: còn 182 ngày đến hạn.\n- Mốc bảo dưỡng: 12,000 km / 12 tháng.\n- Hạn theo thời gian: 07/04/2027.\n- ODO ghi nhận: 12,500 km.\n- Ngày mua xe dùng làm mốc tính: 07/04/2026; đây không phải bản ghi lần bảo dưỡng gần nhất.\nHạng mục tại mốc này:\n- High-voltage battery check (quy tắc có bảo hành; cần dự toán để xác định phần được tính miễn phí).\n- Brake system inspection.",
+    "mode": "OFFLINE_REPLAY_OF_FROZEN_RESULTS_NOT_NEW_API_RUN",
+    "review_status": "CODEX_DRAFT_NOT_INDEPENDENT"
+  },
+  {
+    "session_id": "SESSION-02",
+    "turn": 2,
+    "before_answer": "**Dự toán chi phí bảo dưỡng tại xưởng *VinFast Thanh Xuân* (ID: f34b616b-8909-40b5-90bd-ca8a89358b53):**\n\n- **Hạng mục bảo hành (0đ):**\n  - Kiểm tra pin cao thế\n\n- **Hạng mục phí:**\n  - Kiểm tra hệ thống phanh: **100.000 VND**\n\n---\n**Tổng chi phí ước tính:** **100.000 VND**\n*(Giá đã bao gồm VAT theo quy định xưởng. Hạng mục bảo hành được miễn phí hoàn toàn.)*\n\n---\nBạn muốn:\n- **Đặt lịch hẹn** tại xưởng này?\n- **Xem giờ trống** trong tuần tới?\n- **Tìm xưởng khác** gần bạn hơn?",
+    "tool_results": [
+      {
+        "name": "estimate_service_cost",
+        "args": {
+          "odo_milestone": 12000,
+          "workshop_id": "f34b616b-8909-40b5-90bd-ca8a89358b53"
+        },
+        "result": {
+          "status": "READY",
+          "user_vehicle_id": "7bfcaf0c-ed8f-4b33-86c1-97c571f6106b",
+          "model_id": "MDL-03",
+          "milestone": {
+            "odo_milestone": 12000,
+            "month_milestone": 12,
+            "is_next": true
+          },
+          "workshop": {
+            "workshop_id": "f34b616b-8909-40b5-90bd-ca8a89358b53",
+            "name": "VinFast Thanh Xuan",
+            "selected_by": "REQUEST"
+          },
+          "warranty_status": "UNKNOWN",
+          "items": [
+            {
+              "maintenance_rule_id": "f2f25ebf-8730-44ba-87d2-bf7698e77df0",
+              "item_code": "BATTERY_CHECK",
+              "item_name": "High-voltage battery check",
+              "covered": true,
+              "price": 0,
+              "price_source": null
+            },
+            {
+              "maintenance_rule_id": "c842b2bf-e559-4876-9767-ddaf13bb7363",
+              "item_code": "BRAKE_INSPECTION",
+              "item_name": "Brake system inspection",
+              "covered": false,
+              "price": 100000,
+              "price_source": "WORKSHOP_PRICE"
+            }
+          ],
+          "covered_count": 1,
+          "chargeable_total": 100000,
+          "has_reference_price": false,
+          "currency": "VND",
+          "estimate_label": "Chi phí ước tính",
+          "computed_at": "2026-10-07T09:00:00+07:00"
+        },
+        "artifact": null
+      }
+    ],
+    "after_answer": "Bảo hành xe: chưa xác định. Công cụ dự toán áp dụng quy tắc bảo hành cho hạng mục khi trạng thái chưa xác định; cần xưởng xác nhận quyền lợi thực tế.\n- High-voltage battery check: 0 VND (công cụ tính 0 theo quy tắc bảo hành).\n- Brake system inspection: 100,000 VND (giá của xưởng).\nTổng chi phí ước tính: 100,000 VND. Theo giá xưởng trong dữ liệu dự toán.\nDữ liệu dự toán chưa xác định giá đã bao gồm VAT hay chưa; cần xưởng xác nhận.",
+    "mode": "OFFLINE_REPLAY_OF_FROZEN_RESULTS_NOT_NEW_API_RUN",
+    "review_status": "CODEX_DRAFT_NOT_INDEPENDENT"
+  }
+]

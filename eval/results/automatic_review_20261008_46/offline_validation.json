@@ -1,0 +1,6 @@
+{
+  "pytest_passed": 15,
+  "ruff": "PASS",
+  "prior_reference_validation": "44 PASS in39; unchanged strictlocalref/provenance/semantics; API keywordsubsetcompatibility",
+  "scope": "Required fields and enum retained in sanitizedAPI schema. Full cardinality, source/citation membership and coverage enforced locally. Actual successful real control03 probe45. No status/quote repair; runtime unchanged."
+}

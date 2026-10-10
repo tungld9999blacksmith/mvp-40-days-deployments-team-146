@@ -1,0 +1,6 @@
+{
+  "user_reported_env_update": true,
+  "env_hash_changed_since_prepare": true,
+  "agent_wrote_env": false,
+  "network_probe_scope": "One synthetic BOOK-03 with Mistral Small 2603; no production write or email"
+}

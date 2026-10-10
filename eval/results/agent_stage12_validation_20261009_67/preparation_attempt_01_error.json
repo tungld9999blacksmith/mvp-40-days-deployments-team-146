@@ -1,0 +1,4 @@
+{
+  "error": "FileExistsError: JUnit created the fresh result directory while preservation hashing was running. Kept JUnit; preparation resumed with exclusive artifact writes and excluded own output directory.",
+  "new_api_calls": 0
+}

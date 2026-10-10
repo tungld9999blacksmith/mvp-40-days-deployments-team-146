@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 from src.common.money import Money
+from src.modules.booking_line.schemas import BlockedActionOut
 
 
 class CamelModel(BaseModel):
@@ -36,6 +37,11 @@ class VehicleOut(CamelModel):
     license_plate: str | None
 
 
+class QuoteRefOut(CamelModel):
+    quote_id: UUID
+    status: str
+
+
 class BoardItemOut(CamelModel):
     booking_id: UUID
     booking_code: str
@@ -46,6 +52,7 @@ class BoardItemOut(CamelModel):
     vehicle: VehicleOut
     milestone_label: str | None = None
     estimated_cost: Money | None = None
+    quote: QuoteRefOut | None = None
     attendance_confirmed_at: datetime | None = None
     confirm_deadline: datetime | None = None
     allowed_actions: list[str]
@@ -76,6 +83,9 @@ class StatusEventOut(CamelModel):
 
 class BoardDetailOut(BoardItemOut):
     actual_cost: Money | None = None
+    pricing_flow: str = "legacy"
+    # re-review OV9 — actions the two-tier lines currently block, with the reason to show.
+    blocked_actions: list[BlockedActionOut] = []
     note: str | None = None
     status_history: list[StatusEventOut]
 

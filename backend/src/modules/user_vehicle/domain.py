@@ -52,7 +52,7 @@ class DueConfig:
     due_soon_km: int = 500
     due_soon_days: int = 14
     # Past the end of the rule table the milestone repeats by a fixed step (Q-301).
-    recurring_km: int = 12_000
+    recurring_km: int = 15_000
     recurring_months: int = 12
     odo_stale_days: int = 30
 

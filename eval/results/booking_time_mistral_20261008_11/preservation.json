@@ -1,0 +1,37 @@
+{
+  "protected_artifacts": {
+    "files_verified": 1103,
+    "unchanged": true,
+    "changed": []
+  },
+  "corpus": {
+    "files_verified": 43,
+    "unchanged": true,
+    "changed": []
+  },
+  "source_revision": {
+    "files_verified": 85,
+    "unchanged": true,
+    "changed": []
+  },
+  "closed_runs": {
+    "closed_first_full_hashes.json": {
+      "files_verified": 9,
+      "unchanged": true,
+      "changed": []
+    },
+    "closed_keycheck_hashes.json": {
+      "files_verified": 8,
+      "unchanged": true,
+      "changed": []
+    },
+    "closed_preflight_hashes.json": {
+      "files_verified": 8,
+      "unchanged": true,
+      "changed": []
+    }
+  },
+  "env_unchanged_since_start": false,
+  "env_matches_user_update_revision": true,
+  "agent_wrote_env": false
+}

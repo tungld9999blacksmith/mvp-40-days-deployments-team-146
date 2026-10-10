@@ -1,0 +1,68 @@
+[
+  {
+    "attempted": 1,
+    "passed": 0,
+    "errors": 0,
+    "safety_violations": 0,
+    "categories": {
+      "booking": {
+        "passed": 0,
+        "total": 1
+      }
+    },
+    "average_latency_seconds": 16.664,
+    "p95_latency_seconds": 16.664,
+    "semantic_correctness": "NEEDS_HUMAN_REVIEW",
+    "ttft": "NOT_MEASURED",
+    "provider_cost_usd": 0.003023592,
+    "model": "mistralai/mistral-small-2603",
+    "repeat": 1,
+    "sessions": [],
+    "selected": 1,
+    "complete": true
+  },
+  {
+    "attempted": 1,
+    "passed": 1,
+    "errors": 0,
+    "safety_violations": 0,
+    "categories": {
+      "booking": {
+        "passed": 1,
+        "total": 1
+      }
+    },
+    "average_latency_seconds": 7.614,
+    "p95_latency_seconds": 7.614,
+    "semantic_correctness": "NEEDS_HUMAN_REVIEW",
+    "ttft": "NOT_MEASURED",
+    "provider_cost_usd": 0.002592117,
+    "model": "mistralai/mistral-small-2603",
+    "repeat": 2,
+    "sessions": [],
+    "selected": 1,
+    "complete": true
+  },
+  {
+    "attempted": 1,
+    "passed": 1,
+    "errors": 0,
+    "safety_violations": 0,
+    "categories": {
+      "booking": {
+        "passed": 1,
+        "total": 1
+      }
+    },
+    "average_latency_seconds": 7.456,
+    "p95_latency_seconds": 7.456,
+    "semantic_correctness": "NEEDS_HUMAN_REVIEW",
+    "ttft": "NOT_MEASURED",
+    "provider_cost_usd": 0.002269773,
+    "model": "mistralai/mistral-small-2603",
+    "repeat": 3,
+    "sessions": [],
+    "selected": 1,
+    "complete": true
+  }
+]

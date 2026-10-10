@@ -1,0 +1,52 @@
+{
+  "common_conditions": {
+    "mistral": {
+      "max_tokens": true,
+      "temperature": true,
+      "repeats": true,
+      "timeout": true,
+      "clock": true,
+      "dataset_sha256": true,
+      "selected_ids": true,
+      "rag_mode": true,
+      "business_services": true,
+      "baseline_runtime": true,
+      "scorer_version": true,
+      "schema_identical": true
+    },
+    "gemma": {
+      "max_tokens": true,
+      "temperature": true,
+      "repeats": true,
+      "timeout": true,
+      "clock": true,
+      "dataset_sha256": true,
+      "selected_ids": true,
+      "rag_mode": true,
+      "business_services": true,
+      "baseline_runtime": true,
+      "scorer_version": true,
+      "schema_identical": true
+    },
+    "gpt4o": {
+      "max_tokens": true,
+      "temperature": true,
+      "repeats": true,
+      "timeout": true,
+      "clock": true,
+      "dataset_sha256": true,
+      "selected_ids": true,
+      "rag_mode": true,
+      "business_services": true,
+      "baseline_runtime": true,
+      "scorer_version": true,
+      "schema_identical": true
+    }
+  },
+  "differences": [
+    "GPT-4o/Gemma automatic endpoint routing; Mistral prefers mistral/us,mistral/eu",
+    "Sequential runs at different times; provider load/region not controlled",
+    "Fixture UUIDs generated independently; equivalent placeholder roles, not byte-identical requests"
+  ],
+  "baseline_files_reused_without_rescoring": true
+}

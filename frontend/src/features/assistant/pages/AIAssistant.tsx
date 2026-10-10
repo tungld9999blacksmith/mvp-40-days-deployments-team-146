@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { CalendarClock, Car, History, Plus, Sparkles, Trash2 } from 'lucide-react'
+import { BatteryCharging, CalendarClock, Car, CircleDot, History, Plus, ShieldCheck, Trash2, Wrench, type LucideIcon } from 'lucide-react'
 import { isApiError } from '@/shared/api/client'
 import Button from '@/shared/ui/Button'
 import Dialog from '@/shared/ui/Dialog'
@@ -12,17 +12,29 @@ import { track } from '@/shared/utils/track'
 import { useOnboardingRequiredRedirect } from '@/features/auth/hooks/useOnboardingRequiredRedirect'
 import VehicleGate from '@/features/vehicles/components/VehicleGate'
 import type { VehicleSummary } from '@/features/vehicles/types'
+import { vehicleDisplayName } from '@/shared/domain/labels'
+import { cn } from '@/shared/ui/cn'
 import ChatComposer from '../components/ChatComposer'
 import ChatContextPanel, { SUGGESTED_QUESTIONS } from '../components/ChatContextPanel'
 import CitationDrawer from '../components/CitationDrawer'
 import ConversationHistoryDrawer from '../components/ConversationHistoryDrawer'
 import MessageList from '../components/MessageList'
+import RobotAvatar, { RobotMascot } from '@/shared/ui/RobotAvatar'
 import { useChatSession } from '../hooks/useChatSession'
 import { QUICK_BOOKING_LABEL } from '../quickBooking/proposalView'
+import { consumeQuickBookingIntent } from '../quickBooking/entry'
 import { QuickBookingProvider, type QuickBookingActions } from '../quickBooking/QuickBookingContext'
 import { useProposalActions } from '../quickBooking/useProposalActions'
 import { getChatTransport } from '../transport/ChatTransport'
 import type { CitationDto } from '../types'
+
+/** Icon and one-line hint per SUGGESTED_QUESTIONS entry, same order. */
+const STARTER_META: { icon: LucideIcon; hint: string }[] = [
+  { icon: Wrench, hint: 'Theo lịch định kỳ của hãng cho xe bạn' },
+  { icon: ShieldCheck, hint: 'Những hạng mục bạn không phải trả phí' },
+  { icon: BatteryCharging, hint: 'Thời hạn, điều kiện và cách yêu cầu' },
+  { icon: CircleDot, hint: 'Áp suất, đảo lốp và thay lốp' },
+]
 
 function useCountdown(until: number | null, onDone: () => void): number | null {
   const [now, setNow] = useState(() => Date.now())
@@ -43,6 +55,7 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
   const location = useLocation()
   const toast = useToast()
   const { conversationId: conversationParam } = useParams()
+  const vehicleQuery = `?userVehicleId=${encodeURIComponent(vehicle.userVehicleId)}`
   const [searchParams, setSearchParams] = useSearchParams()
   const messageSeqParam = searchParams.get('messageSeq')
   const [text, setText] = useState('')
@@ -53,6 +66,7 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
   const [deleting, setDeleting] = useState(false)
   const [resolveError, setResolveError] = useState(false)
   const cancelRef = useRef<HTMLButtonElement>(null)
+  const autoQuickBookingStarted = useRef(false)
   const transport = getChatTransport()
 
   const chat = useChatSession({
@@ -126,8 +140,19 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
 
   function startQuickBooking() {
     setContextOpen(false)
-    void chat.send('Tôi muốn đặt lịch bảo dưỡng. Hãy hỏi ngày giờ và xưởng, sau đó tạo đề xuất để tôi xác nhận.')
+    void quickBooking()
   }
+
+  // Home can open `/ai/new?intent=quick-booking`. Consume the intent before starting so
+  // route changes and React Strict Mode cannot create duplicate proposals.
+  useEffect(() => {
+    const remaining = consumeQuickBookingIntent(searchParams)
+    if (!remaining || conversationParam === undefined || state.loading || state.loadError || autoQuickBookingStarted.current) return
+    autoQuickBookingStarted.current = true
+    setSearchParams(remaining, { replace: true })
+    void quickBooking()
+  }, [conversationParam, state.loading, state.loadError, searchParams, setSearchParams, quickBooking])
+
   const chipDisabled = Boolean(chat.lockedReason) || Boolean(retryIn) || quickBusy
 
   async function deleteCurrent() {
@@ -146,7 +171,7 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
     track('chat_conversation_deleted')
     setDeleting(false)
     setConfirmDelete(false)
-    navigate('/ai', { replace: true })
+    navigate(`/ai${vehicleQuery}`, { replace: true })
   }
 
   const openCitation = useCallback((next: CitationDto) => {
@@ -160,35 +185,57 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
 
   // Same condition MessageList uses to render `emptyState`.
   const chatEmpty = !state.loading && state.messages.length === 0 && state.pending.length === 0
+  // Sized to fit with the composer on ~700px-tall viewports; hints and the intro line drop on short screens.
   const emptyState = (
-    <div className="flex flex-col items-center text-center py-10">
-      <div className="w-12 h-12 rounded-2xl bg-emerald/10 flex items-center justify-center mb-4">
-        <Sparkles className="w-6 h-6 text-emerald" aria-hidden />
+    <div className="flex flex-col items-center text-center pt-1 sm:pt-4 pb-2">
+      <div className="flex items-end gap-1">
+        <RobotMascot mood="wave" size={80} label="Robot trợ lý vẫy tay chào" className="w-16 h-16 sm:w-20 sm:h-20" />
+        <p className="mb-11 sm:mb-14 rounded-2xl rounded-bl-md bg-card elevation-sm px-3 py-1.5 text-[13px] font-semibold text-foreground">Xin chào!</p>
       </div>
-      <p className="text-sm text-foreground max-w-md leading-relaxed">
-        Xin chào! Tôi có thể giúp bạn tra cứu lịch bảo dưỡng, hạng mục, bảo hành và cách dùng xe theo tài liệu chính hãng.
+      <h2 className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight leading-tight text-foreground max-w-xl">
+        Hôm nay chiếc {vehicleDisplayName(vehicle.modelName, vehicle.trim)} của bạn cần gì?
+      </h2>
+      <p className="mt-1.5 text-sm text-muted max-w-lg leading-relaxed [@media(max-height:760px)]:hidden">
+        Hỏi về bảo dưỡng, bảo hành và cách dùng xe. Mỗi câu trả lời đều kèm nguồn tài liệu chính hãng.
       </p>
-      <div className="mt-6 flex flex-wrap justify-center gap-2 max-w-xl">
+      <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5 w-full max-w-2xl text-left">
         <button
           type="button"
           onClick={startQuickBooking}
           disabled={chipDisabled}
-          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-xs text-foreground hover:bg-card-hover transition-colors disabled:opacity-50"
+          className="sm:col-span-2 flex items-center gap-3 rounded-2xl bg-brand text-on-brand px-3.5 py-2.5 min-h-12 hover:bg-emerald-bright transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <CalendarClock className="w-3.5 h-3.5 text-emerald" aria-hidden />
-          {QUICK_BOOKING_LABEL}
+          <span className="w-9 h-9 rounded-xl bg-card text-emerald flex items-center justify-center flex-shrink-0">
+            <CalendarClock className="w-[18px] h-[18px]" aria-hidden />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-bold">{QUICK_BOOKING_LABEL}</span>
+            <span className="hidden sm:block text-xs opacity-90 [@media(max-height:760px)]:hidden">
+              Trợ lý tìm xưởng và giờ trống, bạn chỉ cần xác nhận
+            </span>
+          </span>
         </button>
-        {SUGGESTED_QUESTIONS.map(question => (
-          <button
-            key={question}
-            type="button"
-            onClick={() => ask(question)}
-            disabled={Boolean(chat.lockedReason) || Boolean(retryIn)}
-            className="rounded-full border border-border bg-card px-3.5 py-2 text-xs text-foreground hover:bg-card-hover transition-colors disabled:opacity-50"
-          >
-            {question}
-          </button>
-        ))}
+        {SUGGESTED_QUESTIONS.map((question, index) => {
+          const meta = STARTER_META[index]
+          const Icon = meta?.icon ?? Wrench
+          return (
+            <button
+              key={question}
+              type="button"
+              onClick={() => ask(question)}
+              disabled={Boolean(chat.lockedReason) || Boolean(retryIn)}
+              className="flex items-center gap-3 rounded-2xl bg-card elevation-sm px-3.5 py-2.5 min-h-12 text-foreground hover:bg-card-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="w-9 h-9 rounded-xl bg-emerald-dim text-emerald flex items-center justify-center flex-shrink-0">
+                <Icon className="w-[18px] h-[18px]" aria-hidden />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold leading-snug">{question}</span>
+                {meta && <span className="hidden sm:block text-xs text-muted [@media(max-height:760px)]:hidden">{meta.hint}</span>}
+              </span>
+            </button>
+          )
+        })}
       </div>
     </div>
   )
@@ -196,17 +243,24 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
   return (
     <div className="flex h-full min-h-0">
       <div className="flex-1 flex flex-col min-w-0">
-        <div className="h-14 flex items-center gap-2 px-4 sm:px-6 border-b border-border flex-shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-emerald/10 flex items-center justify-center flex-shrink-0">
-            <Sparkles className="w-4 h-4 text-emerald" aria-hidden />
+        <div className="min-h-16 flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2.5 border-b border-border bg-surface flex-shrink-0">
+          <RobotAvatar size={44} mood={state.streaming ? 'thinking' : 'idle'} online />
+          <div className="flex-1 min-w-0">
+            <h1 className="text-[15px] sm:text-base font-extrabold tracking-tight text-foreground leading-tight">Trợ lý EV Care</h1>
+            <p className="text-xs sm:text-[13px] text-muted truncate">{title}</p>
           </div>
-          <h1 className="text-sm font-semibold text-foreground truncate flex-1">{title}</h1>
           <Button variant="ghost" size="sm" onClick={() => setHistoryOpen(true)} icon={<History className="w-4 h-4" />} aria-label="Lịch sử">
             <span className="hidden sm:inline">Lịch sử</span>
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/ai/new')} icon={<Plus className="w-4 h-4" />} aria-label="Cuộc trò chuyện mới">
-            <span className="hidden md:inline">Mới</span>
-          </Button>
+          <button
+            type="button"
+            onClick={() => navigate(`/ai/new${vehicleQuery}`)}
+            aria-label="Cuộc trò chuyện mới"
+            className="inline-flex items-center justify-center gap-2 h-10 min-w-10 px-2.5 md:px-3.5 rounded-xl bg-foreground text-background text-[13px] font-semibold hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+          >
+            <Plus className="w-4 h-4" aria-hidden />
+            <span className="hidden md:inline">Trò chuyện mới</span>
+          </button>
           <Button variant="ghost" size="sm" className="xl:hidden" onClick={() => setContextOpen(true)} icon={<Car className="w-4 h-4" />} aria-label="Xe của tôi" />
           {state.conversationId && (
             <Button
@@ -229,7 +283,7 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
 
         {resolving ? (
           resolveError ? (
-            <ErrorState title="Không tải được cuộc trò chuyện." onRetry={() => navigate('/ai', { replace: true })} />
+            <ErrorState title="Không tải được cuộc trò chuyện." onRetry={() => navigate(`/ai${vehicleQuery}`, { replace: true })} />
           ) : (
             <div className="flex-1 p-6 max-w-3xl w-full mx-auto space-y-4" aria-busy="true">
               <Skeleton className="h-16 w-2/3" />
@@ -270,6 +324,22 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
           retryInSeconds={retryIn}
           helper={chat.helper}
           autoFocus
+          actions={
+            chatEmpty ? null : (
+              <button
+                type="button"
+                onClick={startQuickBooking}
+                disabled={chipDisabled}
+                className={cn(
+                  'inline-flex items-center gap-1.5 h-9 rounded-full bg-emerald-dim px-3.5 text-xs font-semibold text-emerald',
+                  'hover:bg-emerald/15 transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
+                )}
+              >
+                <CalendarClock className="w-3.5 h-3.5" aria-hidden />
+                Đặt lịch nhanh
+              </button>
+            )
+          }
         />
       </div>
 
@@ -301,21 +371,21 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
         currentConversationId={state.conversationId}
         onOpenConversation={conversation => {
           setHistoryOpen(false)
-          navigate(`/ai/${conversation.id}`, { state: { title: conversation.title } })
+          navigate(`/ai/${conversation.id}${vehicleQuery}`, { state: { title: conversation.title } })
         }}
         onOpenResult={result => {
           setHistoryOpen(false)
-          navigate(`/ai/${result.conversationId}?messageSeq=${result.seq}`, { state: { title: result.conversationTitle } })
+          navigate(`/ai/${result.conversationId}${vehicleQuery}&messageSeq=${result.seq}`, { state: { title: result.conversationTitle } })
         }}
         onDeleted={conversationId => {
           if (conversationId === state.conversationId) {
             chat.abortStream()
-            navigate('/ai', { replace: true })
+            navigate(`/ai${vehicleQuery}`, { replace: true })
           }
         }}
         onNewConversation={() => {
           setHistoryOpen(false)
-          navigate('/ai/new')
+          navigate(`/ai/new${vehicleQuery}`)
         }}
       />
 
@@ -324,7 +394,7 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
         onClose={() => setConfirmDelete(false)}
         role="alertdialog"
         title="Xoá cuộc trò chuyện này?"
-        description="Toàn bộ tin nhắn sẽ bị xoá vĩnh viễn và không thể khôi phục. Lịch hẹn đã tạo từ cuộc trò chuyện vẫn được giữ."
+        description="Toàn bộ tin nhắn sẽ bị xoá vĩnh viễn và không thể khôi phục. Lịch hẹn hoặc báo giá đã tạo từ cuộc trò chuyện vẫn được giữ."
         initialFocusRef={cancelRef}
         dismissable={!deleting}
         footer={

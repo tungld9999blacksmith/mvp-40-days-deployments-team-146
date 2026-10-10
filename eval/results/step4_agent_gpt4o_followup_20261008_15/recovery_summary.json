@@ -1,0 +1,320 @@
+{
+  "recovery": {
+    "attempted": 8,
+    "selected": 8,
+    "complete": true,
+    "passed": 8,
+    "errors": 0,
+    "safety_violations": 0,
+    "raw_argument_error_cases": 0,
+    "truncated_cases": 0,
+    "actual_models": [
+      "openai/gpt-4o"
+    ],
+    "mean_seconds": 4.5195,
+    "p90_seconds": 9.862,
+    "known_cost_usd": 0.13632,
+    "missing_cost_cases": 0,
+    "categories": {
+      "booking": {
+        "passed": 2,
+        "attempted": 2
+      },
+      "maintenance_cost": {
+        "passed": 1,
+        "attempted": 1
+      },
+      "reminder": {
+        "passed": 5,
+        "attempted": 5
+      }
+    },
+    "raw_proposal_requests": 1,
+    "raw_proposals_before_verified_availability": 0,
+    "extra_read_calls": 0,
+    "duplicate_calls": 0
+  },
+  "unique_case_coverage": [
+    {
+      "case_id": "RAG-001",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "RAG-007",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "RAG-027",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "RAG-056",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "RAG-061",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "RAG-083",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "GUARD-01",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "GUARD-05",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "GUARD-07",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "GUARD-09",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "GUARD-19",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "BOOK-03",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "BOOK-05",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "BOOK-15",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "BOOK-18",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "BOOK-19",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "BOOK-22",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "BOOK-25",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "BOOK-33",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "MAINT-01",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "MAINT-07",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "MAINT-11",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "COST-01",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "COST-06",
+      "producer": "eval\\results\\step4_agent_gpt4o_20261008_15",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "54f9f660409b2339f76c18cf80310efd5f4a59fefca105013464e00364ad761b"
+    },
+    {
+      "case_id": "COST-11",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "REMINDER-03",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "REMINDER-05",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "REMINDER-10",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "REMINDER-12",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    },
+    {
+      "case_id": "REMINDER-16",
+      "producer": "eval\\results\\step4_agent_gpt4o_paced_recovery_20261008_16",
+      "passed": true,
+      "error": null,
+      "producer_results_sha256": "b8d64f4c79b2e0dc1ab4cc482fee8330234a378cabf83e7c9d9252e632284d98"
+    }
+  ],
+  "unique_successful_cases": 30,
+  "selected_unique_cases": 30,
+  "single_full_repeat": false,
+  "original_result_unchanged": true,
+  "new_known_cost_usd": 0.13632,
+  "raw_audit": [
+    {
+      "case_id": "BOOK-05",
+      "proposal_requests": 1,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "BOOK-15",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "COST-11",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-03",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-05",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-10",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-12",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    },
+    {
+      "case_id": "REMINDER-16",
+      "proposal_requests": 0,
+      "before_verified_availability": 0,
+      "raw_argument_errors": [],
+      "extra_read_calls": 0,
+      "duplicate_calls": 0
+    }
+  ]
+}

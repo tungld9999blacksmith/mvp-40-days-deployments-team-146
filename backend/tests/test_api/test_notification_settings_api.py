@@ -8,9 +8,17 @@ from httpx import ASGITransport, AsyncClient
 from sqlmodel import select
 
 from src.common.core.identity.vehicle_user import OnboardingStatus
+from src.common.core.maintenance.reminder import ReminderChannel
 from src.common.core.notification import UserNotificationChannel, UserNotificationSetting
 from src.infrastructure.supabase.db import get_session
 from src.main import app
+from src.modules.notification.channels import (
+    DeliveryResult,
+    NotificationChannelAdapter,
+    NotificationMessage,
+    NotificationService,
+)
+from src.modules.notification.dependency import get_notification_service
 from src.modules.oauth.dependency import verify_firebase_token
 from tests._user_vehicle import add_owner, make_session
 
@@ -18,30 +26,47 @@ URL = "/api/v1/notification-settings"
 AUTH = {"Authorization": "Bearer x"}
 
 
+class _FakeAdapter(NotificationChannelAdapter):
+    def __init__(self, channel: ReminderChannel) -> None:
+        self.channel = channel
+
+    async def send(self, user_id: int, message: NotificationMessage) -> DeliveryResult:
+        return DeliveryResult.sent()
+
+
 class _Api:
-    def __init__(self, client, session, claims):
+    def __init__(self, client, session, claims, notifier):
         self.client = client
         self.session = session
         self._claims = claims
+        self._notifier = notifier
 
     def sign_in_as(self, uid: str) -> None:
         self._claims["claims"] = {"uid": uid}
+
+    def configure(self, *channels: ReminderChannel) -> None:
+        """Pretend the providers of ``channels`` are configured (no adapter by default)."""
+        for channel in channels:
+            self._notifier.register(_FakeAdapter(channel))
 
 
 @pytest_asyncio.fixture
 async def api():
     session = next(make_session())
     claims: dict = {"claims": {"uid": "uid-1"}}
+    # Independent of the SMTP / eSMS settings in the developer's .env.
+    notifier = NotificationService()
 
     def _override_session():
         yield session
 
     app.dependency_overrides[get_session] = _override_session
     app.dependency_overrides[verify_firebase_token] = lambda: claims["claims"]
+    app.dependency_overrides[get_notification_service] = lambda: notifier
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        yield _Api(client, session, claims)
+        yield _Api(client, session, claims, notifier)
 
     app.dependency_overrides.clear()
     session.close()
@@ -61,26 +86,29 @@ def _channel(data: dict, name: str) -> dict:
 
 @pytest.mark.asyncio
 async def test_defaults_when_never_configured_ac509(api: _Api, owner):
+    api.configure(ReminderChannel.EMAIL)  # EMAIL_MODE=mock (the default) registers the email adapter
     r = await api.client.get(URL, headers=AUTH)
 
     assert r.status_code == 200
     data = r.json()["data"]
     assert data["remindersEnabled"] is True
     assert data["reminderLeadDays"] == 2 and data["defaultReminderLeadDays"] == 2
-    # Reminders are shown in the app; no external channel exists yet.
+    # Email mock is implemented and opt-in; other channels remain unavailable.
     assert [c["channel"] for c in data["channels"]] == [
         "ZALO",
         "TELEGRAM",
         "SMS",
         "EMAIL",
     ]
-    for name in ("ZALO", "TELEGRAM", "SMS", "EMAIL"):
+    for name in ("ZALO", "TELEGRAM", "SMS"):
         assert _channel(data, name) == {
             "channel": name,
             "enabled": False,
             "available": False,
             "status": "COMING_SOON",
         }
+    assert _channel(data, "EMAIL") == {"channel": "EMAIL", "enabled": False, "available": True, "status": "NOT_CONNECTED"}
+    assert data["emailTransport"] == "mock"
 
 
 @pytest.mark.asyncio
@@ -200,6 +228,57 @@ async def test_settings_are_per_owner(api: _Api, owner):
     data = (await api.client.get(URL, headers=AUTH)).json()["data"]
 
     assert data["reminderLeadDays"] == 2
+
+
+# ── Email / SMS once configured (BR-506) ─────────────────────────────────────
+
+
+@pytest.mark.asyncio
+async def test_configured_channels_are_offered_with_connection_status(api: _Api, owner):
+    owner.email_verified = True  # Google sign-in; no phone number on the profile
+    api.session.add(owner)
+    api.session.commit()
+    api.configure(ReminderChannel.EMAIL, ReminderChannel.SMS)
+
+    data = (await api.client.get(URL, headers=AUTH)).json()["data"]
+
+    assert _channel(data, "EMAIL") == {"channel": "EMAIL", "enabled": False, "available": True, "status": "CONNECTED"}
+    assert _channel(data, "SMS") == {"channel": "SMS", "enabled": False, "available": True, "status": "NOT_CONNECTED"}
+    assert _channel(data, "ZALO")["status"] == "COMING_SOON"
+
+
+@pytest.mark.asyncio
+async def test_unverified_email_is_not_connected(api: _Api, owner):
+    api.configure(ReminderChannel.EMAIL)
+
+    data = (await api.client.get(URL, headers=AUTH)).json()["data"]
+
+    assert _channel(data, "EMAIL")["status"] == "NOT_CONNECTED"
+
+
+@pytest.mark.asyncio
+async def test_owner_can_enable_email_and_sms(api: _Api, owner):
+    owner.phone = "+84901000001"
+    owner.email, owner.email_verified = "owner@example.com", True  # email needs a verified address
+    api.session.add(owner)
+    api.session.commit()
+    api.configure(ReminderChannel.EMAIL, ReminderChannel.SMS)
+
+    r = await api.client.put(
+        URL,
+        json={"channels": [{"channel": "EMAIL", "enabled": True}, {"channel": "SMS", "enabled": True}]},
+        headers=AUTH,
+    )
+
+    assert r.status_code == 200
+    data = r.json()["data"]
+    assert _channel(data, "EMAIL")["enabled"] is True
+    assert _channel(data, "SMS") == {"channel": "SMS", "enabled": True, "available": True, "status": "CONNECTED"}
+    rows = api.session.exec(select(UserNotificationChannel)).all()
+    assert {(row.channel, row.is_enabled) for row in rows} == {
+        (ReminderChannel.EMAIL, True),
+        (ReminderChannel.SMS, True),
+    }
 
 
 # ── Guard ───────────────────────────────────────────────────────────────────

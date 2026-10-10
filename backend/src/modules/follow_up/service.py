@@ -144,11 +144,12 @@ class FollowUpService:
             )
         outcome = None
         if follow_up.closed_reason == "PROCESSED":
-            # Safety is not stored; the keyword rules on the saved answer tell it again.
-            safety = (
-                follow_up.has_issue
-                and classify_by_rules(follow_up.rating, follow_up.customer_response, by=ClassifiedBy.RULES).safety
-            )
+            safety = follow_up.safety_flag
+            if safety is None:  # answered before safety_flag was stored: re-run the keyword rules
+                safety = (
+                    follow_up.has_issue
+                    and classify_by_rules(follow_up.rating, follow_up.customer_response, by=ClassifiedBy.RULES).safety
+                )
             outcome = schemas.OutcomeOut(has_issue=follow_up.has_issue, safety_advice=safety)
         return schemas.FollowUpOut(
             follow_up_id=follow_up.id,
@@ -204,6 +205,7 @@ class FollowUpService:
         follow_up.closed_reason = "PROCESSED"
         follow_up.closed_at = now
         follow_up.has_issue = result.has_issue
+        follow_up.safety_flag = result.safety
         follow_up.feedback_intent = result.intent.value
         follow_up.classification_confidence = result.confidence
         follow_up.classified_by = result.classified_by.value

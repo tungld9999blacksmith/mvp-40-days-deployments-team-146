@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 from collections.abc import AsyncIterator, Awaitable, Callable
@@ -7,7 +8,7 @@ from contextlib import AbstractContextManager
 from typing import Any
 from uuid import UUID
 
-from langchain_core.messages import BaseMessage, HumanMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, RemoveMessage
 from langchain_core.runnables import RunnableConfig
 from langgraph.types import Command
 from sqlmodel import Session
@@ -21,6 +22,21 @@ from .state import AgentState
 os.environ["LANGCHAIN_TRACING_V2"] = "false"
 
 logger = logging.getLogger(__name__)
+
+# Checkpoint reads/writes hit the database; a dead connection must fail, not stall a turn.
+_CHECKPOINT_TIMEOUT_SECONDS = 10.0
+
+
+async def _checkpoint_call(awaitable: Awaitable[Any]) -> Any:
+    return await asyncio.wait_for(awaitable, _CHECKPOINT_TIMEOUT_SECONDS)
+
+
+async def _discard_thread(saver: Any, conversation_id: str | UUID) -> None:
+    """Best-effort checkpoint reset on a cancelled turn; never replaces the cancellation."""
+    try:
+        await _checkpoint_call(saver.adelete_thread(str(conversation_id)))
+    except Exception:
+        logger.warning("Could not reset the agent checkpoint of %s", conversation_id, exc_info=True)
 
 
 async def fetch_vehicle_context(
@@ -134,6 +150,7 @@ def _run_config(ctx: AgentCtx) -> RunnableConfig:
             "user_id": ctx.user_id,
             "user_vehicle_id": str(ctx.vehicle_id) if ctx.vehicle_id else None,
             "conversation_id": str(ctx.conversation_id) if ctx.conversation_id else None,
+            "source_message_id": str(ctx.source_message_id) if ctx.source_message_id else None,
         }
     }
 
@@ -188,8 +205,17 @@ class AgentOrchestrator:
 
         # 2. Chuẩn bị State ban đầu
         messages: list[BaseMessage] = list(history_messages or [])
+        # The durable checkpoint already contains tool messages and prior turns.
+        # Seed database history only for a new/recovered thread.
+        saver = getattr(self._graph, "checkpointer", None)
+        checkpoint = await _checkpoint_call(saver.aget_tuple(run_config)) if saver is not None else None
+        if checkpoint:
+            known_ids = {m.id for m in checkpoint.checkpoint.get("channel_values", {}).get("messages", [])}
+            # Include new committed booking-confirmation messages, without
+            # replaying already checkpointed user/assistant messages.
+            messages = [m for m in messages if m.id not in known_ids]
         if message:
-            messages.append(HumanMessage(content=message))
+            messages.append(HumanMessage(content=message, id=str(source_message_id) if source_message_id else None))
 
         initial_state: AgentState = {
             "messages": messages,
@@ -199,6 +225,10 @@ class AgentOrchestrator:
 
         accumulated_text = ""
         citations: list[dict[str, Any]] = []
+        response_metadata: dict[str, Any] = {}
+        from .booking_policy import guarded_booking_turn
+
+        defer_business_tokens = guarded_booking_turn(messages)
 
         try:
             # 3. Chạy vòng lặp ReAct qua astream_events với config chứa ctx
@@ -208,6 +238,11 @@ class AgentOrchestrator:
                 # A. Sự kiện Bắt đầu gọi Tool
                 if event_type == "on_tool_start":
                     tool_name = event.get("name", "")
+                    if tool_name in {"get_due_maintenance", "estimate_service_cost", "find_workshops", "get_available_slots", "propose_booking", "search_ev_knowledge", "get_maintenance_schedule_rag", "get_warranty_policy_rag"}:
+                        # Model tokens have not yet passed the terminal fact guard.
+                        if not defer_business_tokens:
+                            accumulated_text = ""  # A pre-tool introduction is not a verified answer.
+                        defer_business_tokens = True
                     tool_input = event.get("data", {}).get("input", {})
                     yield {
                         "type": "tool_start",
@@ -230,7 +265,7 @@ class AgentOrchestrator:
                     chunk = event.get("data", {}).get("chunk")
                     if chunk and hasattr(chunk, "content"):
                         delta = extract_text_from_content(chunk.content)
-                        if delta:
+                        if delta and not defer_business_tokens:
                             accumulated_text += delta
                             yield {
                                 "type": "token",
@@ -242,20 +277,39 @@ class AgentOrchestrator:
                     output = event.get("data", {}).get("output")
                     if isinstance(output, dict) and output.get("citations"):
                         citations = output["citations"]
+                    if isinstance(output, dict):
+                        for key in ("confidence", "fallback_required"):
+                            if key in output:
+                                response_metadata[key] = output[key]
+                        # Deterministic terminal nodes can replace unsafe model output
+                        # or answer without invoking a model. Persist the graph's answer.
+                        if output.get("response"):
+                            accumulated_text = output["response"]
 
+        except (asyncio.CancelledError, GeneratorExit):
+            if saver is not None:
+                await _discard_thread(saver, conversation_id)
+            raise
         except Exception as exc:
+            # Never run the turn again. Clear incomplete tool state; next turn
+            # reconstructs committed user/assistant history with stable IDs.
+            if saver is not None:
+                await _checkpoint_call(saver.adelete_thread(str(conversation_id)))
             logger.error("Lỗi trong vòng lặp agent astream_events: %s", exc, exc_info=True)
             # BẢO VỆ GIAO DỊCH: TUYỆT ĐỐI KHÔNG fallback chạy lại ainvoke(initial_state)
             # để tránh double side-effect khi tool ghi đã kịp chạy trước khi stream đứt kết nối.
             if not accumulated_text:
                 fallback_msg = "Hệ thống gặp sự cố trong quá trình xử lý yêu cầu. Quý khách vui lòng thử lại sau giây lát hoặc liên hệ hotline 1900 23 23 89."
                 accumulated_text = fallback_msg
-                yield {
-                    "type": "token",
-                    "delta": fallback_msg,
-                }
+                if not defer_business_tokens:
+                    yield {
+                        "type": "token",
+                        "delta": fallback_msg,
+                    }
 
         # 4. Phát tín hiệu hoàn tất (message.completed)
+        if defer_business_tokens and accumulated_text:
+            yield {"type": "token", "delta": accumulated_text}
         yield {
             "type": "completed",
             "message_data": {
@@ -265,8 +319,35 @@ class AgentOrchestrator:
                 "role": "assistant",
                 "content": accumulated_text,
                 "citations": citations,
+                **response_metadata,
             },
         }
+
+    async def record_committed_answer(self, conversation_id, message_id, content):
+        """Replace the final model ID with the database assistant ID after commit."""
+        saver = getattr(self._graph, "checkpointer", None)
+        if saver is None:
+            return
+        config = {"configurable": {"thread_id": str(conversation_id)}}
+        try:
+            state = await _checkpoint_call(self._graph.aget_state(config))
+            messages = state.values.get("messages", [])
+            if not messages:
+                return
+            last = messages[-1]
+            if not isinstance(last, AIMessage) or last.tool_calls:
+                await _checkpoint_call(saver.adelete_thread(str(conversation_id)))
+                return
+            replacement = last.model_copy(update={"id": str(message_id), "content": content})
+            changes = [RemoveMessage(id=last.id), replacement] if last.id != str(message_id) else [replacement]
+            await _checkpoint_call(self._graph.aupdate_state(config, {"messages": changes}, as_node="agent"))
+        except Exception:
+            # The DB reply is committed. Rebuild its history next turn.
+            try:
+                await _checkpoint_call(saver.adelete_thread(str(conversation_id)))
+            except Exception:
+                logger.warning("Checkpoint unavailable after assistant persistence")
+            logger.warning("Checkpoint reset after assistant persistence mismatch")
 
     async def confirm_booking_turn(
         self,

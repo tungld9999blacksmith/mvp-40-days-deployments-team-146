@@ -1,0 +1,20 @@
+{
+  "gate_hits": [
+    {
+      "case_id": "M07",
+      "reason": "coolant_source_value_unverified",
+      "answer": "Bảng được cung cấp ghi: “Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên” [Tài liệu 1].\n\nMốc thay trong dòng này chưa được xác minh với bảng gốc đầy đủ và phiên bản áp dụng. Tôi chưa thể chốt lịch thay cho xe từ bản trích này; không tự sửa số km trong nguồn hoặc ngoại suy chu kỳ. Cần đối chiếu đúng lịch bảo dưỡng trước khi áp dụng."
+    },
+    {
+      "case_id": "M18",
+      "reason": "maintenance_component_actions_missing",
+      "answer": "Bảng liệt kê các hạng mục “Pin”, “Dây cáp của hệ thống điện áp cao”, “Cổng sạc” [Tài liệu 1]. Tuy nhiên, các dòng này trong bản trích không có thao tác hoặc chu kỳ đi kèm; chưa thể kết luận chúng đều phải kiểm tra định kỳ theo lịch cụ thể.\n\nBảng cũng nêu “Nước làm mát pin/động cơ điện” [Tài liệu 1], nhưng mốc thay của dòng này cần xác minh với bảng gốc.\n\nCần lịch đầy đủ, đúng phiên bản để xác định thao tác và thời điểm cho từng hạng mục."
+    },
+    {
+      "case_id": "M23",
+      "reason": "maintenance_period_mapping_missing",
+      "answer": "Chưa xác định được danh sách phụ tùng bắt buộc thay tại mốc 40.000 km từ các đoạn được cung cấp. Bảng có các mốc km/tháng nhưng các dòng hạng mục thiếu cột thao tác tương ứng [Tài liệu 1].\n\nKhông dùng các dòng đã mất ánh xạ để suy ra thao tác tại mốc bạn hỏi. Cần bảng đầy đủ, đúng dòng xe và phiên bản; không áp toàn bộ danh sách thay thế vào mốc này."
+    }
+  ],
+  "independent_review": false
+}

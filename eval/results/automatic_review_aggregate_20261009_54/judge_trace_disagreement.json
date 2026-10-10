@@ -1,0 +1,19 @@
+{
+  "sample_id": "review-024",
+  "case_id": "BOOK-03",
+  "configuration": "agent_gemma",
+  "automatic_status_preserved": "FAIL",
+  "judge_reasons": [
+    "Model thiếu gọi công cụ propose_booking theo kịch bản bắt buộc của người dùng.",
+    "Model gọi thiếu get_available_slots và các bước đề xuất đặt lịch."
+  ],
+  "observed_tool_names": [
+    "find_workshops",
+    "get_due_maintenance",
+    "get_available_slots"
+  ],
+  "get_available_slots_called": true,
+  "propose_booking_called": false,
+  "observed_slots_count": 23,
+  "observation": "The judge reason claims get_available_slots is missing, but immutable input T3 contains that successful tool call. Missing propose_booking is observed, but user has not selected one of six afternoon slots; original answer asks for an explicit choice. No label changed or final semantic adjudication supplied. This flags judge reliability, not acceptance."
+}

@@ -46,6 +46,7 @@ export default function BookingProposal() {
           idempotencyKey: newId(),
         })
         const query = new URLSearchParams({
+          userVehicleId: p.userVehicleId,
           proposalId: params.proposalId!,
           workshopId: p.workshopId,
           date: p.date,

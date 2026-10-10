@@ -13,6 +13,7 @@ Reads use sync repositories; the streaming path is async.
 from __future__ import annotations
 
 import asyncio
+import gc
 import json
 import logging
 import time
@@ -43,8 +44,10 @@ from src.infrastructure.llm.base import LLMProvider, Role
 from src.infrastructure.messaging import AppendResult, ConversationNotFoundError, MessageDto, MessageService
 from src.infrastructure.redis import RedisToolkit
 from src.infrastructure.vectorstore import CONVERSATION_MESSAGES, VectorStore
+from src.modules.booking_line.cards import CARD_BOOKING_LINES, enrich_line_cards
 from src.modules.quick_booking.cards import attach_message, enrich_cards
 from src.modules.quick_booking.domain import CARD_PROPOSAL
+from src.modules.quote.cards import CARD_QUOTE, enrich_quote_cards
 
 from . import errors
 from .schemas import SseFrame
@@ -252,7 +255,7 @@ class ChatService:
                     col(ChatMessage.embedded).is_(True),
                 )
                 vector_ids = [str(mid) for mid in session.execute(stmt).scalars().all()]
-            # cascade deletes chat_message; booking.source_message_id -> NULL.
+            # cascade deletes chat_message; booking/quote.source_message_id -> NULL.
             row = session.get(Conversation, conversation.id)
             if row is not None:
                 session.delete(row)
@@ -332,12 +335,12 @@ class ChatService:
         await self._check_rate_limit(user_id)
 
     def to_dtos(self, messages: list[ChatMessage]) -> list[MessageDto]:
-        """Client DTOs; booking-proposal cards get their live status (us-061 HOOK-QB-01)."""
+        """Client DTOs; proposal and quote cards get their live status (us-061 HOOK-QB-01, us-049)."""
         dtos = [MessageDto.from_message(m) for m in messages]
         if not any(d.card for d in dtos):
             return dtos
         with Session(self._engine) as session:
-            return enrich_cards(session, dtos)
+            return enrich_line_cards(session, enrich_quote_cards(session, enrich_cards(session, dtos)))
 
     async def _run_turn(
         self,
@@ -356,6 +359,7 @@ class ChatService:
         """
         frames = self._run_turn_frames(conversation_id, user_id, vehicle, client_message_id, content, trace_id)
         deadline = asyncio.get_running_loop().time() + self._settings.chat_run_timeout_seconds
+        cleanup_timeout = getattr(self._settings, "chat_run_cleanup_timeout_seconds", 15)
         accepted = False
         pending: asyncio.Task | None = None
 
@@ -366,6 +370,7 @@ class ChatService:
                 await asyncio.sleep(0.1)
 
         disconnected = asyncio.create_task(watch_disconnect()) if is_disconnected else None
+        abandoned = False  # a step that ignored cancellation past cleanup_timeout
         try:
             while True:
                 pending = asyncio.create_task(anext(frames))
@@ -399,8 +404,9 @@ class ChatService:
             logger.warning("Chat turn failed for %s", conversation_id, exc_info=True)
             # Stop the producer (and let an in-flight write finish) before reporting
             # a terminal frame to the client.
-            if pending is not None and await _stop(pending):
+            if pending is not None and await _stop(pending, cleanup_timeout, frames):
                 raise asyncio.CancelledError from exc
+            abandoned = pending is not None and not pending.done()
             yield SseFrame(
                 event="error",
                 data={
@@ -416,9 +422,11 @@ class ChatService:
             cancelled = False
             with anyio.CancelScope(shield=True):
                 for task in (pending, disconnected):
-                    if task is not None:
-                        cancelled |= await _stop(task)
-                await frames.aclose()
+                    if task is not None and not (task is pending and abandoned):
+                        cancelled |= await _stop(task, cleanup_timeout, frames if task is pending else None)
+                # An abandoned step is still running the generator, which cannot be closed then.
+                if pending is None or pending.done():
+                    await frames.aclose()
             if cancelled:
                 raise asyncio.CancelledError
 
@@ -479,8 +487,10 @@ class ChatService:
         agent_run_id = uuid4()
         pieces: list[str] = []
         collected_citations: list[dict] = []
-        # us-061 TOOL-QB-01: the card of the last ``propose_booking`` call goes on the answer.
-        proposal_card: dict | None = None
+        completed_answer: str | None = None
+        response_metadata: dict = {}
+        # The last booking or quote card belongs to the committed answer.
+        card: dict | None = None
 
         orchestrator = await run_in_threadpool(self._get_orchestrator)
         vehicle_context = await orchestrator.fetch_vehicle_context(vehicle.id)
@@ -523,14 +533,17 @@ class ChatService:
                             event="status",
                             data={"stage": f"Đang tra cứu {tool_name}...", "tool": tool_name},
                         )
-                    elif event_type == "tool_end" and event.get("tool") == "propose_booking":
-                        card = _proposal_card(event.get("output"))
-                        if card is not None:
-                            proposal_card = card
+                    elif event_type == "tool_end" and event.get("tool") in _CARD_TOOLS:
+                        card = _tool_card(event.get("output")) or card
                     elif event_type == "completed":
                         msg_data = event.get("message_data", {})
                         if "citations" in msg_data and isinstance(msg_data["citations"], list):
                             collected_citations = msg_data["citations"]
+                        if isinstance(msg_data.get("content"), str):
+                            completed_answer = msg_data["content"]
+                        for key in ("confidence", "fallback_required"):
+                            if key in msg_data:
+                                response_metadata[key] = msg_data[key]
 
         except Exception as exc:
             yield SseFrame(
@@ -540,17 +553,19 @@ class ChatService:
             logger.warning("Agent error for %s: %s", conversation_id, exc, exc_info=True)
             return
 
-        answer = "".join(pieces).strip()
-        if proposal_card is not None and not answer:
-            answer = 'Mình đã chuẩn bị đề xuất đặt lịch. Bấm "Xác nhận đặt lịch" trên thẻ để đặt.'
-        # The answer's database writes run in worker threads that a deadline cannot
-        # stop; finish them before this turn (and its conversation lock) ends.
+        answer = (completed_answer if completed_answer is not None else "".join(pieces)).strip()
+        if card is not None and not answer:
+            answer = _CARD_FALLBACK_ANSWER[card["type"]]
+        # Finish protected writes before releasing the conversation lock.
         persist = asyncio.create_task(
-            self._persist_answer(conversation_id, answer, collected_citations, proposal_card, agent_run_id, trace_id)
+            self._persist_answer(conversation_id, answer, collected_citations, card, agent_run_id, trace_id, response_metadata)
         )
         if await wait_through_cancellation(persist):
             raise asyncio.CancelledError
         assistant = persist.result()
+        record = getattr(orchestrator, "record_committed_answer", None)
+        if callable(record):
+            await record(conversation_id, assistant.message.id, assistant.message.content)
         if assistant.created:
             await self._messages.publish(conversation_id, assistant.message)
         yield SseFrame(
@@ -563,23 +578,25 @@ class ChatService:
         conversation_id: UUID,
         answer: str,
         citations: list[dict],
-        proposal_card: dict | None,
+        card: dict | None,
         agent_run_id: UUID,
         trace_id: str | None,
+        response_metadata: dict | None = None,
     ) -> AppendResult:
         assistant = await self._messages.append(
             conversation_id,
             MessageRole.ASSISTANT,
             answer,
             citations=citations,
-            card=proposal_card,
+            card=card,
             intent=None,
             agent_run_id=agent_run_id,
             trace_id=trace_id,
+            refs={"rag": response_metadata} if response_metadata else {},
             publish=False,  # published by the caller, outside the protected write
         )
-        if proposal_card is not None:
-            await run_in_threadpool(self._attach_proposal_message, proposal_card, assistant.message.id)
+        if card is not None and card["type"] == CARD_PROPOSAL:
+            await run_in_threadpool(self._attach_proposal_message, card, assistant.message.id)
         return assistant
 
     def _attach_proposal_message(self, proposal_card: dict, message_id: UUID) -> None:
@@ -654,9 +671,9 @@ class ChatService:
             if exclude_seq is not None and msg.seq is not None and msg.seq >= exclude_seq:
                 continue
             if msg.role == MessageRole.USER:
-                msgs.append(HumanMessage(content=msg.content))
+                msgs.append(HumanMessage(content=msg.content, id=str(msg.id)))
             elif msg.role == MessageRole.ASSISTANT:
-                msgs.append(AIMessage(content=msg.content))
+                msgs.append(AIMessage(content=msg.content, id=str(msg.id)))
         return msgs
 
     # -- rate limit -------------------------------------------------------
@@ -695,19 +712,83 @@ class ChatService:
         }
 
 
-async def _stop(task: asyncio.Task) -> bool:
-    """Cancel ``task``, wait until it has really finished and report whether we were cancelled."""
+async def _stop(task: asyncio.Task, timeout: float | None = None, awaiting: object = None) -> bool:
+    """Cancel ``task``, wait until it has really finished and report whether we were cancelled.
+
+    A step that ignores cancellation for ``timeout`` seconds (a hung network call) is
+    abandoned, so the turn ends and its run lock is released; where ``awaiting`` (the
+    turn's frame generator) is stuck is logged.
+    """
     task.cancel()
-    cancelled = await wait_through_cancellation(task)
-    if not task.cancelled():
-        task.exception()  # already handled or reported by the turn; mark it retrieved
+    cancelled = await wait_through_cancellation(task, timeout)
+    if not task.done():
+        logger.error(
+            "Abandoned a turn step still running %.0fs after cancellation; stuck at:\n%s",
+            timeout,
+            "\n".join(_await_chain(awaiting)) or "<unknown>",
+        )
+        task.add_done_callback(_retrieve_result)
+        return cancelled
+    _retrieve_result(task)
     return cancelled
 
 
-def _proposal_card(output) -> dict | None:
-    """Card artifact of a ``propose_booking`` ToolMessage (never shown to the LLM)."""
+def _retrieve_result(task: asyncio.Task) -> None:
+    if not task.cancelled():
+        task.exception()  # already handled or reported by the turn; mark it retrieved
+
+
+def _await_chain(awaitable: object) -> list[str]:
+    """Source locations of the coroutine/async-generator chain ``awaitable`` is suspended in."""
+    chain = []
+    for _ in range(100):
+        if awaitable is None:
+            break
+        frame = getattr(awaitable, "cr_frame", None) or getattr(awaitable, "ag_frame", None)
+        if frame is None:
+            frame = getattr(awaitable, "gi_frame", None)
+        if frame is None:
+            # ``async for`` awaits an ``async_generator_asend`` that only references its generator.
+            inner = [r for r in gc.get_referents(awaitable) if hasattr(r, "ag_frame") or hasattr(r, "cr_frame")]
+            if inner:
+                awaitable = inner[0]
+                continue
+            chain.append(f"  awaiting {awaitable!r}"[:300])
+            break
+        chain.append(f"  {frame.f_code.co_filename}:{frame.f_lineno} in {frame.f_code.co_name}")
+        awaitable = (
+            getattr(awaitable, "cr_await", None)
+            or getattr(awaitable, "ag_await", None)
+            or getattr(awaitable, "gi_yieldfrom", None)
+        )
+    return chain
+
+
+# Tools whose ToolMessage artifact is a chat card, and the answer used when the model says nothing.
+_CARD_TOOLS = frozenset({"propose_booking", "create_draft_quote", "get_booking_lines"})
+_CARD_FALLBACK_ANSWER = {
+    CARD_PROPOSAL: 'Mình đã chuẩn bị đề xuất đặt lịch. Bấm "Xác nhận đặt lịch" trên thẻ để đặt.',
+    CARD_QUOTE: 'Mình đã lập báo giá nháp. Bấm "Gửi xưởng duyệt" trên thẻ để gửi xưởng.',
+    CARD_BOOKING_LINES: 'Bạn xem các hạng mục xưởng đề xuất và tự quyết trên phiếu: bấm "Mở phiếu để quyết định".',
+}
+
+
+def _is_card(card) -> bool:
+    if not isinstance(card, dict):
+        return False
+    if card.get("type") == CARD_PROPOSAL:
+        return bool(card.get("proposalId"))
+    if card.get("type") == CARD_QUOTE:
+        return isinstance(card.get("quote"), dict) and bool(card["quote"].get("quoteId"))
+    if card.get("type") == CARD_BOOKING_LINES:
+        return bool(card.get("bookingId"))
+    return False
+
+
+def _tool_card(output) -> dict | None:
+    """Card artifact of a card tool's ToolMessage (never shown to the LLM)."""
     artifact = getattr(output, "artifact", None)
-    if isinstance(artifact, dict) and artifact.get("type") == CARD_PROPOSAL and artifact.get("proposalId"):
+    if _is_card(artifact):
         return artifact
     content = getattr(output, "content", None)
     if isinstance(content, str):
@@ -716,6 +797,6 @@ def _proposal_card(output) -> dict | None:
         except ValueError:
             return None
         card = data.get("card") if isinstance(data, dict) else None
-        if isinstance(card, dict) and card.get("type") == CARD_PROPOSAL and card.get("proposalId"):
+        if _is_card(card):
             return card
     return None

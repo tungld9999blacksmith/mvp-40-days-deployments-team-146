@@ -162,9 +162,10 @@ Quy tắc phụ thuộc:
 | `booking` | Tìm xưởng gần theo vị trí (Redis geo), xem khung giờ trống theo sức chứa, giữ chỗ bằng Redis lock, hủy trong thời gian hold; vé booking (tra theo mã, QR), xác nhận sẽ đến, hủy, đổi lịch, xem tiến độ. | `/workshops/nearby`, `/workshops/{id}/availability`, `/bookings`, `/bookings/{id}/hold`, `/bookings/by-code/{code}`, `/bookings/{id}/attendance-confirmation`, `/cancel`, `/qr`, `/reschedule`, `/progress` |
 | `quick_booking` | Đặt lịch nhanh từ chat (us-061): tạo **đề xuất** (`BookingProposal`), chủ xe sửa/hủy/xác nhận; chỉ nút **Xác nhận đặt lịch** trên thẻ mới tạo booking, gõ chữ "xác nhận" không tính. | `/conversations/{id}/quick-booking`, `/booking-proposals/{pid}/confirm`, `/revise`, `/cancel` |
 | `workshop_board` | Workshop Board (F8): danh sách lịch hẹn, tra theo mã, chuyển trạng thái (xác nhận/từ chối, check-in, in progress, completed), sức chứa, khóa slot, chế độ đặt lịch auto/manual, cập nhật tiến độ dịch vụ. | `/workshop-owner/bookings*`, `/capacity`, `/slot-blocks`, `/booking-settings`, `/bookings/{id}/progress` |
+| `quote` | Báo giá có chủ xưởng duyệt (F5b, us-049): chủ xe lập nháp từ dự toán F5 và gửi duyệt; chủ xưởng duyệt/sửa giá/từ chối; booking gắn báo giá đã duyệt; job `quote.purge_stale_drafts` dọn nháp. | `/quotes*`, `/workshop-owner/quotes*` |
 | `service_progress` | Tiến độ dịch vụ chi tiết 6 bước (F8b, us-057): domain, lỗi, service; được `workshop_board` (ghi) và `booking` (đọc) dùng, không có router riêng. | — |
 | `follow_up` | Hỏi thăm sau dịch vụ (F9, us-041): chủ xe xem và gửi phản hồi (điểm hài lòng + nhận xét); phản hồi có vấn đề chỉ được phân loại, ghi `has_issue` trên `follow_up`, app hiện lời khuyên an toàn + hotline xưởng (không có phiếu hỗ trợ). Job gửi và tự đóng nằm ở `jobs.py`. | `/follow-ups/{id}`, `/follow-ups/{id}/response` |
-| `conversation` | Chat với trợ lý AI: tạo/liệt kê/xóa hội thoại, lịch sử, gửi tin (SSE stream), tìm kiếm, semantic search, WebSocket realtime; xưởng xem trích đoạn hội thoại gắn với lịch hẹn. | `/conversations/*`, WS `/conversations/{id}/stream`, `/workshop/bookings/{id}/conversation-excerpt` |
+| `conversation` | Chat với trợ lý AI: tạo/liệt kê/xóa hội thoại, lịch sử, gửi tin (SSE stream), tìm kiếm, semantic search, WebSocket realtime; xưởng xem trích đoạn hội thoại gắn với lịch hẹn/báo giá. | `/conversations/*`, WS `/conversations/{id}/stream`, `/workshop/{bookings\|quotes}/{id}/conversation-excerpt` |
 | `health` | Kiểm tra trạng thái phụ thuộc. | `/health/dependencies` (và `/health` ở gốc app) |
 | `examples` | Module mẫu (CRUD xe) tham khảo cách viết module; vẫn được đăng ký router. | `/vehicles/*` |
 
@@ -174,7 +175,7 @@ Quy tắc phụ thuộc:
 | --- | --- |
 | `identity` | `VehicleUser`, `WorkshopOwner` |
 | `vehicle` | `UserVehicle`, `VehicleOdometerReading`, `VehicleServiceRecord`, `VehicleOemSync` |
-| `maintenance` | `MaintenanceRule`, `Reminder`, `Booking`, `BookingStatusEvent`, `BookingReschedule`, `BookingProposal`, `ServiceProgress` |
+| `maintenance` | `MaintenanceRule`, `Reminder`, `Booking`, `BookingStatusEvent`, `BookingReschedule`, `BookingProposal`, `Quote`, `QuoteItem`, `ServiceProgress` |
 | `workshop` | `Workshop`, `ServicePrice`, `WorkshopSlotBlock` |
 | `notification` | `UserNotificationSetting`, `UserNotificationChannel`, `ReminderDelivery`, `BookingReminder`, `BookingReminderDelivery`, `FollowUpDelivery` |
 | `conversation` | `Conversation`, `ChatMessage` |
@@ -274,7 +275,7 @@ flowchart LR
 
 - **Cổng xác nhận (HITL):** booking chỉ được tạo khi chủ xe bấm "Xác nhận đặt lịch" (API-QB-02); backend kiểm chứng token của thẻ. Đây là thay đổi so với AI-004: câu chữ "xác nhận" không còn được tính (us-061, quyết định 03/10/2026).
 - **Indexing RAG** (`tools/RAG/ingestion`): nạp tài liệu → làm sạch → chunk → embedding → lưu Qdrant.
-- Không có tool nào cho báo giá hay phiếu hỗ trợ (đã bỏ khỏi phạm vi).
+- Chưa có tool nào cho báo giá (AI-005 TOOL-501…503): F5b đã đưa lại vào phạm vi ngày 07/10/2026, hiện chỉ có API và UI. Phiếu hỗ trợ vẫn ngoài phạm vi.
 - `ChatService` vẫn giữ `knowledge_store`/`vector_store` cho trích dẫn và semantic search; chi tiết kiến trúc agent ở `backend/src/agents/README.md`.
 - Còn lệch spec: AI-001 mô tả orchestrator + sub-graph; code hiện là một graph ReAct với tool. Nhánh `hitl` trong `graph.py` vẫn tham chiếu `create_booking_draft` cũ, cần đồng bộ với `propose_booking`.
 
@@ -362,7 +363,7 @@ Khi booking `completed`, job `follow_up.send_due` (mỗi 15 phút) mở `FollowU
 | Local — full container | `docker-compose.local.yaml` / `docker-compose.dev.yaml` (script `scripts/dev-stack.*`, `compose.local.*`). |
 | Local — debug backend | `docker-compose.infra.yaml` chạy mock-ev-system (:8100), Redis (:6379), Chroma (:8001); backend chạy trực tiếp `uv run uvicorn src.main:app --reload` (script `scripts/infra-stack.*`). Xem [RUN_LOCAL_BACKEND.md](RUN_LOCAL_BACKEND.md). |
 | Hạ tầng dev trên Railway | `scripts/railway-infra.sh` dựng Redis + mock-ev-system trên Railway, backend chạy local; webhook trỏ về backend qua public URL. Xem [RUN_LOCAL_BACKEND_RAILWAY.md](RUN_LOCAL_BACKEND_RAILWAY.md). |
-| Frontend | Vite dev server; cấu hình `vercel.json` để deploy lên Vercel. Chế độ demo chạy hoàn toàn bằng mock trong trình duyệt. |
+| Frontend | Vite dev server ở local. Deploy lên Vercel, `/api/*` chuyển tiếp sang backend Railway: xem [deployments/VERCEL_FRONTEND_DEPLOYMENT.MD](deployments/VERCEL_FRONTEND_DEPLOYMENT.MD). Chế độ demo chạy hoàn toàn bằng mock trong trình duyệt. |
 | Image backend | `dockerfiles/Dockerfile`, compose gốc `docker-compose.yml` expose :8000, healthcheck `/health`. |
 | Dịch vụ managed | Supabase (Postgres + Storage), Qdrant Cloud, Firebase Auth, LLM API. |
 

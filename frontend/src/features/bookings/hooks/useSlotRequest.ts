@@ -68,7 +68,11 @@ export function useSlotRequest() {
             idempotencyKey: newId(),
           })
           const sameProposalSlot = params.workshopId === target.workshopId && params.date === target.date && slotLabel(params.timeSlot ?? '') === label
-          navigate(`/booking/confirm${searchFor({ proposalId: sameProposalSlot ? params.proposalId : null, workshopId: target.workshopId, date: target.date, timeSlot: label, ...extraQuery })}`)
+          // A quote is only valid at its own workshop (us-049 BR-1108, AF-1105).
+          const otherWorkshop = Boolean(params.workshopId) && target.workshopId !== params.workshopId
+          navigate(
+            `/booking/confirm${searchFor({ proposalId: sameProposalSlot ? params.proposalId : null, workshopId: target.workshopId, date: target.date, timeSlot: label, ...extraQuery, ...(otherWorkshop ? { quoteId: null } : {}) })}`,
+          )
           return true
         }
         const withAlternatives = await getAvailability({ workshopId: target.workshopId, date: target.date, timeSlot: label })

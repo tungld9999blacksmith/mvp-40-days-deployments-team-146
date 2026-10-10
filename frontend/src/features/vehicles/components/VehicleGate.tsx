@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Car } from 'lucide-react'
 import { isApiError, type ApiError } from '@/shared/api/client'
 import Button from '@/shared/ui/Button'
@@ -22,6 +22,7 @@ export default function VehicleGate({
   children: (vehicle: VehicleSummary) => ReactNode
 }) {
   const navigate = useNavigate()
+  const [search] = useSearchParams()
   const vehicles = useVehicles()
   useOnboardingRequiredRedirect(vehicles.error)
 
@@ -36,7 +37,11 @@ export default function VehicleGate({
     return <>{loading}</>
   }
 
-  const vehicle = vehicles.data[0]
+  const requested = search.get('userVehicleId')
+  const vehicle = requested ? vehicles.data.find(v => v.userVehicleId === requested) : vehicles.data[0]
+  if (requested && !vehicle) {
+    return <Card><ErrorState title="Không tìm thấy xe trong liên kết." description="Hãy mở lại lời nhắc từ mục Thông báo của tài khoản." /></Card>
+  }
   if (!vehicle) {
     return (
       <Card>

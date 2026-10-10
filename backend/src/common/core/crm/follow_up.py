@@ -69,6 +69,8 @@ class FollowUp(SQLModel, table=True):
             "OR (rating IS NOT NULL AND responded_at IS NOT NULL AND classified_by IS NOT NULL)",
             name="ck_follow_up_processed",
         ),
+        # BR-908 — a safety sign is always an issue.
+        CheckConstraint("safety_flag IS NOT TRUE OR has_issue", name="ck_follow_up_safety_issue"),
         Index(
             "ix_follow_up_sent_sent_at",
             "sent_at",
@@ -104,6 +106,8 @@ class FollowUp(SQLModel, table=True):
     rating: int | None = Field(default=None, sa_column=Column(SmallInteger, nullable=True))
     feedback_intent: str | None = Field(default=None, sa_column=Column(String(32), nullable=True))
     classification_confidence: Decimal | None = Field(default=None, sa_column=Column(Numeric(3, 2), nullable=True))
+    # AI-007 `safety_flag` as decided at answer time; NULL on rows answered before it was stored.
+    safety_flag: bool | None = Field(default=None, sa_column=Column(Boolean, nullable=True))
     # RULES / LLM / LLM_FALLBACK.
     classified_by: str | None = Field(default=None, sa_column=Column(String(16), nullable=True))
     # PROCESSED / NO_RESPONSE / NOT_ELIGIBLE.

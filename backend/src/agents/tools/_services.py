@@ -28,6 +28,8 @@ from src.modules.cost_estimate.dependency import get_cost_estimation_service
 from src.modules.cost_estimate.service import CostEstimationService
 from src.modules.oem_integration.dependency import get_sync_scheduler
 from src.modules.quick_booking.service import QuickBookingService
+from src.modules.quote.dependency import get_quote_service
+from src.modules.quote.service import QuoteService
 from src.modules.user_vehicle.dependency import get_due_config, get_user_vehicle_service
 from src.modules.user_vehicle.service import UserVehicleService
 
@@ -37,6 +39,7 @@ class Caller:
     user: VehicleUser
     user_vehicle_id: UUID
     conversation_id: UUID | None = None
+    source_message_id: UUID | None = None  # the owner's chat message that started this turn
 
 
 class MissingCallerError(Exception):
@@ -64,11 +67,19 @@ def caller(session: Session, config: RunnableConfig | None) -> Caller:
     user = session.get(VehicleUser, user_id)
     if user is None:
         raise MissingCallerError()
+    return Caller(
+        user,
+        user_vehicle_id,
+        _optional_uuid(configurable.get("conversation_id")),
+        _optional_uuid(configurable.get("source_message_id")),
+    )
+
+
+def _optional_uuid(value: Any) -> UUID | None:
     try:
-        conversation_id = UUID(str(configurable["conversation_id"])) if configurable.get("conversation_id") else None
+        return UUID(str(value)) if value else None
     except ValueError:
-        conversation_id = None
-    return Caller(user, user_vehicle_id, conversation_id)
+        return None
 
 
 def user_vehicle_service(session: Session) -> UserVehicleService:
@@ -83,12 +94,30 @@ def booking_service(session: Session) -> BookingService:
     return get_booking_service(session, redis_toolkit(), get_location_finder(), get_booking_config())
 
 
+def quote_service(session: Session) -> QuoteService:
+    return get_quote_service(session, cost_estimation_service(session))
+
+
 def quick_booking_service(session: Session) -> QuickBookingService:
     # The HTTP composition root also depends on ChatService. Import it only
     # when a proposal is requested, after the agent dependencies are composed.
     from src.modules.quick_booking.dependency import build_quick_booking_service
 
     return build_quick_booking_service(session, redis_toolkit())
+
+
+def notification_settings_service(session: Session):
+    from src.config import get_settings
+    from src.modules.notification.dependency import build_notification_service
+    from src.modules.notification.settings_service import NotificationSettingsService
+    cfg = get_settings()
+    return NotificationSettingsService(session, available_channels=build_notification_service(session).available_channels(),
+        default_lead_days=cfg.reminder_default_lead_days, email_mode=cfg.email_mode)
+
+
+def reminder_context_service(session: Session):
+    from src.modules.notification.context_service import ReminderContextService
+    return ReminderContextService(session, user_vehicle_service(session))
 
 
 def tool_error(exc: Exception) -> dict[str, Any]:

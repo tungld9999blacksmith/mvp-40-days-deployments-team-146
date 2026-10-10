@@ -1,0 +1,13 @@
+{
+  "pipeline": 0.25706310225,
+  "judge": 0,
+  "all": 0.25706310225,
+  "embedding_calls": 69,
+  "embedding_cost_usd": null,
+  "missing_pipeline_receipts": 0,
+  "missing_judge_receipts": 0,
+  "unknown_inflight_cost_usd": null,
+  "unknown_inflight_budget_reserve_usd": 0.01,
+  "scope": "Known55-60 fees carried once plus fresh61 repeats and judge. ReusedMistral excluded from new costs and embedding counts. Interrupted request and embedding fees unknown; known fees are a lower bound.",
+  "prior55_through60_pipeline_usd": 0.14215904325
+}

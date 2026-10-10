@@ -1,0 +1,9 @@
+{
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_base\\case_results.jsonl": "0d300f51f798d8a2a4b2014c76acc822139cc875c8d32fdf8532b8d4870bea30",
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_base\\corpus_after.json": "0a8410bfdfc2aaf7ab636991041163a0a8281b8a7457adef5ba0899ae0251d19",
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_base\\corpus_before.json": "261327cb1a732162eee5783567bebb6141d08a67ccc73726da63a6360e603f6e",
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_base\\manifest.json": "5e82621a9c9341631cfe522db15dc3a44411abe13946013f298e23b2364c0e72",
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_base\\metrics.json": "1671f0bbdde500f4e3b584af6b8f545e160e8bc2c7b03d5add7ffc2b3ec56ed1",
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_base\\preservation.json": "e9caa006f0b613077d44786f66ab708b8eb647b66394dca0d29ced8d194ebef0",
+  "eval\\results\\agent_regression_revision_20261009_58\\pilot_base\\resolved_components.json": "0e39da2db61d103dd17ab24c7e9a59bd154687b1d523a48d743d9961efdeb995"
+}

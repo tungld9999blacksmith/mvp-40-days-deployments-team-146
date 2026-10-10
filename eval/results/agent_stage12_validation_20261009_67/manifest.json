@@ -1,0 +1,20 @@
+{
+  "scope": "STAGE1_ISOLATED_INTEGRATION_AND_STAGE2_CACHED_EVIDENCE_LIVE_MISTRAL_SMOKE",
+  "development_not_holdout": true,
+  "env_sha256": "76dadfbc681b8175ff3d347e61b41c6926926b916a9024c7a108430ec98fdfbc",
+  "model": "mistralai/mistral-small-2603",
+  "stage1_postgres_database": "p146_eval67",
+  "stage1_ports": {
+    "postgres": 15432,
+    "redis": 16379,
+    "backend": 8006,
+    "frontend": 5176
+  },
+  "stage2_observed_receipt_stop_usd": 0.04,
+  "stage2_per_request_budget_reserve_usd": 0.004,
+  "reserve_not_guaranteed_billing_upper_bound": true,
+  "new_embedding_calls": 0,
+  "new_qdrant_calls": 0,
+  "judge_calls": 0,
+  "real_email_sends": 0
+}

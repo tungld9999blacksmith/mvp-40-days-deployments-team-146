@@ -128,7 +128,10 @@ async def test_graph_delivers_trusted_chat_context_to_tools(session):
     assert data["user_vehicle_id"] == str(vehicle.id)
     assert data["odometer"]["odo_km"] == 11_500
     assert data["next_milestone"]["odo_milestone_km"] == 12_000
-    assert result["messages"][-1].content == "Mốc bảo dưỡng kế tiếp là 12.000 km."
+    final = result["messages"][-1]
+    assert "12,000 km" in final.content
+    assert "còn 500 km" in final.content
+    assert final.response_metadata["original_business_answer"] == "Mốc bảo dưỡng kế tiếp là 12.000 km."
 
 
 def test_due_maintenance_reads_the_session_vehicle(session):

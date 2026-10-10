@@ -38,11 +38,13 @@ class OpenAICompatibleProvider(LLMProvider):
         provider_name: str = "openai",
         base_url: str | None = None,
         default_max_tokens: int | None = None,
+        default_endpoint_order: list[str] | None = None,
     ) -> None:
         self._client = openai.AsyncOpenAI(api_key=api_key, base_url=base_url)
         self._model = model
         self._provider_name = provider_name
         self._default_max_tokens = default_max_tokens
+        self._default_endpoint_order = list(default_endpoint_order or [])
 
     @property
     def provider_name(self) -> str:
@@ -78,6 +80,7 @@ class OpenAICompatibleProvider(LLMProvider):
 
         choice = response.choices[0]
         usage = response.usage
+        cost = getattr(usage, "cost", None)
         return LLMResponse(
             text=choice.message.content or "",
             model=response.model,
@@ -85,6 +88,7 @@ class OpenAICompatibleProvider(LLMProvider):
             usage=LLMUsage(
                 input_tokens=usage.prompt_tokens if usage else 0,
                 output_tokens=usage.completion_tokens if usage else 0,
+                cost_usd=cost if isinstance(cost, (int, float)) and not isinstance(cost, bool) and cost >= 0 else None,
             ),
             raw=response,
         )
@@ -135,4 +139,10 @@ class OpenAICompatibleProvider(LLMProvider):
         if config.stop_sequences:
             kwargs["stop"] = config.stop_sequences
         kwargs.update(config.extra)
+        if self._default_endpoint_order:
+            body = kwargs.get("extra_body", {})
+            # Explicit request routing overrides preferences; preserve features
+            # such as require_parameters from the generation schema request.
+            routing = {"order": self._default_endpoint_order, "allow_fallbacks": True, **body.get("provider", {})}
+            kwargs["extra_body"] = {**body, "provider": routing}
         return kwargs

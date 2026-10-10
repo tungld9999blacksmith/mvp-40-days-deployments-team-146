@@ -1,0 +1,139 @@
+{
+  "scope": "STEP4_GENERATION_COMPLETION_AFTER_TRANSIENT_TRANSPORT_FAILURE",
+  "models": {
+    "mistral": "mistralai/mistral-small-2603",
+    "gemma": "google/gemma-4-26b-a4b-it"
+  },
+  "selected_ids": [
+    "M01",
+    "M02",
+    "M03",
+    "M07",
+    "M18",
+    "M23",
+    "W01",
+    "W02",
+    "W04",
+    "W12",
+    "W20",
+    "B01",
+    "B11",
+    "B16",
+    "B20",
+    "P01",
+    "P05",
+    "PR01",
+    "PR03",
+    "PR07",
+    "PR10",
+    "G01",
+    "G03",
+    "G05",
+    "M10",
+    "M25",
+    "W08",
+    "B05",
+    "P11",
+    "PR11"
+  ],
+  "pilot_ids": [
+    "M01",
+    "M07",
+    "W02",
+    "B11",
+    "B16",
+    "PR03"
+  ],
+  "selected_cases_sha256": "a664839a64327bd42586df4869407e5f0e4ec9e2e6833295c595a953e85ef7df",
+  "fixed_inputs_sha256": "1f3f77de7fea0638976e9740881ea617bec9b84d0eb8cc755164beaf7c269065",
+  "rubric_sha256": "4d67e80b9f40c86379c7354dafa648ce60236af654c1923e2703c2cc043e45c2",
+  "env_sha256": "d0d9ac252a9ce04595c67a850cb8c7781b540d15eae27fbec069809d61d35e53",
+  "source_revision_sha256": "f80c0ed354239aafea1fc2d75fe0319f3a21e50a86e9c19b6b536232b90dcaff",
+  "changed_runtime_paths": [
+    "backend\\src\\agents\\tools\\RAG\\query\\generator.py"
+  ],
+  "baseline": "eval\\results\\rag_v2_full_100_mistral_routed_20261007_01",
+  "baseline_manifest_sha256": "7a282e9bc231e8a890f00831077e0d59f90ed2755aef634a2f57d555e2be739b",
+  "baseline_results_sha256": "fd06ec27f8cb022310f9ba09684a7a1e0cd5c3dc0766ce5aa579d37c1d5aae9f",
+  "golden_sha256": "391be9d939a554ef9dc60a7b0d22a15b00ebe6c64104700f969374b85f88301f",
+  "prompt_sha256": "d838fea6f832a240d7c7a96328a7173abf0303ba00f5b31de08c4687bbf7502c",
+  "configuration": {
+    "temperature": 0.1,
+    "max_tokens": 3000,
+    "timeout": 60,
+    "sdk_retries": 0,
+    "delay_seconds": 3,
+    "response_format": "json_schema",
+    "require_parameters": true,
+    "retrieval_calls": 0,
+    "embedding_calls": 0,
+    "routing": {
+      "mistral": [
+        "mistral/us",
+        "mistral/eu"
+      ],
+      "gemma": []
+    }
+  },
+  "subset": "same 24 golden questions as Rewrite +6 existing golden questions; not v2.1 replacement or holdout",
+  "review": "DEFERRED_BY_USER",
+  "production_model_change": false,
+  "gpt4o": "EXCLUDED_ALL_STAGES",
+  "write": "INACTIVE",
+  "network_payload": "same 1-5 saved Qdrant evidence blocks per question previously authorized for full RAG; no new retrieval",
+  "previous_master": "eval\\results\\step4_generation_comparison_20261008_23",
+  "recovery_models": [
+    "mistral"
+  ],
+  "runtime_prompt_schema_evidence_config_changed_since_previous": false,
+  "original_failures": {
+    "mistral": {
+      "run": "step4_generation_full_mistral_20261008_23",
+      "metrics": {
+        "attempted": 23,
+        "errors": 1,
+        "provider_errors": 1,
+        "nonempty_answers": 23,
+        "raw_schema_valid": 17,
+        "provider_calls": 18,
+        "answers_with_citations": 20,
+        "fallback_required": 11,
+        "average_generation_seconds": 2.750788011111177,
+        "p50_generation_seconds": 1.5128302999983134,
+        "p90_generation_seconds": 3.2545142999988457,
+        "p95_generation_seconds": 19.2123646,
+        "cost_receipts": 17,
+        "provider_cost_usd": null,
+        "known_cost_usd_partial": 0.009602109,
+        "semantic_correctness": "NEEDS_INDEPENDENT_REVIEW",
+        "production_acceptance": false,
+        "selected": 30,
+        "complete": false,
+        "preprovider_cases": 5,
+        "strict_raw_contract_pass": 17,
+        "technical_pass": 22,
+        "membership_valid": 23,
+        "actual_models": [
+          "mistralai/mistral-small-2603"
+        ],
+        "missing_cost_receipts": 1,
+        "retrieval_calls": 0,
+        "embedding_calls": 0,
+        "independent_labels": 0,
+        "pilot_eligible": false
+      },
+      "last_case_id": "G03",
+      "error": "LLMProviderUnavailableError: Connection error. | Generation returned an offline summary"
+    }
+  },
+  "recovery_rule": "one fresh 30-query run per transiently interrupted model; no pooling old successes",
+  "borrowed_pilots": {
+    "mistral": "step4_generation_pilot_mistral_20261008_23",
+    "gemma": "step4_generation_pilot_gemma_20261008_23"
+  },
+  "borrowed_full_runs": {
+    "gemma": "step4_generation_full_gemma_20261008_23"
+  },
+  "report_spend_scope": "selected pilot/full runs; all attempts and missing receipt lower bound in all_attempts_cost.json",
+  "verification_filename": "step4_generation_completion_verification_20261008_24.json"
+}

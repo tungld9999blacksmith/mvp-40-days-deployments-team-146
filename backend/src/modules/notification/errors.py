@@ -38,6 +38,7 @@ class ChannelNotAvailableError(NotificationError):
 
 
 ERROR_STATUS: dict[str, int] = {
+    "REMINDER_NOT_FOUND": 404,
     "INVALID_REQUEST": 400,
     "INVALID_LEAD_DAYS": 422,
     "CHANNEL_NOT_AVAILABLE": 422,

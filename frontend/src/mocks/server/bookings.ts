@@ -22,6 +22,7 @@ import {
   type MockBooking,
   type Stage,
 } from './db'
+import { displayStatusOf } from './quoteRules'
 
 export const RESCHEDULE_MIN_LEAD_MINUTES = 60
 export const RESCHEDULE_MAX_COUNT = 2
@@ -102,6 +103,10 @@ export function pushEvent(
   booking.status = toStatus
 }
 
+export function detachQuotes(bookingId: string) {
+  for (const quote of getDb().quotes) if (quote.bookingId === bookingId) quote.bookingId = null
+}
+
 /** Booking `pending` past the workshop deadline is cancelled by the system (us-029 BR-015). */
 export function reconcileBookings() {
   let changed = false
@@ -110,6 +115,7 @@ export function reconcileBookings() {
     const deadline = confirmDeadlineOf(booking)
     if (deadline && now > new Date(deadline).getTime()) {
       pushEvent(booking, 'cancelled', 'SYSTEM', 'CONFIRM_DEADLINE', 'CONFIRM_DEADLINE_PASSED')
+      detachQuotes(booking.bookingId)
       changed = true
     }
   }
@@ -132,13 +138,17 @@ export function remainingOf(date: string, timeSlot: string, excludeId: string | 
 }
 
 function itemsOf(booking: MockBooking): { itemName: string; covered: boolean }[] {
+  const quote = booking.quoteId ? getDb().quotes.find(item => item.quoteId === booking.quoteId) : null
+  if (quote) return quote.items.map(item => ({ itemName: item.itemName, covered: item.covered }))
   const vehicle = getDb().vehicles.find(item => item.userVehicleId === booking.userVehicleId) ?? null
   return milestoneItems(vehicle, booking.odoMilestone)
 }
 
-export function costOf(booking: MockBooking): { amount: number | null; label: 'ESTIMATE' | 'NONE' } {
-  if (booking.estimatedCost !== null) return { amount: booking.estimatedCost, label: 'ESTIMATE' }
-  return { amount: null, label: 'NONE' }
+export function costOf(booking: MockBooking): { amount: number | null; label: 'APPROVED_QUOTE' | 'ESTIMATE' | 'NONE'; quoteId: string | null } {
+  const quote = booking.quoteId ? getDb().quotes.find(item => item.quoteId === booking.quoteId) : null
+  if (quote && quote.approvedTotal !== null) return { amount: quote.approvedTotal, label: 'APPROVED_QUOTE', quoteId: quote.quoteId }
+  if (booking.estimatedCost !== null) return { amount: booking.estimatedCost, label: 'ESTIMATE', quoteId: null }
+  return { amount: null, label: 'NONE', quoteId: null }
 }
 
 // ---------------------------------------------------------------- progress (us-057)
@@ -407,6 +417,7 @@ export function registerBookingRoutes() {
       return fail(409, 'APPOINTMENT_STARTED', 'Đã tới giờ hẹn, không thể huỷ. Vui lòng liên hệ xưởng.')
     }
     pushEvent(booking, 'cancelled', 'VEHICLE_OWNER', source, null, reason || null)
+    detachQuotes(booking.bookingId)
     save()
     const at = booking.events[booking.events.length - 1].at
     return remember(req, ok({ bookingId: booking.bookingId, status: 'CANCELLED', cancelledAt: at, cancelledBy: 'VEHICLE_OWNER', source }))
@@ -420,6 +431,7 @@ export function registerBookingRoutes() {
       return fail(409, 'HOLD_WINDOW_CLOSED', 'Đã quá thời gian tự huỷ giữ chỗ.')
     }
     pushEvent(booking, 'cancelled', 'VEHICLE_OWNER', 'APP', 'HOLD_CANCELLED')
+    detachQuotes(booking.bookingId)
     save()
     return ok({ bookingId: booking.bookingId, status: 'cancelled' })
   })
@@ -515,6 +527,12 @@ export function registerBookingRoutes() {
 /** Mock-only pending hold of the owner (seed) — owner-cancel window like us-029 BR-010. */
 export function newHoldWindow() {
   return { holdExpiresAt: hoursFromNow(CONFIRM_DEADLINE_HOURS), ownerCancelableUntil: hoursFromNow(10 / 60) }
+}
+
+/** Board quote badge for a booking. */
+export function quoteBadge(booking: MockBooking) {
+  const quote = booking.quoteId ? getDb().quotes.find(item => item.quoteId === booking.quoteId) : null
+  return quote ? { quoteId: quote.quoteId, status: displayStatusOf(quote) } : null
 }
 
 /** Stable pseudo phone for seeded customers. */

@@ -1,0 +1,9 @@
+{
+  "owned_test_containers": [
+    "/p146_eval_booking_pg_20261008_04 | exited",
+    "/p146_eval_booking_redis_20261008_04 | exited"
+  ],
+  "containers_removed": false,
+  "data_deleted": false,
+  "application_services_stopped": false
+}

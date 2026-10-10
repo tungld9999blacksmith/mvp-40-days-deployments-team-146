@@ -1,7 +1,10 @@
 """Run: uvicorn src.demo.main:app (one worker, no reload during demo)."""
 # ruff: noqa: N803, N815 -- names mirror existing camelCase HTTP contracts.
 
+import asyncio
 import html
+import json
+from contextlib import asynccontextmanager
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -10,11 +13,14 @@ from fastapi import Depends, FastAPI, Header, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+from src.modules.notification.email_transport import verify_webhook
 
 from .chat_service import DemoChatService, default_llm
 from .dependency import current_user, make_services, verify_token
 from .knowledge import DOCUMENTS, ROOT
+from .notifications import SettingsUpdate
 from .registration import router as registration_router
 from .registration import snapshot as registration_snapshot
 from .store import DemoError
@@ -26,6 +32,10 @@ load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
 class ConversationInput(BaseModel):
     userVehicleId: UUID
+
+
+class EmailTestInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
 
 
 class MessageInput(BaseModel):
@@ -43,10 +53,20 @@ class BookingInput(BaseModel):
 
 
 def create_app(demo_services=None, token_verifier=verify_token, llm_factory=default_llm):
-    app = FastAPI(title="EV Care — stateful MVP demo")
+    s = demo_services or make_services()
+
+    @asynccontextmanager
+    async def lifespan(app):
+        task = asyncio.create_task(s.notifications.poll())
+        try:
+            yield
+        finally:
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+
+    app = FastAPI(title="EV Care — stateful MVP demo", lifespan=lifespan)
     app.include_router(workshop_router)
     app.include_router(registration_router)
-    s = demo_services or make_services()
     app.state.services = s
     app.state.token_verifier = token_verifier
     app.state.chat = DemoChatService(s, llm_factory)
@@ -120,7 +140,13 @@ def create_app(demo_services=None, token_verifier=verify_token, llm_factory=defa
 
     @app.get("/health")
     def health():
-        return {"status": "ok", "mode": "demo", "storage": "memory"}
+        return {
+            "status": "ok",
+            "mode": "demo",
+            "storage": "memory",
+            "emailMode": s.notifications.config.mode,
+            "emailManualOnly": s.notifications.config.mode == "resend_test",
+        }
 
     @app.post("/api/v1/oauth/sign-in")
     def sign_in(u=Depends(current_user)):
@@ -140,8 +166,54 @@ def create_app(demo_services=None, token_verifier=verify_token, llm_factory=defa
         return data(registration_snapshot(s.store, u)[1])
 
     @app.get("/api/v1/notification-settings")
-    def notifications(u=Depends(current_user)):
-        return data({"remindersEnabled": False, "reminderLeadDays": 7, "defaultReminderLeadDays": 7, "channels": []})
+    async def notifications(u=Depends(current_user)):
+        return data(s.notifications.settings(u["userId"]))
+
+    @app.put("/api/v1/notification-settings")
+    async def update_notifications(body: SettingsUpdate, u=Depends(current_user)):
+        return data(s.notifications.update(u["userId"], body))
+
+    @app.get("/api/v1/notifications/reminders/{rid}")
+    async def reminder_context(rid: UUID, u=Depends(current_user)):
+        return data(s.notifications.context(u["userId"], str(rid)))
+
+    @app.post("/api/v1/demo/reminders/run")
+    async def run_reminders(u=Depends(current_user)):
+        return data(await s.notifications.run(u["userId"]))
+
+    @app.post("/api/v1/demo/email-test/send")
+    async def send_test_email(_body: EmailTestInput, u=Depends(current_user)):
+        return data(await s.notifications.send_test_email(u["userId"]))
+
+    @app.get("/api/v1/demo/email-outbox")
+    @app.get("/api/v1/notifications/email-outbox")
+    async def email_outbox(u=Depends(current_user)):
+        return data(
+            {
+                "items": s.notifications.outbox(u["userId"]),
+                "mode": s.notifications.config.mode,
+                "canRunReminders": True,
+                "canSendTestEmail": s.notifications.config.mode == "resend_test"
+                and bool(s.notifications._recipient(u)),
+            }
+        )
+
+    @app.post("/api/v1/notifications/email/webhook")
+    async def email_webhook(request: Request):
+        if s.notifications.config.mode not in {"resend", "resend_test"} or not s.notifications.config.webhook_secret:
+            raise DemoError("EMAIL_WEBHOOK_DISABLED", "Webhook Email chưa được bật.", 503)
+        raw = await request.body()
+        try:
+            event_id = verify_webhook(raw, request.headers, s.notifications.config.webhook_secret)
+        except ValueError:
+            raise DemoError("INVALID_EMAIL_SIGNATURE", "Chữ ký webhook không hợp lệ.", 401) from None
+        try:
+            payload = json.loads(raw)
+            if not isinstance(payload, dict):
+                raise ValueError()
+        except (ValueError, TypeError):
+            raise DemoError("INVALID_REQUEST", "Nội dung webhook không hợp lệ.", 422) from None
+        return data(s.notifications.webhook(event_id, payload))
 
     @app.get("/api/v1/user-vehicles")
     def vehicles(u=Depends(current_user)):
@@ -160,7 +232,7 @@ def create_app(demo_services=None, token_verifier=verify_token, llm_factory=defa
         profile = s.vehicles.profile(u["userId"], str(vid))
         last = profile.get("lastService")
         items = []
-        if last:
+        if last and last["source"] == "OEM":
             items.append(
                 {
                     "recordId": f"oem-{vid}",
@@ -265,8 +337,8 @@ def create_app(demo_services=None, token_verifier=verify_token, llm_factory=defa
         )
 
     @app.get("/api/v1/notifications")
-    def notification_feed(u=Depends(current_user)):
-        items = []
+    async def notification_feed(u=Depends(current_user)):
+        items = s.notifications.feed(u["userId"])
         for booking in s.store.bookings.values():
             if booking["userId"] != u["userId"]:
                 continue

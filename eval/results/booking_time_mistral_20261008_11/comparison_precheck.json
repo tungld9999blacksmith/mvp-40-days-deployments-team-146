@@ -1,0 +1,13 @@
+{
+  "models": true,
+  "endpoint_order": true,
+  "repeats": true,
+  "max_tokens": true,
+  "temperature": true,
+  "timeout": true,
+  "clock": true,
+  "dataset_sha256": true,
+  "selected_ids": true,
+  "scorer_version": true,
+  "schema_equal": true
+}

@@ -1,0 +1,7 @@
+{
+  "diagnosis": "WinError 10054 (connection reset by peer) is caused by the Qdrant Cloud server (GCP Australia) closing idle HTTP keep-alive connections after a server-side timeout. The shared httpx connection pool in a single QdrantClient instance holds the stale TCP socket and attempts to reuse it for the next request, causing a ConnectionResetError. This only manifests after enough elapsed time across a 30-case full batch; 10 queries with 3s sleep (diagnostic) completed 10/10 without error.",
+  "fix_applied": "Option A + Option B combined: (A) A fresh QdrantClient is created before each case in the for-identifier loop and stored via store._client, replacing the old stale client; the old client is closed before the new one is created. (B) _run_case_with_retry wraps each case evaluation with up to 3 retries on transport errors (WinError 10054 / ConnectionResetError / OSError errno 10054), using exponential backoff (2s, 4s, 8s capped at 30s) and re-swapping the client on retry.",
+  "v2_script": "d:\\lab_vinuni\\AI_logs\\P-146\\eval\\step5_frozen_transport_retry_v2.py",
+  "tests_passed": true,
+  "test_details": "14 passed (3 from test_step5_frozen_transport.py + 11 from test_step5_frozen_transport_retry.py), 0 failed. Diagnostic run: 10/10 Qdrant dense queries succeeded with 3s sleep intervals (prefer_grpc=False, HTTP REST, GCP Australia endpoint)."
+}

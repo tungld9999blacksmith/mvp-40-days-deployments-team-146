@@ -286,6 +286,9 @@ class CitationTests(unittest.TestCase):
             ["doc1", "doc2", "doc3"],
         )
         self.assertNotIn("[Tài liệu 4]", response.answer)
+        self.assertTrue(response.fallback_required)
+        self.assertEqual(response.confidence, "low")
+        self.assertEqual(response.metadata["reason"], "answer_generation_unavailable")
 
 
 class MetricTests(unittest.TestCase):

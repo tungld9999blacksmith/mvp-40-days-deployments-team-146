@@ -1,0 +1,23 @@
+{
+  "phase": "pilot",
+  "selected_answers": 10,
+  "attempted_answers": 10,
+  "selected_controls": 4,
+  "attempted_controls": 4,
+  "reused_controls": 0,
+  "complete_without_errors": true,
+  "counts": {
+    "PASS": 6,
+    "FAIL": 0,
+    "UNVERIFIABLE": 4
+  },
+  "errored_answers": 0,
+  "unattempted_answers": 0,
+  "known_cost_usd": 0.0229116,
+  "missing_receipts": 0,
+  "full_cost_estimate_max_observed_usd": 0.16766399999999998,
+  "eligible_for_full": true,
+  "human_calibrated": false,
+  "independent_human_labels": 0,
+  "production_acceptance": false
+}

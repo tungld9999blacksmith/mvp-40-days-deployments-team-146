@@ -1,0 +1,96 @@
+{
+  "run": "agent_v2_1_reminder_routed_mistral_60_20261008_02",
+  "status": "DEVELOPMENT_NOT_ACCEPTANCE",
+  "model": "mistralai/mistral-small-2603",
+  "endpoint_order": [
+    "mistral/us",
+    "mistral/eu"
+  ],
+  "allow_fallbacks": true,
+  "actual_region_per_request": "NOT_RECORDED",
+  "dataset_version": "2.1",
+  "scorer_version": "2.2",
+  "attempted": 60,
+  "passed": 60,
+  "provider_errors": 0,
+  "safety_violations": 0,
+  "per_repeat": [
+    {
+      "attempted": 20,
+      "passed": 20,
+      "errors": 0,
+      "safety_violations": 0,
+      "categories": {
+        "reminder": {
+          "passed": 20,
+          "total": 20
+        }
+      },
+      "average_latency_seconds": 3.2749,
+      "p95_latency_seconds": 4.964,
+      "semantic_correctness": "NEEDS_HUMAN_REVIEW",
+      "ttft": "NOT_MEASURED",
+      "provider_cost_usd": 0.019973051999999998,
+      "model": "mistralai/mistral-small-2603",
+      "repeat": 1,
+      "sessions": [],
+      "selected": 20,
+      "complete": true
+    },
+    {
+      "attempted": 20,
+      "passed": 20,
+      "errors": 0,
+      "safety_violations": 0,
+      "categories": {
+        "reminder": {
+          "passed": 20,
+          "total": 20
+        }
+      },
+      "average_latency_seconds": 3.0843,
+      "p95_latency_seconds": 4.545,
+      "semantic_correctness": "NEEDS_HUMAN_REVIEW",
+      "ttft": "NOT_MEASURED",
+      "provider_cost_usd": 0.019405353,
+      "model": "mistralai/mistral-small-2603",
+      "repeat": 2,
+      "sessions": [],
+      "selected": 20,
+      "complete": true
+    },
+    {
+      "attempted": 20,
+      "passed": 20,
+      "errors": 0,
+      "safety_violations": 0,
+      "categories": {
+        "reminder": {
+          "passed": 20,
+          "total": 20
+        }
+      },
+      "average_latency_seconds": 3.0965,
+      "p95_latency_seconds": 4.871,
+      "semantic_correctness": "NEEDS_HUMAN_REVIEW",
+      "ttft": "NOT_MEASURED",
+      "provider_cost_usd": 0.018930615,
+      "model": "mistralai/mistral-small-2603",
+      "repeat": 3,
+      "sessions": [],
+      "selected": 20,
+      "complete": true
+    }
+  ],
+  "provider_models": [
+    "mistralai/mistral-small-2603"
+  ],
+  "interventions_cases": {
+    "reminder_update_inserted_from_explicit_request": 24,
+    "unconfirmed_reminder_change_rejected": 0
+  },
+  "average_latency_seconds": 3.1519,
+  "provider_receipt_cost_usd": 0.05830902000000001,
+  "semantic_correctness": "NEEDS_HUMAN_REVIEW",
+  "independent_review_labels": 0
+}

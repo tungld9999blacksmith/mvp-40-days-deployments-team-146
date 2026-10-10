@@ -2,8 +2,10 @@ import type { BookingProposalCard as ProposalCard, MessageDto } from '../types'
 import BookingProposalCard from './BookingProposalCard'
 
 export function proposalLink(card: NonNullable<MessageDto['card']>): string | null {
-  return card.type === 'booking_proposal' && typeof card.proposalId === 'string'
-    ? `/booking/proposal?proposalId=${encodeURIComponent(card.proposalId)}` : null
+  if (card.type !== 'booking_proposal' || typeof card.proposalId !== 'string') return null
+  const query = new URLSearchParams({ proposalId: card.proposalId })
+  if (typeof card.userVehicleId === 'string') query.set('userVehicleId', card.userVehicleId)
+  return `/booking/proposal?${query}`
 }
 
 /** Adapt the demo HTTP contract to the branch's proposal component. */

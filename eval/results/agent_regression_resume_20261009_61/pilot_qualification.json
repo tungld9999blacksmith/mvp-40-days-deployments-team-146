@@ -1,0 +1,44 @@
+{
+  "qualified": true,
+  "pilots": {
+    "base": {
+      "producer": "eval\\results\\agent_regression_revision_20261009_59\\pilot_base",
+      "attempted": 4,
+      "technical_pass": 4,
+      "original_preflight_error": null,
+      "raw_verdict_modified": false,
+      "model_calls_replayed": 0,
+      "cost_charged_again": false
+    },
+    "agent_gemma": {
+      "producer": "eval\\results\\agent_regression_revision_20261009_59\\pilot_agent_gemma",
+      "attempted": 4,
+      "technical_pass": 4,
+      "original_preflight_error": "ResponseHandlingException: The read operation timed out",
+      "raw_verdict_modified": false,
+      "model_calls_replayed": 0,
+      "cost_charged_again": false
+    }
+  },
+  "source_pilot_hashes": {
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_base\\case_results.jsonl": "3e05843a33b29be8ac74afd91b59467d655baf67a828c2e3f0c8e6f4bd5d5e46",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_base\\closed_run_hashes.json": "3385155883912c39b9ac632bd6dd684a03429a9a15d367a2865a22cdb2e11118",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_base\\corpus_after.json": "0a8410bfdfc2aaf7ab636991041163a0a8281b8a7457adef5ba0899ae0251d19",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_base\\corpus_before.json": "261327cb1a732162eee5783567bebb6141d08a67ccc73726da63a6360e603f6e",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_base\\manifest.json": "1034cb4a022df1203a37854049f32226e7ae3c37855d8a8c0685cc303b21e595",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_base\\metrics.json": "e6b964813711a639b2e1cb8f20fde0c3a87e09e27f2cb050ca5138359cf9ecd4",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_base\\preservation.json": "28defe4d20a2f6d1aa3db09cb5be126df76bd21daf56a416a0abc0455e12613c",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_base\\resolved_components.json": "0e39da2db61d103dd17ab24c7e9a59bd154687b1d523a48d743d9961efdeb995",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_agent_gemma\\case_results.jsonl": "6c1224927a7982896056e3e31b930a8645e6a8adf0c4b28b449bda1bdbc45273",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_agent_gemma\\closed_run_hashes.json": "ed42de8d71de5a26919c87a0f056bdac2d0cd00f9d1d08772b65ad9cdfeb79ce",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_agent_gemma\\corpus_before.json": "261327cb1a732162eee5783567bebb6141d08a67ccc73726da63a6360e603f6e",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_agent_gemma\\manifest.json": "aae202a54f00e78aae5f8ea4665ecdc6020ee70a81228293e5271615724f80aa",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_agent_gemma\\metrics.json": "09128a188c83f6449467a59ab6fa39582f582c8b2652c658f364823e6565f892",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_agent_gemma\\preservation.json": "28defe4d20a2f6d1aa3db09cb5be126df76bd21daf56a416a0abc0455e12613c",
+    "eval\\results\\agent_regression_revision_20261009_59\\pilot_agent_gemma\\resolved_components.json": "0e39da2db61d103dd17ab24c7e9a59bd154687b1d523a48d743d9961efdeb995"
+  },
+  "after_sha256": "261327cb1a732162eee5783567bebb6141d08a67ccc73726da63a6360e603f6e",
+  "scope": "Same runtime59/models/provider params/dataset; current locked corpus verified twice. Evaluator60 only adds bounded idempotent read retries, no whole-case/model retry. Original59 postflight timeout remains recorded.",
+  "resume_reverified": true,
+  "new_model_calls": 0
+}

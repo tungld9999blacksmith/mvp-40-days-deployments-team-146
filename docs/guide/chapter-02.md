@@ -573,7 +573,7 @@ bash scripts/setup_hooks.sh
 # powershell -ExecutionPolicy Bypass -File scripts\setup_hooks.ps1
 ```
 
-Lệnh này cài git pre-push hook và tạo thư mục `.ai-log/`. Sau khi chạy, mọi AI tool dưới đây sẽ tự động log — không cần thao tác thêm.
+Lệnh này cài git pre-push hook và tạo thư mục `.ai-log/`. AI tools sử dụng cấu hình hooks bên dưới; riêng Codex cần review và trust hooks trước khi chạy.
 
 ### 6 AI tools được hỗ trợ tự động
 
@@ -581,10 +581,21 @@ Lệnh này cài git pre-push hook và tạo thư mục `.ai-log/`. Sau khi ch�
 |------|--------|-------------|
 | **Claude Code** | `.claude/settings.json` hooks | Mỗi prompt + mỗi tool call |
 | **Cursor** | `.cursor/hooks.json` | Mỗi prompt + khi stop |
-| **OpenAI Codex CLI** | `.codex/hooks.json` | Mỗi prompt + khi stop |
+| **OpenAI Codex CLI** | `.codex/hooks.json` | Mỗi prompt (`UserPromptSubmit`) |
 | **Gemini CLI** | `.gemini/settings.json` | BeforeAgent + AfterModel + SessionEnd |
 | **GitHub Copilot** | `.github/hooks/hooks.json` | Mỗi prompt + khi session end |
 | **Antigravity IDE** | Pre-push scan transcript | Tự động quét transcript khi `git push` |
+
+### Kích hoạt logging cho Codex trên Windows
+
+1. Kiểm tra `.codex/hooks.json`: lệnh `UserPromptSubmit` phải `cd /d` về đường dẫn tuyệt đối của repo trước khi gọi `.venv\Scripts\python.exe scripts\log_hook.py --tool=codex`. Cấu hình hiện tại dùng `D:\lab_vinuni\AI_logs\P-146`; nếu clone hoặc di chuyển repo, cập nhật đường dẫn này và tạo `.venv` có Python. Không thêm trường `version` hoặc `name`: bộ nạp hooks của Codex không hỗ trợ các trường này. Lệnh này dùng cho CLI và extension VS Code khi chạy trên Windows tại cùng repo.
+2. Đóng rồi mở lại Codex; nếu dùng extension trong VS Code, đóng rồi mở lại VS Code để nạp cấu hình mới.
+3. Mở Codex CLI tại repo, gõ `/hooks`, kiểm tra nguồn `.codex/hooks.json`, chọn `UserPromptSubmit` → trust. Project phải được trusted; mỗi lần thay đổi định nghĩa hook cần review và trust lại. Chỉ restart không thay thế bước trust.
+4. Gửi một prompt mới trong Codex và kiểm tra `.ai-log/session.jsonl` có dòng mới với `tool: "codex"`, `event: "UserPromptSubmit"` và nội dung prompt. Hook ghi vào log local; gửi lên server diễn ra khi `git push`.
+
+Codex không còn hook `Stop` trong cấu hình này vì event đó không có prompt. Nếu prompt từ IDE có dòng `## My request for Codex:`, logger chỉ lấy nội dung sau dòng đó rồi giới hạn 1.000 ký tự; prompt thông thường được giữ nguyên trong giới hạn này. Hook không tự bổ sung các prompt đã gửi trước khi được kích hoạt.
+
+Tham khảo [tài liệu hooks chính thức của OpenAI](https://learn.chatgpt.com/docs/hooks) về `UserPromptSubmit`, cấu hình và trust.
 
 ### Cách hoạt động
 
@@ -630,6 +641,10 @@ Copy từ `.env.example` sang `.env` và điền `AI_LOG_API_KEY` do instructor 
 | Vấn đề | Nguyên nhân | Cách fix |
 |---------|-------------|----------|
 | Hooks không log | Chưa chạy `setup_hooks.sh` | Chạy lại `bash scripts/setup_hooks.sh` |
+| Codex không tạo dòng log mới | Hook chưa được trust hoặc cấu hình mới chưa được nạp | Mở lại Codex, chạy `/hooks` trong CLI tại repo và review/trust `UserPromptSubmit` |
+| `/hooks` báo `No hooks installed for this event` | File hooks chưa được nạp hoặc bị từ chối do schema không hợp lệ | Mở CLI tại đúng repo; kiểm tra cảnh báo parse và bỏ các trường không hỗ trợ như `version` hoặc `name` trong `.codex/hooks.json` |
+| Codex báo `hook returned invalid user prompt submit JSON output` | Script trả JSON không thuộc schema output của Codex, ví dụ `{"status":"logged"}` | Dùng `scripts/log_hook.py` đã cập nhật: Codex ghi file rồi thoát với mã 0 và stdout rỗng; gửi lại prompt để kiểm tra |
+| Codex báo không tìm thấy Python hoặc `scripts\log_hook.py` | Chưa có `.venv`, hook dùng đường dẫn tương đối khi cwd là thư mục con, hoặc repo đã đổi vị trí | Kiểm tra `.venv`, `cd /d` và đường dẫn gốc repo trong `.codex/hooks.json` |
 | `python3: not found` | Thiếu Python trên PATH | `brew install python3` (macOS) hoặc cài từ python.org (Windows) |
 | Submit failed | Sai `AI_LOG_API_KEY` hoặc không có network | Kiểm tra `.env`, logs vẫn giữ locally |
 | Antigravity không log | Chưa có transcript | Chắc chắn dùng Antigravity IDE trong repo folder |

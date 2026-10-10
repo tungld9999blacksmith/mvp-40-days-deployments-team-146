@@ -1,0 +1,64 @@
+{
+  "phases": {
+    "pilot": {
+      "phase": "pilot",
+      "selected_answers": 12,
+      "attempted_answers": 12,
+      "selected_controls": 4,
+      "attempted_controls": 4,
+      "reused_controls": 0,
+      "complete_without_errors": true,
+      "counts": {
+        "PASS": 7,
+        "FAIL": 2,
+        "UNVERIFIABLE": 3
+      },
+      "errored_answers": 0,
+      "unattempted_answers": 0,
+      "known_cost_usd": 0.030009599999999997,
+      "missing_receipts": 0,
+      "full_cost_estimate_max_observed_usd": 0.185454,
+      "full_cost_estimate_mean_with_15percent_usd": 0.14855239999999995,
+      "eligible_for_full": true,
+      "human_calibrated": false,
+      "independent_human_labels": 0,
+      "production_acceptance": false
+    }
+  },
+  "reported_phase": "pilot",
+  "configurations": {
+    "base": {
+      "selected": 6,
+      "attempted": 6,
+      "counts": {
+        "UNVERIFIABLE": 2,
+        "PASS": 3,
+        "FAIL": 1
+      },
+      "unattempted": 0,
+      "automated_pass_fraction_of_selected": 0.5,
+      "interpretable_fraction_of_selected": 0.6666666666666666,
+      "independent_human_correctness": "NOT_MEASURED"
+    },
+    "agent_gemma": {
+      "selected": 6,
+      "attempted": 6,
+      "counts": {
+        "FAIL": 1,
+        "UNVERIFIABLE": 1,
+        "PASS": 4
+      },
+      "unattempted": 0,
+      "automated_pass_fraction_of_selected": 0.6666666666666666,
+      "interpretable_fraction_of_selected": 0.8333333333333334,
+      "independent_human_correctness": "NOT_MEASURED"
+    }
+  },
+  "automated_judge_only": true,
+  "human_calibrated": false,
+  "independent_human_labels": 0,
+  "production_acceptance": false,
+  "known_total_judge_cost_usd": 0.030009599999999997,
+  "missing_receipts": 0,
+  "agent_rag_embedding_calls": 0
+}

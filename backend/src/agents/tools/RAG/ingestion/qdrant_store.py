@@ -185,16 +185,22 @@ class QdrantVectorStore:
         for i in range(0, len(chunks), batch_size):
             batch = chunks[i : i + batch_size]
 
-            # Kiểm tra xem các points trong batch đã tồn tại trong Qdrant chưa (Incremental Indexing)
+            # Kiểm tra xem các points trong batch đã tồn tại trong Qdrant chưa (Incremental Indexing).
+            # Point có vector mượn (embedding_model "inherited-*", do backend/scripts/index_*_aliases.py
+            # ghi khi hết quota) được coi là còn thiếu để embed lại bằng vector thật.
             batch_point_ids = [str(uuid.uuid5(uuid.NAMESPACE_DNS, c.chunk_id)) for c in batch]
             try:
                 existing_records = self._client.retrieve(
                     collection_name=self.collection_name,
                     ids=batch_point_ids,
-                    with_payload=False,
+                    with_payload=["embedding_model"],
                     with_vectors=False,
                 )
-                existing_ids = {str(r.id) for r in existing_records}
+                existing_ids = {
+                    str(r.id)
+                    for r in existing_records
+                    if not str((r.payload or {}).get("embedding_model", "")).startswith("inherited-")
+                }
             except Exception:
                 existing_ids = set()
 

@@ -1,0 +1,506 @@
+{
+  "cases": {
+    "M01": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M02": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M03": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M04": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M05": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M06": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M07": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M08": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M09": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M10": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M11": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M12": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M13": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M14": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M15": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M16": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M17": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M18": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M19": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M20": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M21": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M22": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M23": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M24": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "M25": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W01": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W02": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W03": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W04": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W05": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W06": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W07": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W08": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W09": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W10": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W11": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W12": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W13": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W14": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W15": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W16": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W17": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W18": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W19": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "W20": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B01": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B02": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B03": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B04": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B05": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B06": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B07": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B08": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B09": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B10": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B11": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B12": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B13": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B14": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B15": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B16": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B17": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B18": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B19": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "B20": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P01": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P02": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P03": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P04": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P05": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P06": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P07": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P08": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P09": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P10": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P11": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P12": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P13": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P14": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "P15": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "PR01": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "PR02": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "PR03": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "PR04": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "PR05": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "PR06": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "PR07": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "PR08": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "PR09": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "PR10": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "PR11": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "PR12": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "G01": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "G02": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "G03": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "G04": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "G05": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "G06": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "G07": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    },
+    "G08": {
+      "evidence_sha256": true,
+      "sha256": true,
+      "request_messages_sha256": true
+    }
+  },
+  "identical_cases": 100,
+  "same_model_runtime_change": true
+}

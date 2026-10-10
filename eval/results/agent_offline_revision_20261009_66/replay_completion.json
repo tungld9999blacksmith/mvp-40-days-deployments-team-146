@@ -1,0 +1,28 @@
+{
+  "original_labels_retained": {
+    "PASS": 46,
+    "UNVERIFIABLE": 9,
+    "FAIL": 5
+  },
+  "saved_answers_diagnosed": 60,
+  "rag_recording_replays": 12,
+  "procedure_omissions_repaired_in_replay": 2,
+  "new_live_outputs": 0,
+  "new_api_cost_usd": 0,
+  "network_blocked_attempts": 0,
+  "fresh_semantic_accuracy": "NOT_MEASURED",
+  "production_acceptance": false,
+  "prior_preservation": {
+    "history": {
+      "files_verified": 2986,
+      "unchanged": true,
+      "changed": []
+    },
+    "intentional_runtime_changes": [
+      "backend/src/agents/tools/RAG/query/generator.py"
+    ],
+    "unchanged_original_source_files": 340,
+    "original_generator_preserved": true,
+    "env_unchanged": true
+  }
+}

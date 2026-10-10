@@ -6,6 +6,7 @@ import { SkeletonCard } from '@/shared/ui/Skeleton'
 import { EmptyState, ErrorState } from '@/shared/ui/States'
 import { formatRelativeDay } from '@/shared/utils/format'
 import { addDays, todayVn } from '@/features/bookings/utils'
+import { listWorkshopQuotes } from '@/features/quotes/api'
 import { getBoard } from '@/features/workshop-board/api'
 import { listNotifications, NOTIFICATION_FEED_KEY } from '../api'
 import { portalEntries, toFeedEntry, type FeedEntry, type FeedTone } from '../feed'
@@ -17,7 +18,7 @@ const TONE: Record<FeedTone, { icon: LucideIcon; iconColor: string; iconBg: stri
   info: { icon: Bell, iconColor: 'text-muted', iconBg: 'bg-card border border-border' },
 }
 
-/** Owner: API-NOTI-003. Portal: bookings of the next 7 days still waiting for confirmation (API-WB-01). */
+/** Owner: API-NOTI-003. Portal: pending quotes (API-QT-11) + bookings of the next 7 days still waiting for confirmation (API-WB-01). */
 function useFeed(variant: 'owner' | 'portal') {
   const fetchOwner = useCallback(async () => {
     const feed = await listNotifications()
@@ -25,8 +26,11 @@ function useFeed(variant: 'owner' | 'portal') {
   }, [])
   const fetchPortal = useCallback(async () => {
     const today = todayVn()
-    const board = await getBoard({ from: today, to: addDays(today, 6), statuses: ['PENDING'], q: '' })
-    return portalEntries(board.items)
+    const [board, quotes] = await Promise.all([
+      getBoard({ from: today, to: addDays(today, 6), statuses: ['PENDING'], q: '' }),
+      listWorkshopQuotes('PENDING_APPROVAL'),
+    ])
+    return portalEntries(board.items, quotes.items)
   }, [])
   return useCachedQuery(
     variant === 'owner' ? NOTIFICATION_FEED_KEY : 'notifications:portal',
@@ -80,7 +84,7 @@ export default function Notifications({ variant }: { variant: 'owner' | 'portal'
           <h1 className="text-2xl font-bold text-foreground">Thông báo</h1>
           <p className="text-muted text-sm mt-1">
             {variant === 'portal'
-              ? 'Lịch hẹn 7 ngày tới đang chờ xưởng xác nhận'
+              ? 'Báo giá chờ duyệt và lịch hẹn 7 ngày tới đang chờ xưởng xác nhận'
               : unreadCount > 0
                 ? `${unreadCount} việc cần bạn xem`
                 : 'Hoạt động 90 ngày gần nhất'}
@@ -115,8 +119,8 @@ export default function Notifications({ variant }: { variant: 'owner' | 'portal'
           title={variant === 'portal' ? 'Không có việc chờ xử lý' : 'Chưa có thông báo'}
           description={
             variant === 'portal'
-              ? 'Lịch hẹn mới cần xác nhận sẽ hiện ở đây.'
-              : 'Nhắc bảo dưỡng, cập nhật lịch hẹn và khảo sát sau dịch vụ sẽ hiện ở đây.'
+              ? 'Báo giá mới và lịch hẹn cần xác nhận sẽ hiện ở đây.'
+              : 'Nhắc bảo dưỡng, kết quả báo giá, cập nhật lịch hẹn và khảo sát sau dịch vụ sẽ hiện ở đây.'
           }
         />
       ) : (

@@ -1,0 +1,8 @@
+{
+  "prior_runtime_tests_reused": 45,
+  "new_pytest_run": false,
+  "ruff_controller_passed": true,
+  "application_dataset_scorer_changed": false,
+  "controller_fix_before_api": "dictionary iteration",
+  "final_source_revision": "source_revision_02.json"
+}

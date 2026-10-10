@@ -1,0 +1,8 @@
+{
+  "mode": "propose",
+  "status": "FAILED",
+  "source": "staging_process_restart_v2.py",
+  "error": "psycopg.errors.NotNullViolation: workshop.type is required",
+  "cause": "New standalone fixture omitted required type; corrected in v3 without changing schema or application",
+  "production_data_used": false
+}

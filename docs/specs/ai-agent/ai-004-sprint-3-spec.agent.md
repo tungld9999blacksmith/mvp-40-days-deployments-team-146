@@ -2,7 +2,6 @@
 
 > **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
 >
-> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
 > - Kết nối Discord (`user_discord_link`, ENT-417): **đã bỏ**. Nhắc bảo dưỡng, nhắc lịch hẹn và hỏi thăm hiện trong mục **Thông báo** của app; danh sách kênh ngoài (Zalo / Telegram / SMS / Email) vẫn có nhưng đều "Sắp có", bật nhắc không bắt buộc chọn kênh.
 
 > **Cập nhật xác nhận đặt lịch (03/10/2026, [us-061](../sprint-4/feature-functional/us-061-sprint-4-spec.ff.md)):** chỉ nút **"Xác nhận đặt lịch"** trên thẻ đề xuất tạo booking (`API-QB-02`, backend kiểm chứng đề xuất / chủ xe / hội thoại / xe). Thay cho §7.2 và TOOL-403: câu gõ "xác nhận", "đồng ý đặt" **không** còn là `INT-403`; agent không có tool tạo / huỷ / đổi booking. Tool ghi duy nhất là `propose_booking` (chỉ tạo đề xuất, thẻ `BOOKING_PROPOSAL` thay cho `booking_summary`). Trạng thái HITL §16.3 ánh xạ sang `booking_proposal.status` (us-061 FF §12).
@@ -24,7 +23,7 @@
 | Agent Spec ID                   | `AI-004` |
 | Agent Name                      | Booking Agent (`booking_agent`) |
 | Feature / Use Case              | F6 — Đặt lịch hội thoại theo sức chứa; F6b — Ticket, QR, huỷ/đổi |
-| Document Version                | `v1.0` |
+| Document Version                | `v1.1` |
 | Status                          | `Draft` |
 | Product / Project               | EV Care — AI Agent Chăm sóc sau bán & lịch bảo dưỡng xe điện |
 | Agent Owner                     | AI Team |
@@ -32,7 +31,7 @@
 | Reviewer                        | Tech Lead |
 | Stakeholders                    | PO, Backend, Frontend, AI Team, Chủ xưởng |
 | Created Date                    | `2026-09-28` |
-| Updated Date                    | `2026-09-28` |
+| Updated Date                    | `2026-10-07` |
 | Related Functional Spec         | [us-029 FF](../sprint-3/feature-functional/us-029-sprint-3-spec.ff.md) · [us-053 FF](../sprint-3/feature-functional/us-053-sprint-3-spec.ff.md) |
 | Related API Spec                | [us-029 API](../sprint-3/api/us-029-sprint-3-spec.api.md) · [us-053 API](../sprint-3/api/us-053-sprint-3-spec.api.md) |
 | Related Entity Spec             | [booking](../entity/maintenance/booking.entity.md) · [workshop](../entity/workshop/workshop.entity.md) · [quote](../entity/maintenance/quote.entity.md) |
@@ -303,7 +302,7 @@ Không có xưởng khả dụng trong 7 ngày `[Đề xuất]` → nói rõ, g�
 | `TOOL-403` | `create_booking` | Tạo booking sau xác nhận | `user_vehicle_id`, `workshop_id`, `date`, `time_slot`, `quote_id?`, `confirmation_token` | `booking_id`, `booking_code`, `status`, `qr_url` | Yes |
 | `TOOL-404` | `list_my_bookings` | Lịch sắp tới | `user_id` | bookings | No |
 | `TOOL-405` | `cancel_booking` | Huỷ | `booking_id`, `confirmation_token` | trạng thái | No |
-| `TOOL-406` | `reschedule_booking` | Đổi lịch | `booking_id`, slot mới, `confirmation_token` | booking mới | No |
+| `TOOL-406` | `reschedule_booking` | Đổi lịch **tại chỗ**, cùng xưởng | `booking_id`, ngày + khung mới, `confirmation_token` | **cùng** `booking_id` và `booking_code`, ngày/khung mới, `reschedule_count` | No |
 
 ## 10.2 Tool Calling Rules
 
@@ -350,7 +349,26 @@ Mọi trường hợp khác. LLM không được tự gọi tool này trong cùn
 
 **Expected result**
 
-Service lấy Redis lock, kiểm tra lại trong transaction, tạo booking `pending` với `hold_expires_at` rồi xác nhận `confirmed` `[Đề xuất: xác nhận ngay khi chủ xe bấm Xác nhận]`. Xung đột → `SLOT_FULL` + phương án.
+Service lấy Redis lock, kiểm tra lại trong transaction, tạo booking `pending` (giữ chỗ) với `hold_expires_at = now + 10 phút` (us-029 BR-007). Booking thành `confirmed` ngay nếu xưởng bật tự động xác nhận (`workshop.booking_confirmation_mode = auto`), ngược lại chờ xưởng chấp nhận trên Workshop Board (BR-014). Agent báo đúng trạng thái trả về: "Đã giữ chỗ, chờ xưởng xác nhận" hoặc "Đã đặt lịch". Xung đột → `SLOT_FULL` + phương án. Xe đã có booking mở → `OPEN_BOOKING_EXISTS`, agent gợi ý đổi lịch (TOOL-406) thay vì tạo mới (BR-013).
+
+### TOOL-406 — `reschedule_booking`
+
+**When to use**
+
+Chủ xe muốn đổi ngày/giờ của booking đang `confirmed`, ở **cùng xưởng**.
+
+**When not to use**
+
+Đổi sang xưởng khác (`RESCHEDULE_WORKSHOP_MISMATCH`): hướng dẫn huỷ rồi đặt mới. Booking còn `pending`: chờ xưởng xác nhận trước.
+
+**Validation before call**
+
+- `status = confirmed`, còn ít nhất `RESCHEDULE_MIN_LEAD_MINUTES` (60 phút) trước giờ hẹn (us-053 BR-1206).
+- Chưa đổi quá `RESCHEDULE_MAX_COUNT` (2) lần (BR-1207); khung mới khác khung cũ và còn chỗ (BR-1204).
+
+**Expected result**
+
+Cập nhật tại chỗ trong một transaction (us-053 BR-1205): giữ khung mới trước, trả khung cũ khi commit. `booking_id`, `booking_code` và QR **không đổi**; `reschedule_count` tăng 1. Lỗi `RESCHEDULE_TOO_LATE`, `RESCHEDULE_LIMIT_REACHED`, `SLOT_FULL` → báo lý do và đưa phương án (khung khác, hoặc huỷ rồi đặt mới).
 
 ## 10.3 Tool Failure Handling
 
@@ -679,7 +697,7 @@ High
 
 **Rule**
 
-Booking `pending` có `hold_expires_at` (10 phút, PQ-02); hết hạn → `cancelled` (EF-001).
+Booking `pending` có `hold_expires_at` (10 phút, PQ-02). Trong 10 phút này chủ xe được tự huỷ giữ chỗ. Hết 10 phút booking **không** tự huỷ mà chờ xưởng xác nhận (us-029 BR-010). Ở chế độ xưởng xác nhận thủ công, booking `pending` tự huỷ khi quá hạn chót `BOOKING_WS_CONFIRM_DEADLINE_HOURS` (12 giờ từ lúc giữ chỗ) hoặc tới giờ hẹn, lấy mốc đến trước (BR-015).
 
 **Condition**
 
@@ -843,7 +861,7 @@ Không dùng kiến thức ngoài về xưởng.
 | --- | --- | --- | ---: | --- |
 | Capacity + booking service | Sức chứa, tạo booking | Backend | Yes | [us-029 FF](../sprint-3/feature-functional/us-029-sprint-3-spec.ff.md) |
 | Redis | Lock giữ chỗ | Backend | Yes | PRD §9 |
-| Job hết hạn giữ chỗ | `pending → cancelled` | Backend | Yes | EF-001 |
+| Job quá hạn xưởng xác nhận | `pending → cancelled` khi xưởng thủ công không xử lý kịp | Backend | Yes | us-029 BR-015 |
 | Workshop Board | Khoá chỗ | Backend/FE | Yes | PRD F8 |
 | AI-003 | Chi phí ước tính | AI Team | No | [AI-003](ai-003-sprint-2-spec.agent.md) |
 
@@ -872,7 +890,7 @@ Không dùng kiến thức ngoài về xưởng.
 | Term ID | Term | Vietnamese Name | Definition | Example / Notes |
 | --- | --- | --- | --- | --- |
 | `AI-TERM-401` | Slot | Khung giờ | Một khung 60 phút tại một xưởng | 09:00–10:00 |
-| `AI-TERM-402` | Hold | Giữ chỗ | Booking `pending` có `hold_expires_at` | 10 phút |
+| `AI-TERM-402` | Hold | Giữ chỗ | Booking `pending` tạo khi chủ xe bấm Xác nhận; `hold_expires_at` là cửa sổ 10 phút chủ xe được tự huỷ | 10 phút |
 | `AI-TERM-403` | Confirmation token | Mã xác nhận | Token backend cấp cho thẻ tóm tắt, dùng một lần | Chống side effect ngoài ý muốn |
 
 ---
@@ -881,9 +899,9 @@ Không dùng kiến thức ngoài về xưởng.
 
 | ID | Question | Owner | Status | Decision / Due Date |
 | --- | --- | --- | --- | --- |
-| `AI-Q-401` | Booking chuyển `pending → confirmed` ngay khi chủ xe bấm Xác nhận, hay chờ xưởng? | PO | Open | `[Đề xuất]` ngay khi chủ xe xác nhận |
-| `AI-Q-402` | Giữ chỗ tạm lúc hiển thị thẻ hay chỉ khi bấm Xác nhận? | Tech Lead | Open | `[Đề xuất]` giữ khi hiển thị thẻ, TTL 10 phút |
-| `AI-Q-403` | Cho phép nhiều booking mở / xe? | PO | Open | `[Đề xuất]` 1 |
+| `AI-Q-401` | Booking chuyển `pending → confirmed` ngay khi chủ xe bấm Xác nhận, hay chờ xưởng? | PO | **Resolved** | Bấm Xác nhận = giữ chỗ (`pending`). Thành `confirmed` khi xưởng chấp nhận, hoặc ngay lập tức nếu xưởng bật tự động xác nhận (us-029 BR-014) |
+| `AI-Q-402` | Giữ chỗ tạm lúc hiển thị thẻ hay chỉ khi bấm Xác nhận? | Tech Lead | **Resolved** | Chỉ giữ chỗ khi bấm Xác nhận; hiển thị thẻ chỉ cấp `confirmation_token`. Chủ xe huỷ được trong 10 phút (us-029 BR-007, BR-010) |
+| `AI-Q-403` | Cho phép nhiều booking mở / xe? | PO | **Resolved** | 1 booking đang mở / xe; đặt thêm → `OPEN_BOOKING_EXISTS`, gợi ý đổi lịch (us-029 BR-013) |
 | `AI-Q-404` | Phạm vi "xưởng khác cùng khu vực" xác định bằng `region`? | PO | Open | — |
 
 ---
@@ -989,6 +1007,7 @@ Tìm được tin nhắn xác nhận của chủ xe (AC-F4-06).
 | Version | Date | Author | Change |
 | --- | --- | --- | --- |
 | `v1.0` | `2026-09-28` | Team 4 Người | Initial version từ proposal AI-004 |
+| `v1.1` | `2026-10-07` | Team 4 Người | Đồng bộ với us-029/us-053 và code (báo cáo 03/10, C-07): đóng AI-Q-401/402/403; TOOL-403 giữ chỗ `pending` rồi xác nhận theo chế độ của xưởng; thêm quy tắc gọi TOOL-406 (đổi lịch tại chỗ, giữ `booking_code`); sửa BR-AI-403: hết 10 phút không tự huỷ, chỉ huỷ khi quá hạn xưởng xác nhận |
 
 ---
 

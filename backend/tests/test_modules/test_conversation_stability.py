@@ -134,6 +134,40 @@ async def test_total_deadline_cancels_agent_even_if_tokens_keep_arriving(chat, t
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("disconnect", [False, True])
+async def test_step_ignoring_cancellation_is_abandoned_and_releases_lock(chat, caplog, disconnect):
+    """A hung cleanup (e.g. a checkpoint delete on a dead DB connection) must not hold the lock forever."""
+    service, cid, toolkit, messages, orchestrator = chat
+    service._settings.chat_run_timeout_seconds = 0.15 if not disconnect else 5
+    service._settings.chat_run_cleanup_timeout_seconds = 0.2
+    entered, release = asyncio.Event(), asyncio.Event()
+
+    async def ignore_cancellation(**kwargs):
+        yield {"type": "tool_start", "tool": "lookup"}
+        entered.set()
+        while not release.is_set():
+            try:
+                await release.wait()
+            except asyncio.CancelledError:
+                pass
+
+    async def is_disconnected():
+        return entered.is_set()
+
+    orchestrator.run_agent_turn = ignore_cancellation
+    try:
+        frames = await asyncio.wait_for(collect(service, cid, is_disconnected if disconnect else None), timeout=2)
+        if not disconnect:
+            assert frames[-1].event == "error" and frames[-1].data["code"] == "CHAT_TIMEOUT"
+        assert not await toolkit.locks.is_locked(f"conversation-run:{cid}")
+        assert "Abandoned a turn step" in caplog.text
+        assert "ignore_cancellation" in caplog.text  # where it is stuck
+    finally:
+        release.set()
+        await asyncio.sleep(0.01)
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("cancel_task", [False, True])
 async def test_disconnect_or_cancellation_stops_agent_before_first_token(chat, cancel_task):
     service, cid, toolkit, messages, orchestrator = chat

@@ -407,7 +407,7 @@ Kết quả tính trạng thái đến hạn của một xe tại một thời �
 | Ngày mua | `MIN(vehicle_warranty.start_date)`, fallback `user_vehicle.manufacture_date` |
 | Định mức | `maintenance_rule` WHERE `model_id` |
 | Ngày hiện tại | Server, Asia/Ho_Chi_Minh |
-| Cấu hình (`.env`, truyền vào service qua tham số; sau này có thể ghi đè theo xưởng / gói bảo hành) | `DUE_SOON_KM = 500`, `DUE_SOON_DAYS = 14`, `MAINTENANCE_RECURRING_KM = 12000`, `MAINTENANCE_RECURRING_MONTHS = 12`, `ODO_STALE_DAYS = 30` |
+| Cấu hình (`.env`, truyền vào service qua tham số; sau này có thể ghi đè theo xưởng / gói bảo hành) | `DUE_SOON_KM = 500`, `DUE_SOON_DAYS = 14`, `MAINTENANCE_RECURRING_KM = 15000`, `MAINTENANCE_RECURRING_MONTHS = 12`, `ODO_STALE_DAYS = 30` |
 
 ## 3. Attributes
 

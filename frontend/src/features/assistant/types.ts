@@ -16,7 +16,7 @@ export interface MessageDto {
   content: string
   citations: CitationDto[]
   /** `inReplyTo`: the owner message a quick-booking answer belongs to (us-061 API §4.2). */
-  refs: { bookingId?: string; inReplyTo?: string }
+  refs: { bookingId?: string; quoteId?: string; inReplyTo?: string }
   /** Structured UI card for F5/F6 — rendered by those specs. */
   card: { type: string; [key: string]: unknown } | null
   createdAt: string
@@ -149,6 +149,6 @@ export interface ExcerptMessage {
 }
 
 export interface ConversationExcerpt {
-  source: { type: 'booking'; id: string; confirmedMessageId: string }
+  source: { type: 'booking' | 'quote'; id: string; confirmedMessageId: string }
   messages: ExcerptMessage[]
 }

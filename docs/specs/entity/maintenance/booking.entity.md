@@ -1,9 +1,5 @@
 # Entity Specification — `booking` (Lịch hẹn bảo dưỡng)
 
-> **Cập nhật phạm vi (02/10/2026):** các phần dưới đây trong tài liệu này không còn áp dụng.
->
-> - Báo giá / duyệt báo giá (`quote`, `quote_item`, us-049): **đã bỏ**. Đặt lịch không gắn báo giá; mọi con số chi phí là ước tính (F5), chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
-
 > **Domain:** Maintenance · **Tổng quan lược đồ:** [core.entity.md](../core.entity.md)
 >
 > **Nguồn sự thật:** `core.entity.md` v1.1 §14.2 bảng 5, §11 (EF-001), §13 (State). Cấu trúc bảng **giữ nguyên**.
@@ -17,11 +13,11 @@
 | Business Name | Lịch hẹn bảo dưỡng |
 | Table | `booking` |
 | Domain | Maintenance |
-| Version | `v1.2` |
+| Version | `v1.3` |
 | Status | `Draft` |
 | Owner | Backend Team |
 | Created Date | `2026-09-27` |
-| Updated Date | `2026-09-29` |
+| Updated Date | `2026-10-07` |
 
 ---
 
@@ -56,7 +52,7 @@ Một `booking` = một cam kết đưa một xe đến một xưởng vào mộ
 
 ## Example
 
-`BK-20261003-0012`, xe VF6 của user 42, VinFast Cầu Giấy, 03/10/2026 09:00, `confirmed`.
+`EVC-7F3A9C21`, xe VF6 của user 42, VinFast Cầu Giấy, 03/10/2026 09:00, `confirmed`.
 
 ---
 
@@ -65,7 +61,7 @@ Một `booking` = một cam kết đưa một xe đến một xưởng vào mộ
 | Field | Unique | Description |
 | --- | ---: | --- |
 | `id` (`uuid`) | Yes | PK |
-| `booking_code` | Yes | Mã đặt lịch gửi cho khách hàng |
+| `booking_code` | Yes | Mã đặt lịch gửi cho khách hàng, dạng `EVC-` + 8 ký tự hex in hoa (xem §6) |
 
 ---
 
@@ -74,7 +70,7 @@ Một `booking` = một cam kết đưa một xe đến một xưởng vào mộ
 | Tên trường (Field) | Kiểu dữ liệu (Data Type) | Required | Nullable | Default | Ràng buộc (Constraints) | Mô tả (Description) |
 | --- | --- | ---: | ---: | --- | --- | --- |
 | `id` | `uuid` | Yes | No | `uuid4` | PK | Mã định danh lịch hẹn |
-| `booking_code` | `varchar(20)` | Yes | No | - | Unique | Mã đặt lịch gửi cho khách hàng |
+| `booking_code` | `varchar(20)` | Yes | No | - | Unique, `^EVC-[0-9A-F]{8}$` | Mã đặt lịch gửi cho khách hàng, in trên Ticket và QR |
 | `user_id` | `integer` | Yes | No | - | FK → `vehicle_user.user_id` | Khách hàng đặt lịch |
 | `user_vehicle_id` | `uuid` | Yes | No | - | FK → `user_vehicle.id` | Xe được mang đi bảo dưỡng |
 | `workshop_id` | `uuid` | Yes | No | - | FK → `workshop.id` | Xưởng dịch vụ tiếp nhận |
@@ -84,6 +80,10 @@ Một `booking` = một cam kết đưa một xe đến một xưởng vào mộ
 | `actual_cost` | `numeric(12,2)` | No | Yes | - | `>= 0` | Chi phí thực tế sau khi kiểm tra/sửa chữa |
 | `status` | `booking_status_enum` | Yes | No | `pending` | Xem §8 | Trạng thái lịch hẹn |
 | `hold_expires_at` | `timestamptz` | No | Yes | - | | Thời gian hết hạn giữ slot tạm thời (Hold slot) |
+| `attendance_confirmed_at` | `timestamptz` | No | Yes | - | Ghi một lần | Thời điểm chủ xe bấm "Xác nhận sẽ đến" (us-033 BR-708). Không đổi `status` |
+| `odo_milestone` | `integer` | No | Yes | - | `NULL` hoặc `> 0` | Mốc bảo dưỡng (km) của lịch hẹn, dùng để dựng hạng mục trên Ticket (us-053 BR-1202) |
+| `reschedule_count` | `smallint` | Yes | No | `0` | `>= 0` | Số lần chủ xe đã đổi lịch (us-053 BR-1207) |
+| `source_message_id` | `uuid` | No | Yes | - | FK → `chat_message.id`, `ON DELETE SET NULL` | Tin nhắn chat đã xác nhận lịch này khi đặt từ trợ lý AI (BR-ENT-460) |
 | `created_at` | `timestamptz` | Yes | No | `now()` | | Thời gian khởi tạo lịch hẹn |
 | `updated_at` | `timestamptz` | Yes | No | `now()` | | |
 
@@ -94,6 +94,26 @@ Một `booking` = một cam kết đưa một xe đến một xưởng vào mộ
 ## `estimated_cost`
 
 Khi lịch hẹn được tạo từ một `quote` đã `approved` ⇒ gán bằng `quote.approved_total` (BR-ENT-404). Khi đặt lịch trực tiếp (AF-001) ⇒ lấy tổng `maintenance_rule.estimated_cost` / `service_price.price` của mốc tương ứng hoặc để `NULL`.
+
+## `booking_code`
+
+Sinh ngẫu nhiên khi tạo booking: `"EVC-" + secrets.token_hex(4).upper()` (`backend/src/modules/booking/service.py`). Không chứa ngày hay số thứ tự nên không lộ số lượng lịch của xưởng. URL trong QR là `{APP_BASE_URL}/c/{booking_code}` (us-053 BR-1203); backend kiểm tra mã theo regex `^EVC-[0-9A-F]{8}$` trước khi tra cứu.
+
+## `attendance_confirmed_at`
+
+Chỉ ghi khi booking `confirmed` và chưa tới giờ hẹn. Bấm lại không ghi đè thời điểm cũ (idempotent). Đổi lịch thành công thì cột này được đặt lại `NULL`, vì chủ xe cần xác nhận lại cho giờ hẹn mới. Workshop Board dùng cột này để hiển thị "Khách đã xác nhận sẽ đến".
+
+## `odo_milestone`
+
+Lưu khi đặt lịch, theo thứ tự: `milestoneRef` client gửi lên ở API-BK-03 (ví dụ `"12000"` hoặc `"12000km"` → `12000`); nếu không có thì lấy `quote.odo_milestone` của báo giá gắn kèm; đặt từ chat (us-061) thì lấy mốc của đề xuất. `NULL` nghĩa là không xác định được mốc; khi đó Ticket hiển thị "Bảo dưỡng theo yêu cầu, xưởng sẽ tư vấn tại chỗ".
+
+## `reschedule_count`
+
+Tăng 1 sau mỗi lần đổi lịch thành công. Đạt `RESCHEDULE_MAX_COUNT` (mặc định 2) thì API trả `RESCHEDULE_LIMIT_REACHED` và UI gợi ý huỷ rồi đặt mới.
+
+## `source_message_id`
+
+Gán trong cùng giao dịch tạo booking khi chủ xe xác nhận từ thẻ đề xuất trong chat (us-061). `NULL` khi đặt từ giao diện thường hoặc khi hội thoại đã bị xoá.
 
 ## `hold_expires_at`
 
@@ -113,6 +133,7 @@ erDiagram
     booking      ||--o{ service_progress : "tracks"
     booking      |o--o{ quote            : "fulfils"
     booking      ||--o| follow_up        : "followed_up"
+    chat_message |o--o{ booking          : "confirmed_from"
 ```
 
 ## 7.2 Relationship Details
@@ -125,6 +146,7 @@ erDiagram
 | [`service_progress`](./service_progress.entity.md) | tracks | 1:N | Tiến độ tại xưởng |
 | [`quote`](./quote.entity.md) | fulfils | 1:N | Báo giá được thực hiện bởi lịch hẹn này (FK `quote.booking_id`) |
 | [`follow_up`](../crm/follow_up.entity.md) | followed up | 1:0..1 | Chăm sóc sau dịch vụ (FK `follow_up.booking_id`, unique) |
+| [`chat_message`](../conversation/chat_message.entity.md) | confirmed from | N:0..1 | Tin nhắn đã xác nhận lịch khi đặt từ chat (FK `booking.source_message_id`) |
 
 ### Relationship Rules
 
@@ -201,6 +223,7 @@ stateDiagram-v2
 # 10. Data Integrity
 
 * `CHECK (estimated_cost IS NULL OR estimated_cost >= 0)`, `CHECK (actual_cost IS NULL OR actual_cost >= 0)`.
+* `CHECK (odo_milestone IS NULL OR odo_milestone > 0)` (`ck_booking_odo_milestone`), `CHECK (reschedule_count >= 0)` (`ck_booking_reschedule_count`).
 * `booking_code` unique.
 
 ---
@@ -239,3 +262,4 @@ stateDiagram-v2
 | --- | --- | --- | --- |
 | `v1.1` | `2026-09-27` | Team 4 Người | Tách từ `core.entity.md` v1.1 §14.2 bảng 5 + §11 + §13, cấu trúc giữ nguyên; bổ sung quan hệ tới `quote`, `follow_up` (FK nằm ở bảng mới) |
 | `v1.2` | `2026-09-29` | Team 4 Người | Cập nhật BR-ENT-402 theo F6 (US-029, AI-Q-401/402): `hold_expires_at` là cửa sổ chủ xe huỷ giữ chỗ, không tự huỷ vô điều kiện; lịch chính thức theo `workshop.booking_confirmation_mode` (auto/manual, BR-014); tự huỷ khi treo quá hạn (BR-015). Cập nhật §8.1/§8.3 và ghi chú `hold_expires_at`. Cấu trúc bảng `booking` **không đổi** |
+| `v1.3` | `2026-10-07` | Team 4 Người | Đồng bộ với code (báo cáo 03/10, C-07): thêm cột `attendance_confirmed_at` (us-033), `odo_milestone`, `reschedule_count` (us-053), `source_message_id` (BR-ENT-460); sửa định dạng `booking_code` thành `EVC-` + 8 hex; thêm 2 CHECK constraint và quan hệ tới `chat_message` |

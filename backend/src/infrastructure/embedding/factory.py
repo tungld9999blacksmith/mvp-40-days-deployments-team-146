@@ -21,6 +21,16 @@ def create_embedding_engine(settings: Settings, provider: str | None = None) -> 
             model=settings.embedding_openai_model,
             dimensions=dims,
         )
+    if name == "openrouter":
+        from .openai_provider import OpenAIEmbeddingEngine
+
+        return OpenAIEmbeddingEngine(
+            api_key=settings.openrouter_api_key,
+            model=settings.embedding_openrouter_model,
+            dimensions=dims,
+            base_url=settings.openrouter_base_url,
+            provider_name="openrouter",
+        )
     if name == "gemini":
         from .gemini_provider import GeminiEmbeddingEngine
 

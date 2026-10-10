@@ -57,7 +57,6 @@ from qdrant_client.http.models import (
 from src.agents.tools.RAG.ingestion import (
     DocumentChunk,
     DocumentChunker,
-    GeminiEmbeddingProvider,
     IngestionEngine,
     QdrantVectorStore,
     TextCleaner,
@@ -131,7 +130,8 @@ def ingest(source: Path, report_path: Path, dry_run: bool, prune: bool, force: b
     print(f"  -> {len(details)} tài liệu, {len(chunks)} chunks")
 
     print("\n[2/3] Kết nối Qdrant và so sánh với dữ liệu hiện có...")
-    store = QdrantVectorStore(embedding_provider=GeminiEmbeddingProvider())
+    # EMBEDDING_PROVIDER decides; switching provider/model requires --force.
+    store = QdrantVectorStore()
     print(f"  -> Collection '{store.collection_name}' ({store.url.split('?')[0] or 'local'}) đang có {store.count():,} points")
     existing = _load_existing(store)
 

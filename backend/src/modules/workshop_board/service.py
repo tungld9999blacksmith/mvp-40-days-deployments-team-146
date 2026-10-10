@@ -21,7 +21,10 @@ from sqlmodel import Session, select
 
 from src.common.core.identity.vehicle_user import VehicleUser
 from src.common.core.identity.workshop_owner import WorkshopOwner
-from src.common.core.maintenance.booking import Booking, BookingStatus
+from src.common.core.maintenance.booking import Booking, BookingStatus, PricingFlow
+from src.common.core.maintenance.booking_line import BookingLine, LineStatus
+from src.common.core.maintenance.quote import Quote
+from src.common.core.maintenance.reminder import Reminder
 from src.common.core.vehicle import (
     ServiceRecordSource,
     UserVehicle,
@@ -44,6 +47,10 @@ from src.modules.booking.domain import (
     slot_starts,
 )
 from src.modules.booking.state_machine import Actor, BookingStateMachine, TransitionConflict
+from src.modules.booking_line import BookingLineError
+from src.modules.booking_line.domain import DECLINED_HISTORY_NOTE, declined_package
+from src.modules.booking_line.service import BookingLineService
+from src.modules.booking_line.settlement import lines_of
 from src.modules.follow_up.service import FollowUpScheduler
 from src.modules.notification.channels import NotificationMessage
 from src.modules.notification.owner_notifier import OwnerNotifier
@@ -157,6 +164,7 @@ class WorkshopBoardService:
         return []
 
     def _item(self, booking: Booking, user: VehicleUser | None, vehicle: UserVehicle | None) -> dict:
+        quote = self._db.exec(select(Quote).where(Quote.booking_id == booking.id)).first()
         return {
             "booking_id": booking.id,
             "booking_code": booking.booking_code,
@@ -175,6 +183,7 @@ class WorkshopBoardService:
                 f"Mốc {booking.odo_milestone:,} km".replace(",", ".") if booking.odo_milestone else None
             ),
             "estimated_cost": booking.estimated_cost,
+            "quote": schemas.QuoteRefOut(quote_id=quote.id, status=quote.status.value.upper()) if quote else None,
             "attendance_confirmed_at": booking.attendance_confirmed_at,
             "confirm_deadline": self.confirm_deadline(booking) if booking.status == S.PENDING else None,
             "allowed_actions": self.allowed_actions(booking),
@@ -252,6 +261,8 @@ class WorkshopBoardService:
         return schemas.BoardDetailOut(
             **self._item(booking, user, vehicle),
             actual_cost=booking.actual_cost,
+            pricing_flow=str(booking.pricing_flow),
+            blocked_actions=BookingLineService(self._db).blocked_actions(booking),
             status_history=[
                 schemas.StatusEventOut(
                     from_status=e.from_status.value.upper() if e.from_status else None,
@@ -340,6 +351,9 @@ class WorkshopBoardService:
         except TransitionConflict as exc:
             self._db.rollback()
             raise errors.InvalidStatusTransitionError(exc.current.value, self.allowed_actions(booking)) from exc
+        except BookingLineError:  # two-tier START / COMPLETE guards (D8, D6) — surfaced as-is
+            self._db.rollback()
+            raise
         except DBAPIError as exc:  # BR-807: COMPLETE is all-or-nothing
             self._db.rollback()
             logger.exception("board transition %s failed for %s", action, booking.id)
@@ -413,11 +427,40 @@ class WorkshopBoardService:
             self._db.add(record)
             self._db.flush()
         follow_up = self._follow_ups.on_completed(booking, now)
+        declined = self._record_two_tier_items(booking, record)
+        # OV2 — a refused standard item means the milestone is not done: keep its reminders open.
+        if booking.odo_milestone is not None and not declined:
+            for reminder in self._db.exec(
+                select(Reminder).where(
+                    Reminder.user_vehicle_id == booking.user_vehicle_id,
+                    Reminder.target_odo_milestone == booking.odo_milestone,
+                )
+            ).all():
+                reminder.is_resolved = True
+                reminder.resolution_reason = "MAINTENANCE_COMPLETED"
+                self._db.add(reminder)
         return schemas.TransitionEffectsOut(
             service_record_id=record.id,
             follow_up_id=follow_up.id,
             follow_up_scheduled_at=as_utc(follow_up.scheduled_at),
         )
+
+    def _record_two_tier_items(self, booking: Booking, record: VehicleServiceRecord) -> list[BookingLine]:
+        """D10 / OV2 — the service record lists what was done and what the owner refused."""
+        if booking.pricing_flow != PricingFlow.TWO_TIER:
+            return []
+        lines = lines_of(self._db, booking.id)
+        done = [line.item_name for line in lines if line.line_status in (LineStatus.CONFIRMED, LineStatus.APPROVED)]
+        declined = declined_package(lines)
+        parts = []
+        if done:
+            parts.append("Đã làm: " + "; ".join(done))
+        if declined:
+            parts.append(f"{DECLINED_HISTORY_NOTE} (chưa làm): " + "; ".join(line.item_name for line in declined))
+        if parts:
+            record.items_done = "\n".join(parts)
+            self._db.add(record)
+        return declined
 
     def _transition_out(self, booking: Booking, effects: schemas.TransitionEffectsOut | None) -> schemas.TransitionOut:
         return schemas.TransitionOut(

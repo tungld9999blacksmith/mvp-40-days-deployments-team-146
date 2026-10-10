@@ -125,13 +125,18 @@ export function ReasonDialog({
   )
 }
 
-/** us-037 §4.7 — optional actual cost; warns when the progress is not "Sẵn sàng giao xe" (us-057 AF-1301). */
+/**
+ * us-037 §4.7 — optional actual cost; warns when the progress is not "Sẵn sàng giao xe" (us-057 AF-1301).
+ * Two-tier booking (design 7B, re-review RR1): the total comes from the settled lines, loaded fresh
+ * each time the dialog opens or the server refuses; it is shown locked and never sent.
+ */
 export function CompleteDialog({
   open,
   plate,
   notReadyForPickup,
   submitting,
   serverError,
+  loadSystemTotal,
   onClose,
   onConfirm,
 }: {
@@ -140,20 +145,32 @@ export function CompleteDialog({
   notReadyForPickup: boolean
   submitting: boolean
   serverError?: string | null
+  loadSystemTotal?: () => Promise<number>
   onClose: () => void
   onConfirm: (actualCost: number | null) => void
 }) {
   const [raw, setRaw] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [systemTotal, setSystemTotal] = useState<number | null>(null)
   const laterRef = useRef<HTMLButtonElement>(null)
+  const loadTotal = useRef(loadSystemTotal)
+  loadTotal.current = loadSystemTotal
+  const twoTier = loadSystemTotal !== undefined
   useEffect(() => {
     if (!open) return
     setRaw('')
     setError(null)
-  }, [open])
-  const digits = raw.replace(/\D/g, '')
+    setSystemTotal(null)
+    loadTotal.current?.().then(setSystemTotal, () => setError('Không tải được tổng tiền, thử lại nhé.'))
+  }, [open, serverError])
+  const digits = twoTier ? (systemTotal !== null ? String(systemTotal) : '') : raw.replace(/\D/g, '')
 
   function submit() {
+    if (twoTier) {
+      if (systemTotal === null) return
+      onConfirm(null)
+      return
+    }
     const value = digits ? Number(digits) : null
     if (value !== null && value > 999_999_999) return setError('Chi phí không hợp lệ.')
     setError(null)
@@ -174,7 +191,7 @@ export function CompleteDialog({
           <Button ref={laterRef} variant="secondary" onClick={onClose} disabled={submitting}>
             Để sau
           </Button>
-          <Button loading={submitting} loadingText="Đang hoàn tất…" onClick={submit}>
+          <Button loading={submitting} loadingText="Đang hoàn tất…" disabled={twoTier && systemTotal === null} onClick={submit}>
             Hoàn tất
           </Button>
         </>
@@ -188,13 +205,15 @@ export function CompleteDialog({
       )}
       <TextInput
         label="Chi phí thực tế"
-        optional
+        optional={!twoTier}
         inputMode="numeric"
         value={digits ? formatNumber(Number(digits)) : ''}
         onChange={event => setRaw(event.target.value)}
-        placeholder="1.850.000"
+        placeholder={twoTier ? 'Đang tính…' : '1.850.000'}
         aside={<span className="text-xs text-muted">đ</span>}
         error={error ?? serverError ?? undefined}
+        helper={twoTier ? 'Tổng các hạng mục đã chốt và chủ xe đã đồng ý; hệ thống tự tính.' : undefined}
+        readOnly={twoTier}
         disabled={submitting}
       />
     </Dialog>

@@ -21,7 +21,7 @@ from fastapi import APIRouter, Depends, Path, Query, Request, Response
 from fastapi.responses import StreamingResponse
 from sqlmodel import Session
 
-from src.common.core.maintenance import Booking
+from src.common.core.maintenance import Booking, Quote, QuoteStatus
 from src.infrastructure.supabase.db import engine
 from src.infrastructure.vectorstore import mask_pii
 from src.modules.workshop_board.dependency import OwnerWorkshop, get_owner_workshop
@@ -190,7 +190,7 @@ def delete_conversation(
     return Response(status_code=204)
 
 
-# ── API-CHAT-007 — workshop conversation excerpt ───────────────────
+# ── API-CHAT-007 / 008 — workshop conversation excerpt ───────────────────
 @workshop_router.get("/bookings/{bookingId}/conversation-excerpt", response_model=schemas.ExcerptEnvelope)
 def booking_excerpt(
     booking_id: Annotated[UUID, Path(alias="bookingId")],
@@ -206,6 +206,24 @@ def booking_excerpt(
     if source_id is None:
         raise errors.ExcerptNotAvailable()
     return _excerpt_envelope(service.excerpt_for_source("booking", source_id, booking_id))
+
+
+@workshop_router.get("/quotes/{quoteId}/conversation-excerpt", response_model=schemas.ExcerptEnvelope)
+def quote_excerpt(
+    quote_id: Annotated[UUID, Path(alias="quoteId")],
+    service: Annotated[ChatService, Depends(get_chat_service)],
+    scope: Annotated[OwnerWorkshop, Depends(get_owner_workshop)],
+) -> schemas.ExcerptEnvelope:
+    with Session(engine) as session:
+        quote = session.get(Quote, quote_id)
+        source_id = quote.source_message_id if quote else None
+        # Drafts are invisible to the workshop (us-049 BR-1110).
+        owned = quote is not None and quote.workshop_id == scope.workshop.id and quote.status != QuoteStatus.DRAFT
+    if not owned:
+        raise errors.ConversationNotFound()
+    if source_id is None:
+        raise errors.ExcerptNotAvailable()
+    return _excerpt_envelope(service.excerpt_for_source("quote", source_id, quote_id))
 
 
 # ── helpers ───────────────────────────────────────────────────────────────

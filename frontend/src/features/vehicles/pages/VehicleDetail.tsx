@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import { track } from '@/shared/utils/track'
-import { SkeletonCard } from '@/shared/ui/Skeleton'
+import Skeleton, { SkeletonCard } from '@/shared/ui/Skeleton'
 import { isApiError } from '@/shared/api/client'
 import MaintenanceStatusCard from '../components/MaintenanceStatusCard'
-import { LastServiceCard, OdometerCard, VehicleIdentityCard, WarrantyCard } from '../components/VehicleCards'
+import { LastServiceCard, OdometerCard, WarrantyCard } from '../components/VehicleCards'
+import VehicleHero from '../components/VehicleHero'
 import VehicleGate, { VehicleApiError } from '../components/VehicleGate'
 import { useMaintenanceStatus, useVehicleProfile } from '../hooks/useVehicleQueries'
 
@@ -30,40 +31,49 @@ function VehicleDetailContent({ vehicleId }: { vehicleId: string }) {
   const statusVehicleError = status.error && VEHICLE_ERRORS.some(code => isApiError(status.error, code))
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="space-y-6">
-        {profile.data ? (
-          <>
-            <VehicleIdentityCard profile={profile.data} />
-            <WarrantyCard warranties={profile.data.warranties} />
-          </>
-        ) : profile.error ? (
-          <VehicleApiError error={profile.error} onRetry={() => void profile.refetch()} title="Không tải được hồ sơ xe." />
-        ) : (
-          <>
-            <SkeletonCard lines={7} />
-            <SkeletonCard lines={3} />
-          </>
-        )}
+    <div className="space-y-6">
+      {profile.data ? (
+        <VehicleHero profile={profile.data} status={status.data} />
+      ) : profile.error ? (
+        <VehicleApiError error={profile.error} onRetry={() => void profile.refetch()} title="Không tải được hồ sơ xe." />
+      ) : (
+        <Skeleton className="h-[420px] lg:h-80 w-full rounded-2xl" />
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          {statusVehicleError && status.error ? (
+            <VehicleApiError error={status.error} onRetry={() => void status.refetch()} title="Không tải được trạng thái bảo dưỡng." />
+          ) : (
+            <MaintenanceStatusCard
+              variant="full"
+              status={status.data}
+              error={status.error}
+              onRetry={() => void status.refetch()}
+              retrying={status.isFetching && status.data !== null}
+              pendingSyncExhausted={status.pendingSyncExhausted}
+              onRetryPendingSync={status.retryPendingSync}
+            />
+          )}
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 content-start">
+          {profile.data ? (
+            <>
+              <OdometerCard odometer={profile.data.odometer} />
+              <LastServiceCard lastService={profile.data.lastService} />
+            </>
+          ) : (
+            !profile.error && (
+              <>
+                <SkeletonCard lines={2} />
+                <SkeletonCard lines={3} />
+              </>
+            )
+          )}
+        </div>
       </div>
 
-      <div className="space-y-6">
-        {profile.data ? <OdometerCard odometer={profile.data.odometer} /> : !profile.error && <SkeletonCard lines={2} />}
-        {statusVehicleError && status.error ? (
-          <VehicleApiError error={status.error} onRetry={() => void status.refetch()} title="Không tải được trạng thái bảo dưỡng." />
-        ) : (
-          <MaintenanceStatusCard
-            variant="full"
-            status={status.data}
-            error={status.error}
-            onRetry={() => void status.refetch()}
-            retrying={status.isFetching && status.data !== null}
-            pendingSyncExhausted={status.pendingSyncExhausted}
-            onRetryPendingSync={status.retryPendingSync}
-          />
-        )}
-        {profile.data && <LastServiceCard lastService={profile.data.lastService} />}
-      </div>
+      {profile.data ? <WarrantyCard warranties={profile.data.warranties} /> : !profile.error && <SkeletonCard lines={3} />}
     </div>
   )
 }
@@ -72,14 +82,12 @@ function VehicleDetailContent({ vehicleId }: { vehicleId: string }) {
 export default function VehicleDetail() {
   return (
     <div className="p-4 sm:p-6 xl:p-8 max-w-6xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Xe của tôi</h1>
-        <p className="text-sm text-muted mt-1">Dữ liệu do hãng cung cấp</p>
-      </div>
+      {/* The hero opens the page; the heading stays for screen readers. */}
+      <h1 className="sr-only">Xe của tôi</h1>
       <VehicleGate
         loading={
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <SkeletonCard lines={7} />
+          <div className="space-y-6">
+            <Skeleton className="h-[420px] lg:h-80 w-full rounded-2xl" />
             <SkeletonCard lines={5} />
           </div>
         }

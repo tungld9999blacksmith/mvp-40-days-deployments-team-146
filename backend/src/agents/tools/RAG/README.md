@@ -2,6 +2,13 @@
 
 Tài liệu kiến trúc, sơ đồ kỹ thuật và hướng dẫn vận hành toàn diện cho hệ thống **Retrieval-Augmented Generation (RAG)** chuyên biệt về dịch vụ hậu mãi, bảo hành và bảo dưỡng xe điện VinFast.
 
+> Cập nhật tích hợp 06/10/2026: provider embedding dùng cấu hình chung trong
+> `src/config.py` và `infrastructure/embedding/`: **Gemini `gemini-embedding-001`,
+> 3072 chiều**, collection `ev_care_knowledge_base_3072`. Chat agent vẫn dùng
+> OpenRouter theo cấu hình LLM riêng.
+> Provider không tự chuyển khi lỗi. Nếu AI tổng hợp thất bại, câu trả lời phải
+> công bố chỉ có danh sách tài liệu và `fallback_required=true`.
+
 ---
 
 ## 1. Sơ đồ Kiến trúc Toàn diện (System Architecture)

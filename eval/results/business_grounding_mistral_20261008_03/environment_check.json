@@ -1,0 +1,8 @@
+{
+  "docker_probe": "docker info --format {{.ServerVersion}}",
+  "exit_code": 1,
+  "error": "failed to connect to docker API at npipe:////./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.",
+  "staging": "NOT_RUN_DOCKER_DAEMON_UNAVAILABLE",
+  "production_database_used": false,
+  "existing_app_services_restarted": false
+}

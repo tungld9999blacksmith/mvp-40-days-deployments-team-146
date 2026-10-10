@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "check": "browser_failure",
+      "passed": false,
+      "error": "Error: expect(received).toBe(expected) // Object.is equality\n\nExpected: true\nReceived: false\n\nCall Log:\n- Timeout 45000ms exceeded while waiting on the predicate"
+    }
+  ],
+  "network": [
+    {
+      "method": "POST",
+      "path": "/api/v1/oauth/sign-in",
+      "status": 401
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/oauth/sign-in",
+      "status": 401
+    }
+  ],
+  "google_popup_tested": false,
+  "firebase": "AUTH_EMULATOR_GOOGLE_FIXTURE",
+  "llm": "stub",
+  "real_emails_sent": 0
+}

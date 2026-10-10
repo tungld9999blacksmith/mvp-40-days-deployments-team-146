@@ -169,7 +169,8 @@ def test_recurring_milestone_after_table_end_br007():
 
     milestone = result.next_milestone
     assert milestone.is_recurring is True
-    assert (milestone.odo_milestone_km, milestone.month_milestone) == (36_000, 36)
+    # Default step: 15,000 km / 12 months (VinFast EV schedule since 2026-01-01).
+    assert (milestone.odo_milestone_km, milestone.month_milestone) == (39_000, 36)
     assert milestone.due_date == date(2028, 10, 15)
     assert {i.item_code for i in milestone.items} == {"BRAKE_INSPECTION", "BATTERY_CHECK"}
 

@@ -16,7 +16,7 @@
 
 **Vấn đề:** `maintenance_rule` chỉ có một số mốc hữu hạn (ví dụ VF6: 12.000 / 24.000 km). Xe làm xong mốc cuối thì mốc kế tiếp là gì?
 
-**Hiện trạng (tạm thời):** mốc tăng theo bước cố định, cấu hình trong `.env`: `MAINTENANCE_RECURRING_KM=12000`, `MAINTENANCE_RECURRING_MONTHS=12`. Ví dụ sau 24.000 km / 24 tháng ⇒ 36.000 km / 36 tháng, rồi 48.000… Hạng mục lấy theo mốc đầu tiên. Code: `calculate_due_status` trong `backend/src/modules/user_vehicle/domain.py`.
+**Hiện trạng (tạm thời):** mốc tăng theo bước cố định, cấu hình trong `.env`: `MAINTENANCE_RECURRING_KM=15000`, `MAINTENANCE_RECURRING_MONTHS=12` (chu kỳ VinFast từ 01/01/2026). Ví dụ sau 75.000 km / 60 tháng ⇒ 90.000 km / 72 tháng, rồi 105.000… Hạng mục lấy theo mốc đầu tiên. Code: `calculate_due_status` trong `backend/src/modules/user_vehicle/domain.py`.
 
 **Cần làm:** PO nghiên cứu rule bảo hành để xác định chu kỳ và hạng mục thực sự của các mốc sau bảng (có thể khác nhau theo model/gói bảo hành). Sau khi có kết luận, thay bước cố định bằng nguồn từ rule bảo hành (BR-007).
 

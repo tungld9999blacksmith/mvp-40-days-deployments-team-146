@@ -1,0 +1,6 @@
+{
+  "pytest_passed": 51,
+  "new_compact_card_tests": 19,
+  "ruff": "PASS",
+  "scope": "Compact payload preserves all literal spans and distinct paths, actual frozen booking contract quotes, empty-card API output blocked, binding unchanged. Pilot includes GUARD01. Runtime unchanged."
+}

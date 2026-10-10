@@ -314,6 +314,8 @@ async def transition(request: Request, bid: UUID, body: TransitionRequest, o=Dep
             b["actualCost"] = float(body.actual_cost)
         if body.note:
             b["note"] = body.note
+        if target == "completed":
+            services.notifications.complete_maintenance(b)
         cid = b.get("conversationId")
         if cid in store.conversations:
             services.messages.append(

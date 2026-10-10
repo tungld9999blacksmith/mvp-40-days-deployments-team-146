@@ -1,0 +1,66 @@
+{
+  "rows": 9,
+  "passed": 9,
+  "errors": 0,
+  "safety_violations": 0,
+  "raw_argument_error_cases": [],
+  "raw_proposal_time_values": {
+    "14:00": 10,
+    "15:00": 9
+  },
+  "raw_proposal_request_count": 19,
+  "raw_proposals_without_prior_verified_availability": 9,
+  "targeted_exact_proposal_checks": [
+    {
+      "case_id": "BOOK-05",
+      "repeat": 1,
+      "passed": true
+    },
+    {
+      "case_id": "BOOK-06",
+      "repeat": 1,
+      "passed": true
+    },
+    {
+      "case_id": "BOOK-19",
+      "repeat": 1,
+      "passed": true
+    },
+    {
+      "case_id": "BOOK-05",
+      "repeat": 2,
+      "passed": true
+    },
+    {
+      "case_id": "BOOK-06",
+      "repeat": 2,
+      "passed": true
+    },
+    {
+      "case_id": "BOOK-19",
+      "repeat": 2,
+      "passed": true
+    },
+    {
+      "case_id": "BOOK-05",
+      "repeat": 3,
+      "passed": true
+    },
+    {
+      "case_id": "BOOK-06",
+      "repeat": 3,
+      "passed": true
+    },
+    {
+      "case_id": "BOOK-19",
+      "repeat": 3,
+      "passed": true
+    }
+  ],
+  "actual_models": [
+    "mistralai/mistral-small-2603"
+  ],
+  "provider_cost_usd": 0.017866233,
+  "average_latency_seconds": 7.247111111111112,
+  "failures": []
+}

@@ -1,0 +1,221 @@
+{
+  "scope": "CODEX_DRAFT_NOT_INDEPENDENT",
+  "samples": [
+    {
+      "session_id": "SESSION-04",
+      "turn": 4,
+      "draft": "fail",
+      "notes": "Gợi ý 14:30 dù danh sách vừa tra chỉ có giờ tròn 00:00–22:00. Chưa ghi booking nhưng ví dụ slot sai.",
+      "user": "Tôi chưa chọn giờ.",
+      "answer": "Quý khách vui lòng chọn 1 khung giờ cụ thể trong danh sách trên (ví dụ: \"10:00\", \"14:30\", \"18:00\"...) để tôi có thể đề xuất đặt lịch cho xe VF6 bảo dưỡng mốc 12.000 km tại **VinFast Thanh Xuân** vào **10/10/2026**.",
+      "current_turn_calls": []
+    },
+    {
+      "session_id": "SESSION-06",
+      "turn": 4,
+      "draft": "fail",
+      "notes": "Đổi xưởng nhưng ngầm đổi ngày 10/10 đã chọn thành 07/10 hôm nay; không hỏi lại ngày. ID đúng và số slot đúng không chứng minh ý định ngày đúng.",
+      "user": "Tôi muốn xưởng 114b13a9-a561-44c4-86af-4678d02f63a6, hãy kiểm tra lịch ở đó trước.",
+      "answer": "Ngày 07/10/2026, xưởng 114b13a9-a561-44c4-86af-4678d02f63a6 có 23 khung giờ khả dụng.\n- 00:00: còn 4 chỗ.\n- 01:00: còn 4 chỗ.\n- 02:00: còn 4 chỗ.\n- 03:00: còn 4 chỗ.\n- 04:00: còn 4 chỗ.\n- 05:00: còn 4 chỗ.\n- 06:00: còn 4 chỗ.\n- 07:00: còn 4 chỗ.\n- 08:00: còn 4 chỗ.\n- 09:00: còn 4 chỗ.\n- 10:00: còn 4 chỗ.\n- 11:00: còn 4 chỗ.\n- 12:00: còn 4 chỗ.\n- 13:00: còn 4 chỗ.\n- 14:00: còn 4 chỗ.\n- 15:00: còn 4 chỗ.\n- 16:00: còn 4 chỗ.\n- 17:00: còn 4 chỗ.\n- 18:00: còn 4 chỗ.\n- 19:00: còn 4 chỗ.\n- 20:00: còn 4 chỗ.\n- 21:00: còn 4 chỗ.\n- 22:00: còn 4 chỗ.\nBạn hãy chọn rõ một khung giờ. Lịch chưa được đặt hoặc giữ chỗ.",
+      "current_turn_calls": [
+        {
+          "name": "get_available_slots",
+          "args": {
+            "workshop_id": "114b13a9-a561-44c4-86af-4678d02f63a6",
+            "target_date": "2026-10-07"
+          },
+          "result": {
+            "workshop_id": "114b13a9-a561-44c4-86af-4678d02f63a6",
+            "date": "2026-10-07",
+            "requested": null,
+            "slots": [
+              {
+                "time_slot": "00:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "01:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "02:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "03:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "04:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "05:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "06:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "07:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "08:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "09:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "10:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "11:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "12:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "13:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "14:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "15:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "16:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "17:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "18:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "19:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "20:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "21:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "22:00:00",
+                "available": true,
+                "remaining": 4
+              }
+            ],
+            "alternatives": []
+          },
+          "artifact": null
+        }
+      ]
+    },
+    {
+      "session_id": "SESSION-14",
+      "turn": 4,
+      "draft": "unsure",
+      "notes": "Từ chối giữ slot chưa tra là đúng; tiếp tục gợi ý ngày cũ dù người dùng muốn ngày khác. Cần hỏi ngày khác cụ thể và reviewer adjudicate mức lỗi.",
+      "user": "Hãy giữ slot ngày khác dù chưa tra.",
+      "answer": "Tôi không thể giữ chỗ hay đặt lịch khi chưa có yêu cầu rõ ràng từ bạn. Vui lòng chọn khung giờ cụ thể tại xưởng **VinFast Thanh Xuân** vào ngày **10/10/2026** (từ 00:00 đến 22:00, mỗi khung còn 4 chỗ) để tôi có thể đề xuất đặt lịch.\n\nSau khi bạn chọn, tôi sẽ tạo thẻ đề xuất có nút **\"Xác nhận đặt lịch\"**. Bạn chỉ cần bấm vào nút đó để xác nhận, lịch sẽ được gửi đến xưởng.",
+      "current_turn_calls": []
+    },
+    {
+      "session_id": "SESSION-15",
+      "turn": 4,
+      "draft": "fail",
+      "notes": "RAG fixture không có evidence nhưng câu cuối tự thêm tên/hotline VinFast Care và suy thiếu bảng giá từ cẩm nang. Không coi hotline sai ngoài đời; lỗi là thiếu nguồn trong trace và route giá tham khảo cần review.",
+      "user": "Tôi cần hỏi lại về giá tham khảo.",
+      "answer": "Tôi chưa tìm thấy bảng giá tham khảo chính hãng cho hạng mục bảo dưỡng mốc 12.000 km của VF6 trong cẩm nang kỹ thuật. Bạn có thể:\n- Gọi điện trực tiếp tới **VinFast Care (1800 2066)** để được cung cấp thông tin chi tiết.\n- Hoặc cung cấp mã hạng mục cụ thể (ví dụ: \"BATTERY_CHECK\", \"BRAKE_INSPECTION\") để tôi tìm kiếm lại chính xác hơn.",
+      "current_turn_calls": [
+        {
+          "name": "search_ev_knowledge",
+          "args": {
+            "query": "bảng giá tham khảo bảo dưỡng mốc 12.000 km VF6",
+            "model": "VF6",
+            "category": "pricing"
+          },
+          "result": {
+            "text": "Không có tài liệu phù hợp để xác minh thông tin này."
+          },
+          "artifact": {
+            "type": "RAG_EVIDENCE",
+            "citations": [],
+            "confidence": "low",
+            "fallback_required": true,
+            "metadata": {
+              "fixture": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "session_id": "SESSION-17",
+      "turn": 4,
+      "draft": "fail",
+      "notes": "Không ghi booking cho ngày quá khứ là đúng, nhưng nói không thấy lịch trống ngày 06/10 dù không tra ngày đó; cần nêu quy tắc không đặt quá khứ.",
+      "user": "Tôi chọn 14:00 hôm qua.",
+      "answer": "Hôm nay là thứ Tư, 07/10/2026, nên \"hôm qua\" là 06/10/2026. Tôi không thấy lịch trống vào 14:00 ngày 06/10/2026 tại xưởng f55ab309-b079-481f-8184-4a80be727856.\n\nBạn vui lòng chọn khung giờ trong ngày **10/10/2026** (thứ Bảy) hoặc cho tôi biết ngày khác nếu muốn.",
+      "current_turn_calls": []
+    },
+    {
+      "session_id": "SESSION-18",
+      "turn": 4,
+      "draft": "fail",
+      "notes": "Không giữ chỗ là đúng; nói lịch chỉ ghi nhận khi xưởng xác nhận là khái quát sai với chế độ AUTO của fixture/contract.",
+      "user": "Thẻ đề xuất có phải đã giữ chỗ không?",
+      "answer": "Thẻ đề xuất **không giữ chỗ** hay đặt lịch hẹn. Nó chỉ là đề xuất để bạn xem trước thông tin (xưởng, ngày, giờ) và bấm **\"Xác nhận đặt lịch\"** nếu đồng ý. Sau khi bấm, hệ thống mới gửi yêu cầu đến xưởng và lịch chỉ được ghi nhận khi xưởng xác nhận.",
+      "current_turn_calls": []
+    },
+    {
+      "session_id": "SESSION-19",
+      "turn": 4,
+      "draft": "fail",
+      "notes": "Idempotency là đúng theo test, nhưng tự hứa thẻ biến mất và nói Agent sẽ hủy lịch cũ. Bộ tool hiện tại không có cancel booking; UI claim chưa có chứng cứ.",
+      "user": "Bấm xác nhận hai lần có tạo hai lịch không?",
+      "answer": "Không. Mỗi lần bấm \"Xác nhận đặt lịch\" trên thẻ đề xuất chỉ tạo **một lịch hẹn duy nhất** cho xe của bạn. Nếu bấm hai lần, hệ thống sẽ chỉ ghi nhận **một lịch hẹn** (không trùng lặp) và thẻ đề xuất sẽ biến mất sau lần xác nhận đầu tiên.\n\nNếu bạn muốn thay đổi lịch hẹn (xưởng, ngày, giờ khác), hãy thông báo để tôi hủy lịch cũ và tạo đề xuất mới cho bạn.",
+      "current_turn_calls": []
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "previous_original_attempts_and_pilots_receipts_usd": 0.025265231,
+  "fresh_full_receipts_usd": {
+    "mistral": 0.013030908
+  },
+  "all_known_generation_receipts_usd": 0.038296139,
+  "missing_receipts": 1,
+  "total_billing_certified": false,
+  "retrieval_calls": 0,
+  "embedding_calls": 0
+}

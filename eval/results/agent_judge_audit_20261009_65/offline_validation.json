@@ -1,0 +1,25 @@
+{
+  "pytest_command": ".venv\\Scripts\\python.exe -m pytest eval/test_agent_judge_audit65.py -q",
+  "tests_passed": 13,
+  "pytest_exit_code": 0,
+  "ruff_exit_code": 0,
+  "new_provider_calls": 0,
+  "new_provider_cost_usd": 0,
+  "checks": {
+    "closed64": {
+      "files_verified": 29,
+      "unchanged": true,
+      "changed": []
+    },
+    "history": {
+      "files_verified": 2945,
+      "unchanged": true,
+      "changed": []
+    },
+    "source": {
+      "files_verified": 341,
+      "unchanged": true,
+      "changed": []
+    }
+  }
+}

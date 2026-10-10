@@ -1,0 +1,18 @@
+{
+  "phase": "full",
+  "selected_answers": 60,
+  "attempted_answers": 60,
+  "complete_without_errors": true,
+  "counts": {
+    "FAIL": 3,
+    "UNVERIFIABLE": 7,
+    "PASS": 50
+  },
+  "errored_answers": 0,
+  "unattempted_answers": 0,
+  "known_cost_usd": 0.14307257000000004,
+  "missing_receipts": 0,
+  "human_calibrated": false,
+  "independent_human_labels": 0,
+  "production_acceptance": false
+}

@@ -1,0 +1,4785 @@
+{
+  "pilot_mistral": [
+    {
+      "case_id": "M01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Bảo dưỡng định kỳ mốc 15.000 km đối với xe VinFast VF8 gồm những hạng mục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "mốc 15.000 km",
+          "hạng mục",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "rewritten_query": "Bảo dưỡng định kỳ mốc 15.000 km đối với xe VinFast VF8 gồm những hạng mục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "mốc 15.000 km",
+          "hạng mục",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W02",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Pin cao áp của xe VinFast VF6 được bảo hành trong thời gian bao lâu?",
+        "keywords": [
+          "pin cao áp",
+          "bảo hành",
+          "thời gian bảo hành",
+          "VF6"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "rewritten_query": "Pin cao áp của xe VinFast VF6 được bảo hành trong thời gian bao lâu?",
+        "keywords": [
+          "pin cao áp",
+          "bảo hành",
+          "thời gian bảo hành",
+          "VF6"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "G01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF8 sắp đến mốc bảo dưỡng định kỳ cần thực hiện những thủ tục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "thủ tục",
+          "mốc bảo dưỡng",
+          "VinFast VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe tôi sắp đến mốc bảo dưỡng rồi phải làm gì?",
+        "rewritten_query": "Xe VinFast VF8 sắp đến mốc bảo dưỡng định kỳ cần thực hiện những thủ tục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "thủ tục",
+          "mốc bảo dưỡng",
+          "VinFast VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "MAINT-10",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF8 có đến hạn bảo dưỡng định kỳ chưa?",
+        "keywords": [
+          "đến hạn",
+          "bảo dưỡng",
+          "định kỳ",
+          "VinFast",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "xe toi den han bao duong chua",
+        "rewritten_query": "Xe VinFast VF8 có đến hạn bảo dưỡng định kỳ chưa?",
+        "keywords": [
+          "đến hạn",
+          "bảo dưỡng",
+          "định kỳ",
+          "VinFast",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "GUARD-13",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Người dùng yêu cầu lời khuyên về nấu ăn, không liên quan đến xe điện.",
+        "keywords": [
+          "lời khuyên",
+          "nấu ăn"
+        ],
+        "model": null,
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": true
+      },
+      "runtime_analysis": {
+        "original_query": "Cho tôi lời khuyên nấu ăn, không cần thông tin xe.",
+        "rewritten_query": "Người dùng yêu cầu lời khuyên về nấu ăn, không liên quan đến xe điện.",
+        "keywords": [
+          "lời khuyên",
+          "nấu ăn"
+        ],
+        "model": null,
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": true
+      },
+      "error": null,
+      "retrieval_status": "SKIPPED_OUT_OF_SCOPE"
+    }
+  ],
+  "full_mistral": [
+    {
+      "case_id": "M01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Bảo dưỡng định kỳ mốc 15.000 km đối với xe VinFast VF8 gồm những hạng mục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "mốc 15.000 km",
+          "hạng mục",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "rewritten_query": "Bảo dưỡng định kỳ mốc 15.000 km đối với xe VinFast VF8 gồm những hạng mục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "mốc 15.000 km",
+          "hạng mục",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M02",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Thay pin chìa khóa điều khiển xe VinFast VF e34 theo chu kỳ nào?",
+        "keywords": [
+          "pin chìa khóa điều khiển",
+          "thay pin",
+          "chu kỳ thay pin",
+          "chìa khóa điều khiển",
+          "VF e34",
+          "VinFast"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Pin chìa khóa điều khiển VF e34 thay theo chu kỳ nào?",
+        "rewritten_query": "Thay pin chìa khóa điều khiển xe VinFast VF e34 theo chu kỳ nào?",
+        "keywords": [
+          "pin chìa khóa điều khiển",
+          "thay pin",
+          "chu kỳ thay pin",
+          "chìa khóa điều khiển",
+          "VF e34",
+          "VinFast"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M03",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu theo quy định?",
+        "keywords": [
+          "chu kỳ bảo dưỡng định kỳ",
+          "ô tô điện VinFast",
+          "năm 2026",
+          "bảo dưỡng định kỳ",
+          "quy định"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu?",
+        "rewritten_query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu theo quy định?",
+        "keywords": [
+          "chu kỳ bảo dưỡng định kỳ",
+          "ô tô điện VinFast",
+          "năm 2026",
+          "bảo dưỡng định kỳ",
+          "quy định"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M07",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Lịch thay hoặc kiểm tra định kỳ của nước làm mát pin và động cơ điện trên xe VinFast VF e34?",
+        "keywords": [
+          "nước làm mát pin",
+          "nước làm mát động cơ điện",
+          "thay nước làm mát",
+          "kiểm tra định kỳ",
+          "lịch bảo dưỡng",
+          "VF e34"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Nước làm mát pin và động cơ điện VF e34 cần thay hay kiểm tra định kỳ?",
+        "rewritten_query": "Lịch thay hoặc kiểm tra định kỳ của nước làm mát pin và động cơ điện trên xe VinFast VF e34?",
+        "keywords": [
+          "nước làm mát pin",
+          "nước làm mát động cơ điện",
+          "thay nước làm mát",
+          "kiểm tra định kỳ",
+          "lịch bảo dưỡng",
+          "VF e34"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M18",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Trong bảo dưỡng định kỳ cho dòng xe VinFast VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc?",
+        "keywords": [
+          "bảo dưỡng",
+          "VF e34",
+          "pin cao áp",
+          "cổng sạc",
+          "hạng mục",
+          "kiểm tra",
+          "thay thế"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Trong bảo dưỡng VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc?",
+        "rewritten_query": "Trong bảo dưỡng định kỳ cho dòng xe VinFast VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc?",
+        "keywords": [
+          "bảo dưỡng",
+          "VF e34",
+          "pin cao áp",
+          "cổng sạc",
+          "hạng mục",
+          "kiểm tra",
+          "thay thế"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M23",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF e34 đến mốc 40.000 km cần thay những phụ tùng gì?",
+        "keywords": [
+          "VF e34",
+          "40.000 km",
+          "thay phụ tùng",
+          "bảo dưỡng",
+          "mốc 40.000 km"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": 40000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe VF e34 đến 40.000 km cần thay những phụ tùng gì?",
+        "rewritten_query": "Xe VinFast VF e34 đến mốc 40.000 km cần thay những phụ tùng gì?",
+        "keywords": [
+          "VF e34",
+          "40.000 km",
+          "thay phụ tùng",
+          "bảo dưỡng",
+          "mốc 40.000 km"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": 40000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Chính sách bảo hành cho dòng xe VinFast VF8 là bao nhiêu năm?",
+        "keywords": [
+          "chính sách bảo hành",
+          "VF8",
+          "năm"
+        ],
+        "model": "VF8",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Chính sách bảo hành xe VF8 là bao nhiêu năm?",
+        "rewritten_query": "Chính sách bảo hành cho dòng xe VinFast VF8 là bao nhiêu năm?",
+        "keywords": [
+          "chính sách bảo hành",
+          "VF8",
+          "năm"
+        ],
+        "model": "VF8",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W02",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Pin cao áp của xe VinFast VF6 được bảo hành trong thời gian bao lâu?",
+        "keywords": [
+          "pin cao áp",
+          "bảo hành",
+          "thời gian bảo hành",
+          "VF6"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "rewritten_query": "Pin cao áp của xe VinFast VF6 được bảo hành trong thời gian bao lâu?",
+        "keywords": [
+          "pin cao áp",
+          "bảo hành",
+          "thời gian bảo hành",
+          "VF6"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W04",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Điều kiện bảo hành đối với xe VinFast là gì?",
+        "keywords": [
+          "điều kiện bảo hành",
+          "xe VinFast",
+          "bảo hành"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Điều kiện để xe VinFast được bảo hành là gì?",
+        "rewritten_query": "Điều kiện bảo hành đối với xe VinFast là gì?",
+        "keywords": [
+          "điều kiện bảo hành",
+          "xe VinFast",
+          "bảo hành"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W12",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast đã sử dụng cho mục đích thương mại sau khi chuyển quyền sở hữu thì áp dụng chính sách bảo hành nào?",
+        "keywords": [
+          "bảo hành",
+          "sau chuyển chủ",
+          "thương mại",
+          "chính sách bảo hành",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe VinFast từng dùng thương mại sau khi chuyển chủ áp dụng bảo hành nào?",
+        "rewritten_query": "Xe VinFast đã sử dụng cho mục đích thương mại sau khi chuyển quyền sở hữu thì áp dụng chính sách bảo hành nào?",
+        "keywords": [
+          "bảo hành",
+          "sau chuyển chủ",
+          "thương mại",
+          "chính sách bảo hành",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W20",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF3 sau 7 năm sử dụng có còn nằm trong thời hạn bảo hành không?",
+        "keywords": [
+          "bảo hành",
+          "thời hạn bảo hành",
+          "7 năm",
+          "sau 7 năm",
+          "VinFast VF3"
+        ],
+        "model": "VF3",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe VF3 dùng 7 năm vẫn còn trong bảo hành không?",
+        "rewritten_query": "Xe VinFast VF3 sau 7 năm sử dụng có còn nằm trong thời hạn bảo hành không?",
+        "keywords": [
+          "bảo hành",
+          "thời hạn bảo hành",
+          "7 năm",
+          "sau 7 năm",
+          "VinFast VF3"
+        ],
+        "model": "VF3",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "B01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Giới hạn nhiệt độ khuyến cáo khi bảo quản xe ô tô điện VinFast là bao nhiêu?",
+        "keywords": [
+          "nhiệt độ",
+          "bảo quản",
+          "ô tô điện",
+          "VinFast",
+          "giới hạn nhiệt độ",
+          "bảo quản xe điện"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+        "rewritten_query": "Giới hạn nhiệt độ khuyến cáo khi bảo quản xe ô tô điện VinFast là bao nhiêu?",
+        "keywords": [
+          "nhiệt độ",
+          "bảo quản",
+          "ô tô điện",
+          "VinFast",
+          "giới hạn nhiệt độ",
+          "bảo quản xe điện"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "B11",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Quy trình cứu hộ pin xe điện VinFast hoạt động như thế nào?",
+        "keywords": [
+          "cứu hộ",
+          "pin",
+          "xe điện",
+          "VinFast",
+          "hoạt động",
+          "quy trình"
+        ],
+        "model": "ALL",
+        "category": "safety",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Cứu hộ pin xe điện VinFast hoạt động như thế nào?",
+        "rewritten_query": "Quy trình cứu hộ pin xe điện VinFast hoạt động như thế nào?",
+        "keywords": [
+          "cứu hộ",
+          "pin",
+          "xe điện",
+          "VinFast",
+          "hoạt động",
+          "quy trình"
+        ],
+        "model": "ALL",
+        "category": "safety",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "B16",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF e34 sạc đầy bằng chế độ sạc thường mất bao lâu?",
+        "keywords": [
+          "VF e34",
+          "sạc đầy",
+          "chế độ sạc thường",
+          "thời gian sạc"
+        ],
+        "model": "VFe34",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe VF e34 sạc đầy bằng chế độ sạc thường mất bao lâu?",
+        "rewritten_query": "Xe VinFast VF e34 sạc đầy bằng chế độ sạc thường mất bao lâu?",
+        "keywords": [
+          "VF e34",
+          "sạc đầy",
+          "chế độ sạc thường",
+          "thời gian sạc"
+        ],
+        "model": "VFe34",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "B20",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Công suất sạc AC tối đa và công suất sạc DC tối đa của xe VinFast VF7 là bao nhiêu?",
+        "keywords": [
+          "công suất sạc AC tối đa",
+          "công suất sạc DC tối đa",
+          "VinFast VF7"
+        ],
+        "model": "VF7",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Công suất sạc AC và DC tối đa của VinFast VF7 là bao nhiêu?",
+        "rewritten_query": "Công suất sạc AC tối đa và công suất sạc DC tối đa của xe VinFast VF7 là bao nhiêu?",
+        "keywords": [
+          "công suất sạc AC tối đa",
+          "công suất sạc DC tối đa",
+          "VinFast VF7"
+        ],
+        "model": "VF7",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "P01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Chi phí sạc xe điện tại nhà bằng bộ sạc VinFast công suất 3 kW là bao nhiêu?",
+        "keywords": [
+          "sạc tại nhà",
+          "VinFast",
+          "3 kW",
+          "giá",
+          "chi phí",
+          "bộ sạc"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Sạc tại nhà VinFast 3 kW có giá bao nhiêu?",
+        "rewritten_query": "Chi phí sạc xe điện tại nhà bằng bộ sạc VinFast công suất 3 kW là bao nhiêu?",
+        "keywords": [
+          "sạc tại nhà",
+          "VinFast",
+          "3 kW",
+          "giá",
+          "chi phí",
+          "bộ sạc"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "P05",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Giá tấm che pin cao áp chính hãng của xe VinFast VF5 là bao nhiêu?",
+        "keywords": [
+          "tấm che pin cao áp",
+          "chính hãng",
+          "giá",
+          "VinFast VF5"
+        ],
+        "model": "VF5",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Tấm che pin cao áp VF5 chính hãng giá bao nhiêu?",
+        "rewritten_query": "Giá tấm che pin cao áp chính hãng của xe VinFast VF5 là bao nhiêu?",
+        "keywords": [
+          "tấm che pin cao áp",
+          "chính hãng",
+          "giá",
+          "VinFast VF5"
+        ],
+        "model": "VF5",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "PR01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Hướng dẫn đặt lịch bảo dưỡng định kỳ cho xe VinFast thông qua ứng dụng di động",
+        "keywords": [
+          "đặt lịch",
+          "bảo dưỡng",
+          "xe VinFast",
+          "ứng dụng di động",
+          "lịch bảo dưỡng định kỳ"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Đặt lịch bảo dưỡng xe VinFast qua app như thế nào?",
+        "rewritten_query": "Hướng dẫn đặt lịch bảo dưỡng định kỳ cho xe VinFast thông qua ứng dụng di động",
+        "keywords": [
+          "đặt lịch",
+          "bảo dưỡng",
+          "xe VinFast",
+          "ứng dụng di động",
+          "lịch bảo dưỡng định kỳ"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "PR03",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng của VinFast gồm những bước nào?",
+        "keywords": [
+          "quy trình",
+          "tiếp nhận",
+          "xe",
+          "bảo dưỡng",
+          "xưởng",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast như thế nào?",
+        "rewritten_query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng của VinFast gồm những bước nào?",
+        "keywords": [
+          "quy trình",
+          "tiếp nhận",
+          "xe",
+          "bảo dưỡng",
+          "xưởng",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "PR07",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xưởng dịch vụ VinFast cung cấp hotline nào để liên hệ?",
+        "keywords": [
+          "hotline",
+          "xưởng dịch vụ",
+          "VinFast",
+          "liên hệ"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xưởng dịch vụ VinFast có hotline nào để liên hệ?",
+        "rewritten_query": "Xưởng dịch vụ VinFast cung cấp hotline nào để liên hệ?",
+        "keywords": [
+          "hotline",
+          "xưởng dịch vụ",
+          "VinFast",
+          "liên hệ"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "PR10",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Sau khi nhận xe trở lại từ xưởng bảo dưỡng của VinFast, cần kiểm tra những hạng mục gì?",
+        "keywords": [
+          "nhận xe",
+          "sau bảo dưỡng",
+          "xưởng",
+          "kiểm tra",
+          "trở lại",
+          "hạng mục"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Nhận xe lại sau bảo dưỡng tại xưởng VinFast cần kiểm tra gì không?",
+        "rewritten_query": "Sau khi nhận xe trở lại từ xưởng bảo dưỡng của VinFast, cần kiểm tra những hạng mục gì?",
+        "keywords": [
+          "nhận xe",
+          "sau bảo dưỡng",
+          "xưởng",
+          "kiểm tra",
+          "trở lại",
+          "hạng mục"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "G01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF8 sắp đến mốc bảo dưỡng định kỳ, cần thực hiện những thủ tục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "thủ tục",
+          "mốc bảo dưỡng",
+          "VinFast VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe tôi sắp đến mốc bảo dưỡng rồi phải làm gì?",
+        "rewritten_query": "Xe VinFast VF8 sắp đến mốc bảo dưỡng định kỳ, cần thực hiện những thủ tục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "thủ tục",
+          "mốc bảo dưỡng",
+          "VinFast VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "G03",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Chính sách tặng VPoint cho khách hàng khi đặt lịch dịch vụ trước và đến đúng hẹn là bao nhiêu?",
+        "keywords": [
+          "VPoint",
+          "tặng",
+          "đặt lịch dịch vụ trước",
+          "đến đúng hẹn",
+          "chính sách"
+        ],
+        "model": null,
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ trước và đến đúng hẹn?",
+        "rewritten_query": "Chính sách tặng VPoint cho khách hàng khi đặt lịch dịch vụ trước và đến đúng hẹn là bao nhiêu?",
+        "keywords": [
+          "VPoint",
+          "tặng",
+          "đặt lịch dịch vụ trước",
+          "đến đúng hẹn",
+          "chính sách"
+        ],
+        "model": null,
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "G05",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Lý do tại sao lịch bảo dưỡng của ô tô điện dài hơn so với ô tô sử dụng động cơ xăng?",
+        "keywords": [
+          "lịch bảo dưỡng",
+          "ô tô điện",
+          "xe xăng",
+          "động cơ xăng",
+          "bảo dưỡng định kỳ",
+          "so sánh"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Vì sao lịch bảo dưỡng ô tô điện dài hơn xe xăng?",
+        "rewritten_query": "Lý do tại sao lịch bảo dưỡng của ô tô điện dài hơn so với ô tô sử dụng động cơ xăng?",
+        "keywords": [
+          "lịch bảo dưỡng",
+          "ô tô điện",
+          "xe xăng",
+          "động cơ xăng",
+          "bảo dưỡng định kỳ",
+          "so sánh"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "MAINT-01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF8 có đến hạn bảo dưỡng định kỳ chưa?",
+        "keywords": [
+          "đến hạn bảo dưỡng",
+          "bảo dưỡng định kỳ",
+          "VinFast VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe tôi đến hạn bảo dưỡng chưa?",
+        "rewritten_query": "Xe VinFast VF8 có đến hạn bảo dưỡng định kỳ chưa?",
+        "keywords": [
+          "đến hạn bảo dưỡng",
+          "bảo dưỡng định kỳ",
+          "VinFast VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "MAINT-10",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF8 có đến hạn bảo dưỡng định kỳ chưa?",
+        "keywords": [
+          "đến hạn",
+          "bảo dưỡng",
+          "định kỳ",
+          "VinFast VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "xe toi den han bao duong chua",
+        "rewritten_query": "Xe VinFast VF8 có đến hạn bảo dưỡng định kỳ chưa?",
+        "keywords": [
+          "đến hạn",
+          "bảo dưỡng",
+          "định kỳ",
+          "VinFast VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "MAINT-13",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Danh sách hạng mục bảo dưỡng định kỳ tại mốc 12.000 km đối với xe VinFast VF8 gồm những gì?",
+        "keywords": [
+          "mốc bảo dưỡng",
+          "12000 km",
+          "hạng mục bảo dưỡng",
+          "bảo dưỡng định kỳ",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 12000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Mốc bảo dưỡng định kỳ 12000 km gồm gì?",
+        "rewritten_query": "Danh sách hạng mục bảo dưỡng định kỳ tại mốc 12.000 km đối với xe VinFast VF8 gồm những gì?",
+        "keywords": [
+          "mốc bảo dưỡng",
+          "12000 km",
+          "hạng mục bảo dưỡng",
+          "bảo dưỡng định kỳ",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 12000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "BOOK-11",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Tìm 2 cửa hàng đại lý xe điện VinFast tại Hà Nội",
+        "keywords": [
+          "tìm",
+          "2",
+          "cửa hàng",
+          "đại lý",
+          "xe điện",
+          "VinFast",
+          "Hà Nội"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "tim 2 xuong o Ha Noi",
+        "rewritten_query": "Tìm 2 cửa hàng đại lý xe điện VinFast tại Hà Nội",
+        "keywords": [
+          "tìm",
+          "2",
+          "cửa hàng",
+          "đại lý",
+          "xe điện",
+          "VinFast",
+          "Hà Nội"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "BOOK-22",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Làm thế nào để đặt lịch bảo dưỡng hoặc dịch vụ cho xe điện VinFast?",
+        "keywords": [
+          "đặt lịch",
+          "bảo dưỡng",
+          "dịch vụ",
+          "xe điện",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Đặt lịch đó.",
+        "rewritten_query": "Làm thế nào để đặt lịch bảo dưỡng hoặc dịch vụ cho xe điện VinFast?",
+        "keywords": [
+          "đặt lịch",
+          "bảo dưỡng",
+          "dịch vụ",
+          "xe điện",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "GUARD-13",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Người dùng yêu cầu lời khuyên về nấu ăn, không liên quan đến xe điện.",
+        "keywords": [
+          "lời khuyên",
+          "nấu ăn"
+        ],
+        "model": null,
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": true
+      },
+      "runtime_analysis": {
+        "original_query": "Cho tôi lời khuyên nấu ăn, không cần thông tin xe.",
+        "rewritten_query": "Người dùng yêu cầu lời khuyên về nấu ăn, không liên quan đến xe điện.",
+        "keywords": [
+          "lời khuyên",
+          "nấu ăn"
+        ],
+        "model": null,
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": true
+      },
+      "error": null,
+      "retrieval_status": "SKIPPED_OUT_OF_SCOPE"
+    }
+  ],
+  "pilot_gemma": [
+    {
+      "case_id": "M01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Các hạng mục bảo dưỡng định kỳ cho xe VinFast VF8 tại mốc 15.000 km bao gồm những gì?",
+        "keywords": [
+          "bảo dưỡng",
+          "định kỳ",
+          "15.000 km",
+          "VF8",
+          "hạng mục"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "rewritten_query": "Các hạng mục bảo dưỡng định kỳ cho xe VinFast VF8 tại mốc 15.000 km bao gồm những gì?",
+        "keywords": [
+          "bảo dưỡng",
+          "định kỳ",
+          "15.000 km",
+          "VF8",
+          "hạng mục"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W02",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Thời hạn bảo hành của pin cao áp đối với dòng xe VF6 là bao lâu?",
+        "keywords": [
+          "pin cao áp",
+          "VF6",
+          "bảo hành",
+          "thời hạn"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "rewritten_query": "Thời hạn bảo hành của pin cao áp đối với dòng xe VF6 là bao lâu?",
+        "keywords": [
+          "pin cao áp",
+          "VF6",
+          "bảo hành",
+          "thời hạn"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "G01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Quy trình và các bước cần thực hiện khi xe VinFast VF8 sắp đến mốc bảo dưỡng định kỳ là gì?",
+        "keywords": [
+          "bảo dưỡng",
+          "định kỳ",
+          "quy trình",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe tôi sắp đến mốc bảo dưỡng rồi phải làm gì?",
+        "rewritten_query": "Quy trình và các bước cần thực hiện khi xe VinFast VF8 sắp đến mốc bảo dưỡng định kỳ là gì?",
+        "keywords": [
+          "bảo dưỡng",
+          "định kỳ",
+          "quy trình",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "MAINT-10",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF8 đã đến hạn bảo dưỡng định kỳ chưa?",
+        "keywords": [
+          "VinFast",
+          "VF8",
+          "đến hạn",
+          "bảo dưỡng",
+          "định kỳ"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "xe toi den han bao duong chua",
+        "rewritten_query": "Xe VinFast VF8 đã đến hạn bảo dưỡng định kỳ chưa?",
+        "keywords": [
+          "VinFast",
+          "VF8",
+          "đến hạn",
+          "bảo dưỡng",
+          "định kỳ"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "GUARD-13",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Cho tôi lời khuyên nấu ăn, không cần thông tin xe.",
+        "keywords": [
+          "nấu ăn",
+          "lời khuyên"
+        ],
+        "model": null,
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": true
+      },
+      "runtime_analysis": {
+        "original_query": "Cho tôi lời khuyên nấu ăn, không cần thông tin xe.",
+        "rewritten_query": "Cho tôi lời khuyên nấu ăn, không cần thông tin xe.",
+        "keywords": [
+          "nấu ăn",
+          "lời khuyên"
+        ],
+        "model": null,
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": true
+      },
+      "error": null,
+      "retrieval_status": "SKIPPED_OUT_OF_SCOPE"
+    }
+  ],
+  "full_gemma": [
+    {
+      "case_id": "M01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Các hạng mục bảo dưỡng định kỳ cho xe VinFast VF8 tại mốc 15.000 km bao gồm những gì?",
+        "keywords": [
+          "bảo dưỡng",
+          "định kỳ",
+          "15.000 km",
+          "VF8",
+          "hạng mục"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "rewritten_query": "Các hạng mục bảo dưỡng định kỳ cho xe VinFast VF8 tại mốc 15.000 km bao gồm những gì?",
+        "keywords": [
+          "bảo dưỡng",
+          "định kỳ",
+          "15.000 km",
+          "VF8",
+          "hạng mục"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M02",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Thời hạn thay thế pin cho chìa khóa điều khiển của xe VinFast VFe34 là bao lâu?",
+        "keywords": [
+          "pin",
+          "chìa khóa",
+          "điều khiển",
+          "VFe34",
+          "thay thế",
+          "chu kỳ"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Pin chìa khóa điều khiển VF e34 thay theo chu kỳ nào?",
+        "rewritten_query": "Thời hạn thay thế pin cho chìa khóa điều khiển của xe VinFast VFe34 là bao lâu?",
+        "keywords": [
+          "pin",
+          "chìa khóa",
+          "điều khiển",
+          "VFe34",
+          "thay thế",
+          "chu kỳ"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M03",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Chu kỳ bảo dưỡng định kỳ của xe ô tô điện VinFast từ năm 2026 là bao lâu?",
+        "keywords": [
+          "chu kỳ",
+          "bảo dưỡng định kỳ",
+          "ô tô điện",
+          "VinFast",
+          "2026"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu?",
+        "rewritten_query": "Chu kỳ bảo dưỡng định kỳ của xe ô tô điện VinFast từ năm 2026 là bao lâu?",
+        "keywords": [
+          "chu kỳ",
+          "bảo dưỡng định kỳ",
+          "ô tô điện",
+          "VinFast",
+          "2026"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M07",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Quy trình kiểm tra hoặc thay thế nước làm mát cho pin cao áp và động cơ điện trên dòng xe VFe34 được quy định như thế nào?",
+        "keywords": [
+          "nước làm mát",
+          "pin cao áp",
+          "động cơ điện",
+          "VFe34",
+          "kiểm tra định kỳ",
+          "thay thế"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Nước làm mát pin và động cơ điện VF e34 cần thay hay kiểm tra định kỳ?",
+        "rewritten_query": "Quy trình kiểm tra hoặc thay thế nước làm mát cho pin cao áp và động cơ điện trên dòng xe VFe34 được quy định như thế nào?",
+        "keywords": [
+          "nước làm mát",
+          "pin cao áp",
+          "động cơ điện",
+          "VFe34",
+          "kiểm tra định kỳ",
+          "thay thế"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M18",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Các hạng mục kiểm tra liên quan đến pin cao áp và cổng sạc trong quy trình bảo dưỡng định kỳ của xe VinFast VFe34 là gì?",
+        "keywords": [
+          "bảo dưỡng",
+          "VFe34",
+          "pin cao áp",
+          "cổng sạc",
+          "hạng mục kiểm tra"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Trong bảo dưỡng VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc?",
+        "rewritten_query": "Các hạng mục kiểm tra liên quan đến pin cao áp và cổng sạc trong quy trình bảo dưỡng định kỳ của xe VinFast VFe34 là gì?",
+        "keywords": [
+          "bảo dưỡng",
+          "VFe34",
+          "pin cao áp",
+          "cổng sạc",
+          "hạng mục kiểm tra"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M23",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Các hạng mục phụ tùng cần thay thế khi xe VinFast VFe34 thực hiện bảo dưỡng tại mốc 40.000 km là gì?",
+        "keywords": [
+          "VFe34",
+          "thay thế",
+          "phụ tùng",
+          "bảo dưỡng",
+          "40.000 km"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": 40000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe VF e34 đến 40.000 km cần thay những phụ tùng gì?",
+        "rewritten_query": "Các hạng mục phụ tùng cần thay thế khi xe VinFast VFe34 thực hiện bảo dưỡng tại mốc 40.000 km là gì?",
+        "keywords": [
+          "VFe34",
+          "thay thế",
+          "phụ tùng",
+          "bảo dưỡng",
+          "40.000 km"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": 40000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Chính sách bảo hành của dòng xe VF8 là bao nhiêu năm?",
+        "keywords": [
+          "chính sách",
+          "bảo hành",
+          "VF8",
+          "thời hạn"
+        ],
+        "model": "VF8",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Chính sách bảo hành xe VF8 là bao nhiêu năm?",
+        "rewritten_query": "Chính sách bảo hành của dòng xe VF8 là bao nhiêu năm?",
+        "keywords": [
+          "chính sách",
+          "bảo hành",
+          "VF8",
+          "thời hạn"
+        ],
+        "model": "VF8",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W02",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Thời hạn bảo hành của pin cao áp đối với dòng xe VF6 là bao lâu?",
+        "keywords": [
+          "pin cao áp",
+          "bảo hành",
+          "VF6",
+          "thời hạn"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "rewritten_query": "Thời hạn bảo hành của pin cao áp đối với dòng xe VF6 là bao lâu?",
+        "keywords": [
+          "pin cao áp",
+          "bảo hành",
+          "VF6",
+          "thời hạn"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W04",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Các điều kiện và tiêu chuẩn để xe VinFast được hưởng chính sách bảo hành là gì?",
+        "keywords": [
+          "điều kiện",
+          "bảo hành",
+          "xe VinFast"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Điều kiện để xe VinFast được bảo hành là gì?",
+        "rewritten_query": "Các điều kiện và tiêu chuẩn để xe VinFast được hưởng chính sách bảo hành là gì?",
+        "keywords": [
+          "điều kiện",
+          "bảo hành",
+          "xe VinFast"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W12",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Chính sách bảo hành áp dụng cho xe VinFast đã từng được sử dụng cho mục đích kinh doanh thương mại sau khi thay đổi chủ sở hữu là gì?",
+        "keywords": [
+          "bảo hành",
+          "xe thương mại",
+          "chuyển chủ",
+          "chính sách bảo hành"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe VinFast từng dùng thương mại sau khi chuyển chủ áp dụng bảo hành nào?",
+        "rewritten_query": "Chính sách bảo hành áp dụng cho xe VinFast đã từng được sử dụng cho mục đích kinh doanh thương mại sau khi thay đổi chủ sở hữu là gì?",
+        "keywords": [
+          "bảo hành",
+          "xe thương mại",
+          "chuyển chủ",
+          "chính sách bảo hành"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W20",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Chính sách bảo hành của dòng xe VF3 sau 7 năm sử dụng như thế nào?",
+        "keywords": [
+          "VF3",
+          "bảo hành",
+          "7 năm",
+          "thời hạn bảo hành"
+        ],
+        "model": "VF3",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe VF3 dùng 7 năm vẫn còn trong bảo hành không?",
+        "rewritten_query": "Chính sách bảo hành của dòng xe VF3 sau 7 năm sử dụng như thế nào?",
+        "keywords": [
+          "VF3",
+          "bảo hành",
+          "7 năm",
+          "thời hạn bảo hành"
+        ],
+        "model": "VF3",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "B01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "VinFast khuyến cáo giới hạn nhiệt độ bao nhiêu khi bảo quản xe ô tô điện?",
+        "keywords": [
+          "khuyến cáo",
+          "giới hạn nhiệt độ",
+          "bảo quản",
+          "ô tô điện"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+        "rewritten_query": "VinFast khuyến cáo giới hạn nhiệt độ bao nhiêu khi bảo quản xe ô tô điện?",
+        "keywords": [
+          "khuyến cáo",
+          "giới hạn nhiệt độ",
+          "bảo quản",
+          "ô tô điện"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "B11",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Quy trình và cách thức hoạt động của dịch vụ cứu hộ đối với pin xe điện VinFast như thế nào?",
+        "keywords": [
+          "cứu hộ",
+          "pin",
+          "xe điện",
+          "quy trình",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "safety",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Cứu hộ pin xe điện VinFast hoạt động như thế nào?",
+        "rewritten_query": "Quy trình và cách thức hoạt động của dịch vụ cứu hộ đối với pin xe điện VinFast như thế nào?",
+        "keywords": [
+          "cứu hộ",
+          "pin",
+          "xe điện",
+          "quy trình",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "safety",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "B16",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Thời gian sạc đầy pin cho xe VFe34 khi sử dụng chế độ sạc thường là bao lâu?",
+        "keywords": [
+          "VFe34",
+          "sạc đầy",
+          "chế độ sạc thường",
+          "thời gian sạc"
+        ],
+        "model": "VFe34",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe VF e34 sạc đầy bằng chế độ sạc thường mất bao lâu?",
+        "rewritten_query": "Thời gian sạc đầy pin cho xe VFe34 khi sử dụng chế độ sạc thường là bao lâu?",
+        "keywords": [
+          "VFe34",
+          "sạc đầy",
+          "chế độ sạc thường",
+          "thời gian sạc"
+        ],
+        "model": "VFe34",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "B20",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Công suất sạc AC và DC tối đa của dòng xe VinFast VF7 là bao nhiêu?",
+        "keywords": [
+          "công suất sạc",
+          "AC",
+          "DC",
+          "VinFast VF7"
+        ],
+        "model": "VF7",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Công suất sạc AC và DC tối đa của VinFast VF7 là bao nhiêu?",
+        "rewritten_query": "Công suất sạc AC và DC tối đa của dòng xe VinFast VF7 là bao nhiêu?",
+        "keywords": [
+          "công suất sạc",
+          "AC",
+          "DC",
+          "VinFast VF7"
+        ],
+        "model": "VF7",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "P01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Chi phí lắp đặt hoặc giá của bộ sạc tại nhà VinFast công suất 3 kW là bao nhiêu?",
+        "keywords": [
+          "sạc tại nhà",
+          "VinFast",
+          "3 kW",
+          "giá",
+          "chi phí"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Sạc tại nhà VinFast 3 kW có giá bao nhiêu?",
+        "rewritten_query": "Chi phí lắp đặt hoặc giá của bộ sạc tại nhà VinFast công suất 3 kW là bao nhiêu?",
+        "keywords": [
+          "sạc tại nhà",
+          "VinFast",
+          "3 kW",
+          "giá",
+          "chi phí"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "P05",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Giá của tấm che pin cao áp chính hãng cho dòng xe VF5 là bao nhiêu?",
+        "keywords": [
+          "giá",
+          "tấm che",
+          "pin cao áp",
+          "VF5",
+          "chính hãng"
+        ],
+        "model": "VF5",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Tấm che pin cao áp VF5 chính hãng giá bao nhiêu?",
+        "rewritten_query": "Giá của tấm che pin cao áp chính hãng cho dòng xe VF5 là bao nhiêu?",
+        "keywords": [
+          "giá",
+          "tấm che",
+          "pin cao áp",
+          "VF5",
+          "chính hãng"
+        ],
+        "model": "VF5",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "PR01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Quy trình đặt lịch bảo dưỡng xe VinFast thông qua ứng dụng di động được thực hiện như thế nào?",
+        "keywords": [
+          "đặt lịch",
+          "bảo dưỡng",
+          "VinFast",
+          "ứng dụng",
+          "quy trình"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Đặt lịch bảo dưỡng xe VinFast qua app như thế nào?",
+        "rewritten_query": "Quy trình đặt lịch bảo dưỡng xe VinFast thông qua ứng dụng di động được thực hiện như thế nào?",
+        "keywords": [
+          "đặt lịch",
+          "bảo dưỡng",
+          "VinFast",
+          "ứng dụng",
+          "quy trình"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "PR03",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Quy trình tiếp nhận xe tại xưởng dịch vụ VinFast khi khách hàng đến bảo dưỡng được thực hiện như thế nào?",
+        "keywords": [
+          "quy trình",
+          "tiếp nhận",
+          "xe",
+          "bảo dưỡng",
+          "xưởng",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast như thế nào?",
+        "rewritten_query": "Quy trình tiếp nhận xe tại xưởng dịch vụ VinFast khi khách hàng đến bảo dưỡng được thực hiện như thế nào?",
+        "keywords": [
+          "quy trình",
+          "tiếp nhận",
+          "xe",
+          "bảo dưỡng",
+          "xưởng",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "PR07",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Số điện thoại hotline liên hệ của xưởng dịch vụ VinFast là gì?",
+        "keywords": [
+          "hotline",
+          "xưởng dịch vụ",
+          "liên hệ",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xưởng dịch vụ VinFast có hotline nào để liên hệ?",
+        "rewritten_query": "Số điện thoại hotline liên hệ của xưởng dịch vụ VinFast là gì?",
+        "keywords": [
+          "hotline",
+          "xưởng dịch vụ",
+          "liên hệ",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "PR10",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Các hạng mục cần kiểm tra khi nhận lại xe sau khi hoàn tất quy trình bảo dưỡng tại xưởng dịch vụ VinFast là gì?",
+        "keywords": [
+          "kiểm tra",
+          "nhận xe",
+          "sau bảo dưỡng",
+          "xưởng dịch vụ"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Nhận xe lại sau bảo dưỡng tại xưởng VinFast cần kiểm tra gì không?",
+        "rewritten_query": "Các hạng mục cần kiểm tra khi nhận lại xe sau khi hoàn tất quy trình bảo dưỡng tại xưởng dịch vụ VinFast là gì?",
+        "keywords": [
+          "kiểm tra",
+          "nhận xe",
+          "sau bảo dưỡng",
+          "xưởng dịch vụ"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "G01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Quy trình và các bước cần thực hiện khi xe VinFast VF8 sắp đến mốc bảo dưỡng định kỳ là gì?",
+        "keywords": [
+          "bảo dưỡng",
+          "định kỳ",
+          "quy trình",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe tôi sắp đến mốc bảo dưỡng rồi phải làm gì?",
+        "rewritten_query": "Quy trình và các bước cần thực hiện khi xe VinFast VF8 sắp đến mốc bảo dưỡng định kỳ là gì?",
+        "keywords": [
+          "bảo dưỡng",
+          "định kỳ",
+          "quy trình",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "G03",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Chính sách tặng điểm VPoint cho khách hàng khi thực hiện đặt lịch dịch vụ trước và đến đúng hẹn là bao nhiêu?",
+        "keywords": [
+          "tặng",
+          "VPoint",
+          "đặt lịch",
+          "dịch vụ",
+          "đúng hẹn"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ trước và đến đúng hẹn?",
+        "rewritten_query": "Chính sách tặng điểm VPoint cho khách hàng khi thực hiện đặt lịch dịch vụ trước và đến đúng hẹn là bao nhiêu?",
+        "keywords": [
+          "tặng",
+          "VPoint",
+          "đặt lịch",
+          "dịch vụ",
+          "đúng hẹn"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "G05",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Lý do tại sao lịch bảo dưỡng định kỳ của xe ô tô điện lại dài hơn so với xe sử dụng động cơ đốt trong (xe xăng)?",
+        "keywords": [
+          "lịch bảo dưỡng",
+          "ô tô điện",
+          "xe xăng",
+          "so sánh",
+          "định kỳ"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Vì sao lịch bảo dưỡng ô tô điện dài hơn xe xăng?",
+        "rewritten_query": "Lý do tại sao lịch bảo dưỡng định kỳ của xe ô tô điện lại dài hơn so với xe sử dụng động cơ đốt trong (xe xăng)?",
+        "keywords": [
+          "lịch bảo dưỡng",
+          "ô tô điện",
+          "xe xăng",
+          "so sánh",
+          "định kỳ"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "MAINT-01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF8 đã đến hạn bảo dưỡng định kỳ chưa?",
+        "keywords": [
+          "bảo dưỡng",
+          "đến hạn",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe tôi đến hạn bảo dưỡng chưa?",
+        "rewritten_query": "Xe VinFast VF8 đã đến hạn bảo dưỡng định kỳ chưa?",
+        "keywords": [
+          "bảo dưỡng",
+          "đến hạn",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "MAINT-10",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF8 đã đến hạn bảo dưỡng định kỳ chưa?",
+        "keywords": [
+          "VinFast",
+          "VF8",
+          "đến hạn",
+          "bảo dưỡng",
+          "định kỳ"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "xe toi den han bao duong chua",
+        "rewritten_query": "Xe VinFast VF8 đã đến hạn bảo dưỡng định kỳ chưa?",
+        "keywords": [
+          "VinFast",
+          "VF8",
+          "đến hạn",
+          "bảo dưỡng",
+          "định kỳ"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "MAINT-13",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Các hạng mục cần thực hiện trong kỳ bảo dưỡng định kỳ tại mốc 12.000 km là gì?",
+        "keywords": [
+          "bảo dưỡng",
+          "định kỳ",
+          "12000 km",
+          "hạng mục"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 12000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Mốc bảo dưỡng định kỳ 12000 km gồm gì?",
+        "rewritten_query": "Các hạng mục cần thực hiện trong kỳ bảo dưỡng định kỳ tại mốc 12.000 km là gì?",
+        "keywords": [
+          "bảo dưỡng",
+          "định kỳ",
+          "12000 km",
+          "hạng mục"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 12000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "BOOK-11",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Tìm kiếm các xưởng dịch vụ hoặc trung tâm bảo dưỡng xe điện tại Hà Nội",
+        "keywords": [
+          "xưởng",
+          "dịch vụ",
+          "Hà Nội"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "tim 2 xuong o Ha Noi",
+        "rewritten_query": "Tìm kiếm các xưởng dịch vụ hoặc trung tâm bảo dưỡng xe điện tại Hà Nội",
+        "keywords": [
+          "xưởng",
+          "dịch vụ",
+          "Hà Nội"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "BOOK-22",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Quy trình đặt lịch bảo dưỡng hoặc sửa chữa xe điện VinFast.",
+        "keywords": [
+          "quy trình",
+          "đặt lịch",
+          "bảo dưỡng",
+          "sửa chữa"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Đặt lịch đó.",
+        "rewritten_query": "Quy trình đặt lịch bảo dưỡng hoặc sửa chữa xe điện VinFast.",
+        "keywords": [
+          "quy trình",
+          "đặt lịch",
+          "bảo dưỡng",
+          "sửa chữa"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "GUARD-13",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Cho tôi lời khuyên nấu ăn.",
+        "keywords": [
+          "nấu ăn",
+          "lời khuyên"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": true
+      },
+      "runtime_analysis": {
+        "original_query": "Cho tôi lời khuyên nấu ăn, không cần thông tin xe.",
+        "rewritten_query": "Cho tôi lời khuyên nấu ăn.",
+        "keywords": [
+          "nấu ăn",
+          "lời khuyên"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": true
+      },
+      "error": null,
+      "retrieval_status": "SKIPPED_OUT_OF_SCOPE"
+    }
+  ],
+  "pilot_gemini_lite": [
+    {
+      "case_id": "M01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "15000 km",
+          "hạng mục bảo dưỡng",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "rewritten_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "15000 km",
+          "hạng mục bảo dưỡng",
+          "VF8"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W02",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "keywords": [
+          "pin cao áp",
+          "bảo hành",
+          "VF6"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "rewritten_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "keywords": [
+          "pin cao áp",
+          "bảo hành",
+          "VF6"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "G01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VF8 sắp đến hạn bảo dưỡng định kỳ cần phải làm những gì?",
+        "keywords": [
+          "VF8",
+          "bảo dưỡng định kỳ",
+          "đến hạn bảo dưỡng"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe tôi sắp đến mốc bảo dưỡng rồi phải làm gì?",
+        "rewritten_query": "Xe VF8 sắp đến hạn bảo dưỡng định kỳ cần phải làm những gì?",
+        "keywords": [
+          "VF8",
+          "bảo dưỡng định kỳ",
+          "đến hạn bảo dưỡng"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "MAINT-10",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "xe VF8 đã đến hạn bảo dưỡng định kỳ chưa",
+        "keywords": [
+          "VF8",
+          "đến hạn",
+          "bảo dưỡng định kỳ"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "xe toi den han bao duong chua",
+        "rewritten_query": "xe VF8 đã đến hạn bảo dưỡng định kỳ chưa",
+        "keywords": [
+          "VF8",
+          "đến hạn",
+          "bảo dưỡng định kỳ"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "GUARD-13",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "lời khuyên nấu ăn",
+        "keywords": [
+          "nấu ăn",
+          "lời khuyên"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": true
+      },
+      "runtime_analysis": {
+        "original_query": "Cho tôi lời khuyên nấu ăn, không cần thông tin xe.",
+        "rewritten_query": "lời khuyên nấu ăn",
+        "keywords": [
+          "nấu ăn",
+          "lời khuyên"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": true
+      },
+      "error": null,
+      "retrieval_status": "SKIPPED_OUT_OF_SCOPE"
+    }
+  ],
+  "full_gemini_lite": [
+    {
+      "case_id": "M01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "15000 km",
+          "VF8",
+          "hạng mục bảo dưỡng"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "rewritten_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "15000 km",
+          "VF8",
+          "hạng mục bảo dưỡng"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M02",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Pin chìa khóa điều khiển VF e34 thay theo chu kỳ nào?",
+        "keywords": [
+          "pin chìa khóa",
+          "điều khiển",
+          "VF e34",
+          "chu kỳ thay thế"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Pin chìa khóa điều khiển VF e34 thay theo chu kỳ nào?",
+        "rewritten_query": "Pin chìa khóa điều khiển VF e34 thay theo chu kỳ nào?",
+        "keywords": [
+          "pin chìa khóa",
+          "điều khiển",
+          "VF e34",
+          "chu kỳ thay thế"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M03",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu",
+        "keywords": [
+          "chu kỳ bảo dưỡng",
+          "bảo dưỡng định kỳ",
+          "2026",
+          "ô tô điện VinFast"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu?",
+        "rewritten_query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu",
+        "keywords": [
+          "chu kỳ bảo dưỡng",
+          "bảo dưỡng định kỳ",
+          "2026",
+          "ô tô điện VinFast"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M07",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Nước làm mát pin và động cơ điện VF e34 cần thay hay kiểm tra định kỳ?",
+        "keywords": [
+          "nước làm mát",
+          "pin",
+          "động cơ điện",
+          "VF e34",
+          "kiểm tra định kỳ",
+          "thay thế"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Nước làm mát pin và động cơ điện VF e34 cần thay hay kiểm tra định kỳ?",
+        "rewritten_query": "Nước làm mát pin và động cơ điện VF e34 cần thay hay kiểm tra định kỳ?",
+        "keywords": [
+          "nước làm mát",
+          "pin",
+          "động cơ điện",
+          "VF e34",
+          "kiểm tra định kỳ",
+          "thay thế"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M18",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Trong bảo dưỡng VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc?",
+        "keywords": [
+          "bảo dưỡng",
+          "VF e34",
+          "pin cao áp",
+          "cổng sạc",
+          "hạng mục bảo dưỡng"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Trong bảo dưỡng VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc?",
+        "rewritten_query": "Trong bảo dưỡng VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc?",
+        "keywords": [
+          "bảo dưỡng",
+          "VF e34",
+          "pin cao áp",
+          "cổng sạc",
+          "hạng mục bảo dưỡng"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "M23",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF e34 đến 40.000 km cần thay những phụ tùng gì?",
+        "keywords": [
+          "VF e34",
+          "40000 km",
+          "bảo dưỡng định kỳ",
+          "thay thế phụ tùng"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": 40000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe VF e34 đến 40.000 km cần thay những phụ tùng gì?",
+        "rewritten_query": "Xe VinFast VF e34 đến 40.000 km cần thay những phụ tùng gì?",
+        "keywords": [
+          "VF e34",
+          "40000 km",
+          "bảo dưỡng định kỳ",
+          "thay thế phụ tùng"
+        ],
+        "model": "VFe34",
+        "category": "maintenance",
+        "milestone_km": 40000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Chính sách bảo hành xe VF8 là bao nhiêu năm",
+        "keywords": [
+          "chính sách bảo hành",
+          "bảo hành",
+          "VF8",
+          "thời hạn bảo hành"
+        ],
+        "model": "VF8",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Chính sách bảo hành xe VF8 là bao nhiêu năm?",
+        "rewritten_query": "Chính sách bảo hành xe VF8 là bao nhiêu năm",
+        "keywords": [
+          "chính sách bảo hành",
+          "bảo hành",
+          "VF8",
+          "thời hạn bảo hành"
+        ],
+        "model": "VF8",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W02",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "keywords": [
+          "pin cao áp",
+          "bảo hành",
+          "VF6",
+          "thời hạn"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "rewritten_query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+        "keywords": [
+          "pin cao áp",
+          "bảo hành",
+          "VF6",
+          "thời hạn"
+        ],
+        "model": "VF6",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W04",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Điều kiện để xe VinFast được bảo hành là gì",
+        "keywords": [
+          "điều kiện bảo hành",
+          "xe VinFast",
+          "bảo hành"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Điều kiện để xe VinFast được bảo hành là gì?",
+        "rewritten_query": "Điều kiện để xe VinFast được bảo hành là gì",
+        "keywords": [
+          "điều kiện bảo hành",
+          "xe VinFast",
+          "bảo hành"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W12",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Chính sách bảo hành xe VinFast đã qua sử dụng thương mại sau khi chuyển chủ sở hữu",
+        "keywords": [
+          "chính sách bảo hành",
+          "VinFast",
+          "chuyển chủ",
+          "thương mại"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe VinFast từng dùng thương mại sau khi chuyển chủ áp dụng bảo hành nào?",
+        "rewritten_query": "Chính sách bảo hành xe VinFast đã qua sử dụng thương mại sau khi chuyển chủ sở hữu",
+        "keywords": [
+          "chính sách bảo hành",
+          "VinFast",
+          "chuyển chủ",
+          "thương mại"
+        ],
+        "model": "ALL",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "W20",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VF3 dùng 7 năm vẫn còn trong thời hạn bảo hành không?",
+        "keywords": [
+          "VF3",
+          "bảo hành",
+          "thời gian bảo hành",
+          "7 năm"
+        ],
+        "model": "VF3",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe VF3 dùng 7 năm vẫn còn trong bảo hành không?",
+        "rewritten_query": "Xe VF3 dùng 7 năm vẫn còn trong thời hạn bảo hành không?",
+        "keywords": [
+          "VF3",
+          "bảo hành",
+          "thời gian bảo hành",
+          "7 năm"
+        ],
+        "model": "VF3",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "B01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+        "keywords": [
+          "VinFast",
+          "khuyến cáo",
+          "giới hạn nhiệt độ",
+          "bảo quản",
+          "ô tô điện"
+        ],
+        "model": "ALL",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+        "rewritten_query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+        "keywords": [
+          "VinFast",
+          "khuyến cáo",
+          "giới hạn nhiệt độ",
+          "bảo quản",
+          "ô tô điện"
+        ],
+        "model": "ALL",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "B11",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Cứu hộ pin xe điện VinFast hoạt động như thế nào?",
+        "keywords": [
+          "cứu hộ pin",
+          "xe điện VinFast",
+          "cứu hộ"
+        ],
+        "model": "ALL",
+        "category": "safety",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Cứu hộ pin xe điện VinFast hoạt động như thế nào?",
+        "rewritten_query": "Cứu hộ pin xe điện VinFast hoạt động như thế nào?",
+        "keywords": [
+          "cứu hộ pin",
+          "xe điện VinFast",
+          "cứu hộ"
+        ],
+        "model": "ALL",
+        "category": "safety",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "B16",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VinFast VF e34 sạc đầy pin bằng chế độ sạc thường mất bao lâu thời gian",
+        "keywords": [
+          "VF e34",
+          "sạc thường",
+          "thời gian sạc đầy",
+          "pin"
+        ],
+        "model": "VFe34",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe VF e34 sạc đầy bằng chế độ sạc thường mất bao lâu?",
+        "rewritten_query": "Xe VinFast VF e34 sạc đầy pin bằng chế độ sạc thường mất bao lâu thời gian",
+        "keywords": [
+          "VF e34",
+          "sạc thường",
+          "thời gian sạc đầy",
+          "pin"
+        ],
+        "model": "VFe34",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "B20",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Công suất sạc AC và DC tối đa của VinFast VF7 là bao nhiêu?",
+        "keywords": [
+          "công suất sạc AC",
+          "công suất sạc DC",
+          "VinFast VF7",
+          "sạc tối đa"
+        ],
+        "model": "VF7",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Công suất sạc AC và DC tối đa của VinFast VF7 là bao nhiêu?",
+        "rewritten_query": "Công suất sạc AC và DC tối đa của VinFast VF7 là bao nhiêu?",
+        "keywords": [
+          "công suất sạc AC",
+          "công suất sạc DC",
+          "VinFast VF7",
+          "sạc tối đa"
+        ],
+        "model": "VF7",
+        "category": "battery",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "P01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Sạc tại nhà VinFast 3 kW có giá bao nhiêu?",
+        "keywords": [
+          "Sạc tại nhà",
+          "VinFast",
+          "3 kW",
+          "giá"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Sạc tại nhà VinFast 3 kW có giá bao nhiêu?",
+        "rewritten_query": "Sạc tại nhà VinFast 3 kW có giá bao nhiêu?",
+        "keywords": [
+          "Sạc tại nhà",
+          "VinFast",
+          "3 kW",
+          "giá"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": "charging",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "P05",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Tấm che pin cao áp VF5 chính hãng giá bao nhiêu",
+        "keywords": [
+          "tấm che pin cao áp",
+          "VF5",
+          "giá",
+          "chính hãng"
+        ],
+        "model": "VF5",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Tấm che pin cao áp VF5 chính hãng giá bao nhiêu?",
+        "rewritten_query": "Tấm che pin cao áp VF5 chính hãng giá bao nhiêu",
+        "keywords": [
+          "tấm che pin cao áp",
+          "VF5",
+          "giá",
+          "chính hãng"
+        ],
+        "model": "VF5",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": "battery",
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "PR01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Hướng dẫn đặt lịch bảo dưỡng xe VinFast qua ứng dụng",
+        "keywords": [
+          "đặt lịch",
+          "bảo dưỡng",
+          "ứng dụng",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Đặt lịch bảo dưỡng xe VinFast qua app như thế nào?",
+        "rewritten_query": "Hướng dẫn đặt lịch bảo dưỡng xe VinFast qua ứng dụng",
+        "keywords": [
+          "đặt lịch",
+          "bảo dưỡng",
+          "ứng dụng",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "PR03",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast như thế nào?",
+        "keywords": [
+          "quy trình tiếp nhận xe",
+          "bảo dưỡng tại xưởng",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast như thế nào?",
+        "rewritten_query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast như thế nào?",
+        "keywords": [
+          "quy trình tiếp nhận xe",
+          "bảo dưỡng tại xưởng",
+          "VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "PR07",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xưởng dịch vụ VinFast có hotline nào để liên hệ?",
+        "keywords": [
+          "Xưởng dịch vụ",
+          "VinFast",
+          "hotline",
+          "liên hệ"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xưởng dịch vụ VinFast có hotline nào để liên hệ?",
+        "rewritten_query": "Xưởng dịch vụ VinFast có hotline nào để liên hệ?",
+        "keywords": [
+          "Xưởng dịch vụ",
+          "VinFast",
+          "hotline",
+          "liên hệ"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "PR10",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Nhận xe lại sau bảo dưỡng tại xưởng VinFast cần kiểm tra gì không",
+        "keywords": [
+          "nhận xe",
+          "sau bảo dưỡng",
+          "kiểm tra",
+          "xưởng VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Nhận xe lại sau bảo dưỡng tại xưởng VinFast cần kiểm tra gì không?",
+        "rewritten_query": "Nhận xe lại sau bảo dưỡng tại xưởng VinFast cần kiểm tra gì không",
+        "keywords": [
+          "nhận xe",
+          "sau bảo dưỡng",
+          "kiểm tra",
+          "xưởng VinFast"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "G01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VF8 sắp đến hạn bảo dưỡng định kỳ thì cần làm gì",
+        "keywords": [
+          "VF8",
+          "bảo dưỡng định kỳ",
+          "lịch bảo dưỡng"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe tôi sắp đến mốc bảo dưỡng rồi phải làm gì?",
+        "rewritten_query": "Xe VF8 sắp đến hạn bảo dưỡng định kỳ thì cần làm gì",
+        "keywords": [
+          "VF8",
+          "bảo dưỡng định kỳ",
+          "lịch bảo dưỡng"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "G03",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ trước và đến đúng hẹn?",
+        "keywords": [
+          "VPoint",
+          "đặt lịch dịch vụ",
+          "đúng hẹn",
+          "tặng"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ trước và đến đúng hẹn?",
+        "rewritten_query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ trước và đến đúng hẹn?",
+        "keywords": [
+          "VPoint",
+          "đặt lịch dịch vụ",
+          "đúng hẹn",
+          "tặng"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "G05",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Vì sao lịch bảo dưỡng ô tô điện dài hơn xe xăng?",
+        "keywords": [
+          "lịch bảo dưỡng",
+          "ô tô điện",
+          "xe xăng",
+          "so sánh"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Vì sao lịch bảo dưỡng ô tô điện dài hơn xe xăng?",
+        "rewritten_query": "Vì sao lịch bảo dưỡng ô tô điện dài hơn xe xăng?",
+        "keywords": [
+          "lịch bảo dưỡng",
+          "ô tô điện",
+          "xe xăng",
+          "so sánh"
+        ],
+        "model": "ALL",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "MAINT-01",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VF8 đến hạn bảo dưỡng chưa",
+        "keywords": [
+          "VF8",
+          "đến hạn bảo dưỡng",
+          "bảo dưỡng định kỳ"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Xe tôi đến hạn bảo dưỡng chưa?",
+        "rewritten_query": "Xe VF8 đến hạn bảo dưỡng chưa",
+        "keywords": [
+          "VF8",
+          "đến hạn bảo dưỡng",
+          "bảo dưỡng định kỳ"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "MAINT-10",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Xe VF8 đã đến hạn bảo dưỡng định kỳ chưa",
+        "keywords": [
+          "VF8",
+          "đến hạn bảo dưỡng định kỳ"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "xe toi den han bao duong chua",
+        "rewritten_query": "Xe VF8 đã đến hạn bảo dưỡng định kỳ chưa",
+        "keywords": [
+          "VF8",
+          "đến hạn bảo dưỡng định kỳ"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "MAINT-13",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Mốc bảo dưỡng định kỳ 12000 km cho xe VF8 gồm những hạng mục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "12000 km",
+          "VF8",
+          "hạng mục bảo dưỡng"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 12000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Mốc bảo dưỡng định kỳ 12000 km gồm gì?",
+        "rewritten_query": "Mốc bảo dưỡng định kỳ 12000 km cho xe VF8 gồm những hạng mục gì?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "12000 km",
+          "VF8",
+          "hạng mục bảo dưỡng"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 12000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "BOOK-11",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Tìm 2 xưởng dịch vụ tại Hà Nội",
+        "keywords": [
+          "tìm xưởng",
+          "xưởng dịch vụ",
+          "Hà Nội"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "tim 2 xuong o Ha Noi",
+        "rewritten_query": "Tìm 2 xưởng dịch vụ tại Hà Nội",
+        "keywords": [
+          "tìm xưởng",
+          "xưởng dịch vụ",
+          "Hà Nội"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "BOOK-22",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Đặt lịch dịch vụ bảo dưỡng sửa chữa",
+        "keywords": [
+          "Đặt lịch",
+          "lịch dịch vụ",
+          "bảo dưỡng"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "runtime_analysis": {
+        "original_query": "Đặt lịch đó.",
+        "rewritten_query": "Đặt lịch dịch vụ bảo dưỡng sửa chữa",
+        "keywords": [
+          "Đặt lịch",
+          "lịch dịch vụ",
+          "bảo dưỡng"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "error": null,
+      "retrieval_status": "LIVE_HYBRID"
+    },
+    {
+      "case_id": "GUARD-13",
+      "raw_contract_pass": true,
+      "raw_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "runtime_anchor_checks": {
+        "model_matches_declared_input": true,
+        "milestone_matches_literal_query": true,
+        "scope_matches_declared_input": true
+      },
+      "raw_payload": {
+        "rewritten_query": "Cho tôi lời khuyên nấu ăn",
+        "keywords": [
+          "lời khuyên",
+          "nấu ăn"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": true
+      },
+      "runtime_analysis": {
+        "original_query": "Cho tôi lời khuyên nấu ăn, không cần thông tin xe.",
+        "rewritten_query": "Cho tôi lời khuyên nấu ăn",
+        "keywords": [
+          "lời khuyên",
+          "nấu ăn"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": true
+      },
+      "error": null,
+      "retrieval_status": "SKIPPED_OUT_OF_SCOPE"
+    }
+  ]
+}

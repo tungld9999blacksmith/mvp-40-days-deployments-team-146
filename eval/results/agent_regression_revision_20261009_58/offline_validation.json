@@ -1,0 +1,10 @@
+{
+  "runtime_regression_passed": 219,
+  "runtime_command": ".venv/Scripts/python.exe -m pytest eval/test_agent_regression_revision.py backend/tests/test_agents/test_reminder_intent.py backend/tests/test_agents/test_review_followup.py backend/tests/test_agents/test_booking_followup_policy.py backend/tests/test_agents/test_booking_grounding.py backend/tests/test_agents/test_booking_multishop_grounding.py backend/tests/test_agents/test_ev_care_tools.py backend/tests/test_agents/test_booking_schema_recovery.py -q",
+  "readonly_runner_passed": 6,
+  "runner_command": ".venv/Scripts/python.exe -m pytest eval/test_agent_regression_runner.py -q",
+  "ruff": "PASS for5 changed application files and4 new runner/review/test files",
+  "initial_test_run": "173PASS/1FAIL exposed unconfirmed-claim response hiding the created card details; guard now renders verified proposal, final suite219PASS",
+  "real_email_sent": false,
+  "production_database_written": false
+}

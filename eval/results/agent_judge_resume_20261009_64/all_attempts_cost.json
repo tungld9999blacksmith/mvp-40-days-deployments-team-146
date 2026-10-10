@@ -1,0 +1,14 @@
+{
+  "pipeline": 0.25706310225,
+  "judge": 0.20227562,
+  "all": 0.45933872225,
+  "new64_judge_known_cost_usd": 0.09634156,
+  "new64_missing_receipts": 0,
+  "prior63_missing_receipts": 1,
+  "all_missing_judge_receipts": 1,
+  "unknown_inflight_cost_usd": null,
+  "unknown_inflight_budget_reserve_usd": 0.01,
+  "embedding_calls": 69,
+  "embedding_cost_usd": null,
+  "scope": "Known55-63 aggregate once plus64 fresh35; reused25 labels and pilot fees not added again. Includes failed62 control and63 provider403; missing/embedding/interrupted60 costs not zero."
+}

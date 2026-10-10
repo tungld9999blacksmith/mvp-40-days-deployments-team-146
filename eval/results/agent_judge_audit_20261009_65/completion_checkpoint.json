@@ -1,0 +1,14 @@
+{
+  "status": "OFFLINE_FLAG_AUDIT_COMPLETE_REPAIRS_PENDING",
+  "flags_audited": 14,
+  "independent_labels": 0,
+  "production_acceptance": false,
+  "old_counts_retained": {
+    "PASS": 46,
+    "UNVERIFIABLE": 9,
+    "FAIL": 5
+  },
+  "new_api_cost_usd": 0,
+  "runtime_modified": false,
+  "new_paid_budget_authorized": false
+}

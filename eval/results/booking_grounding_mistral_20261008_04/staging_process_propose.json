@@ -1,0 +1,13 @@
+{
+  "booking_count": 0,
+  "proposal_count": 1,
+  "message_count": 1,
+  "migrated_schema_reused": true,
+  "mode": "propose",
+  "process_id": 21216,
+  "scope": "SYNTHETIC_PROCESS_RESTART_NOT_HTTP_OR_UI",
+  "database_port": 35432,
+  "redis_port": 36379,
+  "llm_called": false,
+  "email_sent": false
+}

@@ -19,10 +19,11 @@ class CelerySessionRevoker:
 
     def enqueue_revoke(self, *, uid: str, user_id: int, trace_id: str | None = None) -> None:
         # Imported lazily to avoid a hard Celery/broker dependency at import time.
+        from src.celery_tasks import FAIL_FAST_PUBLISH
         from src.infrastructure.celery.tasks.auth_tasks import revoke_session_task
 
         try:
-            revoke_session_task.delay(uid, user_id, trace_id)
+            revoke_session_task.apply_async((uid, user_id, trace_id), **FAIL_FAST_PUBLISH)
         except Exception as exc:  # noqa: BLE001 — broker unreachable, etc.
             logger.warning("could not enqueue revoke task uid=%s: %s", uid, exc)
             raise RevokeEnqueueError(str(exc)) from exc

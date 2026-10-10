@@ -1,0 +1,25 @@
+{
+  "pipeline": 0.04645228325,
+  "judge": 0,
+  "all": 0.04645228325,
+  "embedding_calls": 16,
+  "embedding_cost_usd": null,
+  "legacy55_57_closed_cost_anchor_usd": 0.01643033675,
+  "new57_additions": [
+    {
+      "producer": "eval\\results\\step5_frozen_transport_20261009_57\\pilot_agent_gemma",
+      "cost_usd": 0.0013675515,
+      "embedding_calls": 1,
+      "attempted": 3
+    },
+    {
+      "producer": "eval\\results\\step5_frozen_transport_20261009_57\\repeat1_base",
+      "cost_usd": 0.028654395,
+      "embedding_calls": 6,
+      "attempted": 26
+    }
+  ],
+  "reused_base_pilot_charged_again": false,
+  "historical_original_failed_gemma_raw_available": false,
+  "boundary": "Known receipts/unchanged historical aggregate, not full provider invoice. Original failed pilot raw cannot be restored. Current replaced pilot is a separate paid attempt; no retroactive seal amendment."
+}

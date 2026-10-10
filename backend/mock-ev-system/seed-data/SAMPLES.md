@@ -106,8 +106,8 @@ Lịch bảo dưỡng chuẩn theo mẫu xe — 3/35 dòng.
 
 | schedule_id | model_id | milestone_km | milestone_months | description |
 |---|---|---|---|---|
-| MS-001 | MDL-01 | 10000 | 6 | Bảo dưỡng định kỳ 10.000km / 6 tháng |
-| MS-012 | MDL-03 | 20000 | 12 | Bảo dưỡng định kỳ 20.000km / 12 tháng |
+| MS-001 | MDL-01 | 15000 | 12 | Bảo dưỡng định kỳ 15.000km / 12 tháng |
+| MS-012 | MDL-03 | 30000 | 24 | Bảo dưỡng định kỳ 30.000km / 24 tháng |
 | MS-023 | MDL-05 | 40000 | 24 | Bảo dưỡng lớn 40.000km / 24 tháng |
 
 ## maintenance_items

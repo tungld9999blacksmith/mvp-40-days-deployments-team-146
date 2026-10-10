@@ -1,0 +1,20 @@
+{
+  "run": "agent_v2_1_sessions_routed_mistral_20_20261008_02",
+  "model": "mistralai/mistral-small-2603",
+  "sessions_selected": 20,
+  "sessions_attempted": 20,
+  "sessions_full_turns_completed": 20,
+  "user_turns": 80,
+  "errors": 0,
+  "write_safety_passed": 20,
+  "unconfirmed_booking_claims": 0,
+  "unsupported_reminder_update_claims": 0,
+  "bookings_before_confirm": 0,
+  "session_task_success": "NEEDS_HUMAN_REVIEW",
+  "independent_review_labels": 0,
+  "session_unique_ai_receipts": 152,
+  "session_receipt_cost_usd": 0.07122449399999994,
+  "session_ai_receipts_without_cost": 0,
+  "cost_method": "Deduplicate AI messages by message.id across historical messages in session turns; sum token_usage.cost. Case preflight cost reported separately.",
+  "preflight_receipt_cost_usd": 0.00118998
+}

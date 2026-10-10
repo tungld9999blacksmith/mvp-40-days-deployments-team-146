@@ -1,0 +1,8 @@
+{
+  "syntax_exit_code": 0,
+  "behavior_exit_code": 0,
+  "behavior_stdout": "{\"status\":\"PASS\",\"synthetic_only\":true,\"actual_review_labels_submitted\":0,\"case_panels\":100,\"initial_controls_blank\":true,\"export_source_hash_verified\":true,\"storage_scoped_to_current_run\":true}\n",
+  "stderr": "",
+  "synthetic_only": true,
+  "actual_review_labels_submitted": 0
+}

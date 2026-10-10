@@ -35,6 +35,7 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 sys.path.insert(0, str(BACKEND_DIR))
 load_dotenv(REPO_ROOT / ".env")
 
+from src.agents.graph import prefill_due_maintenance_args  # noqa: E402
 from src.agents.prompts import format_system_prompt  # noqa: E402
 from src.agents.tools import CUSTOMER_AGENT_TOOLS  # noqa: E402
 
@@ -86,10 +87,12 @@ def load_cases() -> list[dict[str, Any]]:
         "multistep": 4,
         "guardrail": 3,
         "edge": 3,
+        "pricing": 3,  # bao-gia-hai-tang D12 — explain extras, refuse to decide, ignore injected reasons
     }
     actual = {name: sum(c["category"] == name for c in cases) for name in expected_counts}
-    if len(cases) != 30 or actual != expected_counts:
-        raise ValueError(f"Dataset phải có đúng 30 case theo phân bổ; nhận được {actual}")
+    total = sum(expected_counts.values())
+    if len(cases) != total or actual != expected_counts:
+        raise ValueError(f"Dataset phải có đúng {total} case theo phân bổ; nhận được {actual}")
     ids = [case["id"] for case in cases]
     if len(ids) != len(set(ids)):
         raise ValueError("Case id bị trùng")
@@ -132,26 +135,11 @@ def value_matches(actual: Any, expected: Any) -> bool:
 def apply_production_argument_patch(
     call: dict[str, Any], case: dict[str, Any]
 ) -> tuple[dict[str, Any], list[str]]:
-    """Mirror graph.py's trusted-context pre-fill for get_due_maintenance."""
+    """Apply graph.py's trusted-context pre-fill for get_due_maintenance."""
     args = dict(call.get("arguments") or {})
-    patched: list[str] = []
     if call.get("name") != "get_due_maintenance":
-        return args, patched
-    context = case.get("vehicle_context") or {}
-    if not args.get("model") and context.get("model"):
-        args["model"] = context["model"]
-        patched.append("model")
-    if not args.get("current_odometer_km") and not args.get("current_odo"):
-        odo = context.get("current_odo") or context.get("current_odometer_km")
-        if odo:
-            args["current_odometer_km"] = int(odo)
-            patched.append("current_odometer_km")
-    if args.get("months_since_last_service") is None:
-        months = context.get("months_since_last") or context.get("months_since_last_service")
-        if months is not None:
-            args["months_since_last_service"] = int(months)
-            patched.append("months_since_last_service")
-    return args, patched
+        return args, []
+    return prefill_due_maintenance_args(args, case.get("vehicle_context") or {})
 
 
 def update_provenance_from_saved_call(call: dict[str, Any], provenance: dict[str, Any]) -> None:
@@ -331,6 +319,8 @@ def fixture_for_tool(
         }
     if tool_name == "search_ev_knowledge":
         return case.get("rag_fixture", "Không đủ thông tin trong tài liệu được truy xuất.")
+    if tool_name == "get_booking_lines":
+        return case.get("booking_lines_fixture") or {"status": "ERROR", "error_code": "BOOKING_NOT_FOUND"}
     return {"status": "error", "code": "UNKNOWN_TOOL", "data": None, "hint": "Tool không tồn tại."}
 
 
@@ -465,6 +455,9 @@ def evaluate_case(
 ) -> dict[str, Any]:
     expected = case.get("expected_tools", [])
     forbidden = case.get("forbidden_tools", [])
+    # Optional read-only lookups (e.g. reading the lines before refusing to decide) are not scored.
+    allowed = set(case.get("allowed_tools", [])) - set(expected)
+    calls = [call for call in calls if call["name"] not in allowed]
     actual = [call["name"] for call in calls]
     tool_score = sequence_score(actual, expected, forbidden)
     expected_calls = [call for call in calls if call["name"] in expected]
@@ -861,6 +854,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 async def async_main(args: argparse.Namespace) -> int:
+    if args.rescore or not args.list:
+        raise SystemExit("Legacy benchmark is read-only. Use backend/tests/test_agents/evaluate_agent.py; historical results must not be overwritten or rescored in place.")
     models = load_models()
     cases = load_cases()
     if args.model:

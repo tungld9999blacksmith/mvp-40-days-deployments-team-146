@@ -1,0 +1,14 @@
+{
+  "status": "BLOCKED_BY_AUTOMATIC_APPROVAL_REVIEW",
+  "rejected_action": "pilot9 plus planned full180 Gemini3.5FlashLite/OpenRouter calls",
+  "new_judge_requests_sent": 0,
+  "reason": "Prior permission interpreted as Qdrant fullRAG to Gemma, not sandbox traces and evidence to Gemini judge. Explicit scope requested from user.",
+  "inputs_prepared": 180,
+  "pilot_work_items": 9,
+  "llm_judge_cost_estimate_usd": [
+    0.44,
+    0.46
+  ],
+  "shared_original_receipt_cap_usd": 0.75,
+  "source_or_data_modified_to_bypass_rejection": false
+}

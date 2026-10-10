@@ -15,6 +15,7 @@ import { track } from '@/shared/utils/track'
 import VehicleGate from '@/features/vehicles/components/VehicleGate'
 import { useMaintenanceStatus } from '@/features/vehicles/hooks/useVehicleQueries'
 import type { VehicleSummary } from '@/features/vehicles/types'
+import { usePricingFlow } from '@/features/booking-lines/flow'
 import { getCostEstimate, getMilestones } from '../api'
 import { EstimateItemList, EstimateTotal } from '../components/EstimateBreakdown'
 import WorkshopPickerDrawer from '../components/WorkshopPickerDrawer'
@@ -56,6 +57,9 @@ function VehicleInfo({ vehicle }: { vehicle: VehicleSummary }) {
 
 function EstimateView({ vehicle }: { vehicle: VehicleSummary }) {
   const navigate = useNavigate()
+  // two_tier: the package price is set at booking time, so there is no quote to request.
+  const flow = usePricingFlow()
+  const quotes = flow === 'legacy'
   const toast = useToast()
   const [searchParams, setSearchParams] = useSearchParams()
   const odoParam = readNumberParam(searchParams.get('odoMilestone'))
@@ -150,7 +154,7 @@ function EstimateView({ vehicle }: { vehicle: VehicleSummary }) {
     ? `workshopId=${encodeURIComponent(ready.workshop.workshopId)}&odoMilestone=${ready.milestone.odoMilestone}`
     : ''
 
-  function go(action: 'BOOKING' | 'COMPARE', to: string) {
+  function go(action: 'QUOTE' | 'BOOKING' | 'COMPARE', to: string) {
     track('estimate_next_action', { action })
     navigate(to)
   }
@@ -218,7 +222,7 @@ function EstimateView({ vehicle }: { vehicle: VehicleSummary }) {
             <EmptyState
               icon={<FileText className="w-5 h-5" />}
               title="Chưa thể dự toán cho mẫu xe/mốc này"
-              description="EV Care chưa có định mức bảo dưỡng cho mẫu xe/mốc này nên chưa thể dự toán. Bạn có thể liên hệ xưởng để được tư vấn chi phí."
+              description="EV Care chưa có định mức bảo dưỡng cho mẫu xe/mốc này nên chưa thể dự toán. Bạn có thể liên hệ xưởng để được báo giá."
               action={
                 <Button variant="secondary" icon={<PhoneCall className="w-4 h-4" />} onClick={() => setPickerOpen(true)}>
                   Liên hệ xưởng
@@ -268,11 +272,23 @@ function EstimateView({ vehicle }: { vehicle: VehicleSummary }) {
         {ready && (
           <div className="sticky sm:static bottom-0 z-10 -mx-4 sm:mx-0 px-4 sm:px-0 py-3 sm:py-0 bg-background/95 sm:bg-transparent backdrop-blur sm:backdrop-blur-none border-t border-border sm:border-0 space-y-2">
             <div className="flex flex-col sm:flex-row gap-2">
-              <Button className="sm:flex-1" icon={<CalendarClock className="w-4 h-4" />} onClick={() => go('BOOKING', `/booking?${nextActionQuery}`)}>
+              {quotes && (
+                <Button className="sm:flex-1" icon={<FileText className="w-4 h-4" />} onClick={() => go('QUOTE', `/quotes/new?userVehicleId=${encodeURIComponent(vehicleId)}&${nextActionQuery}`)}>
+                  Gửi xưởng báo giá
+                </Button>
+              )}
+              <Button variant={quotes ? 'secondary' : 'primary'} className="sm:flex-1" icon={<CalendarClock className="w-4 h-4" />} onClick={() => go('BOOKING', `/booking?${nextActionQuery}`)}>
                 Đặt lịch
               </Button>
             </div>
-            <div className="flex flex-wrap items-center justify-end gap-2 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span className="text-muted">
+                {flow === 'two_tier'
+                  ? 'Giá gói chốt khi bạn đặt lịch. Xưởng chỉ hỏi bạn khi có hạng mục phát sinh.'
+                  : flow === 'legacy'
+                    ? 'Đặt lịch không bắt buộc có báo giá.'
+                    : null}
+              </span>
               <Link
                 to={`/estimate/compare?odoMilestone=${ready.milestone.odoMilestone}&workshopIds=${encodeURIComponent(ready.workshop.workshopId)}`}
                 onClick={() => track('estimate_next_action', { action: 'COMPARE' })}

@@ -1,0 +1,206 @@
+{
+  "get_due_maintenance": {
+    "description": "Tình trạng bảo dưỡng của xe đang chọn trong phiên chat (TOOL-VEH-001).\n\nTính từ dữ liệu thật của xe: số ODO mới nhất, lần bảo dưỡng định kỳ gần nhất và\nlịch bảo dưỡng của dòng xe. Không cần truyền tham số: xe lấy từ phiên chat.\n\nReturns:\n    due_status (NORMAL / DUE_SOON / OVERDUE / UNKNOWN), due_reason (KM / TIME / BOTH), next_milestone\n    (odo_milestone_km, month_milestone, due_date, items: item_code, item_name,\n    is_covered_by_warranty), remaining_km, remaining_days, odometer, last_service.",
+    "properties": {},
+    "title": "get_due_maintenance",
+    "type": "object"
+  },
+  "estimate_service_cost": {
+    "description": "Ước tính chi phí một mốc bảo dưỡng của xe đang chọn tại một xưởng (TOOL-301).\n\nGiá lấy từ bảng giá của xưởng (price_source = WORKSHOP_PRICE) hoặc giá tham khảo\n(REFERENCE_PRICE); hạng mục được bảo hành có giá 0. Không tự bịa giá.\n\nArgs:\n    odo_milestone: Mốc km cần ước tính, lấy từ next_milestone.odo_milestone_km của\n        get_due_maintenance. Bỏ trống để dùng mốc kế tiếp của xe.\n    workshop_id: workshop_id (UUID) từ find_workshops. Bỏ trống để dùng xưởng ưu tiên\n        của chủ xe, không có thì xưởng gần vị trí chính nhất.\n\nReturns:\n    status (READY / NO_RULE), milestone, workshop, warranty_status, items (item_name,\n    covered, price, price_source), chargeable_total, has_reference_price.\n    Lỗi MILESTONE_REQUIRED / MILESTONE_NOT_FOUND kèm details.validMilestones.",
+    "properties": {
+      "odo_milestone": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Odo Milestone"
+      },
+      "workshop_id": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Workshop Id"
+      }
+    },
+    "title": "estimate_service_cost",
+    "type": "object"
+  },
+  "find_workshops": {
+    "description": "Tìm xưởng dịch vụ đang hoạt động gần chủ xe (API-BK-01, UC-401).\n\n(Công cụ Đọc)\n\nArgs:\n    area_or_address: Khu vực / tỉnh thành chủ xe nêu (ví dụ: 'Hà Nội'). Bỏ trống để\n        tìm quanh vị trí chính trong hồ sơ hoặc xưởng ưu tiên của chủ xe.\n    limit: Số xưởng tối đa (1-10).\n\nReturns:\n    anchor (cách xếp hạng), workshops: workshop_id (UUID, dùng cho các tool sau), name,\n    address, region, distance_km (có thể null), is_preferred.",
+    "properties": {
+      "area_or_address": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Area Or Address"
+      },
+      "limit": {
+        "default": 3,
+        "title": "Limit",
+        "type": "integer"
+      }
+    },
+    "title": "find_workshops",
+    "type": "object"
+  },
+  "get_available_slots": {
+    "description": "Các khung giờ trong ngày của một xưởng và chỗ còn trống (API-BK-02, UC-402).\n\n(Công cụ Đọc)\n\nArgs:\n    workshop_id: workshop_id (UUID) lấy từ find_workshops.\n    target_date: Ngày cần xem, dạng YYYY-MM-DD. Quy đổi 'thứ Bảy này', 'mai'... theo\n        ngày hôm nay trong ngữ cảnh.\n\nReturns:\n    workshop_id, date, slots: time_slot, available, remaining (chỗ còn trống).\n    Không có slot nào nghĩa là xưởng nghỉ ngày đó.",
+    "properties": {
+      "workshop_id": {
+        "title": "Workshop Id",
+        "type": "string"
+      },
+      "target_date": {
+        "title": "Target Date",
+        "type": "string"
+      }
+    },
+    "required": [
+      "workshop_id",
+      "target_date"
+    ],
+    "title": "get_available_slots",
+    "type": "object"
+  },
+  "propose_booking": {
+    "description": "Tạo ĐỀ XUẤT đặt lịch cho xe đang chọn: hiện thẻ có nút \"Xác nhận đặt lịch\" (us-061 TOOL-QB-01).\n\nTool này KHÔNG tạo lịch hẹn và KHÔNG giữ chỗ. Lịch chỉ được tạo khi chủ xe bấm nút\n\"Xác nhận đặt lịch\" trên thẻ. Gọi khi chủ xe đã chọn xưởng, ngày và giờ cụ thể.\nChủ xe gõ \"đồng ý\" / \"xác nhận\" thì nhắc họ bấm nút trên thẻ, không gọi lại tool.\n\nArgs:\n    workshop_id: workshop_id (UUID) lấy từ find_workshops.\n    booking_date: Ngày hẹn, dạng YYYY-MM-DD.\n    time_slot: Giờ bắt đầu khung giờ, dạng HH:MM, phải là một slot available của get_available_slots.\n    odo_milestone: Mốc km bảo dưỡng (next_milestone.odo_milestone_km), nếu đã biết.\n\nReturns:\n    status PROPOSED, proposal_id, summary, next_step. Lỗi SLOT_FULL kèm alternatives;\n    SLOT_TOO_SOON khi khung giờ bắt đầu quá sớm.",
+    "properties": {
+      "workshop_id": {
+        "title": "Workshop Id",
+        "type": "string"
+      },
+      "booking_date": {
+        "title": "Booking Date",
+        "type": "string"
+      },
+      "time_slot": {
+        "title": "Time Slot",
+        "type": "string"
+      },
+      "odo_milestone": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Odo Milestone"
+      }
+    },
+    "required": [
+      "workshop_id",
+      "booking_date",
+      "time_slot"
+    ],
+    "title": "propose_booking",
+    "type": "object"
+  },
+  "get_reminder_settings": {
+    "description": "Đọc cài đặt nhắc bảo dưỡng và Email của chủ xe đang chat; áp dụng tất cả xe sở hữu.",
+    "properties": {},
+    "title": "get_reminder_settings",
+    "type": "object"
+  },
+  "update_reminder_settings": {
+    "description": "Chỉ đổi phần chủ xe yêu cầu rõ. Bật email cũng bật nhắc; tắt email giữ nhắc trong ứng dụng.\n\nEmail nhận lấy từ danh tính đã xác minh; không nhận địa chỉ email tùy ý.\nTool lưu cài đặt, không gửi thư hoặc đặt lịch. Chỉ báo đã lưu khi status=ok.\nreminder_lead_days chỉ hợp lệ từ 0 đến 30 ngày; không lưu giá trị ngoài khoảng.\nTắt mọi nhắc bảo dưỡng: chỉ reminders_enabled=false, giữ nguyên email_enabled\nvà số ngày. Chỉ thay email_enabled nếu chủ xe yêu cầu bật/tắt Email rõ ràng.",
+    "properties": {
+      "reminders_enabled": {
+        "anyOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Reminders Enabled"
+      },
+      "email_enabled": {
+        "anyOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Email Enabled"
+      },
+      "reminder_lead_days": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Reminder Lead Days"
+      }
+    },
+    "title": "update_reminder_settings",
+    "type": "object"
+  },
+  "get_reminder_context": {
+    "description": "Giải thích lời nhắc theo ID, dữ liệu tại lúc nhắc, tình trạng hiện tại và trạng thái gửi; chỉ đọc xe của chủ đang chat.",
+    "properties": {
+      "reminder_id": {
+        "format": "uuid",
+        "title": "Reminder Id",
+        "type": "string"
+      }
+    },
+    "required": [
+      "reminder_id"
+    ],
+    "title": "get_reminder_context",
+    "type": "object"
+  },
+  "search_ev_knowledge": {
+    "description": "Tìm kiếm thông tin kỹ thuật, bảo dưỡng, bảo hành, bảng giá trong Cẩm nang xe điện VinFast trên Qdrant Cloud.\n\nArgs:\n    query: Câu hỏi hoặc từ khóa cần tra cứu (ví dụ: 'chính sách bảo hành pin', 'chi phí bảo dưỡng mốc 24.000 km')\n    model: Dòng xe cần tra cứu (tùy chọn: 'VF3', 'VF5', 'VF6', 'VF7', 'VF8', 'VF9', 'VFe34', 'ALL')\n    category: Phân loại thông tin (tùy chọn: 'maintenance', 'warranty', 'pricing', 'battery', 'procedure')\n\nReturns:\n    Câu trả lời chính xác có nguồn dẫn chính hãng",
+    "properties": {
+      "query": {
+        "title": "Query",
+        "type": "string"
+      },
+      "model": {
+        "default": "",
+        "title": "Model",
+        "type": "string"
+      },
+      "category": {
+        "default": "",
+        "title": "Category",
+        "type": "string"
+      }
+    },
+    "required": [
+      "query"
+    ],
+    "title": "search_ev_knowledge",
+    "type": "object"
+  }
+}

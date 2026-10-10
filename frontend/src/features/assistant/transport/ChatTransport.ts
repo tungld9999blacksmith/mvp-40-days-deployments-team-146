@@ -42,7 +42,7 @@ export interface ChatTransport {
   /** API-CONV-005 — 204 */
   deleteConversation(conversationId: string): Promise<void>
   /** API-CHAT-007 / API-CHAT-008 (Workshop Portal). */
-  getConversationExcerpt(source: { type: 'booking'; id: string }): Promise<ConversationExcerpt>
+  getConversationExcerpt(source: { type: 'booking' | 'quote'; id: string }): Promise<ConversationExcerpt>
   /** us-061 API-QB-01 — the quick-booking chip: a proposal card, never a booking. */
   quickBooking(
     conversationId: string,

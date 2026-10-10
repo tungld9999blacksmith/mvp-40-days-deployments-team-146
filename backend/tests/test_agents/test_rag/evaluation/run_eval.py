@@ -70,6 +70,7 @@ def load_jsonl(path: Path) -> list[dict]:
 
 
 def main() -> int:
+    raise SystemExit("Legacy RAG runner is read-only. Use evaluate_rag.py beside this file; historical reports must not be overwritten.")
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--golden",

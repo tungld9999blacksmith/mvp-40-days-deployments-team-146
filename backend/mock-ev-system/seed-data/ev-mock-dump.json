@@ -1964,248 +1964,248 @@
     "maintenance_schedules": [
       {
         "model_id": "MDL-01",
-        "milestone_km": 10000,
-        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "milestone_km": 15000,
+        "description": "Bảo dưỡng định kỳ 15.000km / 12 tháng",
         "schedule_id": "MS-001",
-        "milestone_months": 6
+        "milestone_months": 12
       },
       {
         "model_id": "MDL-01",
-        "milestone_km": 20000,
-        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "milestone_km": 30000,
+        "description": "Bảo dưỡng định kỳ 30.000km / 24 tháng",
         "schedule_id": "MS-002",
-        "milestone_months": 12
+        "milestone_months": 24
       },
       {
         "model_id": "MDL-01",
-        "milestone_km": 40000,
-        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "milestone_km": 45000,
+        "description": "Bảo dưỡng lớn 45.000km / 36 tháng",
         "schedule_id": "MS-003",
-        "milestone_months": 24
+        "milestone_months": 36
       },
       {
         "model_id": "MDL-01",
         "milestone_km": 60000,
-        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "description": "Bảo dưỡng lớn 60.000km / 48 tháng",
         "schedule_id": "MS-004",
-        "milestone_months": 36
+        "milestone_months": 48
       },
       {
         "model_id": "MDL-01",
-        "milestone_km": 80000,
-        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
+        "milestone_km": 75000,
+        "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
         "schedule_id": "MS-005",
-        "milestone_months": 48
+        "milestone_months": 60
       },
       {
         "model_id": "MDL-02",
-        "milestone_km": 10000,
-        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "milestone_km": 15000,
+        "description": "Bảo dưỡng định kỳ 15.000km / 12 tháng",
         "schedule_id": "MS-006",
-        "milestone_months": 6
+        "milestone_months": 12
       },
       {
         "model_id": "MDL-02",
-        "milestone_km": 20000,
-        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "milestone_km": 30000,
+        "description": "Bảo dưỡng định kỳ 30.000km / 24 tháng",
         "schedule_id": "MS-007",
-        "milestone_months": 12
+        "milestone_months": 24
       },
       {
         "model_id": "MDL-02",
-        "milestone_km": 40000,
-        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "milestone_km": 45000,
+        "description": "Bảo dưỡng lớn 45.000km / 36 tháng",
         "schedule_id": "MS-008",
-        "milestone_months": 24
+        "milestone_months": 36
       },
       {
         "model_id": "MDL-02",
         "milestone_km": 60000,
-        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "description": "Bảo dưỡng lớn 60.000km / 48 tháng",
         "schedule_id": "MS-009",
-        "milestone_months": 36
+        "milestone_months": 48
       },
       {
         "model_id": "MDL-02",
-        "milestone_km": 80000,
-        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
+        "milestone_km": 75000,
+        "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
         "schedule_id": "MS-010",
-        "milestone_months": 48
+        "milestone_months": 60
       },
       {
         "model_id": "MDL-03",
-        "milestone_km": 10000,
-        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "milestone_km": 15000,
+        "description": "Bảo dưỡng định kỳ 15.000km / 12 tháng",
         "schedule_id": "MS-011",
-        "milestone_months": 6
+        "milestone_months": 12
       },
       {
         "model_id": "MDL-03",
-        "milestone_km": 20000,
-        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "milestone_km": 30000,
+        "description": "Bảo dưỡng định kỳ 30.000km / 24 tháng",
         "schedule_id": "MS-012",
-        "milestone_months": 12
+        "milestone_months": 24
       },
       {
         "model_id": "MDL-03",
-        "milestone_km": 40000,
-        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "milestone_km": 45000,
+        "description": "Bảo dưỡng lớn 45.000km / 36 tháng",
         "schedule_id": "MS-013",
-        "milestone_months": 24
+        "milestone_months": 36
       },
       {
         "model_id": "MDL-03",
         "milestone_km": 60000,
-        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "description": "Bảo dưỡng lớn 60.000km / 48 tháng",
         "schedule_id": "MS-014",
-        "milestone_months": 36
+        "milestone_months": 48
       },
       {
         "model_id": "MDL-03",
-        "milestone_km": 80000,
-        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
+        "milestone_km": 75000,
+        "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
         "schedule_id": "MS-015",
-        "milestone_months": 48
+        "milestone_months": 60
       },
       {
         "model_id": "MDL-04",
-        "milestone_km": 10000,
-        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "milestone_km": 15000,
+        "description": "Bảo dưỡng định kỳ 15.000km / 12 tháng",
         "schedule_id": "MS-016",
-        "milestone_months": 6
+        "milestone_months": 12
       },
       {
         "model_id": "MDL-04",
-        "milestone_km": 20000,
-        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "milestone_km": 30000,
+        "description": "Bảo dưỡng định kỳ 30.000km / 24 tháng",
         "schedule_id": "MS-017",
-        "milestone_months": 12
+        "milestone_months": 24
       },
       {
         "model_id": "MDL-04",
-        "milestone_km": 40000,
-        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "milestone_km": 45000,
+        "description": "Bảo dưỡng lớn 45.000km / 36 tháng",
         "schedule_id": "MS-018",
-        "milestone_months": 24
+        "milestone_months": 36
       },
       {
         "model_id": "MDL-04",
         "milestone_km": 60000,
-        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "description": "Bảo dưỡng lớn 60.000km / 48 tháng",
         "schedule_id": "MS-019",
-        "milestone_months": 36
+        "milestone_months": 48
       },
       {
         "model_id": "MDL-04",
-        "milestone_km": 80000,
-        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
+        "milestone_km": 75000,
+        "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
         "schedule_id": "MS-020",
-        "milestone_months": 48
+        "milestone_months": 60
       },
       {
         "model_id": "MDL-05",
-        "milestone_km": 10000,
-        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "milestone_km": 15000,
+        "description": "Bảo dưỡng định kỳ 15.000km / 12 tháng",
         "schedule_id": "MS-021",
-        "milestone_months": 6
+        "milestone_months": 12
       },
       {
         "model_id": "MDL-05",
-        "milestone_km": 20000,
-        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "milestone_km": 30000,
+        "description": "Bảo dưỡng định kỳ 30.000km / 24 tháng",
         "schedule_id": "MS-022",
-        "milestone_months": 12
+        "milestone_months": 24
       },
       {
         "model_id": "MDL-05",
-        "milestone_km": 40000,
-        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "milestone_km": 45000,
+        "description": "Bảo dưỡng lớn 45.000km / 36 tháng",
         "schedule_id": "MS-023",
-        "milestone_months": 24
+        "milestone_months": 36
       },
       {
         "model_id": "MDL-05",
         "milestone_km": 60000,
-        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
+        "description": "Bảo dưỡng lớn 60.000km / 48 tháng",
         "schedule_id": "MS-024",
-        "milestone_months": 36
+        "milestone_months": 48
       },
       {
         "model_id": "MDL-05",
-        "milestone_km": 80000,
-        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
+        "milestone_km": 75000,
+        "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
         "schedule_id": "MS-025",
-        "milestone_months": 48
+        "milestone_months": 60
       },
       {
         "model_id": "MDL-06",
-        "milestone_km": 10000,
-        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
+        "milestone_km": 15000,
+        "description": "Bảo dưỡng định kỳ 15.000km / 12 tháng",
         "schedule_id": "MS-026",
-        "milestone_months": 6
+        "milestone_months": 12
       },
       {
         "model_id": "MDL-06",
-        "milestone_km": 20000,
-        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
+        "milestone_km": 30000,
+        "description": "Bảo dưỡng định kỳ 30.000km / 24 tháng",
         "schedule_id": "MS-027",
-        "milestone_months": 12
+        "milestone_months": 24
       },
       {
         "model_id": "MDL-06",
-        "milestone_km": 40000,
-        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
+        "milestone_km": 45000,
+        "description": "Bảo dưỡng lớn 45.000km / 36 tháng",
         "schedule_id": "MS-028",
-        "milestone_months": 24
-      },
-      {
-        "model_id": "MDL-06",
-        "milestone_km": 60000,
-        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
-        "schedule_id": "MS-029",
         "milestone_months": 36
       },
       {
         "model_id": "MDL-06",
-        "milestone_km": 80000,
-        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
-        "schedule_id": "MS-030",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 48 tháng",
+        "schedule_id": "MS-029",
         "milestone_months": 48
       },
       {
-        "model_id": "MDL-07",
-        "milestone_km": 10000,
-        "description": "Bảo dưỡng định kỳ 10.000km / 6 tháng",
-        "schedule_id": "MS-031",
-        "milestone_months": 6
+        "model_id": "MDL-06",
+        "milestone_km": 75000,
+        "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
+        "schedule_id": "MS-030",
+        "milestone_months": 60
       },
       {
         "model_id": "MDL-07",
-        "milestone_km": 20000,
-        "description": "Bảo dưỡng định kỳ 20.000km / 12 tháng",
-        "schedule_id": "MS-032",
+        "milestone_km": 15000,
+        "description": "Bảo dưỡng định kỳ 15.000km / 12 tháng",
+        "schedule_id": "MS-031",
         "milestone_months": 12
       },
       {
         "model_id": "MDL-07",
-        "milestone_km": 40000,
-        "description": "Bảo dưỡng lớn 40.000km / 24 tháng",
-        "schedule_id": "MS-033",
+        "milestone_km": 30000,
+        "description": "Bảo dưỡng định kỳ 30.000km / 24 tháng",
+        "schedule_id": "MS-032",
         "milestone_months": 24
       },
       {
         "model_id": "MDL-07",
-        "milestone_km": 60000,
-        "description": "Bảo dưỡng lớn 60.000km / 36 tháng",
-        "schedule_id": "MS-034",
+        "milestone_km": 45000,
+        "description": "Bảo dưỡng lớn 45.000km / 36 tháng",
+        "schedule_id": "MS-033",
         "milestone_months": 36
       },
       {
         "model_id": "MDL-07",
-        "milestone_km": 80000,
-        "description": "Bảo dưỡng toàn diện 80.000km / 48 tháng",
-        "schedule_id": "MS-035",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 48 tháng",
+        "schedule_id": "MS-034",
         "milestone_months": 48
+      },
+      {
+        "model_id": "MDL-07",
+        "milestone_km": 75000,
+        "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
+        "schedule_id": "MS-035",
+        "milestone_months": 60
       }
     ],
     "maintenance_items": [

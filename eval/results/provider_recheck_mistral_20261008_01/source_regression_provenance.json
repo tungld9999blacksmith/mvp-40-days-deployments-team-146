@@ -1,0 +1,12 @@
+{
+  "prior_regression": "provider_resume_mistral_20261007_07/final_regression_02.xml",
+  "passed": 314,
+  "skipped": 5,
+  "checked_python_sources_unchanged": {
+    "eval/resume_when_provider_ready.py": true,
+    "backend/tests/evaluation_v2/runner.py": true,
+    "backend/tests/test_agents/test_evaluation_provider_stop.py": true,
+    "backend/tests/test_agents/test_provider_resume_controller.py": true
+  },
+  "tests_not_rerun_for_configuration_only_recheck": true
+}

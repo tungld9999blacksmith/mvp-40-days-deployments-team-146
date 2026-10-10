@@ -1,0 +1,20 @@
+{
+  "history": {
+    "files_verified": 1610,
+    "unchanged": true,
+    "changed": []
+  },
+  "corpus": {
+    "files_verified": 43,
+    "unchanged": true,
+    "changed": []
+  },
+  "source": {
+    "files_verified": 108,
+    "unchanged": true,
+    "changed": []
+  },
+  "env_unchanged": true,
+  "selected_cases_unchanged": true,
+  "rubric_unchanged": true
+}

@@ -67,6 +67,7 @@ erDiagram
         varchar     feedback_intent "new"
         numeric     classification_confidence "new"
         varchar     classified_by "new"
+        boolean     safety_flag "new"
         enum        status
         varchar     closed_reason "new"
         timestamptz scheduled_at
@@ -131,6 +132,7 @@ erDiagram
 | 4 | Thêm chuyển `pending → closed`, `sent → closed` | BR-903, BR-909 — chốt AI-Q-701 |
 | 5 | Nới `ck_follow_up_responded`: nhận xét **không** bắt buộc, điểm bắt buộc | BR-905 |
 | 6 | Sửa `ck_follow_up_sent_at` cho phép đóng từ `pending` | BR-903 |
+| 7 | Thêm `safety_flag` + `ck_follow_up_safety_issue` | BR-908 — giữ lời khuyên an toàn đã quyết định lúc phản hồi (kể cả khi chỉ LLM phát hiện) |
 
 ## 5. Attributes (cột mới)
 
@@ -140,6 +142,7 @@ erDiagram
 | `feedback_intent` | `varchar(32)` | No | Yes | - | `SATISFIED / ISSUE_REPORTED / COMPLAINT_SERVICE / UNCLEAR` | Ý định phản hồi (AI-007 §7.1) |
 | `classification_confidence` | `numeric(3,2)` | No | Yes | - | `0..1` | Độ tin cậy phân loại; `NULL` khi phân loại bằng quy tắc |
 | `classified_by` | `varchar(16)` | No | Yes | - | `RULES / LLM / LLM_FALLBACK` | Cách phân loại (quan sát chất lượng AI) |
+| `safety_flag` | `boolean` | No | Yes | - | `TRUE` ⇒ `has_issue` | Có dấu hiệu an toàn (AI-007 `safety_flag`); `NULL` với phản hồi trước migration `e8c4b1d7a2f5` ⇒ API tính lại bằng luật từ khoá |
 | `closed_reason` | `varchar(32)` | No | Yes | - | `PROCESSED / NO_RESPONSE / NOT_ELIGIBLE`; bắt buộc khi `closed` | Lý do đóng |
 | `closed_at` | `timestamptz` | No | Yes | - | Bắt buộc khi `closed` | Thời điểm đóng |
 
@@ -222,6 +225,8 @@ ALTER TABLE follow_up ADD CONSTRAINT ck_follow_up_confidence
 ALTER TABLE follow_up ADD CONSTRAINT ck_follow_up_processed
   CHECK (closed_reason IS DISTINCT FROM 'PROCESSED'
          OR (rating IS NOT NULL AND responded_at IS NOT NULL AND classified_by IS NOT NULL));
+ALTER TABLE follow_up ADD CONSTRAINT ck_follow_up_safety_issue
+  CHECK (safety_flag IS NOT TRUE OR has_issue);
 ```
 
 ## 11. Index & Query Requirements
@@ -522,6 +527,7 @@ Revision Alembic `extend_follow_up_support_ticket` (sau `add_booking_status_even
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | `v1.0` | `2026-09-29` | Team 4 Người | Initial version: mở rộng `follow_up` (v1.2), `support_ticket` (v1.1); thêm `follow_up_delivery` (ENT-427) |
+| `v1.1` | `2026-10-07` | Mai Văn Trung | Thêm `follow_up.safety_flag` và `ck_follow_up_safety_issue` (migration `e8c4b1d7a2f5`) |
 
 ---
 

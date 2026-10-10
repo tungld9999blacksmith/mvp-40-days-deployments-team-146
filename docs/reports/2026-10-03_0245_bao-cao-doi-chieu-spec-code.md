@@ -25,7 +25,7 @@ Cách kiểm tra: dump OpenAPI của app thật (75 endpoint) và so với bản
 
 Ký hiệu: ✅ khớp spec · 🟡 có nhưng lệch / chưa đủ · 🧪 mock · ❌ chưa có
 
-| PRD | Tính năng | Backend API + job | AI Agent | Frontend | Phụ trách (chucnang.md) |
+| PRD | Tính năng | Backend API + job | AI Agent | Frontend | Phụ trách |
 |---|---|---|---|---|---|
 | F1 | Đăng ký/đăng nhập chủ xe (us-001, us-005) | ✅ | — | ✅ Login + onboarding nối API; ❌ `/profile` (us-005 FE) | Tùng |
 | F2 | Đăng ký/đăng nhập chủ xưởng (us-009, us-013) | ✅ | — | ✅ nối API; ❌ `/customers` (us-009 FE) | Tùng |

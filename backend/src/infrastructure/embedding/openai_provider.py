@@ -28,6 +28,7 @@ class OpenAIEmbeddingEngine(EmbeddingEngine):
         *,
         base_url: str | None = None,
         send_dimensions: bool = True,
+        provider_name: str = "openai",
     ) -> None:
         self._sync = openai.OpenAI(api_key=api_key, base_url=base_url)
         self._async = openai.AsyncOpenAI(api_key=api_key, base_url=base_url)
@@ -36,10 +37,11 @@ class OpenAIEmbeddingEngine(EmbeddingEngine):
         # `text-embedding-3-*` supports server-side truncation to `dimensions`;
         # older models (ada-002) reject the argument, so it can be disabled.
         self._send_dimensions = send_dimensions
+        self._provider_name = provider_name
 
     @property
     def provider_name(self) -> str:
-        return "openai"
+        return self._provider_name
 
     @property
     def model(self) -> str:

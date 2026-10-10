@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.14' and sys_platform == 'emscripten'",
@@ -904,7 +904,7 @@ requires-dist = [
     { name = "celery", extras = ["redis"], specifier = ">=5.6.0" },
     { name = "chromadb", specifier = ">=1.5.0" },
     { name = "ev-contracts", editable = "shared/ev-contracts" },
-    { name = "fastapi", specifier = ">=0.115.0" },
+    { name = "fastapi", specifier = ">=0.121.0" },
     { name = "firebase-admin", specifier = ">=7.7.0" },
     { name = "flashrank", specifier = ">=0.2.9" },
     { name = "google-auth", extras = ["requests"], specifier = ">=2.0.0" },

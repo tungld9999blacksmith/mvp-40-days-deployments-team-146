@@ -1,0 +1,9 @@
+{
+  "eval\\results\\agent_regression_resume_20261009_61\\repeat3_base\\case_results.jsonl": "6c3b9e09c2ecf566dd1cecda049a52dbb1ad8684288584d3aaeb81bf85082d3a",
+  "eval\\results\\agent_regression_resume_20261009_61\\repeat3_base\\corpus_after.json": "0a8410bfdfc2aaf7ab636991041163a0a8281b8a7457adef5ba0899ae0251d19",
+  "eval\\results\\agent_regression_resume_20261009_61\\repeat3_base\\corpus_before.json": "261327cb1a732162eee5783567bebb6141d08a67ccc73726da63a6360e603f6e",
+  "eval\\results\\agent_regression_resume_20261009_61\\repeat3_base\\manifest.json": "4d01593682e89396c94cf96a655820640f88a4b61762f5962a50c8dff2734bd9",
+  "eval\\results\\agent_regression_resume_20261009_61\\repeat3_base\\metrics.json": "6a00bd119a3a6acc9a95c9de9f15656346a8bab7457ee9aa9bf43967d9e69ec4",
+  "eval\\results\\agent_regression_resume_20261009_61\\repeat3_base\\preservation.json": "f1b93a2714029a2af5ba6572c25f157a4f13437705e691e204db04931da1479c",
+  "eval\\results\\agent_regression_resume_20261009_61\\repeat3_base\\resolved_components.json": "0e39da2db61d103dd17ab24c7e9a59bd154687b1d523a48d743d9961efdeb995"
+}

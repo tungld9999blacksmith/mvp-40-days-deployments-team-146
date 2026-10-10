@@ -1,0 +1,25 @@
+{
+  "previous_artifacts": {
+    "files_verified": 1165,
+    "unchanged": true,
+    "changed": []
+  },
+  "corpus": {
+    "files_verified": 43,
+    "unchanged": true,
+    "changed": []
+  },
+  "source": {
+    "files_verified": 87,
+    "unchanged": true,
+    "changed": []
+  },
+  "closed_runs": {
+    "closed_preflight_hashes.json": {
+      "files_verified": 8,
+      "unchanged": true,
+      "changed": []
+    }
+  },
+  "env_unchanged": true
+}

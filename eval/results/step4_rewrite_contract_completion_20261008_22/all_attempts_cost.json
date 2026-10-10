@@ -1,0 +1,9 @@
+{
+  "selected_pilots_and_complete_or_partial_full_receipts_usd": 0.0267808035,
+  "original_failed_gemma_attempt_receipt_usd": 0.00019188,
+  "all_structured_revision_rewrite_attempts_receipts_usd": 0.026972683499999997,
+  "embedding_calls_including_failed_attempt": 101,
+  "embedding_cost_usd": null,
+  "total_pipeline_cost_usd": null,
+  "missing_rewrite_receipts": 0
+}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { AlarmClock, CalendarClock, ChevronRight, QrCode, Wrench } from 'lucide-react'
+import { AlarmClock, CalendarClock, ChevronRight, FileText, QrCode, Wrench } from 'lucide-react'
 import { isApiError, type ApiError } from '@/shared/api/client'
 import Badge from '@/shared/ui/Badge'
 import Button from '@/shared/ui/Button'
@@ -8,20 +8,24 @@ import { Card } from '@/shared/ui/Card'
 import Skeleton from '@/shared/ui/Skeleton'
 import { EmptyState, ErrorState } from '@/shared/ui/States'
 import { PORTAL_BOOKING_STATUS as BOOKING_STATUS } from '@/shared/domain/bookingLabels'
-import { formatLicensePlate } from '@/shared/utils/format'
+import { formatKm, formatLicensePlate, formatTimeDayMonth } from '@/shared/utils/format'
 import { useWorkshopAuth } from '@/features/workshop-auth/context/WorkshopAuthContext'
 import { slotLabel, todayVn } from '@/features/bookings/utils'
 import { getBoard } from '@/features/workshop-board/api'
 import type { BoardData } from '@/features/workshop-board/types'
+import { formatVnd } from '@/features/estimate/utils'
+import { listWorkshopQuotes } from '@/features/quotes/api'
+import type { WorkshopQuoteList } from '@/features/quotes/types'
 
 const TODAY_LABEL = new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' })
 
-/** `/technician` — today's summary from API-WB-01 (first 5 bookings). */
+/** `/technician` — today's summary from API-WB-01 (first 5 bookings) and quotes waiting for review (QT-11). */
 export default function TechnicianDashboard() {
   const navigate = useNavigate()
   const { displayName, workshop } = useWorkshopAuth()
   const [board, setBoard] = useState<BoardData | null>(null)
   const [boardError, setBoardError] = useState<ApiError | null>(null)
+  const [quotes, setQuotes] = useState<WorkshopQuoteList | null>(null)
 
   const loadBoard = () => {
     const today = todayVn()
@@ -33,6 +37,9 @@ export default function TechnicianDashboard() {
 
   useEffect(() => {
     loadBoard()
+    listWorkshopQuotes('PENDING_APPROVAL')
+      .then(setQuotes)
+      .catch(() => setQuotes(null))
   }, [])
 
   const summary = board?.summary
@@ -40,6 +47,7 @@ export default function TechnicianDashboard() {
     { label: 'Chờ xác nhận', value: summary?.PENDING, icon: AlarmClock, tone: 'text-warning bg-warning/10', to: '/technician/board?status=PENDING' },
     { label: 'Lịch hẹn hôm nay', value: board ? board.items.filter(item => item.status !== 'CANCELLED').length : undefined, icon: CalendarClock, tone: 'text-emerald bg-emerald/10', to: '/technician/board' },
     { label: 'Đang làm', value: summary ? summary.CHECKED_IN + summary.IN_PROGRESS : undefined, icon: Wrench, tone: 'text-emerald bg-emerald/10', to: '/technician/board?status=CHECKED_IN&status=IN_PROGRESS' },
+    { label: 'Báo giá chờ duyệt', value: quotes?.items.length, icon: FileText, tone: 'text-warning bg-warning/10', to: '/technician/quotes' },
   ]
 
   return (
@@ -58,7 +66,7 @@ export default function TechnicianDashboard() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-6">
         {stats.map(({ label, value, icon: Icon, tone, to }) => (
           <Link key={label} to={to} className="group rounded-2xl p-3 sm:p-5 bg-card border border-border elevation-sm hover:-translate-y-0.5 hover:elevation-md hover:border-emerald/30 transition-all">
             <span className={`hidden sm:flex w-9 h-9 rounded-xl items-center justify-center mb-3 ${tone}`}>
@@ -70,7 +78,7 @@ export default function TechnicianDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
         <Card className="p-0 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-border">
             <span className="text-sm font-semibold text-foreground">Lịch hẹn hôm nay</span>
@@ -101,6 +109,47 @@ export default function TechnicianDashboard() {
                       </span>
                     </span>
                     {BOOKING_STATUS[item.status] && <Badge tone={BOOKING_STATUS[item.status].tone}>{BOOKING_STATUS[item.status].label}</Badge>}
+                    <ChevronRight className="w-4 h-4 text-muted" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+
+        <Card className="p-0 overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+            <span className="text-sm font-semibold text-foreground">Báo giá chờ duyệt</span>
+            <Link to="/technician/quotes" className="text-xs text-emerald font-medium hover:text-emerald-bright">
+              Xem tất cả →
+            </Link>
+          </div>
+          {!quotes ? (
+            <div className="p-5 space-y-3">
+              {[0, 1].map(index => (
+                <Skeleton key={index} className="h-10 w-full" />
+              ))}
+            </div>
+          ) : quotes.items.length === 0 ? (
+            <EmptyState title="Không có báo giá chờ duyệt." />
+          ) : (
+            <ul className="divide-y divide-border">
+              {quotes.items.slice(0, 5).map(quote => (
+                <li key={quote.quoteId}>
+                  <Link
+                    to={`/technician/quote-review?quoteId=${encodeURIComponent(quote.quoteId)}`}
+                    className="px-5 py-3.5 flex items-center gap-4 hover:bg-card-hover transition-colors"
+                  >
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-sm font-medium text-foreground truncate">
+                        {quote.modelName} · <span className="font-mono">{formatLicensePlate(quote.plateNumber)}</span>
+                      </span>
+                      <span className="block text-xs text-muted truncate">
+                        {quote.customer.fullName} · Mốc {formatKm(quote.odoMilestone)} · gửi {quote.submittedAt ? formatTimeDayMonth(quote.submittedAt) : '—'}
+                      </span>
+                    </span>
+                    <span className="font-mono text-sm text-foreground">{formatVnd(quote.estimatedTotal)}</span>
+                    {quote.isWaitingLong && <Badge tone="error">Chờ &gt; 24h</Badge>}
                     <ChevronRight className="w-4 h-4 text-muted" />
                   </Link>
                 </li>

@@ -1,0 +1,116 @@
+{
+  "checks": [
+    {
+      "check": "emulator_google_browser_and_real_backend_signin",
+      "passed": true
+    },
+    {
+      "check": "reminder_browser_save_survives_reload",
+      "passed": true
+    },
+    {
+      "check": "proposal_browser_confirm_and_persistence",
+      "passed": true
+    },
+    {
+      "check": "browser_http_chat_stub_transport",
+      "passed": true
+    }
+  ],
+  "network": [
+    {
+      "method": "POST",
+      "path": "/api/v1/oauth/sign-in",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/oauth/sign-in",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notification-settings",
+      "status": 200
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/notification-settings",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/oauth/sign-in",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notification-settings",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/oauth/sign-in",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/user-vehicles",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/user-vehicles/ae6be15a-68d3-42fd-b4bb-6f62f85c3fee/maintenance-status",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/conversations/ef570a26-781d-49af-a44b-81b17c3d425c/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/conversations/ef570a26-781d-49af-a44b-81b17c3d425c/messages",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/conversations/ef570a26-781d-49af-a44b-81b17c3d425c/booking-proposals/451af021-493f-49e8-95b4-8c1c5ef1b464/confirm",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/oauth/sign-in",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/user-vehicles",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/user-vehicles/ae6be15a-68d3-42fd-b4bb-6f62f85c3fee/maintenance-status",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/conversations/ef570a26-781d-49af-a44b-81b17c3d425c/messages",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/conversations/ef570a26-781d-49af-a44b-81b17c3d425c/messages",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/conversations/ef570a26-781d-49af-a44b-81b17c3d425c/messages",
+      "status": 200
+    }
+  ],
+  "google_popup_tested": false,
+  "firebase": "AUTH_EMULATOR_GOOGLE_FIXTURE",
+  "llm": "stub",
+  "real_emails_sent": 0
+}

@@ -1,0 +1,20 @@
+{
+  "synthetic_accounts": [
+    {
+      "uid": "evc-eval67-312baf7ad805463abfe976edd89e024c",
+      "user_id": 1,
+      "vehicle_id": "ae6be15a-68d3-42fd-b4bb-6f62f85c3fee",
+      "conversation_id": "ef570a26-781d-49af-a44b-81b17c3d425c"
+    },
+    {
+      "uid": "evc-eval67-064703acd8794652b9e5da113a17d242",
+      "user_id": 2,
+      "vehicle_id": "a8cb1d70-2c61-404f-b4e0-e81290d1c593",
+      "conversation_id": "eceba1c8-8a22-463d-a1b7-3507517acd35"
+    }
+  ],
+  "firebase": "REAL_CUSTOM_TOKEN_AUTH_NOT_GOOGLE_POPUP",
+  "database": "p146_eval67",
+  "workshop_id": "d6e51d91-a042-47d6-adef-413beddc887c",
+  "emails_sent": 0
+}

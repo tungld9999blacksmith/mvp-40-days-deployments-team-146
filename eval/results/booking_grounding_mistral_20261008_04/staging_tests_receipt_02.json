@@ -1,0 +1,23 @@
+{
+  "scope": "DEDICATED_SYNTHETIC_DATABASE_ONLY",
+  "mode": "tests",
+  "database": {
+    "host": "127.0.0.1",
+    "port": 35432,
+    "name": "p146_eval_booking",
+    "user": "p146_eval"
+  },
+  "redis": {
+    "host": "127.0.0.1",
+    "port": 36379,
+    "database": 0
+  },
+  "production_settings_used": false,
+  "env_file_modified": false,
+  "exit_code": 0,
+  "limitations": [
+    "Service fixtures replace chat/message transport and email.",
+    "Persistence test reopens SQL engines; it does not restart an application worker or test browser streaming.",
+    "Schema-isolated fixture creates its own SQLModel tables; successful public-schema migration is separate evidence."
+  ]
+}

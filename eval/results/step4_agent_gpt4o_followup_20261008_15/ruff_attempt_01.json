@@ -1,0 +1,7 @@
+{
+  "passed": false,
+  "rule": "PLC0206",
+  "location": "controller dictionary loop",
+  "before_live_calls": true,
+  "application_changed": false
+}

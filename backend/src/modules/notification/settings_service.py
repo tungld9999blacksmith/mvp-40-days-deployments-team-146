@@ -7,10 +7,13 @@ from sqlmodel import Session, select
 from src.common.core.identity import VehicleUser
 from src.common.core.maintenance.reminder import ReminderChannel
 from src.common.core.notification import UserNotificationChannel, UserNotificationSetting
+from src.common.core.notification.email import EmailSuppression
 
 from . import errors, schemas
 from .domain import ALL_CHANNELS, MAX_LEAD_DAYS, MIN_LEAD_DAYS
+from .email_transport import address_hash
 from .preferences import channel_rows, effective_channels, load_preferences
+from .recipients import has_recipient
 
 
 def _to_api(channel: ReminderChannel) -> schemas.NotificationChannel:
@@ -28,15 +31,17 @@ class NotificationSettingsService:
         *,
         available_channels: set[ReminderChannel],
         default_lead_days: int,
+        email_mode: str = "off",
     ) -> None:
         self._db = session
         self._available = available_channels
         self._default_lead_days = default_lead_days
+        self._email_mode = email_mode
 
     def get(self, user: VehicleUser) -> schemas.NotificationSettingsOut:
         """API-NOTI-001. Read only: never creates rows."""
         prefs = load_preferences(self._db, user.user_id, default_lead_days=self._default_lead_days)
-        return self._out(prefs.reminders_enabled, prefs.lead_days, prefs.channels)
+        return self._out(prefs.reminders_enabled, prefs.lead_days, prefs.channels, user)
 
     def update(
         self, user: VehicleUser, payload: schemas.NotificationSettingsUpdateIn
@@ -54,6 +59,11 @@ class NotificationSettingsService:
             channel = _to_core(change.channel)
             if change.enabled and channel not in self._available:
                 raise errors.ChannelNotAvailableError(change.channel.value)
+            if change.enabled and channel == ReminderChannel.EMAIL:
+                if not user.email or not user.email_verified:
+                    raise errors.InvalidRequestError("Email must be verified before enabling maintenance email.")
+                if self._db.get(EmailSuppression, address_hash(user.email)):
+                    raise errors.InvalidRequestError("This address is suppressed after a delivery problem.")
             rows[channel] = change.enabled
 
         setting = self._db.get(UserNotificationSetting, user.user_id)
@@ -82,7 +92,7 @@ class NotificationSettingsService:
             self._db.add(row)
         self._db.commit()
 
-        return self._out(enabled, setting.reminder_lead_days, effective_channels(rows))
+        return self._out(enabled, setting.reminder_lead_days, effective_channels(rows), user)
 
     # ----------------------------------------------------------- helpers
     def _out(
@@ -90,7 +100,14 @@ class NotificationSettingsService:
         reminders_enabled: bool,
         lead_days: int,
         enabled_channels: frozenset[ReminderChannel],
+        user: VehicleUser,
     ) -> schemas.NotificationSettingsOut:
+        suppressed = (
+            bool(user.email and self._db.get(EmailSuppression, address_hash(user.email)))
+            if ReminderChannel.EMAIL in self._available
+            else False
+        )
+        verified = bool(user.email and user.email_verified)
         return schemas.NotificationSettingsOut(
             reminders_enabled=reminders_enabled,
             reminder_lead_days=lead_days,
@@ -100,13 +117,26 @@ class NotificationSettingsService:
                     channel=_to_api(channel),
                     enabled=channel in enabled_channels,
                     available=channel in self._available,
-                    status=self._status(channel),
+                    status=(
+                        schemas.ChannelStatus.CONNECTED
+                        if verified and not suppressed
+                        else schemas.ChannelStatus.NOT_CONNECTED
+                    )
+                    if channel == ReminderChannel.EMAIL and channel in self._available
+                    else self._status(user, channel),
                 )
                 for channel in ALL_CHANNELS
             ],
+            email_recipient=user.email,
+            email_verified=verified,
+            email_suppressed=suppressed,
+            email_transport=self._email_mode,
         )
 
-    def _status(self, channel: ReminderChannel) -> schemas.ChannelStatus:
+    def _status(self, user: VehicleUser, channel: ReminderChannel) -> schemas.ChannelStatus:
+        """CONNECTED = the owner has an address for the channel (verified email, phone number)."""
         if channel not in self._available:
             return schemas.ChannelStatus.COMING_SOON
+        if has_recipient(user, channel):
+            return schemas.ChannelStatus.CONNECTED
         return schemas.ChannelStatus.NOT_CONNECTED

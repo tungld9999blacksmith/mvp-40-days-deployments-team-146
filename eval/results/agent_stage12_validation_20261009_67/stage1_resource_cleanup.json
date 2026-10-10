@@ -1,0 +1,31 @@
+{
+    "stopped_owned_process_ids":  [
+                                      11396,
+                                      5312,
+                                      17020,
+                                      15076,
+                                      31944,
+                                      30836,
+                                      26724,
+                                      2380,
+                                      24836,
+                                      8156,
+                                      13188,
+                                      17144,
+                                      24952,
+                                      29532,
+                                      1212,
+                                      27616,
+                                      19756,
+                                      30032
+                                  ],
+    "stopped_owned_containers":  [
+                                     "p146_eval67_postgres",
+                                     "p146_eval67_redis"
+                                 ],
+    "production_services_untouched":  true,
+    "removed_private_token_files":  [
+                                        "session_secrets.json",
+                                        "emulator_session_secrets.json"
+                                    ]
+}

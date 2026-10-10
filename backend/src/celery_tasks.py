@@ -41,6 +41,11 @@ celery.conf.update(
             "task": "reminder.send_all",
             "schedule": crontab(hour=get_settings().reminder_job_hour, minute=0),
         },
+        "maintenance-email-retries": {"task": "reminder.retry_emails", "schedule": 60.0},
+        "maintenance-email-payload-retention": {
+            "task": "reminder.purge_email_payloads",
+            "schedule": crontab(hour=3, minute=15),
+        },
         # FEAT-AUTH-004: purge workshop-owner auth audit older than 60 days.
         "workshop-auth-purge-events": {
             "task": "workshop_auth.purge_events",
@@ -66,8 +71,28 @@ celery.conf.update(
             "task": "follow_up.close_expired",
             "schedule": crontab(minute=5),
         },
+        # us-049 JOB-QT-01: purge stale quote drafts daily 03:00 (VN).
+        "quote-purge-stale-drafts": {
+            "task": "quote.purge_stale_drafts",
+            "schedule": crontab(hour=3, minute=0),
+        },
+        # bao-gia-hai-tang OV5: photos uploaded for an extra that was never sent, hourly.
+        "booking-line-purge-pending-photos": {
+            "task": "booking_line.purge_pending_photos",
+            "schedule": crontab(minute=20),
+        },
     },
 )
+
+# apply_async options for enqueues made inside an HTTP request (e.g. the logout
+# revoke). Without them a down Redis blocks the request for ~2 minutes: the
+# result backend retries its pub/sub reconnect 20 times before giving up. Fire-
+# and-forget tasks need no result subscription, and the publish gets one retry.
+FAIL_FAST_PUBLISH: dict = {
+    "ignore_result": True,
+    "retry": True,
+    "retry_policy": {"max_retries": 1, "interval_start": 0, "interval_step": 0.2, "interval_max": 0.2},
+}
 
 if not get_settings().uses_static_odometer():
     # FEAT-VEH-001 JOB-VEH-001: pull odometer + service history of every vehicle.

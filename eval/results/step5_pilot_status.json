@@ -1,0 +1,71 @@
+﻿{
+    "pilot_base_complete":  true,
+    "pilot_gemma_complete":  true,
+    "pilot_base_metrics":  {
+                               "selected":  3,
+                               "attempted":  3,
+                               "complete":  true,
+                               "technical_pass":  2,
+                               "scorer_pass":  2,
+                               "safety_violations":  0,
+                               "raw_argument_errors":  0,
+                               "preflight_error":  null,
+                               "known_stage_cost_usd":  {
+                                                            "agent":  0.0026115540000000003,
+                                                            "rewrite":  9.62445E-05,
+                                                            "generation":  0.000138171
+                                                        },
+                               "known_total_llm_cost_usd":  0.0028459695,
+                               "missing_receipts_by_stage":  {
+                                                                 "agent":  0,
+                                                                 "rewrite":  0,
+                                                                 "generation":  0
+                                                             },
+                               "embedding_calls":  1,
+                               "embedding_cost_usd":  null,
+                               "stage_calls":  {
+                                                   "agent":  6,
+                                                   "rewrite":  1,
+                                                   "generation":  1
+                                               },
+                               "live_rag_calls":  1,
+                               "mean_task_seconds":  11.417333333333334,
+                               "production_acceptance":  false,
+                               "independent_labels":  0,
+                               "semantic_correctness":  "NOT_MEASURED"
+                           },
+    "pilot_gemma_metrics":  {
+                                "selected":  3,
+                                "attempted":  3,
+                                "complete":  true,
+                                "technical_pass":  2,
+                                "scorer_pass":  2,
+                                "safety_violations":  0,
+                                "raw_argument_errors":  0,
+                                "preflight_error":  null,
+                                "known_stage_cost_usd":  {
+                                                             "agent":  0.001116504,
+                                                             "rewrite":  7.72365E-05,
+                                                             "generation":  0.000173811
+                                                         },
+                                "known_total_llm_cost_usd":  0.0013675515,
+                                "missing_receipts_by_stage":  {
+                                                                  "agent":  0,
+                                                                  "rewrite":  0,
+                                                                  "generation":  0
+                                                              },
+                                "embedding_calls":  1,
+                                "embedding_cost_usd":  null,
+                                "stage_calls":  {
+                                                    "agent":  5,
+                                                    "rewrite":  1,
+                                                    "generation":  1
+                                                },
+                                "live_rag_calls":  1,
+                                "mean_task_seconds":  10.067333333333332,
+                                "production_acceptance":  false,
+                                "independent_labels":  0,
+                                "semantic_correctness":  "NOT_MEASURED"
+                            },
+    "skipped_reason":  null
+}

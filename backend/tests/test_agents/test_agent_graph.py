@@ -3,6 +3,8 @@ import os
 import sys
 from pathlib import Path
 
+import pytest
+
 # Fix Windows console encoding for UTF-8 Vietnamese diacritics
 if hasattr(sys.stdout, "reconfigure"):
     getattr(sys.stdout, "reconfigure")(encoding="utf-8")
@@ -45,6 +47,7 @@ def test_route_intent():
     print("PASS: test_route_intent passed all checks!")
 
 
+@pytest.mark.live
 def test_agent_graph_execution():
     asyncio.run(_async_test_agent_graph_execution())
 

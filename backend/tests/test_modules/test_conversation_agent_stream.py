@@ -14,7 +14,12 @@ from src.modules.conversation.service import ChatService
 
 
 @pytest.mark.asyncio
-async def test_chat_service_run_turn_with_agent_orchestrator():
+@pytest.mark.parametrize("completed_content,stream_tokens,metadata", [
+    ("Xe của bạn đến hạn bảo dưỡng 6 tháng.", True, {}),
+    ("Chưa có lịch hẹn được tạo. Hãy bấm xác nhận trên thẻ.", True, {"confidence": "low", "fallback_required": True}),
+    ("Hệ thống chưa tra được dự toán chi phí.", False, {"confidence": "low", "fallback_required": True}),
+])
+async def test_chat_service_run_turn_with_agent_orchestrator(completed_content, stream_tokens, metadata):
     """Kiểm tra ChatService._run_turn tích hợp với run_agent_turn và phát đầy đủ SSE frames."""
     conversation_id = uuid4()
     user_id = 123
@@ -58,7 +63,7 @@ async def test_chat_service_run_turn_with_agent_orchestrator():
     assistant_msg_mock.id = uuid4()
     assistant_msg_mock.seq = 2
     assistant_msg_mock.role = MessageRole.ASSISTANT
-    assistant_msg_mock.content = "Xe của bạn đến hạn bảo dưỡng 6 tháng."
+    assistant_msg_mock.content = completed_content
     assistant_msg_mock.created_at = datetime.now(UTC)
     assistant_msg_mock.citations = [{"documentId": "DOC-EVO200"}]
     assistant_msg_mock.refs = {}
@@ -72,6 +77,7 @@ async def test_chat_service_run_turn_with_agent_orchestrator():
     # Inject the agent runner; no global function patch or production DB lookup.
     orchestrator = MagicMock()
     orchestrator.fetch_vehicle_context = AsyncMock(return_value={})
+    orchestrator.record_committed_answer = AsyncMock()
 
     # Mock dependencies for ChatService
     service = ChatService(
@@ -92,13 +98,15 @@ async def test_chat_service_run_turn_with_agent_orchestrator():
     async def fake_agent_turn(**kwargs):
         yield {"type": "tool_start", "tool": "get_due_maintenance", "input": {"model": "Evo200"}}
         yield {"type": "tool_end", "tool": "get_due_maintenance", "output": {"due": True}}
-        yield {"type": "token", "delta": "Xe của bạn "}
-        yield {"type": "token", "delta": "đến hạn bảo dưỡng 6 tháng."}
+        if stream_tokens:
+            yield {"type": "token", "delta": "Xe của bạn "}
+            yield {"type": "token", "delta": "đến hạn bảo dưỡng 6 tháng."}
         yield {
             "type": "completed",
             "message_data": {
                 "citations": [{"documentId": "DOC-EVO200"}],
-                "content": "Xe của bạn đến hạn bảo dưỡng 6 tháng.",
+                "content": completed_content,
+                **metadata,
             },
         }
 
@@ -121,6 +129,9 @@ async def test_chat_service_run_turn_with_agent_orchestrator():
     assert run_args["user_id"] == user_id
     assert run_args["source_message_id"] == user_msg_mock.id
     assert run_args["operation_key"] == str(client_message_id)
+    orchestrator.record_committed_answer.assert_awaited_once_with(
+        conversation_id, assistant_msg_mock.id, assistant_msg_mock.content,
+    )
 
     # Kiểm tra các sự kiện SSE phát ra
     events = [f.event for f in frames]
@@ -129,16 +140,84 @@ async def test_chat_service_run_turn_with_agent_orchestrator():
     assert frames[1].data["stage"] == "analyzing"
     assert events[2] == "status"
     assert "get_due_maintenance" in frames[2].data["stage"]
-    assert events[3] == "token"
-    assert frames[3].data["delta"] == "Xe của bạn "
-    assert events[4] == "token"
-    assert frames[4].data["delta"] == "đến hạn bảo dưỡng 6 tháng."
-    assert events[5] == "message.completed"
+    if stream_tokens:
+        assert events[3] == "token"
+        assert frames[3].data["delta"] == "Xe của bạn "
+        assert events[4] == "token"
+        assert frames[4].data["delta"] == "đến hạn bảo dưỡng 6 tháng."
+    else:
+        assert "token" not in events
+    assert events[-1] == "message.completed"
 
     # Kiểm tra lưu trữ assistant message vào database
     assert mock_messages.append.call_count == 2
     assistant_call = mock_messages.append.call_args_list[1]
     assert assistant_call[0][0] == conversation_id
     assert assistant_call[0][1] == MessageRole.ASSISTANT
-    assert assistant_call[0][2] == "Xe của bạn đến hạn bảo dưỡng 6 tháng."
+    assert assistant_call[0][2] == completed_content
     assert assistant_call[1]["citations"] == [{"documentId": "DOC-EVO200"}]
+    assert assistant_call[1]["refs"] == ({"rag": metadata} if metadata else {})
+
+
+@pytest.mark.asyncio
+async def test_chat_turn_saves_the_quote_card_of_create_draft_quote():
+    """AI-005 TOOL-501: the QUOTE card artifact goes on the answer; the LLM never sees it."""
+    from datetime import UTC, datetime
+
+    from langchain_core.messages import ToolMessage
+
+    conversation_id = uuid4()
+    vehicle = MagicMock(spec=UserVehicle)
+    vehicle.id = uuid4()
+    vehicle.link_status = VehicleLinkStatus.ACTIVE
+
+    def _message(role, seq):
+        msg = MagicMock()
+        msg.id, msg.seq, msg.role, msg.content = uuid4(), seq, role, "x"
+        msg.created_at, msg.citations, msg.refs, msg.card = datetime.now(UTC), [], {}, None
+        result = MagicMock()
+        result.created, result.message = True, msg
+        return result
+
+    messages = MagicMock()
+    messages.append = AsyncMock(side_effect=[_message(MessageRole.USER, 1), _message(MessageRole.ASSISTANT, 2)])
+    messages.publish = AsyncMock()
+    orchestrator = MagicMock()
+    orchestrator.fetch_vehicle_context = AsyncMock(return_value={"vehicle_id": str(vehicle.id)})
+    orchestrator.record_committed_answer = AsyncMock()
+    card = {"type": "QUOTE", "quote": {"quoteId": str(uuid4()), "displayStatus": "DRAFT"}}
+
+    async def fake_agent_turn(**kwargs):
+        output = ToolMessage(content='{"status": "DRAFT"}', tool_call_id="call-1", artifact=card)
+        yield {"type": "tool_end", "tool": "create_draft_quote", "output": output}
+        yield {"type": "completed", "message_data": {"citations": []}}
+
+    orchestrator.run_agent_turn.side_effect = fake_agent_turn
+    service = ChatService(
+        engine=MagicMock(),
+        message_service=messages,
+        toolkit=MagicMock(),
+        llm=MagicMock(),
+        knowledge_store=MagicMock(),
+        vector_store=MagicMock(),
+        settings=MagicMock(chat_run_timeout_seconds=30),
+        orchestrator=orchestrator,
+    )
+    service._build_history_messages = MagicMock(return_value=[])
+    service._attach_proposal_message = MagicMock()
+
+    async for _frame in service._run_turn(
+        conversation_id=conversation_id,
+        user_id=123,
+        vehicle=vehicle,
+        client_message_id=uuid4(),
+        content="Gửi xưởng báo giá giúp tôi",
+        trace_id="t",
+        is_disconnected=None,
+    ):
+        pass
+
+    answer_call = messages.append.call_args_list[1]
+    assert answer_call.kwargs["card"] == card
+    assert "Gửi xưởng duyệt" in answer_call.args[2]  # the model said nothing: fallback text
+    service._attach_proposal_message.assert_not_called()  # only proposals link back to the message

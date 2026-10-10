@@ -21,8 +21,11 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / "backend"), str(ROOT / "backend" / "src")]
 load_dotenv(ROOT / ".env")
 
-from src.agents.tools.RAG.ingestion import DocumentChunker, IngestionEngine, TextCleaner  # noqa: E402
-
+from src.agents.tools.RAG.ingestion import (
+    DocumentChunker,
+    IngestionEngine,
+    TextCleaner,
+)
 
 SOURCE_MARKERS = {
     "Chính sách bảo hành VinFast hiện hành - bản chuẩn hóa tiếng Việt": "# Warranty Policy",

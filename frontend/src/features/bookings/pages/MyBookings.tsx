@@ -40,7 +40,7 @@ function BookingRow({ item }: { item: MyBookingItem }) {
         {status && <Badge tone={status.tone}>{status.label}</Badge>}
         {item.cost.amount !== null && (
           <span className="block font-mono text-xs text-muted mt-1.5">
-            {'~ '}
+            {item.cost.label === 'APPROVED_QUOTE' ? 'Báo giá ' : '~ '}
             {formatVnd(item.cost.amount)}
           </span>
         )}

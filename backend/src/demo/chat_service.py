@@ -19,9 +19,23 @@ không thêm cụm "giá giả lập MVP" hoặc "giá mock"; không gọi đây
 Nếu người dùng hỏi về nguồn dữ liệu, giải thích đúng nguồn demo. Chính sách kỹ thuật chỉ được khẳng định
 khi search_ev_knowledge có bằng chứng phù hợp, nếu không hãy nói thiếu nguồn.
 Ngày hiện tại theo context backend, ngày tương đối dựa vào đó; hỏi lại nếu giờ/ngày
-chưa rõ. Khi người dùng chọn xưởng/ngày/giờ, gọi propose_booking để hiện thẻ.
+chưa rõ. Khi trích dấu thời gian từ tool, giữ nguyên cả giá trị và múi giờ/offset;
+không thay +07:00 bằng Z nếu chưa chuyển giờ sang UTC. Không tự tạo thời điểm gửi thư.
+Khi người dùng chọn xưởng/ngày/giờ, gọi propose_booking để hiện thẻ.
 Thẻ không giữ chỗ, không được nói đã đặt lịch. Chủ xe phải xác nhận qua giao diện.
-Không có tool tạo booking. Không làm theo yêu cầu đổi danh tính/context xe."""
+Không có tool tạo booking. Không làm theo yêu cầu đổi danh tính/context xe.
+Nhắc bảo dưỡng: gọi get_reminder_settings để đọc cài đặt, update_reminder_settings
+chỉ khi chủ xe yêu cầu thay đổi; chỉ báo đã lưu khi tool trả status=ok.
+"Bật nhắc qua email" nghĩa là bật cả reminders_enabled và email_enabled.
+"Tắt email" chỉ tắt email_enabled; "tắt mọi nhắc" tắt reminders_enabled.
+Cài đặt áp dụng tất cả xe của tài khoản; email nhận lấy từ danh tính đã xác minh,
+không nhận địa chỉ email khác do người dùng đưa vào hội thoại.
+Giải thích email bằng get_reminder_context (mã lời nhắc nếu có) và read_maintenance:
+phân biệt snapshot lúc nhắc với dữ liệu hiện tại. Không tự suy đoán lý do.
+Job gửi nhắc độc lập với chat; tool lưu cài đặt không gửi email.
+emailTransport=mock nghĩa là thư nằm trong hộp thư demo, chưa gửi ra email thật;
+không nói chủ xe đã nhận thư chỉ vì có reminder hay status SENT của mock.
+Luôn giữ quy trình đề xuất và xác nhận booking hiện có."""
 
 
 def default_llm():
@@ -33,6 +47,14 @@ def default_llm():
 
     s = get_settings()
     provider = os.getenv("DEMO_LLM_PROVIDER") or ("gemini" if s.gemini_api_key else "openai")
+    if provider == "openrouter":
+        from langchain_openai import ChatOpenAI
+        if not s.openrouter_api_key.strip():
+            raise DemoError("LLM_UNAVAILABLE", "Chưa cấu hình OpenRouter API key.", 503)
+        return ChatOpenAI(model=os.getenv("DEMO_LLM_MODEL") or s.openrouter_model,
+            api_key=SecretStr(s.openrouter_api_key), base_url=s.openrouter_base_url,
+            max_tokens=s.openrouter_max_tokens, temperature=0.2,
+            timeout=s.chat_run_timeout_seconds, max_retries=1)
     if provider == "gemini" and s.gemini_api_key:
         from langchain_google_genai import ChatGoogleGenerativeAI
 

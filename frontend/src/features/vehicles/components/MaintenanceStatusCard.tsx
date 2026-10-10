@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom'
-import { Bot, Calculator, CalendarClock, ChevronRight, ShieldCheck, Wrench } from 'lucide-react'
+import { Calculator, CalendarClock, ChevronRight, ShieldCheck, Wrench } from 'lucide-react'
 import type { ApiError } from '@/shared/api/client'
 import { Card, CardHeader } from '@/shared/ui/Card'
 import Button from '@/shared/ui/Button'
+import RobotAvatar from '@/shared/ui/RobotAvatar'
 import Skeleton from '@/shared/ui/Skeleton'
 import Spinner from '@/shared/ui/Spinner'
 import { ErrorState, Notice } from '@/shared/ui/States'
@@ -98,7 +99,7 @@ export default function MaintenanceStatusCard({
         <Notice>Chưa có lịch bảo dưỡng cho mẫu xe này — vui lòng liên hệ xưởng.</Notice>
       ) : (
         <>
-          <div className={cn('flex flex-wrap items-baseline gap-x-1.5', compact ? 'text-3xl' : 'text-4xl', 'font-bold font-plate leading-none')}>
+          <div className={cn('flex flex-wrap items-baseline gap-x-1.5', compact ? 'text-3xl' : 'text-4xl sm:text-5xl', 'font-bold font-plate leading-none')}>
             {parts.map((part, index) => (
               <span key={part.kind} className={part.emphasized ? TONE_TEXT[tone] : alerting ? 'text-muted' : 'text-foreground'}>
                 {index > 0 && <span className="text-muted font-normal mr-1.5">·</span>}
@@ -124,12 +125,19 @@ export default function MaintenanceStatusCard({
                 aria-valuemax={100}
                 aria-valuenow={Math.round(progress * 100)}
                 aria-label={`Tiến độ tới mốc ${formatKm(status.nextMilestone.odoMilestoneKm)}`}
-                className="w-full h-1.5 bg-background rounded-full overflow-hidden"
+                className={cn('w-full bg-background rounded-full overflow-hidden', compact ? 'h-1.5' : 'h-2.5')}
               >
                 <div className={cn('h-full rounded-full', TONE_BAR[tone])} style={{ width: `${progress * 100}%` }} />
               </div>
-              <div className="flex justify-between mt-1.5 text-xs text-muted font-mono">
-                <span>{formatKm(status.odometer.odoKm)}</span>
+              <div className="flex justify-between gap-2 mt-1.5 text-xs text-muted font-mono">
+                {compact ? (
+                  <span>{formatKm(status.odometer.odoKm)}</span>
+                ) : (
+                  <>
+                    <span>{formatKm(status.lastService?.odoKm ?? 0)}</span>
+                    <span className="text-foreground">ODO {formatKm(status.odometer.odoKm)}</span>
+                  </>
+                )}
                 <span>{formatKm(status.nextMilestone.odoMilestoneKm)}</span>
               </div>
             </div>
@@ -156,6 +164,23 @@ export default function MaintenanceStatusCard({
       {shownItems.length > 0 && !unknown && (
         <div className="mt-4 pt-4 border-t border-border">
           <p className="text-[13px] font-semibold text-muted mb-2">Hạng mục của mốc</p>
+          {!compact ? (
+            <ul className="flex flex-wrap gap-2">
+              {shownItems.map(item => (
+                <li
+                  key={item.itemCode}
+                  className={cn(
+                    'inline-flex items-center gap-1.5 min-h-8 rounded-full px-3 py-1 text-[13px]',
+                    item.isCoveredByWarranty ? 'bg-emerald-dim text-emerald font-semibold' : 'bg-background text-foreground',
+                  )}
+                >
+                  {item.isCoveredByWarranty && <ShieldCheck className="w-3.5 h-3.5" aria-hidden />}
+                  {item.itemName}
+                  {item.isCoveredByWarranty && <span className="font-normal">· Trong bảo hành</span>}
+                </li>
+              ))}
+            </ul>
+          ) : (
           <ul className="space-y-1.5">
             {shownItems.map(item => (
               <li key={item.itemCode} className="flex items-center justify-between gap-3 text-sm">
@@ -169,6 +194,7 @@ export default function MaintenanceStatusCard({
               </li>
             ))}
           </ul>
+          )}
           {compact && items.length > 3 && <p className="text-xs text-muted mt-2">và {items.length - 3} hạng mục khác</p>}
         </div>
       )}
@@ -189,17 +215,17 @@ export default function MaintenanceStatusCard({
           <>
             <Link
               to="/booking"
-              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm bg-brand-gradient text-on-brand font-semibold glow-emerald hover:brightness-110 transition-all active:scale-[0.98]"
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 min-h-11 text-sm bg-brand text-on-brand font-semibold hover:bg-emerald-bright transition-colors active:scale-[0.98]"
             >
               <CalendarClock className="w-4 h-4" aria-hidden />
               Đặt lịch bảo dưỡng
             </Link>
             <Link
               to={`/ai?q=${encodeURIComponent(ASK_AI_QUESTION)}`}
-              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm bg-card border border-border text-muted hover:text-foreground hover:bg-card-hover transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl pl-2 pr-4 py-1.5 min-h-11 text-sm font-medium bg-card-hover text-foreground hover:bg-border transition-colors"
             >
-              <Bot className="w-4 h-4" aria-hidden />
-              Hỏi AI về mốc này
+              <RobotAvatar size={30} />
+              Hỏi trợ lý về mốc này
             </Link>
           </>
         ) : (

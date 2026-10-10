@@ -1,0 +1,11 @@
+{
+  "Agent": {
+    "mistralai/mistral-small-2603": "KEEP_BASELINE: 30/30 scorer, lower observed cost than GPT-4o; semantic review deferred",
+    "google/gemma-4-26b-a4b-it": "DEVELOPMENT_COST_CANDIDATE: 30/30 scorer; slower; semantic review deferred",
+    "openai/gpt-4o": "RESERVE: original 5 provider 429 errors; targeted recovery recorded separately; substantially higher observed cost, no proven semantic advantage"
+  },
+  "Rewrite": "NOT_RUN: next stage is offline subset/criteria lock, then 3-model pilot",
+  "Generation": "Mistral/Gemma 6-case pilot retained; GPT-4o NOT_RUN; no independent semantic review",
+  "Write": "INACTIVE: no GPT-4o reviewer calls",
+  "production_model_change": false
+}

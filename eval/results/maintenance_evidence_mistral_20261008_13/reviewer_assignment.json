@@ -1,0 +1,9 @@
+{
+  "assigned_reviewer": "USER",
+  "basis": "User explicitly chose to review directly in this conversation",
+  "independent_labels_submitted": 0,
+  "status": "PENDING_USER_REVIEW",
+  "source_owner_approval": false,
+  "review_page": "rag_review.html",
+  "review_export": "rag-maintenance-review.json"
+}

@@ -1,0 +1,25 @@
+{
+  "previous": {
+    "files_verified": 1308,
+    "unchanged": true,
+    "changed": []
+  },
+  "corpus": {
+    "files_verified": 43,
+    "unchanged": true,
+    "changed": []
+  },
+  "source": {
+    "files_verified": 90,
+    "unchanged": true,
+    "changed": []
+  },
+  "closed_initial_producers": {
+    "files_verified": 17,
+    "unchanged": true,
+    "changed": []
+  },
+  "recovery_controller_unchanged": true,
+  "env_unchanged": true,
+  "review_labels": 0
+}

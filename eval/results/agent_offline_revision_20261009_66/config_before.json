@@ -1,0 +1,7 @@
+{
+  "env_sha256": "76dadfbc681b8175ff3d347e61b41c6926926b916a9024c7a108430ec98fdfbc",
+  "allowed_source_changes": [
+    "backend/src/agents/tools/RAG/query/generator.py"
+  ],
+  "new_api_calls": 0
+}

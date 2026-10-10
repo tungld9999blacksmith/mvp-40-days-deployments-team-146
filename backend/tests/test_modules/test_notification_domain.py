@@ -72,7 +72,9 @@ def test_message_is_safe_and_has_link():
     )
 
     assert "30A12345" not in message.body and "30****45" in message.body
-    assert "12,000 km / 12 months" in message.body and "2 days" in message.body
+    assert message.subject == "Xe sắp đến hạn bảo dưỡng"
+    assert "mốc bảo dưỡng 12.000 km / 12 tháng" in message.body
+    assert "(hạn 15/10/2026, còn 2 ngày hoặc 5.000 km)" in message.body
     assert message.link == "https://app.example.com/booking"
     assert message.body.endswith("https://app.example.com/booking")
 
@@ -85,5 +87,20 @@ def test_expired_message_states_how_late():
         level=ReminderLevel.EXPIRED,
     )
 
-    assert "overdue by 3 days and 300 km" in message.body
+    assert message.subject == "Xe đã quá hạn bảo dưỡng"
+    assert "đã quá 3 ngày và 300 km" in message.body
     assert message.link is None
+
+
+def test_due_today_message():
+    message = build_message(
+        model_name="VF6",
+        license_plate="30A12345",
+        result=_result(DueStatus.DUE_SOON, days=0, km=800),
+        level=ReminderLevel.EARLY,
+    )
+
+    assert (
+        message.body
+        == "Xe VF6 (30****45) sắp đến mốc bảo dưỡng 12.000 km / 12 tháng (hạn 15/10/2026, đến hạn hôm nay)."
+    )

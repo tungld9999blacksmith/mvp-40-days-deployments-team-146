@@ -46,6 +46,7 @@ class GenerationConfig(BaseModel):
 class LLMUsage(BaseModel):
     input_tokens: int = 0
     output_tokens: int = 0
+    cost_usd: float | None = Field(default=None, ge=0)
 
 
 class LLMResponse(BaseModel):

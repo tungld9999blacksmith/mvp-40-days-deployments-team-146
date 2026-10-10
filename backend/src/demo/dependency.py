@@ -13,6 +13,7 @@ from fastapi import Header, Request
 from starlette.concurrency import run_in_threadpool
 
 from .fixtures import ensure_user, seed_store
+from .notifications import DemoEmailConfig, DemoNotificationService
 from .services import (
     MockBookingService,
     MockCostService,
@@ -31,9 +32,10 @@ class DemoServices:
     cost: MockCostService
     messages: MockMessageService
     booking: MockBookingService
+    notifications: DemoNotificationService
 
 
-def make_services(store: DemoStore | None = None) -> DemoServices:
+def make_services(store: DemoStore | None = None, *, email_config=None, email_transport=None) -> DemoServices:
     persistent = store is None
     if store is None:
         store = DemoStore(skip_onboarding=False)
@@ -45,17 +47,25 @@ def make_services(store: DemoStore | None = None) -> DemoServices:
             started = monotonic()
             store.clock = lambda: frozen + timedelta(seconds=monotonic() - started)
     seed_store(store)
+    config = email_config or (DemoEmailConfig.from_env() if persistent else DemoEmailConfig())
     if persistent:
         from .persistence import load_registration
 
         default_path = Path(__file__).resolve().parents[3] / "data" / "demo" / "registration.json"
         load_registration(store, Path(os.getenv("DEMO_REGISTRATION_FILE", str(default_path))))
+        from .notification_persistence import load_notifications
+
+        notification_path = default_path.with_name(
+            "notifications-resend-test.json" if config.mode == "resend_test" else "notifications.json"
+        )
+        load_notifications(store, Path(os.getenv("DEMO_NOTIFICATIONS_FILE", str(notification_path))))
     vehicles = MockVehicleService(store)
     maintenance = MockMaintenanceService(store, vehicles)
     cost = MockCostService(store, vehicles, maintenance)
     messages = MockMessageService(store, vehicles)
     booking = MockBookingService(store, vehicles, cost, messages)
-    return DemoServices(store, vehicles, maintenance, cost, messages, booking)
+    notifications = DemoNotificationService(store, vehicles, maintenance, config, email_transport)
+    return DemoServices(store, vehicles, maintenance, cost, messages, booking, notifications)
 
 
 def services(request: Request) -> DemoServices:

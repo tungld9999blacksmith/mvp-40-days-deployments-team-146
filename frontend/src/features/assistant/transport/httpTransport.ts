@@ -93,10 +93,10 @@ export function createHttpTransport(): ChatTransport {
       await apiRequest<void>(`/conversations/${encodeURIComponent(conversationId)}`, { method: 'DELETE', timeoutMs: 10_000 })
     },
 
-    getConversationExcerpt: async ({ id }) =>
+    getConversationExcerpt: async ({ type, id }) =>
       (
         await apiRequest<ConversationExcerpt>(
-          `/workshop/bookings/${encodeURIComponent(id)}/conversation-excerpt`,
+          `/workshop/${type === 'booking' ? 'bookings' : 'quotes'}/${encodeURIComponent(id)}/conversation-excerpt`,
           { timeoutMs: 10_000 },
         )
       ).data,

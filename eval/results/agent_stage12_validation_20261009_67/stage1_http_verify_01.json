@@ -1,0 +1,130 @@
+{
+  "checks": [
+    {
+      "check": "concurrent_confirm_replay",
+      "passed": true,
+      "detail": [
+        200,
+        200
+      ]
+    },
+    {
+      "check": "confirm_same_booking",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "exactly_one_booking",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "check": "last_slot_capacity_rechecked",
+      "passed": true,
+      "detail": {
+        "status": 409,
+        "error": {
+          "code": "PROPOSAL_SLOT_FULL",
+          "message": "The selected time slot is no longer available.",
+          "details": {
+            "proposalId": "ee0a5ddc-2c80-41d6-a6a5-98056236dcda",
+            "message": {
+              "id": "e959d3f7-bb4f-4465-9492-7d2ca83d5936",
+              "seq": 8,
+              "role": "assistant",
+              "content": "Khung giờ 20:00 Thứ Sáu, 09/10/2026 vừa hết chỗ. Đề xuất mới: EV Care Evaluation67 lúc 21:00 Thứ Sáu, 09/10/2026. Bấm \"Xác nhận đặt lịch\" để đặt lại.",
+              "citations": [],
+              "refs": {},
+              "card": {
+                "type": "BOOKING_PROPOSAL",
+                "reason": "Xe đã quá mốc 12.000 km: quá 500 km. Đề xuất khung giờ sớm nhất còn trống.",
+                "primary": {
+                  "date": "2026-10-09",
+                  "region": "Ha Noi",
+                  "address": "EV Care Evaluation67 address",
+                  "estimate": {
+                    "coveredCount": 1,
+                    "chargeableTotal": "100000.00",
+                    "hasReferencePrice": false
+                  },
+                  "optionId": "opt-1",
+                  "timeSlot": "21:00",
+                  "distanceKm": 2.0,
+                  "workshopId": "d6e51d91-a042-47d6-adef-413beddc887c",
+                  "isPreferred": false,
+                  "workshopName": "EV Care Evaluation67"
+                },
+                "vehicle": {
+                  "trim": "Plus",
+                  "modelName": "VF6",
+                  "userVehicleId": "a8cb1d70-2c61-404f-b4e0-e81290d1c593",
+                  "licensePlateMasked": "30A***45"
+                },
+                "version": 1,
+                "expiresAt": "2026-10-09T11:20:01.345733+00:00",
+                "milestone": {
+                  "items": [
+                    {
+                      "itemCode": "BATTERY_CHECK",
+                      "itemName": "High-voltage battery check",
+                      "isCoveredByWarranty": true
+                    },
+                    {
+                      "itemCode": "BRAKE_INSPECTION",
+                      "itemName": "Brake system inspection",
+                      "isCoveredByWarranty": false
+                    }
+                  ],
+                  "label": "12,000 km / 12 months",
+                  "dueDate": "2027-04-09",
+                  "dueReason": "KM",
+                  "dueStatus": "OVERDUE",
+                  "remainingKm": -500,
+                  "remainingDays": 182,
+                  "monthMilestone": 12,
+                  "odoMilestoneKm": 12000
+                },
+                "proposalId": "ee0a5ddc-2c80-41d6-a6a5-98056236dcda",
+                "alternatives": [
+                  {
+                    "date": "2026-10-09",
+                    "region": "Ha Noi",
+                    "address": "EV Care Evaluation67 address",
+                    "estimate": {
+                      "coveredCount": 1,
+                      "chargeableTotal": "100000.00",
+                      "hasReferencePrice": false
+                    },
+                    "optionId": "opt-2",
+                    "timeSlot": "22:00",
+                    "distanceKm": 2.0,
+                    "workshopId": "d6e51d91-a042-47d6-adef-413beddc887c",
+                    "isPreferred": false,
+                    "workshopName": "EV Care Evaluation67"
+                  }
+                ],
+                "locationBasis": "DEVICE",
+                "locationLabel": null
+              },
+              "createdAt": "2026-10-09T10:50:01.403453Z"
+            }
+          },
+          "traceId": null
+        }
+      }
+    },
+    {
+      "check": "no_extra_booking_after_capacity_failure",
+      "passed": true,
+      "detail": null
+    }
+  ],
+  "passed": 5,
+  "total": 5,
+  "backend": "src.main:app",
+  "firebase": "real custom-token auth",
+  "database": "isolated PostgreSQL",
+  "redis": "isolated real Redis",
+  "llm": "stub",
+  "real_emails_sent": 0
+}

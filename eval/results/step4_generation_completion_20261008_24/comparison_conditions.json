@@ -1,0 +1,39 @@
+{
+  "actual_paired_request_hashes": {
+    "M01": "0350d0cfe6fe82b9010c40c3ca1307b1065d688190c56f0967830bcfa7b7cc0a",
+    "W02": "0a050f55ff1145df7a7a7d42aff453a9a066720236d5198ec7f8b0e8b025538f",
+    "B11": "1fc87f1f68060a2afc1f0104d6e09a7c95bc4790ad7ac410f52464797095b58f",
+    "B16": "32cc27174cdd09f5c78f32f195892fa81967463e711bac6db45a0e2c3e18c1d8",
+    "PR03": "f9e2f28235283678a46738ed980ffa5b02cd411bc8eb55bbe8d225b1f73ce37c",
+    "M02": "fe281b9badfc438963e8b9c8708d606f840ba4e3a2a0b2337ef8cafe31c4cd97",
+    "M03": "5c7116e7721eac9f699c679ea6db2fcdf242617a50ed85abf41c9d69458eb1d8",
+    "W01": "ddb54df384d3d7611c0eb1d62b796b88f6fb6142e4fe4f12fd389cab06eb5153",
+    "W04": "0c6038688e03132eec038b6ad5b88fa2921d9e57d78b4e5f50734987f11eacd6",
+    "W12": "4c33c62e8afe25a76542bf497c325b73def811e9881009c4f4f5cac5f7cf369e",
+    "B01": "902ea47d6f2d78d25d65c35f954be191b245ba7a787bcb471804cd1da4a66dc2",
+    "B20": "5a75135c6ec55fc30b37fc0f7321fbaffbe7444d4e7147c8cd95cd98ef2c5f60",
+    "P01": "d5709e5f7db851294bc344a568a02fb86d0c795364d8d5fff76d5180ab1f9fdf",
+    "P05": "2daeebf75e27442ebf1a56681fa6a1539e468bfa3375cb5a1c04db47992f7ecb",
+    "PR07": "178ae929526bc34f6d0305c0c12a5b168b243b141b043cec2b000a41038a949c",
+    "PR10": "fe814d3739f2086520889dddf80a3493cdeffb69d266aca7a48b75268e209d76",
+    "G01": "6a52fe60d5cdfa1e16267ebfcb16c1bed4e624a19382a9b46f8e648937ec5b68",
+    "G03": "afc686dcd989fa7a1c9714cc18dc93de8d1f7db4ff34c1c7a236c5ebe478c88b",
+    "G05": "885b9b9a29f6508ec3991f74fe240fd40da5c41eee7213307b9e5d8f46d4af9a",
+    "M10": "f2467af0c600bba38e11e2d629b077bb4fca89a5852f6cb8897d19e0c56ea3fb",
+    "M25": "f479147debf12484df107bf73d41bf1a4e6d43108230b38752621724ce0535c4",
+    "W08": "54e20f80794d9ecf88e37020e3c8712afce030ad5d3da8677e5733d724aa8496",
+    "B05": "47dde0b25355b84c8f545f9986deebb7c36c89522d8a19be58256c273db9722c",
+    "P11": "77e243136e1e69f3e1a8ae3bdc6a6492fa705df48472f07247541433a6aac51e",
+    "PR11": "bf901fc718f9b540922a30522ab8578de2dcd41b7c56541f3098de9968b660ee"
+  },
+  "same_original_queries_analysis_vehicle_evidence_prompt_schema_temperature_budget": true,
+  "retrieval_calls": 0,
+  "embedding_calls": 0,
+  "differences": [
+    "Mistral endpoint preference mistral/us,mistral/eu; Gemma automatic",
+    "Sequential provider/cache/load effects; single development repeat"
+  ],
+  "historical_pilot_prompt_changed": true,
+  "historical_results_preserved": true,
+  "semantic_accuracy": "NOT_MEASURED_REVIEW_DEFERRED"
+}

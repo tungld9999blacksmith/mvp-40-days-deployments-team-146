@@ -49,6 +49,8 @@ def main() -> int:
     parser.add_argument("--collection")
     parser.add_argument("--output", type=Path, default=EVAL_DIR / "indexed_evidence_audit.json")
     args = parser.parse_args()
+    if args.output.exists():
+        raise SystemExit("Refusing to overwrite an existing evidence audit. Select a new --output under eval/results/<run-id>/.")
 
     store = QdrantVectorStore(collection_name=args.collection)
     chunks = store.get_all_chunks()

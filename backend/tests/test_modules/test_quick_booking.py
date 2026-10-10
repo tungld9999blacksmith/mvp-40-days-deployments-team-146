@@ -714,11 +714,14 @@ def test_chat_turn_takes_the_card_from_the_tool_artifact():
     """TOOL-QB-01: ChatService reads the card from the ToolMessage artifact (the LLM never sees it)."""
     from langchain_core.messages import ToolMessage
 
-    from src.modules.conversation.service import _proposal_card
+    from src.modules.conversation.service import _tool_card
 
     card = {"type": "BOOKING_PROPOSAL", "proposalId": str(uuid4())}
-    assert _proposal_card(ToolMessage(content='{"status": "PROPOSED"}', tool_call_id="1", artifact=card)) == card
-    assert _proposal_card(ToolMessage(content='{"status": "ERROR"}', tool_call_id="1")) is None
+    assert _tool_card(ToolMessage(content='{"status": "PROPOSED"}', tool_call_id="1", artifact=card)) == card
+    assert _tool_card(ToolMessage(content='{"status": "ERROR"}', tool_call_id="1")) is None
+    quote = {"type": "QUOTE", "quote": {"quoteId": str(uuid4())}}
+    assert _tool_card(ToolMessage(content='{"status": "DRAFT"}', tool_call_id="2", artifact=quote)) == quote
+    assert _tool_card(ToolMessage(content="{}", tool_call_id="3", artifact={"type": "QUOTE", "quote": {}})) is None
 
 
 @pytest.mark.asyncio

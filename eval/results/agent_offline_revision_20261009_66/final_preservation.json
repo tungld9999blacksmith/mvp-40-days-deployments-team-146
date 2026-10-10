@@ -1,0 +1,13 @@
+{
+  "history": {
+    "files_verified": 2986,
+    "unchanged": true,
+    "changed": []
+  },
+  "intentional_runtime_changes": [
+    "backend/src/agents/tools/RAG/query/generator.py"
+  ],
+  "unchanged_original_source_files": 340,
+  "original_generator_preserved": true,
+  "env_unchanged": true
+}

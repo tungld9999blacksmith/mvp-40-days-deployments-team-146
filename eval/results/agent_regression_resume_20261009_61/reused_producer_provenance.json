@@ -1,0 +1,7 @@
+{
+  "producer": "eval\\results\\agent_regression_revision_20261009_60\\repeat1_base",
+  "producer_seal_sha256": "a3bbe44f6cbbbca7ebafa5f7f184249da7e1d185f65697733f864fe201d9c74a",
+  "copied_raw_rows_sha256": "069679e1975a79a8c707e798e8d45bd8c15a18d3edb6ac9f0cea8cdef5a7b462",
+  "model_requests_replayed": 0,
+  "cost_charged_again": false
+}

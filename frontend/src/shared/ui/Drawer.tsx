@@ -2,8 +2,9 @@ import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from './cn'
+import { isTopOverlay, pushOverlay, trapTab } from './overlayStack'
 
-/** Side panel on desktop, bottom sheet on mobile. Esc / overlay closes it. */
+/** Side panel on desktop, bottom sheet on mobile. Esc / overlay closes it; focus stays inside. */
 export default function Drawer({
   open,
   onClose,
@@ -12,6 +13,7 @@ export default function Drawer({
   children,
   className,
   width,
+  dismissable = true,
 }: {
   open: boolean
   onClose: () => void
@@ -21,22 +23,37 @@ export default function Drawer({
   className?: string
   /** Desktop width class, e.g. `sm:w-[30rem]` (default 26rem right / 24rem left). */
   width?: string
+  /** When false, Esc and overlay click do nothing (e.g. while a request runs). */
+  dismissable?: boolean
 }) {
   const titleId = useId()
   const panelRef = useRef<HTMLDivElement>(null)
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
+  const dismissableRef = useRef(dismissable)
+  dismissableRef.current = dismissable
 
   useEffect(() => {
     if (!open) return
     const previous = document.activeElement as HTMLElement | null
-    panelRef.current?.focus()
+    const panel = panelRef.current
+    panel?.focus()
+    const id = Symbol('drawer')
+    const pop = pushOverlay(id)
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onCloseRef.current()
+      // A Dialog or Drawer opened on top of this one handles the key alone.
+      if (!isTopOverlay(id)) return
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        if (dismissableRef.current) onCloseRef.current()
+        return
+      }
+      trapTab(event, panel)
     }
     document.addEventListener('keydown', onKeyDown)
     return () => {
       document.removeEventListener('keydown', onKeyDown)
+      pop()
       previous?.focus?.()
     }
   }, [open])
@@ -45,7 +62,11 @@ export default function Drawer({
 
   return createPortal(
     <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in" aria-hidden onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
+        aria-hidden
+        onClick={() => dismissable && onClose()}
+      />
       <div
         ref={panelRef}
         role="dialog"

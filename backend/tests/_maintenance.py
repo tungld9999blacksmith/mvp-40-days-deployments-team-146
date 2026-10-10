@@ -1,4 +1,4 @@
-"""Shared test helpers for the maintenance flows (cost estimate, bookings, CRM).
+"""Shared test helpers for the maintenance flows (cost estimate, bookings, quotes, CRM).
 
 Builds on ``tests._user_vehicle`` (same in-memory SQLite approach) and adds the
 workshop-side tables plus seed helpers for workshops, owners and bookings.
@@ -18,9 +18,12 @@ from src.common.core.crm.follow_up import FollowUp
 from src.common.core.identity.vehicle_user import VehicleUser
 from src.common.core.identity.workshop_owner import WorkshopOwner
 from src.common.core.maintenance.booking import Booking, BookingStatus
+from src.common.core.maintenance.booking_line import BookingLine, BookingLinePhoto
 from src.common.core.maintenance.booking_proposal import BookingProposal
 from src.common.core.maintenance.booking_request import BookingRequest
 from src.common.core.maintenance.booking_status_event import BookingReschedule, BookingStatusEvent
+from src.common.core.maintenance.quote import Quote
+from src.common.core.maintenance.quote_item import QuoteItem
 from src.common.core.maintenance.service_progress import ServiceProgress
 from src.common.core.notification import (
     BookingReminder,
@@ -43,6 +46,8 @@ TABLES = [
     *VEHICLE_TABLES,
     WorkshopOperatingHour.__table__,
     WorkshopSlotBlock.__table__,
+    Quote.__table__,
+    QuoteItem.__table__,
     ServiceProgress.__table__,
     FollowUp.__table__,
     BookingStatusEvent.__table__,
@@ -52,6 +57,8 @@ TABLES = [
     FollowUpDelivery.__table__,
     BookingProposal.__table__,
     BookingRequest.__table__,
+    BookingLine.__table__,
+    BookingLinePhoto.__table__,
 ]
 
 

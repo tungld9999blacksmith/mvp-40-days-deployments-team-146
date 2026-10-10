@@ -16,7 +16,8 @@ import type { FollowUp as FollowUpData, FollowUpOutcome } from '../types'
 
 const MAX_COMMENT = 1000
 
-function CallButton({ hotline, label = 'Gọi xưởng' }: { hotline: string; label?: string }) {
+function CallButton({ hotline, label = 'Gọi xưởng' }: { hotline: string | null; label?: string }) {
+  if (!hotline) return null
   return (
     <a
       href={`tel:${hotline.replace(/\s+/g, '')}`}
@@ -36,7 +37,7 @@ function ResultPanel({ outcome, workshop }: { outcome: FollowUpOutcome; workshop
         <div role="alert" className="rounded-2xl border border-warning/30 bg-warning/10 p-4 space-y-3">
           <p className="flex items-start gap-2 text-sm text-foreground">
             <ShieldAlert className="w-5 h-5 text-warning shrink-0" />
-            <span>{outcome.safetyMessage ?? `Nếu xe có dấu hiệu bất thường khi vận hành, bạn nên dừng xe và liên hệ xưởng ngay: ${workshop.hotline}.`}</span>
+            <span>{outcome.safetyMessage ?? `Nếu xe có dấu hiệu bất thường khi vận hành, bạn nên dừng xe và liên hệ xưởng ngay: ${workshop.hotline ?? workshop.name}.`}</span>
           </p>
           <CallButton hotline={workshop.hotline} />
         </div>
@@ -70,7 +71,8 @@ export default function FollowUp() {
   const [ratingError, setRatingError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [outcome, setOutcome] = useState<FollowUpOutcome | null>(null)
-  const [closedHotline, setClosedHotline] = useState<string | null>(null)
+  /** Set once the API answers FOLLOW_UP_CLOSED; `hotline` comes from its details. */
+  const [closedByApi, setClosedByApi] = useState<{ hotline: string | null } | null>(null)
   const viewed = useRef(false)
 
   const load = useCallback(
@@ -117,7 +119,10 @@ export default function FollowUp() {
       const code = isApiError(reason) ? reason.code : 'UNKNOWN'
       track('follow_up_submit_failed', { errorCode: code })
       if (code === 'FOLLOW_UP_ALREADY_RESPONDED') void load()
-      else if (code === 'FOLLOW_UP_CLOSED') setClosedHotline(isApiError(reason) ? String(reason.details?.workshopHotline ?? data.workshop.hotline) : data.workshop.hotline)
+      else if (code === 'FOLLOW_UP_CLOSED') {
+        const fromApi = isApiError(reason) ? reason.details?.workshopHotline : undefined
+        setClosedByApi({ hotline: typeof fromApi === 'string' && fromApi ? fromApi : data.workshop.hotline })
+      }
       else if (code === 'FOLLOW_UP_NOT_OPEN') void load()
       else toast.show('Tạm thời chưa gửi được, bạn thử lại nhé.', 'error')
     } finally {
@@ -147,7 +152,8 @@ export default function FollowUp() {
     )
   }
 
-  const closed = closedHotline !== null || (data.status === 'CLOSED' && data.closedReason === 'NO_RESPONSE')
+  const closed = closedByApi !== null || (data.status === 'CLOSED' && data.closedReason === 'NO_RESPONSE')
+  const closedHotline = closedByApi ? closedByApi.hotline : data.workshop.hotline
   const lowRating = rating !== null && rating <= 2
 
   return (
@@ -174,9 +180,10 @@ export default function FollowUp() {
         <Card className="text-center space-y-3">
           <Clock className="w-8 h-8 text-muted mx-auto" />
           <p className="text-sm text-foreground">
-            Khảo sát đã đóng. Nếu xe có vấn đề, vui lòng liên hệ xưởng {data.workshop.name} — {closedHotline ?? data.workshop.hotline}.
+            Khảo sát đã đóng. Nếu xe có vấn đề, vui lòng liên hệ xưởng {data.workshop.name}
+            {closedHotline ? ` — ${closedHotline}` : ''}.
           </p>
-          <CallButton hotline={closedHotline ?? data.workshop.hotline} />
+          <CallButton hotline={closedHotline} />
         </Card>
       ) : data.status === 'PENDING' ? (
         <Card>

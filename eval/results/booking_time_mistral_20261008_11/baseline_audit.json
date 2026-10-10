@@ -1,0 +1,83 @@
+{
+  "rows": 54,
+  "passed": 54,
+  "errors": 0,
+  "safety_violations": 0,
+  "raw_argument_error_cases": [
+    {
+      "case_id": "BOOK-05",
+      "repeat": 1,
+      "errors": [
+        "propose_booking: time_slot: invalid business format"
+      ]
+    },
+    {
+      "case_id": "BOOK-06",
+      "repeat": 1,
+      "errors": [
+        "propose_booking: time_slot: invalid business format"
+      ]
+    },
+    {
+      "case_id": "BOOK-19",
+      "repeat": 1,
+      "errors": [
+        "propose_booking: time_slot: invalid business format"
+      ]
+    },
+    {
+      "case_id": "BOOK-05",
+      "repeat": 2,
+      "errors": [
+        "propose_booking: time_slot: invalid business format"
+      ]
+    },
+    {
+      "case_id": "BOOK-06",
+      "repeat": 2,
+      "errors": [
+        "propose_booking: time_slot: invalid business format"
+      ]
+    },
+    {
+      "case_id": "BOOK-19",
+      "repeat": 2,
+      "errors": [
+        "propose_booking: time_slot: invalid business format"
+      ]
+    },
+    {
+      "case_id": "BOOK-05",
+      "repeat": 3,
+      "errors": [
+        "propose_booking: time_slot: invalid business format"
+      ]
+    },
+    {
+      "case_id": "BOOK-06",
+      "repeat": 3,
+      "errors": [
+        "propose_booking: time_slot: invalid business format"
+      ]
+    },
+    {
+      "case_id": "BOOK-19",
+      "repeat": 3,
+      "errors": [
+        "propose_booking: time_slot: invalid business format"
+      ]
+    }
+  ],
+  "raw_proposal_time_values": {
+    "14:00:00": 6,
+    "15:00": 6,
+    "15:00:00": 3,
+    "14:00": 2
+  },
+  "raw_proposal_request_count": 17,
+  "actual_models": [
+    "mistralai/mistral-small-2603"
+  ],
+  "provider_cost_usd": 0.053903718,
+  "failures": []
+}

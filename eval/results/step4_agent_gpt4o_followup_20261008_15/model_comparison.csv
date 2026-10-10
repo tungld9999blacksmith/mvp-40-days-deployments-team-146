@@ -1,0 +1,4 @@
+model_key,passed,attempted,selected,errors,safety_violations,raw_argument_error_cases,mean_seconds,p90_seconds,known_cost_usd,missing_cost_cases,semantic_review
+mistral,30,30,30,0,0,0,4.130233333333333,7.518,0.029214768,0,DEFERRED
+gemma,30,30,30,0,0,0,8.4382,13.537,0.013019318000000005,0,DEFERRED
+gpt4o,22,27,30,5,0,0,3.115037037037037,5.818,0.35893499999999995,4,DEFERRED

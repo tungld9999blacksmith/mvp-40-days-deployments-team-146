@@ -38,6 +38,16 @@ async def test_chat_maps_response_fields(provider: OpenAICompatibleProvider):
     assert result.stop_reason == "stop"
     assert result.usage.input_tokens == 8
     assert result.usage.output_tokens == 3
+    assert result.usage.cost_usd is None
+
+
+@pytest.mark.asyncio
+async def test_openrouter_cost_receipt_is_preserved(provider):
+    response = _fake_response()
+    response.usage.cost = 0.001234
+    provider._client.chat.completions.create = AsyncMock(return_value=response)
+    result = await provider.chat([ChatMessage(role="user", content="Hi")])
+    assert result.usage.cost_usd == 0.001234
 
 
 @pytest.mark.asyncio
@@ -100,3 +110,12 @@ async def test_connection_error_is_translated(provider: OpenAICompatibleProvider
 
     with pytest.raises(LLMProviderUnavailableError):
         await provider.chat([ChatMessage(role="user", content="Hi")])
+
+
+def test_default_routing_preserves_schema_requirement_and_explicit_overrides():
+    provider = OpenAICompatibleProvider(api_key="test-key", model="test-model", provider_name="openrouter", default_endpoint_order=["mistral/us", "mistral/eu"])
+    message = [ChatMessage(role="user", content="Hi")]
+    request = provider._build_kwargs(message, GenerationConfig(extra={"extra_body": {"provider": {"require_parameters": True}}}))
+    assert request["extra_body"]["provider"] == {"order": ["mistral/us", "mistral/eu"], "allow_fallbacks": True, "require_parameters": True}
+    overridden = provider._build_kwargs(message, GenerationConfig(extra={"extra_body": {"provider": {"order": ["mistral/eu"], "allow_fallbacks": False}}}))
+    assert overridden["extra_body"]["provider"] == {"order": ["mistral/eu"], "allow_fallbacks": False}

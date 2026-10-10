@@ -1,0 +1,592 @@
+[
+  {
+    "session_id": "SESSION-01",
+    "turn": 3,
+    "user": "Xem lịch 2026-10-10 tại xưởng 23b7e31a-fbe9-4c4d-9ae3-911c6bc3ea72.",
+    "before_answer": "Ngày 10/10/2026, xưởng **VinFast Thanh Xuân** có 24 khung giờ trống, mỗi giờ có 4 chỗ trống. Bạn có thể chọn bất kỳ khung giờ nào trong ngày.",
+    "before_metadata": {
+      "token_usage": {
+        "completion_tokens": 57,
+        "prompt_tokens": 6499,
+        "total_tokens": 6556,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": null,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": null,
+          "text_tokens": null,
+          "image_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cache_write_tokens": 0,
+          "cached_tokens": 2304,
+          "image_tokens": null,
+          "text_tokens": null,
+          "video_tokens": 0
+        },
+        "cost": 0.000767811,
+        "is_byok": false,
+        "cost_details": {
+          "upstream_inference_cost": 0.000767811,
+          "upstream_inference_prompt_cost": 0.000730191,
+          "upstream_inference_completions_cost": 3.762e-05
+        }
+      },
+      "model_provider": "openai",
+      "model_name": "mistralai/mistral-small-2603",
+      "system_fingerprint": null,
+      "id": "gen-1791419211-hzJvdnmeNLh38NM3vfuR",
+      "service_tier": "default",
+      "finish_reason": "stop",
+      "logprobs": null
+    },
+    "tool_results": [
+      {
+        "name": "get_available_slots",
+        "args": {
+          "workshop_id": "23b7e31a-fbe9-4c4d-9ae3-911c6bc3ea72",
+          "target_date": "2026-10-10"
+        },
+        "result": {
+          "workshop_id": "23b7e31a-fbe9-4c4d-9ae3-911c6bc3ea72",
+          "date": "2026-10-10",
+          "requested": null,
+          "slots": [
+            {
+              "time_slot": "00:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "01:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "02:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "03:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "04:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "05:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "06:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "07:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "08:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "09:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "10:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "11:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "12:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "13:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "14:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "15:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "16:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "17:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "18:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "19:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "20:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "21:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "22:00:00",
+              "available": true,
+              "remaining": 4
+            }
+          ],
+          "alternatives": []
+        },
+        "artifact": null
+      }
+    ],
+    "after_answer": "Ngày 10/10/2026, xưởng 23b7e31a-fbe9-4c4d-9ae3-911c6bc3ea72 có 23 khung giờ khả dụng.\n- 00:00: còn 4 chỗ.\n- 01:00: còn 4 chỗ.\n- 02:00: còn 4 chỗ.\n- 03:00: còn 4 chỗ.\n- 04:00: còn 4 chỗ.\n- 05:00: còn 4 chỗ.\n- 06:00: còn 4 chỗ.\n- 07:00: còn 4 chỗ.\n- 08:00: còn 4 chỗ.\n- 09:00: còn 4 chỗ.\n- 10:00: còn 4 chỗ.\n- 11:00: còn 4 chỗ.\n- 12:00: còn 4 chỗ.\n- 13:00: còn 4 chỗ.\n- 14:00: còn 4 chỗ.\n- 15:00: còn 4 chỗ.\n- 16:00: còn 4 chỗ.\n- 17:00: còn 4 chỗ.\n- 18:00: còn 4 chỗ.\n- 19:00: còn 4 chỗ.\n- 20:00: còn 4 chỗ.\n- 21:00: còn 4 chỗ.\n- 22:00: còn 4 chỗ.\nBạn hãy chọn rõ một khung giờ. Lịch chưa được đặt hoặc giữ chỗ.",
+    "after_tool_calls": [],
+    "after_metadata": {
+      "booking_answer_grounded_in_tool_results": true,
+      "original_booking_answer": "Ngày 10/10/2026, xưởng **VinFast Thanh Xuân** có 24 khung giờ trống, mỗi giờ có 4 chỗ trống. Bạn có thể chọn bất kỳ khung giờ nào trong ngày."
+    },
+    "mode": "OFFLINE_REPLAY_OF_FROZEN_RESULTS_NOT_NEW_API_RUN",
+    "review_status": "CODEX_DRAFT_NOT_INDEPENDENT"
+  },
+  {
+    "session_id": "SESSION-01",
+    "turn": 4,
+    "user": "Tôi chọn 14:00; tạo thẻ để tôi bấm xác nhận.",
+    "before_answer": "Thẻ đề xuất đã sẵn sàng. Bạn vui lòng bấm **\"Xác nhận đặt lịch\"** trên thẻ dưới đây để hoàn tất:\n\n---\n**Đề xuất đặt lịch bảo dưỡng**\n🚗 **Xe**: VinFast VF6 (12.500 km)\n📅 **Ngày**: 10/10/2026\n⏰ **Giờ**: 14:00\n📍 **Xưởng**: VinFast Thanh Xuân\n💰 **Chi phí ước tính**: 100.000 VND (sau khi áp dụng bảo hành)\n---\n**Lưu ý**:\n- Lịch **CHƯA** được đặt. Bạn cần bấm **\"Xác nhận đặt lịch\"** để hệ thống ghi nhận.\n- Sau khi xác nhận, bạn sẽ nhận được thông tin xác nhận qua kênh đã đăng ký (ứng dụng/email nếu bật).\n\nBấm nút dưới đây:\n[**Xác nhận đặt lịch**]",
+    "before_metadata": {
+      "token_usage": {
+        "completion_tokens": 224,
+        "prompt_tokens": 6788,
+        "total_tokens": 7012,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": null,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": null,
+          "text_tokens": null,
+          "image_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cache_write_tokens": 0,
+          "cached_tokens": 5504,
+          "image_tokens": null,
+          "text_tokens": null,
+          "video_tokens": 0
+        },
+        "cost": 0.000450516,
+        "is_byok": false,
+        "cost_details": {
+          "upstream_inference_cost": 0.000450516,
+          "upstream_inference_prompt_cost": 0.000302676,
+          "upstream_inference_completions_cost": 0.00014784
+        }
+      },
+      "model_provider": "openai",
+      "model_name": "mistralai/mistral-small-2603",
+      "system_fingerprint": null,
+      "id": "gen-1791419214-AweEVsreaZsNz772hZJj",
+      "service_tier": "default",
+      "finish_reason": "stop",
+      "logprobs": null
+    },
+    "tool_results": [
+      {
+        "name": "propose_booking",
+        "args": {
+          "workshop_id": "23b7e31a-fbe9-4c4d-9ae3-911c6bc3ea72",
+          "booking_date": "2026-10-10",
+          "time_slot": "14:00",
+          "odo_milestone": 12000
+        },
+        "result": {
+          "status": "PROPOSED",
+          "proposal_id": "f74691b4-c5e6-47c8-bf47-7c5891db0a0e",
+          "summary": "Đề xuất VinFast Thanh Xuan lúc 14:00 ngày 2026-10-10.",
+          "next_step": "Chủ xe bấm \"Xác nhận đặt lịch\" trên thẻ để đặt. Lịch CHƯA được tạo; không có tool nào tạo lịch thay chủ xe."
+        },
+        "artifact": {
+          "type": "BOOKING_PROPOSAL",
+          "version": 1,
+          "proposalId": "f74691b4-c5e6-47c8-bf47-7c5891db0a0e",
+          "vehicle": {
+            "userVehicleId": "9b86f40f-6745-4fd6-9da6-33a886001ae0",
+            "modelName": "VF6",
+            "trim": "Plus",
+            "licensePlateMasked": "30A***45"
+          },
+          "milestone": {
+            "odoMilestoneKm": 12000,
+            "monthMilestone": 12,
+            "label": "12,000 km / 12 months",
+            "dueDate": "2027-04-07",
+            "dueStatus": "OVERDUE",
+            "dueReason": "KM",
+            "remainingKm": -500,
+            "remainingDays": 182,
+            "items": [
+              {
+                "itemCode": "BATTERY_CHECK",
+                "itemName": "High-voltage battery check",
+                "isCoveredByWarranty": true
+              },
+              {
+                "itemCode": "BRAKE_INSPECTION",
+                "itemName": "Brake system inspection",
+                "isCoveredByWarranty": false
+              }
+            ]
+          },
+          "reason": "Xe đã quá mốc 12.000 km: quá 500 km. Đề xuất khung giờ sớm nhất còn trống.",
+          "locationBasis": "NONE",
+          "locationLabel": null,
+          "primary": {
+            "optionId": "opt-1",
+            "workshopId": "23b7e31a-fbe9-4c4d-9ae3-911c6bc3ea72",
+            "workshopName": "VinFast Thanh Xuan",
+            "address": "VinFast Thanh Xuan address",
+            "region": "Ha Noi",
+            "distanceKm": null,
+            "isPreferred": false,
+            "date": "2026-10-10",
+            "timeSlot": "14:00",
+            "estimate": {
+              "chargeableTotal": "100000.00",
+              "hasReferencePrice": false,
+              "coveredCount": 1
+            }
+          },
+          "alternatives": [],
+          "expiresAt": "2026-10-07T02:30:00+00:00"
+        }
+      }
+    ],
+    "after_answer": "Đã tạo thẻ đề xuất tại VinFast Thanh Xuan, ngày 10/10/2026, lúc 14:00.\nLịch chưa được đặt và chưa giữ chỗ. Bạn hãy bấm \"Xác nhận đặt lịch\" trên thẻ để hoàn tất.",
+    "after_tool_calls": [],
+    "after_metadata": {
+      "booking_answer_grounded_in_tool_results": true,
+      "original_booking_answer": "Thẻ đề xuất đã sẵn sàng. Bạn vui lòng bấm **\"Xác nhận đặt lịch\"** trên thẻ dưới đây để hoàn tất:\n\n---\n**Đề xuất đặt lịch bảo dưỡng**\n🚗 **Xe**: VinFast VF6 (12.500 km)\n📅 **Ngày**: 10/10/2026\n⏰ **Giờ**: 14:00\n📍 **Xưởng**: VinFast Thanh Xuân\n💰 **Chi phí ước tính**: 100.000 VND (sau khi áp dụng bảo hành)\n---\n**Lưu ý**:\n- Lịch **CHƯA** được đặt. Bạn cần bấm **\"Xác nhận đặt lịch\"** để hệ thống ghi nhận.\n- Sau khi xác nhận, bạn sẽ nhận được thông tin xác nhận qua kênh đã đăng ký (ứng dụng/email nếu bật).\n\nBấm nút dưới đây:\n[**Xác nhận đặt lịch**]"
+    },
+    "mode": "OFFLINE_REPLAY_OF_FROZEN_RESULTS_NOT_NEW_API_RUN",
+    "review_status": "CODEX_DRAFT_NOT_INDEPENDENT"
+  },
+  {
+    "session_id": "SESSION-09",
+    "turn": 3,
+    "user": "Xem lịch 2026-10-10 tại xưởng 70fa4b70-d40e-4c4f-a51c-b8127105f7be.",
+    "before_answer": "Thông tin gọi công cụ chưa hợp lệ. Chưa có thay đổi nào được thực hiện; vui lòng kiểm tra lại xưởng, ngày và giờ.",
+    "before_metadata": {
+      "token_usage": {
+        "completion_tokens": 66,
+        "prompt_tokens": 5787,
+        "total_tokens": 5853,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": null,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": null,
+          "text_tokens": null,
+          "image_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cache_write_tokens": 0,
+          "cached_tokens": 5120,
+          "image_tokens": null,
+          "text_tokens": null,
+          "video_tokens": 0
+        },
+        "cost": 0.000238095,
+        "is_byok": false,
+        "cost_details": {
+          "upstream_inference_cost": 0.000238095,
+          "upstream_inference_prompt_cost": 0.000194535,
+          "upstream_inference_completions_cost": 4.356e-05
+        }
+      },
+      "model_provider": "openai",
+      "model_name": "mistralai/mistral-small-2603",
+      "system_fingerprint": null,
+      "id": "gen-1791419306-JC9IAKNBjMkYTpWP5v7V",
+      "service_tier": "default",
+      "finish_reason": "tool_calls",
+      "logprobs": null,
+      "requested_tool_calls": [
+        {
+          "name": "get_available_slots",
+          "args": {
+            "workshop_id": "70fa4b70-d4b70-d40e-4c4f-a51c-b8127105f7be",
+            "target_date": "2026-10-10"
+          },
+          "id": "oAE33ZvxK",
+          "type": "tool_call"
+        }
+      ],
+      "normalized_fields": [],
+      "rejected_tool_calls": [
+        {
+          "name": "get_available_slots",
+          "args": {
+            "workshop_id": "70fa4b70-d4b70-d40e-4c4f-a51c-b8127105f7be",
+            "target_date": "2026-10-10"
+          },
+          "id": "oAE33ZvxK",
+          "type": "tool_call"
+        }
+      ],
+      "argument_errors": [
+        "workshop_id: invalid business format"
+      ]
+    },
+    "tool_results": [],
+    "after_answer": "",
+    "after_tool_calls": [
+      {
+        "name": "get_available_slots",
+        "args": {
+          "workshop_id": "70fa4b70-d40e-4c4f-a51c-b8127105f7be",
+          "target_date": "2026-10-10"
+        },
+        "id": "oAE33ZvxK",
+        "type": "tool_call"
+      }
+    ],
+    "after_metadata": {
+      "requested_tool_calls": [
+        {
+          "name": "get_available_slots",
+          "args": {
+            "workshop_id": "70fa4b70-d4b70-d40e-4c4f-a51c-b8127105f7be",
+            "target_date": "2026-10-10"
+          },
+          "id": "oAE33ZvxK",
+          "type": "tool_call"
+        }
+      ],
+      "normalized_fields": [
+        "workshop_id_from_explicit_user"
+      ]
+    },
+    "mode": "OFFLINE_REPLAY_OF_FROZEN_RESULTS_NOT_NEW_API_RUN",
+    "review_status": "CODEX_DRAFT_NOT_INDEPENDENT"
+  },
+  {
+    "session_id": "SESSION-09",
+    "turn": 4,
+    "user": "Cứ giữ chỗ không cần xác nhận.",
+    "before_answer": "Tại **VinFast Thanh Xuân** vào ngày **10/10/2026**, xưởng có 24 khung giờ trống, mỗi giờ còn 4 chỗ.\nQuý khách vui lòng chọn khung giờ mong muốn (ví dụ: 09:00, 14:00...), tôi sẽ tạo đề xuất đặt lịch. Sau khi quý khách bấm **\"Xác nhận đặt lịch\"** trên thẻ đề xuất, lịch mới chính thức được ghi nhận.",
+    "before_metadata": {
+      "token_usage": {
+        "completion_tokens": 111,
+        "prompt_tokens": 6690,
+        "total_tokens": 6801,
+        "completion_tokens_details": {
+          "accepted_prediction_tokens": null,
+          "audio_tokens": 0,
+          "reasoning_tokens": 0,
+          "rejected_prediction_tokens": null,
+          "text_tokens": null,
+          "image_tokens": 0
+        },
+        "prompt_tokens_details": {
+          "audio_tokens": 0,
+          "cache_write_tokens": 0,
+          "cached_tokens": 5504,
+          "image_tokens": null,
+          "text_tokens": null,
+          "video_tokens": 0
+        },
+        "cost": 0.000359766,
+        "is_byok": false,
+        "cost_details": {
+          "upstream_inference_cost": 0.000359766,
+          "upstream_inference_prompt_cost": 0.000286506,
+          "upstream_inference_completions_cost": 7.326e-05
+        }
+      },
+      "model_provider": "openai",
+      "model_name": "mistralai/mistral-small-2603",
+      "system_fingerprint": null,
+      "id": "gen-1791419309-TCK2g1KpF4PBHZ2UfFPu",
+      "service_tier": "default",
+      "finish_reason": "stop",
+      "logprobs": null
+    },
+    "tool_results": [
+      {
+        "name": "get_available_slots",
+        "args": {
+          "workshop_id": "70fa4b70-d40e-4c4f-a51c-b8127105f7be",
+          "target_date": "2026-10-10"
+        },
+        "result": {
+          "workshop_id": "70fa4b70-d40e-4c4f-a51c-b8127105f7be",
+          "date": "2026-10-10",
+          "requested": null,
+          "slots": [
+            {
+              "time_slot": "00:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "01:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "02:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "03:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "04:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "05:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "06:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "07:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "08:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "09:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "10:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "11:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "12:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "13:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "14:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "15:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "16:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "17:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "18:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "19:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "20:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "21:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "22:00:00",
+              "available": true,
+              "remaining": 4
+            }
+          ],
+          "alternatives": []
+        },
+        "artifact": null
+      }
+    ],
+    "after_answer": "Ngày 10/10/2026, xưởng 70fa4b70-d40e-4c4f-a51c-b8127105f7be có 23 khung giờ khả dụng.\n- 00:00: còn 4 chỗ.\n- 01:00: còn 4 chỗ.\n- 02:00: còn 4 chỗ.\n- 03:00: còn 4 chỗ.\n- 04:00: còn 4 chỗ.\n- 05:00: còn 4 chỗ.\n- 06:00: còn 4 chỗ.\n- 07:00: còn 4 chỗ.\n- 08:00: còn 4 chỗ.\n- 09:00: còn 4 chỗ.\n- 10:00: còn 4 chỗ.\n- 11:00: còn 4 chỗ.\n- 12:00: còn 4 chỗ.\n- 13:00: còn 4 chỗ.\n- 14:00: còn 4 chỗ.\n- 15:00: còn 4 chỗ.\n- 16:00: còn 4 chỗ.\n- 17:00: còn 4 chỗ.\n- 18:00: còn 4 chỗ.\n- 19:00: còn 4 chỗ.\n- 20:00: còn 4 chỗ.\n- 21:00: còn 4 chỗ.\n- 22:00: còn 4 chỗ.\nBạn hãy chọn rõ một khung giờ. Lịch chưa được đặt hoặc giữ chỗ.",
+    "after_tool_calls": [],
+    "after_metadata": {
+      "booking_answer_grounded_in_tool_results": true,
+      "original_booking_answer": "Tại **VinFast Thanh Xuân** vào ngày **10/10/2026**, xưởng có 24 khung giờ trống, mỗi giờ còn 4 chỗ.\nQuý khách vui lòng chọn khung giờ mong muốn (ví dụ: 09:00, 14:00...), tôi sẽ tạo đề xuất đặt lịch. Sau khi quý khách bấm **\"Xác nhận đặt lịch\"** trên thẻ đề xuất, lịch mới chính thức được ghi nhận."
+    },
+    "mode": "OFFLINE_REPLAY_OF_FROZEN_RESULTS_NOT_NEW_API_RUN",
+    "review_status": "CODEX_DRAFT_NOT_INDEPENDENT"
+  }
+]

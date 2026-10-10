@@ -1,0 +1,622 @@
+[
+  {
+    "id": "M01",
+    "query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+    "vehicle_context": {
+      "model": "VF8"
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "6840bdf58070555456f78778e19a56958553604d88cc8519e8933aefa8bcb886",
+    "relevant_doc_ids": [
+      "warranty_maintenance_VF8",
+      "lich_bao_duong_ALL",
+      "dich_vu_bao_duong_ALL",
+      "toi_uu_moc_bao_duong_ALL"
+    ],
+    "category_draft": "maintenance",
+    "anchors": {
+      "model": "VF8",
+      "milestone_km": 15000,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "M02",
+    "query": "Pin chìa khóa điều khiển VF e34 thay theo chu kỳ nào?",
+    "vehicle_context": {
+      "model": "VFe34"
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "5539271887740b6cef406f22b45f4423d6addf4f3ee5dd5a42b15f22dfc90677",
+    "relevant_doc_ids": [
+      "lich_bao_duong_ALL"
+    ],
+    "category_draft": "maintenance",
+    "anchors": {
+      "model": "VFe34",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "M03",
+    "query": "Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu?",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "e8149460ecc0e9a9aef0d4b1c1af9686de5e53936873ab63faa8767b7b4ff64b",
+    "relevant_doc_ids": [
+      "toi_uu_moc_bao_duong_ALL"
+    ],
+    "category_draft": "maintenance",
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "M07",
+    "query": "Nước làm mát pin và động cơ điện VF e34 cần thay hay kiểm tra định kỳ?",
+    "vehicle_context": {
+      "model": "VFe34"
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "76e569fd536cb18d778568a98d07b42d4a797ece07ccc6613aee6b72fc018096",
+    "relevant_doc_ids": [
+      "lich_bao_duong_ALL"
+    ],
+    "category_draft": "maintenance",
+    "anchors": {
+      "model": "VFe34",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "M18",
+    "query": "Trong bảo dưỡng VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc?",
+    "vehicle_context": {
+      "model": "VFe34"
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "e92a8fbea20865dddcc5e9b3534de7769e14597b28dd73cf488e37bd849e6b7f",
+    "relevant_doc_ids": [
+      "lich_bao_duong_ALL"
+    ],
+    "category_draft": "maintenance",
+    "anchors": {
+      "model": "VFe34",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "M23",
+    "query": "Xe VF e34 đến 40.000 km cần thay những phụ tùng gì?",
+    "vehicle_context": {
+      "model": "VFe34"
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "8a6f342d428d67d06a90e56a8ecf9cc4d68378cbb4d5af262fff19cdc4c6df1d",
+    "relevant_doc_ids": [
+      "warranty_maintenance_VFe34",
+      "lich_bao_duong_ALL",
+      "dich_vu_bao_duong_ALL"
+    ],
+    "category_draft": "maintenance",
+    "anchors": {
+      "model": "VFe34",
+      "milestone_km": 40000,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "W01",
+    "query": "Chính sách bảo hành xe VF8 là bao nhiêu năm?",
+    "vehicle_context": {
+      "model": "VF8"
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "97ecfddbd05b7f2fa3d1f232a4cf6a205fd8877a88d204353e578062204f8233",
+    "relevant_doc_ids": [
+      "warranty_policy_ALL",
+      "warranty_policy_vi",
+      "warranty_maintenance_VF8",
+      "faq_baoduong_baohanh_ALL"
+    ],
+    "category_draft": "warranty",
+    "anchors": {
+      "model": "VF8",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "W02",
+    "query": "Pin cao áp xe VF6 được bảo hành trong bao lâu?",
+    "vehicle_context": {
+      "model": "VF6"
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "2aae306b9953796901ee7e23fa28e3af9ea2ed373fd5cb843a37d12d2e001bfb",
+    "relevant_doc_ids": [
+      "warranty_policy_ALL",
+      "warranty_policy_vi",
+      "warranty_maintenance_VF6"
+    ],
+    "category_draft": "warranty",
+    "anchors": {
+      "model": "VF6",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "W04",
+    "query": "Điều kiện để xe VinFast được bảo hành là gì?",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "e4b27ad2f97a263e9d29568946af77a793868677c4ac14c6b11037ce29bd15c8",
+    "relevant_doc_ids": [
+      "warranty_policy_ALL",
+      "warranty_policy_vi",
+      "warranty_maintenance_VF3"
+    ],
+    "category_draft": "warranty",
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "W12",
+    "query": "Xe VinFast từng dùng thương mại sau khi chuyển chủ áp dụng bảo hành nào?",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "24232aab7b679f548a113b40fd599aea2aea8b14c92c9f767101c3866d40c038",
+    "relevant_doc_ids": [
+      "warranty_policy_ALL",
+      "warranty_policy_vi"
+    ],
+    "category_draft": "warranty",
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "W20",
+    "query": "Xe VF3 dùng 7 năm vẫn còn trong bảo hành không?",
+    "vehicle_context": {
+      "model": "VF3"
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "926a1214546400660e0c633220f0107acf9184e56c176780492eb2d5a9fff376",
+    "relevant_doc_ids": [
+      "warranty_policy_ALL",
+      "warranty_policy_vi",
+      "warranty_maintenance_VF3"
+    ],
+    "category_draft": "warranty",
+    "anchors": {
+      "model": "VF3",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "B01",
+    "query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "e83e6da04e1109fa98cb6a91be00d0d8ff79d4511d49581628e47267415658d1",
+    "relevant_doc_ids": [
+      "battery_quy_dinh_su_dung_ALL",
+      "faq_baoduong_baohanh_ALL"
+    ],
+    "category_draft": "battery",
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "B11",
+    "query": "Cứu hộ pin xe điện VinFast hoạt động như thế nào?",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "dffb79d83f3e697655edfd265406cc4f0de88ce99e22a8f0e25044f631383a1e",
+    "relevant_doc_ids": [
+      "battery_cuu_ho_ALL",
+      "faq_baoduong_baohanh_ALL"
+    ],
+    "category_draft": "battery",
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "B16",
+    "query": "Xe VF e34 sạc đầy bằng chế độ sạc thường mất bao lâu?",
+    "vehicle_context": {
+      "model": "VFe34"
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "2ddfefaf12feed195380445cb41712a44d10076df09f9e02ca62359c7d2c5b86",
+    "relevant_doc_ids": [
+      "battery_sac_VFe34",
+      "faq_baoduong_baohanh_ALL"
+    ],
+    "category_draft": "battery",
+    "anchors": {
+      "model": "VFe34",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "B20",
+    "query": "Công suất sạc AC và DC tối đa của VinFast VF7 là bao nhiêu?",
+    "vehicle_context": {
+      "model": "VF7"
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "6aa2382be056f11feaaf361871365877baff5f4538aca89df0c74f88cc1091b4",
+    "relevant_doc_ids": [
+      "battery_sac_VF7"
+    ],
+    "category_draft": "battery",
+    "anchors": {
+      "model": "VF7",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "P01",
+    "query": "Sạc tại nhà VinFast 3 kW có giá bao nhiêu?",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "da774e9c65fce251bd6265f12d0ee4a569f8344d4703ef6267bffea95cd63f11",
+    "relevant_doc_ids": [
+      "pricing_thiet_bi_sac_ALL"
+    ],
+    "category_draft": "pricing",
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "P05",
+    "query": "Tấm che pin cao áp VF5 chính hãng giá bao nhiêu?",
+    "vehicle_context": {
+      "model": "VF5"
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "2cfcc798bae559bd082daec5fe6b4a90ebf3c607231e863613e9b2b33f30da46",
+    "relevant_doc_ids": [
+      "pricing_phu_kien_VF5"
+    ],
+    "category_draft": "pricing",
+    "anchors": {
+      "model": "VF5",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "PR01",
+    "query": "Đặt lịch bảo dưỡng xe VinFast qua app như thế nào?",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "9fed0557cfa5c60a7dfbbc8d5616267cff9a9a8389ab8ec9506f83efe54ac1da",
+    "relevant_doc_ids": [
+      "faq_baoduong_baohanh_ALL",
+      "quy_trinh_ung_dung_ALL",
+      "dich_vu_bao_duong_ALL"
+    ],
+    "category_draft": "procedure",
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "PR03",
+    "query": "Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast như thế nào?",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "75361a4b1081a50516d0350c37a5bd248824ad08049b332ce366cb378eb5e8f3",
+    "relevant_doc_ids": [
+      "faq_baoduong_baohanh_ALL",
+      "quy_trinh_ung_dung_ALL",
+      "dich_vu_bao_duong_ALL"
+    ],
+    "category_draft": "procedure",
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "PR07",
+    "query": "Xưởng dịch vụ VinFast có hotline nào để liên hệ?",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "757a029478f00cdd86eb69ab5c0795fd338b119fd94de86deb8b6eacee0e9e74",
+    "relevant_doc_ids": [
+      "faq_baoduong_baohanh_ALL",
+      "quy_trinh_ung_dung_ALL",
+      "dich_vu_bao_duong_ALL"
+    ],
+    "category_draft": "procedure",
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "PR10",
+    "query": "Nhận xe lại sau bảo dưỡng tại xưởng VinFast cần kiểm tra gì không?",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "a8c42c4ef05a2691ad4e01a7bcbdbf3e94412a08693e19c9e2a4127f59ed1fa6",
+    "relevant_doc_ids": [
+      "faq_baoduong_baohanh_ALL",
+      "quy_trinh_ung_dung_ALL",
+      "dich_vu_bao_duong_ALL"
+    ],
+    "category_draft": "procedure",
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "G01",
+    "query": "Xe tôi sắp đến mốc bảo dưỡng rồi phải làm gì?",
+    "vehicle_context": {
+      "model": "VF8",
+      "current_odometer_km": 14900
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "1f81d27500e3608819985ed147b1f72044c6e86d48c4443cc4cf903a9ec80b78",
+    "relevant_doc_ids": [
+      "dich_vu_bao_duong_ALL",
+      "lich_bao_duong_ALL",
+      "quy_trinh_ung_dung_ALL"
+    ],
+    "category_draft": "maintenance",
+    "anchors": {
+      "model": "VF8",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "DECLARED_SYNTHETIC_SCENARIO",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "G03",
+    "query": "Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ trước và đến đúng hẹn?",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "43915698e5a4abaa2078a73447fec1c1f6d0ebea227e9d33695c6fbcb53e8b34",
+    "relevant_doc_ids": [
+      "dich_vu_bao_duong_ALL"
+    ],
+    "category_draft": "general",
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "G05",
+    "query": "Vì sao lịch bảo dưỡng ô tô điện dài hơn xe xăng?",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "backend\\tests\\test_agents\\test_rag\\evaluation\\golden_set.jsonl",
+    "source_case_sha256": "2169ec0fd61a24e47f377893c6610b4e47d5df0f4d49f5f368add8d13768a074",
+    "relevant_doc_ids": [
+      "lich_bao_duong_ALL"
+    ],
+    "category_draft": "maintenance",
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "MAINT-01",
+    "query": "Xe tôi đến hạn bảo dưỡng chưa?",
+    "vehicle_context": {
+      "model": "VF8",
+      "current_odometer_km": 14900
+    },
+    "source_file": "eval\\datasets\\agent_cases_v2_1.json",
+    "source_case_sha256": "1fc641af415cf290b2819de7e6eb591c3f5b9e124cfe1f20506fc0f186ca14ac",
+    "relevant_doc_ids": [],
+    "category_draft": null,
+    "anchors": {
+      "model": "VF8",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "DECLARED_SYNTHETIC_SCENARIO",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "MAINT-10",
+    "query": "xe toi den han bao duong chua",
+    "vehicle_context": {
+      "model": "VF8",
+      "current_odometer_km": 14900
+    },
+    "source_file": "eval\\datasets\\agent_cases_v2_1.json",
+    "source_case_sha256": "eb02a8000f20c6be0759b4fcbc1325ae282e6dcb425958434eb74f5fcb03327d",
+    "relevant_doc_ids": [],
+    "category_draft": null,
+    "anchors": {
+      "model": "VF8",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "DECLARED_SYNTHETIC_SCENARIO",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "MAINT-13",
+    "query": "Mốc bảo dưỡng định kỳ 12000 km gồm gì?",
+    "vehicle_context": {
+      "model": "VF8",
+      "current_odometer_km": 14900
+    },
+    "source_file": "eval\\datasets\\agent_cases_v2_1.json",
+    "source_case_sha256": "869f00dbd28708db6f25a86e7f7bc6bb7038352e6f796246cb12ec30ffa9312d",
+    "relevant_doc_ids": [],
+    "category_draft": null,
+    "anchors": {
+      "model": "VF8",
+      "milestone_km": 12000,
+      "is_out_of_scope": false
+    },
+    "context_origin": "DECLARED_SYNTHETIC_SCENARIO",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "BOOK-11",
+    "query": "tim 2 xuong o Ha Noi",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "eval\\datasets\\agent_cases_v2_1.json",
+    "source_case_sha256": "0b70488eeb39e11d610b1646983ebc1b153f40a15bd20e98a50dcd56fbd0f139",
+    "relevant_doc_ids": [],
+    "category_draft": null,
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "BOOK-22",
+    "query": "Đặt lịch đó.",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "eval\\datasets\\agent_cases_v2_1.json",
+    "source_case_sha256": "a59c1307779f1af38ce120155fa207791875d7c8f8a23d56247dde9cfc15d57d",
+    "relevant_doc_ids": [],
+    "category_draft": null,
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": false
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  },
+  {
+    "id": "GUARD-13",
+    "query": "Cho tôi lời khuyên nấu ăn, không cần thông tin xe.",
+    "vehicle_context": {
+      "model": null
+    },
+    "source_file": "eval\\datasets\\agent_cases_v2_1.json",
+    "source_case_sha256": "75c2197d393f1dcadfbc37dfaf5003e4b8dd413a9fe12c69695a8405c785f47f",
+    "relevant_doc_ids": [],
+    "category_draft": null,
+    "anchors": {
+      "model": "ALL",
+      "milestone_km": null,
+      "is_out_of_scope": true
+    },
+    "context_origin": "golden_model_or_none",
+    "semantic_labels": "DRAFT_UNREVIEWED"
+  }
+]

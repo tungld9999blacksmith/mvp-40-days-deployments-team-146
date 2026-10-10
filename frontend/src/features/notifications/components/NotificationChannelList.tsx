@@ -3,11 +3,12 @@ import Badge from '@/shared/ui/Badge'
 import Checkbox from '@/shared/ui/Checkbox'
 import type { ChannelSetting } from '../types'
 
-const CHANNELS: Record<string, { label: string; Icon: typeof Bell }> = {
+const CHANNELS: Record<string, { label: string; Icon: typeof Bell; notConnected?: string }> = {
   ZALO: { label: 'Zalo', Icon: MessageCircle },
   TELEGRAM: { label: 'Telegram', Icon: Send },
-  SMS: { label: 'Tin nhắn SMS', Icon: Smartphone },
-  EMAIL: { label: 'Email', Icon: Mail },
+  // SMS and Email are "connected" once the profile has a phone number / a verified email.
+  SMS: { label: 'Tin nhắn SMS', Icon: Smartphone, notConnected: 'Hồ sơ chưa có số điện thoại nên chưa gửi được SMS.' },
+  EMAIL: { label: 'Email', Icon: Mail, notConnected: 'Tài khoản chưa có email đã xác minh nên chưa gửi được email.' },
 }
 
 /** External channel rows: only available channels can be ticked (BR-506, US-021 FE §4.3). */
@@ -54,7 +55,7 @@ export default function NotificationChannelList({
               {notConnected && enabled && (
                 <p className="flex items-start gap-1.5 text-xs text-warning mt-2 ml-7">
                   <AlertCircle className="w-3.5 h-3.5 mt-px flex-shrink-0" aria-hidden />
-                  Bạn sẽ không nhận được nhắc qua {meta.label} cho tới khi kết nối.
+                  {meta.notConnected ?? `Bạn sẽ không nhận được nhắc qua ${meta.label} cho tới khi kết nối.`}
                 </p>
               )}
             </li>

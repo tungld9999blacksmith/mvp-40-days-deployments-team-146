@@ -1,0 +1,98 @@
+{
+  "scope": "SYNTHETIC_SERVICE_AND_PROCESS_PERSISTENCE_NOT_FULL_APP_ACCEPTANCE",
+  "migration": {
+    "scope": "DEDICATED_SYNTHETIC_DATABASE_ONLY",
+    "mode": "migration",
+    "database": {
+      "host": "127.0.0.1",
+      "port": 35432,
+      "name": "p146_eval_booking",
+      "user": "p146_eval"
+    },
+    "redis": {
+      "host": "127.0.0.1",
+      "port": 36379,
+      "database": 0
+    },
+    "production_settings_used": false,
+    "env_file_modified": false,
+    "exit_code": 0,
+    "limitations": [
+      "Service fixtures replace chat/message transport and email.",
+      "Persistence test reopens SQL engines; it does not restart an application worker or test browser streaming.",
+      "Schema-isolated fixture creates its own SQLModel tables; successful public-schema migration is separate evidence."
+    ],
+    "alembic_revisions": [
+      "e7a9c2b4d6f8"
+    ],
+    "extensions": [
+      "plpgsql",
+      "unaccent",
+      "vector"
+    ],
+    "public_table_count": 47
+  },
+  "schema_isolated_tests": {
+    "passed": 2,
+    "failed_final": 0,
+    "xml": "staging_persistence_02.xml",
+    "earlier_failed_attempt_preserved": "staging_persistence_01.xml",
+    "fixture_revision": "staging_fixture_revision.json"
+  },
+  "separate_process_checks": [
+    {
+      "booking_count": 0,
+      "proposal_count": 1,
+      "message_count": 1,
+      "migrated_schema_reused": true,
+      "mode": "propose",
+      "process_id": 21216,
+      "scope": "SYNTHETIC_PROCESS_RESTART_NOT_HTTP_OR_UI",
+      "database_port": 35432,
+      "redis_port": 36379,
+      "llm_called": false,
+      "email_sent": false
+    },
+    {
+      "booking_count": 1,
+      "booking_id": "b9e8ae6c-504f-4258-949a-b3ea72267f97",
+      "message_count": 2,
+      "replayed": false,
+      "proposal_card_survived": true,
+      "mode": "confirm",
+      "process_id": 21320,
+      "scope": "SYNTHETIC_PROCESS_RESTART_NOT_HTTP_OR_UI",
+      "database_port": 35432,
+      "redis_port": 36379,
+      "llm_called": false,
+      "email_sent": false
+    },
+    {
+      "booking_count": 1,
+      "booking_id": "b9e8ae6c-504f-4258-949a-b3ea72267f97",
+      "message_count": 2,
+      "replayed": true,
+      "proposal_card_survived": true,
+      "mode": "replay",
+      "process_id": 3704,
+      "scope": "SYNTHETIC_PROCESS_RESTART_NOT_HTTP_OR_UI",
+      "database_port": 35432,
+      "redis_port": 36379,
+      "llm_called": false,
+      "email_sent": false
+    }
+  ],
+  "separate_process_failures_preserved": [
+    "staging_process_failure_01.json",
+    "staging_process_failure_02.json"
+  ],
+  "production_database_used": false,
+  "email_sent": false,
+  "llm_called_for_staging": false,
+  "limitations": [
+    "Standalone processes call domain services directly; no HTTP/Firebase/browser or full backend worker restart.",
+    "First process seed needed mandatory migrated workshop onboarding fields; original failed source variants preserved.",
+    "Schema fixture recreates SQLModel tables; separate process checks use actual Alembic-migrated public schema and real MessageService/Redis.",
+    "Concurrency, full UI/streaming/TTFT and real-user pilot remain unverified."
+  ]
+}

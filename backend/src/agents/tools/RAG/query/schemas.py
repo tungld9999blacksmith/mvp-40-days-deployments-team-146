@@ -2,7 +2,16 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
+
+
+class GroundedAnswerPayload(BaseModel):
+    """Four required fields requested from a structured generation endpoint."""
+    model_config = ConfigDict(extra="forbid", strict=True)
+    answer: str
+    confidence: Literal["high", "medium", "low"]
+    fallback_required: StrictBool
+    cited_doc_indexes: list[StrictInt]
 
 
 class UserVehicleContext(BaseModel):
@@ -14,6 +23,27 @@ class UserVehicleContext(BaseModel):
     current_odometer_km: int | None = None
     battery_type: str | None = None
     extra: dict[str, Any] = Field(default_factory=dict)
+
+
+class RewritePayload(BaseModel):
+    """Seven required fields returned by the query rewriting endpoint."""
+
+    model_config = ConfigDict(extra="forbid", strict=True)
+    rewritten_query: str = Field(min_length=1)
+    keywords: list[str] = Field(min_length=1)
+    model: Literal[
+        "ALL", "VF3", "VF5", "VF6", "VF7", "VF8", "VF9", "VFe34",
+        "VFMPV7", "Evo200", "Feliz", "Klara", "Vento", "Theon",
+    ] | None
+    category: Literal[
+        "maintenance", "warranty", "pricing", "battery", "procedure", "safety", "general",
+    ] | None
+    milestone_km: StrictInt | None = Field(
+        ge=0,
+        description="Maintenance kilometre milestone explicitly stated in the user's question; null otherwise. Never infer from current odometer, vehicle context or warranty distance.",
+    )
+    subsystem: Literal["battery", "charging", "motor", "brake", "hvac", "software", "chassis"] | None
+    is_out_of_scope: StrictBool
 
 
 class QueryAnalysis(BaseModel):

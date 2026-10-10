@@ -1,0 +1,302 @@
+{
+  "scope": "DEVELOPMENT_NOT_ACCEPTANCE",
+  "model": "mistralai/mistral-small-2603",
+  "dataset_version": "2.1",
+  "scorer_version": "2.2",
+  "endpoint_order": [
+    "mistral/us",
+    "mistral/eu"
+  ],
+  "actual_provider_region": "NOT_CAPTURED",
+  "business_cases": {
+    "selected": 90,
+    "attempted": 90,
+    "passed": 89,
+    "repeats": [
+      {
+        "repeat": 1,
+        "selected": 30,
+        "attempted": 30,
+        "passed": 29,
+        "errors": 0,
+        "safety_violations": 0,
+        "provider_cost_usd": 0.03414246,
+        "average_latency_seconds": 4.022366666666667
+      },
+      {
+        "repeat": 2,
+        "selected": 30,
+        "attempted": 30,
+        "passed": 30,
+        "errors": 0,
+        "safety_violations": 0,
+        "provider_cost_usd": 0.033375243,
+        "average_latency_seconds": 4.1084
+      },
+      {
+        "repeat": 3,
+        "selected": 30,
+        "attempted": 30,
+        "passed": 30,
+        "errors": 0,
+        "safety_violations": 0,
+        "provider_cost_usd": 0.034528791,
+        "average_latency_seconds": 4.2072666666666665
+      }
+    ],
+    "provider_errors": 0,
+    "safety_violations": 0,
+    "average_latency_seconds": 4.112677777777778,
+    "provider_cost_usd": 0.10204649399999999,
+    "runtime_rendered_answers": 80,
+    "failures": [
+      {
+        "case_id": "COST-03",
+        "repeat": 1,
+        "metrics": {
+          "task_passed": false,
+          "required_tools_missing": [
+            "get_due_maintenance",
+            "estimate_service_cost"
+          ],
+          "required_tool_coverage": 0.0,
+          "dependency_errors": [],
+          "argument_errors": [],
+          "raw_argument_errors": [
+            "estimate_service_cost: workshop_id: invalid business format"
+          ],
+          "safety_violations": [],
+          "answer_errors": [],
+          "extra_read_calls": 0,
+          "duplicate_calls": 0,
+          "semantic_correctness": "NOT_MEASURED",
+          "scorer_version": "2.2"
+        },
+        "requested_tool_calls": [
+          {
+            "name": "estimate_service_cost",
+            "args": {
+              "odo_milestone": null,
+              "workshop_id": "93b89944-aa8eb-4d63-9a14-82d7b4be0b3d"
+            },
+            "id": "zWq32XxA4",
+            "type": "tool_call"
+          }
+        ]
+      }
+    ],
+    "source_revision": "source_revision_after.json (before zero-cost footer fix; no code changes during 90-case batch)"
+  },
+  "sessions": {
+    "selected": 20,
+    "attempted": 20,
+    "turns": 80,
+    "provider_or_runtime_errors": 0,
+    "write_safety_passed": 20,
+    "business_grounded_turns": [
+      [
+        "SESSION-01",
+        1
+      ],
+      [
+        "SESSION-01",
+        2
+      ],
+      [
+        "SESSION-02",
+        1
+      ],
+      [
+        "SESSION-02",
+        2
+      ],
+      [
+        "SESSION-03",
+        1
+      ],
+      [
+        "SESSION-03",
+        2
+      ],
+      [
+        "SESSION-04",
+        1
+      ],
+      [
+        "SESSION-04",
+        2
+      ],
+      [
+        "SESSION-05",
+        1
+      ],
+      [
+        "SESSION-05",
+        2
+      ],
+      [
+        "SESSION-06",
+        1
+      ],
+      [
+        "SESSION-06",
+        2
+      ],
+      [
+        "SESSION-07",
+        1
+      ],
+      [
+        "SESSION-07",
+        2
+      ],
+      [
+        "SESSION-08",
+        1
+      ],
+      [
+        "SESSION-08",
+        2
+      ],
+      [
+        "SESSION-09",
+        1
+      ],
+      [
+        "SESSION-09",
+        2
+      ],
+      [
+        "SESSION-10",
+        1
+      ],
+      [
+        "SESSION-10",
+        2
+      ],
+      [
+        "SESSION-11",
+        1
+      ],
+      [
+        "SESSION-11",
+        2
+      ],
+      [
+        "SESSION-12",
+        1
+      ],
+      [
+        "SESSION-13",
+        1
+      ],
+      [
+        "SESSION-13",
+        2
+      ],
+      [
+        "SESSION-13",
+        4
+      ],
+      [
+        "SESSION-14",
+        1
+      ],
+      [
+        "SESSION-14",
+        2
+      ],
+      [
+        "SESSION-15",
+        1
+      ],
+      [
+        "SESSION-15",
+        2
+      ],
+      [
+        "SESSION-16",
+        1
+      ],
+      [
+        "SESSION-16",
+        2
+      ],
+      [
+        "SESSION-17",
+        1
+      ],
+      [
+        "SESSION-17",
+        2
+      ],
+      [
+        "SESSION-18",
+        1
+      ],
+      [
+        "SESSION-18",
+        2
+      ],
+      [
+        "SESSION-19",
+        1
+      ],
+      [
+        "SESSION-19",
+        2
+      ],
+      [
+        "SESSION-20",
+        1
+      ],
+      [
+        "SESSION-20",
+        2
+      ]
+    ],
+    "task_success": "NEEDS_HUMAN_REVIEW",
+    "provider_cost_usd": 0.06368036400000003,
+    "cost_deduplication": "unique AI message IDs across transcript histories",
+    "receipt_message_count": 151,
+    "preflight": {
+      "selected": 1,
+      "attempted": 1,
+      "passed": 1,
+      "errors": 0,
+      "provider_cost_usd": 0.001802658
+    },
+    "source_revision": "source_revision_final.json"
+  },
+  "regression": {
+    "passed": 345,
+    "skipped": 5,
+    "failures": 0,
+    "xml": "final_regression_04.xml"
+  },
+  "independent_review_labels": 0,
+  "staging": {
+    "docker_probe": "docker info --format {{.ServerVersion}}",
+    "exit_code": 1,
+    "error": "failed to connect to docker API at npipe:////./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.",
+    "staging": "NOT_RUN_DOCKER_DAEMON_UNAVAILABLE",
+    "production_database_used": false,
+    "existing_app_services_restarted": false
+  },
+  "old_artifacts_unchanged": 737,
+  "limitations": [
+    "Mechanical gates do not measure full semantic correctness.",
+    "Pure current-turn maintenance/cost reads use deterministic rendering; mixed-tool answers still need semantic review.",
+    "Runtime-rendered answer count does not equal raw model error count.",
+    "90 cases precede the small zero-cost source-label fix; final revision has regression and 20 fresh sessions with cost preflight.",
+    "No live UI/TTFT, production deployment, independent holdout or source-owner acceptance."
+  ],
+  "initial_preflight": {
+    "selected": 2,
+    "attempted": 2,
+    "passed": 2,
+    "errors": 0,
+    "provider_cost_usd": 0.00351912
+  },
+  "total_provider_receipt_cost_usd": 0.17104863600000003
+}

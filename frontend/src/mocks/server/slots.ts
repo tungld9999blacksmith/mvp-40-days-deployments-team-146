@@ -21,6 +21,7 @@ import {
   type MockWorkshop,
 } from './db'
 import { CONFIRM_DEADLINE_HOURS, isClosedDay, remainingOf, SLOT_TIMES, visibleCode } from './bookings'
+import { canAttachToBooking } from './quoteRules'
 
 const GROUP = 'slots'
 const TOKEN_TTL_MS = 600_000
@@ -158,6 +159,7 @@ function bookingResponse(booking: MockBooking) {
     qrUrl: confirmed ? `/api/v1/bookings/${booking.bookingId}/qr` : null,
     estimatedCost: booking.estimatedCost,
     estimateLabel: 'Chi phí ước tính',
+    quoteId: booking.quoteId,
   }
 }
 
@@ -227,7 +229,7 @@ export function registerSlotRoutes() {
     const stored = replayIdempotent(req)
     if (stored) return stored
     const db = getDb()
-    const body = bodyOf<{ confirmationToken: string; userVehicleId: string; milestoneRef: string; note: string }>(req)
+    const body = bodyOf<{ confirmationToken: string; userVehicleId: string; quoteId?: string; milestoneRef: string; note: string }>(req)
     if (!body.confirmationToken || !body.userVehicleId) return fail(400, 'INVALID_REQUEST', 'Thiếu thông tin đặt lịch.')
     if ((body.note ?? '').length > 500) return fail(400, 'INVALID_REQUEST', 'Ghi chú tối đa 500 ký tự.', { field: 'note' })
     const token = db.holdTokens.find(item => item.token === body.confirmationToken)
@@ -245,8 +247,13 @@ export function registerSlotRoutes() {
       return fail(409, 'SLOT_FULL', 'Khung giờ vừa hết chỗ.', { alternatives: alternatives(workshop, token.date, token.timeSlot) })
     }
 
-    const milestone = body.milestoneRef && /^\d+$/.test(body.milestoneRef) ? Number(body.milestoneRef) : null
-    const cost = milestone ? estimate(vehicle, milestone, workshop, 'REQUEST') : null
+    // us-049 BR-1108 — only an approved, unexpired quote of this vehicle and workshop.
+    const quote = body.quoteId ? db.quotes.find(item => item.quoteId === body.quoteId) ?? null : null
+    if (body.quoteId && (!quote || quote.userVehicleId !== vehicle.userVehicleId || quote.workshopId !== workshop.workshopId || !canAttachToBooking(quote))) {
+      return fail(409, 'QUOTE_EXPIRED', 'Báo giá đính kèm không còn hiệu lực.')
+    }
+    const milestone = body.milestoneRef && /^\d+$/.test(body.milestoneRef) ? Number(body.milestoneRef) : quote?.odoMilestone ?? null
+    const cost = milestone && !quote ? estimate(vehicle, milestone, workshop, 'REQUEST') : null
     const mode = db.confirmationMode
     const now = nowIso()
     const booking: MockBooking = {
@@ -267,7 +274,8 @@ export function registerSlotRoutes() {
       ownerCancelableUntil: hoursFromNow(OWNER_CANCEL_WINDOW_MINUTES / 60),
       confirmationMode: mode,
       odoMilestone: milestone,
-      estimatedCost: cost?.chargeableTotal ?? null,
+      estimatedCost: quote?.approvedTotal ?? cost?.chargeableTotal ?? null,
+      quoteId: quote?.quoteId ?? null,
       actualCost: null,
       note: body.note?.trim() || null,
       attendanceConfirmedAt: null,
@@ -284,6 +292,7 @@ export function registerSlotRoutes() {
     }
     token.used = true
     db.bookings.push(booking)
+    if (quote) quote.bookingId = booking.bookingId
     return rememberIdempotent(req, ok(bookingResponse(booking), 201))
   })
 }

@@ -142,8 +142,7 @@ Sau khi điền key và chạy `setup_hooks` (Bước 1), hook của Claude Code
 | `GEMINI_API_KEY` | khi `gemini` | Key Google AI Studio |
 | `ANTHROPIC_API_KEY` | khi `anthropic` | Key Anthropic |
 | `GOOGLE_API_KEY` / `GEMINI_API_KEY`, `GEMINI_MODEL` | khi dùng Gemini | Key Gemini cho embedding Gemini; model chat dùng khi `LLM_PROVIDER=gemini` |
-| `EMBEDDING_PROVIDER`, `EMBEDDING_DIMENSIONS` | ✅ | Phải khớp với lúc ingest collection (mặc định `gemini`, `3072`) |
-| `HF_TOKEN` | | Token Hugging Face (reranker / model tải từ HF) |
+| `EMBEDDING_PROVIDER`, `EMBEDDING_DIMENSIONS` | ✅ | Phải khớp với lúc ingest collection (mặc định `gemini`, `3072`). `openrouter` dùng `OPENROUTER_API_KEY` và `EMBEDDING_OPENROUTER_MODEL` (mặc định `google/gemini-embedding-001`); đổi provider thì chạy lại `scripts/ingest_knowledge.py --force` |
 | `LANGCHAIN_API_KEY`, `LANGCHAIN_PROJECT`, `LANGCHAIN_TRACING_V2` | | Trace từng bước agent lên LangSmith (`true` để bật) |
 
 ### Database, vector store, Redis
@@ -151,8 +150,8 @@ Sau khi điền key và chạy `setup_hooks` (Bước 1), hook của Claude Code
 | Biến | Bắt buộc | Ý nghĩa |
 |---|---|---|
 | `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_NAME`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_SSLMODE` | ✅ | Kết nối Supabase Postgres. Để trống `DATABASE_URL` + `DATABASE_PASSWORD` thì dùng SQLite dự phòng |
-| `DATABASE_URL`, `ALEMBIC_DATABASE_URL` | | Nếu điền sẽ **đè** các trường lẻ ở trên |
-| `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Supabase project (Storage, API) |
+| `DATABASE_URL` | | Nếu điền sẽ **đè** các trường lẻ ở trên |
+| `SUPABASE_URL`, `SUPABASE_KEY` | ✅ | Supabase project (Storage, API) |
 | `FILE_STORAGE`, `SUPABASE_STORAGE_BUCKET` | | Lưu file; bucket phải tồn tại và để private |
 | `QDRANT_URL`, `QDRANT_API_KEY`, `QDRANT_COLLECTION_NAME` | ✅ (RAG) | Qdrant Cloud. Trống `QDRANT_URL` thì dùng Qdrant Local |
 | `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`, `REDIS_DB` | ✅ | Redis local từ `infra-stack` (mặc định `localhost:6379`) |

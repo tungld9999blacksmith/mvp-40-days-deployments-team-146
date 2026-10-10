@@ -34,7 +34,7 @@ Toàn repo dùng **một** file `.env` ở gốc (mẫu: `.env.example`, chia m�
 | `VITE_CONSENT_POLICY_VERSION` / `VITE_WORKSHOP_CONSENT_POLICY_VERSION` | Không | Phiên bản điều khoản gửi kèm consent (mặc định `2026-09` / `WS-2026-09`), phải khớp backend. |
 | `VITE_CHAT_TRANSPORT` | Không | `http` (mặc định — API hội thoại thật, SSE theo API-CHAT-004) hoặc `mock` (dữ liệu giả, chạy không cần backend). |
 | `VITE_CHAT_WS_ENABLED` | Không | Chưa dùng ở MVP (`false`). |
-| `VITE_API_MOCKS` | Không | Mock API cho các nhóm endpoint: `off` (mặc định), `all` (= `estimate,bookings,board,crm`), hoặc danh sách nhóm. Xem [Mock API](#mock-api). |
+| `VITE_API_MOCKS` | Không | Mock API cho các nhóm endpoint: `off` (mặc định), `all` (= `estimate,quotes,bookings,board,crm`), hoặc danh sách nhóm. Xem [Mock API](#mock-api). |
 | `VITE_DEMO_MODE` | Không | Đánh dấu UI demo; Firebase Emulator cũng bật cờ này. Không bỏ Firebase hoặc tự bật mock API/chat. |
 | `VITE_SUPPORT_URL` | Không | Link cho các nút "Liên hệ hỗ trợ" / "Liên hệ hãng". |
 
@@ -49,21 +49,24 @@ Không commit `.env`.
 | `/dashboard` | Home: xe + trạng thái đến hạn | US-017 |
 | `/vehicle` | Hồ sơ xe | US-017 |
 | `/ai`, `/ai/new`, `/ai/:conversationId` | AI Trợ lý (chat có trích nguồn) | US-025 |
-| `/notifications`, `/notifications/settings` | Thông báo (nhắc bảo dưỡng, cập nhật lịch hẹn, khảo sát) · Cài đặt nhắc bảo dưỡng (kênh ngoài "Sắp có") | US-021 |
+| `/notifications`, `/notifications/settings` | Thông báo (nhắc bảo dưỡng, kết quả báo giá, cập nhật lịch hẹn, khảo sát) · Cài đặt nhắc bảo dưỡng (kênh ngoài "Sắp có") | US-021, US-069 |
 | `/workshop/login` | Đăng nhập Workshop Portal | US-009, US-013 |
 | `/workshop/onboarding/profile · operations · verifying · success · failed` | Onboarding chủ xưởng | US-009 |
-| `/booking`, `/booking/workshops · slots · confirm` | Đặt lịch theo sức chứa & vị trí (API-BK-01 → 03); thẻ tóm tắt có chi phí ước tính | US-029 |
+| `/booking`, `/booking/workshops · slots · confirm` | Đặt lịch theo sức chứa & vị trí (API-BK-01 → 03); thẻ tóm tắt có mã báo giá / chi phí ước tính | US-029 |
 | `/estimate`, `/estimate/compare` | Dự toán chi phí theo mốc + xưởng, so sánh 2–3 xưởng (API-EST-01 → 03) | US-045 |
+| `/quotes`, `/quotes/new`, `/quotes/:quoteId` | Báo giá của tôi · lập nháp · chi tiết (gửi duyệt, xoá nháp, đặt lịch với báo giá) | US-049 |
 | `/bookings`, `/bookings/:bookingId[?src=REMINDER_24H]` | Lịch của tôi · Booking Ticket (QR, xác nhận đến, huỷ, tiến độ 6 bước) | US-033, US-053, US-057 |
 | `/bookings/:bookingId/reschedule` | Đổi lịch cùng xưởng (token `RESCHEDULE`, Idempotency-Key) | US-053 |
 | `/c/:bookingCode` | URL trong QR: chủ xưởng ⇒ `/technician/check-in?code=`, chủ xe ⇒ ticket của mình | US-053 |
 | `/follow-ups/:followUpId` | Hỏi thăm sau dịch vụ (chấm sao, khuyến cáo an toàn) | US-041 |
-| `/technician` | Dashboard Portal: tóm tắt hôm nay (WB-01) | US-037 |
+| `/technician` | Dashboard Portal: tóm tắt hôm nay (WB-01), báo giá chờ duyệt | US-037, US-049 |
+| `/technician/quotes`, `/technician/quote-review?quoteId=` | Báo giá chờ duyệt · duyệt/sửa giá/từ chối | US-049 |
 | `/technician/board[/:bookingId]` | Workshop Board + drawer chi tiết (chấp nhận/từ chối/check-in/bắt đầu/hoàn tất/huỷ, tiến độ) | US-037, US-057 |
 | `/technician/check-in` | Quét QR (BarcodeDetector) hoặc nhập mã ⇒ check-in | US-037 |
 | `/technician/capacity`, `/technician/settings/booking` | Sức chứa & khoá chỗ · chế độ xác nhận | US-037 |
-| `/technician/notifications` | Thông báo: lịch hẹn 7 ngày tới đang chờ xưởng xác nhận (WB-01) | US-037 |
-| `/history` | Lịch sử dịch vụ (mock — chưa có spec) | — |
+| `/technician/notifications` | Thông báo: báo giá chờ duyệt (QT-11), lịch hẹn 7 ngày tới đang chờ xưởng xác nhận (WB-01) | US-037, US-049, US-069 |
+| `/history` | Lịch sử dịch vụ: lần làm từ hãng + lịch hẹn hoàn tất qua EV Care, lọc, tìm (API-VEH-005) | US-065 |
+| `/notifications/reminders/:reminderId` | Chi tiết lời nhắc bảo dưỡng (API-NOTI-004), link từ email `?action=chat\|booking` | US-069 |
 
 ## Tổ chức
 
@@ -77,7 +80,7 @@ Không commit `.env`.
 - `src/shared/api/client.ts` — gắn Firebase ID token + `X-Request-ID`, bóc envelope `{ data }`, `ApiError` theo `{ error: { code, message, details, traceId } }`, retry 1 lần khi `401`.
 - `src/shared/ui/` — bộ component theo phong cách thiết kế: `Button`, `Card`, `Field` (`TextInput`, `TextArea`, `SelectInput`), `Checkbox`, `Switch`, `NumberStepper`, `Badge`, `Skeleton`, `Dialog`, `Drawer`, `Toast`, `States` (`EmptyState`, `ErrorState`, `Notice`), `Stepper`, `SafeMarkdown`, `SupportLink`.
 - `src/shared/hooks/` — `useCachedQuery` (cache theo phiên, xoá khi đăng xuất), `usePolling`, `useOnlineStatus`.
-- `src/features/estimate/` (us-045), `workshop-board/` (us-037), `progress/` (us-057, dùng chung ticket + Board), `after-service/` (us-041, chỉ hỏi thăm sau dịch vụ).
+- `src/features/estimate/` (us-045), `quotes/` (us-049), `workshop-board/` (us-037), `progress/` (us-057, dùng chung ticket + Board), `after-service/` (us-041, chỉ hỏi thăm sau dịch vụ).
 - `src/mocks/server/` — Mock API (xem dưới). `src/mocks/*.ts` còn lại là dữ liệu giả cho trang chưa có spec (lịch sử dịch vụ, danh sách thông báo).
 - `src/styles/index.css` — token màu / font (`bg-background`, `bg-surface`, `bg-card`, `border-border`, `text-emerald`...). Không viết mã hex trong JSX.
 
@@ -93,8 +96,8 @@ Completed registration redirects to the dashboard; unfinished registration resum
 
 Backend chưa có API của us-033/037/041/045/053/057. Các màn này gọi đúng contract trong `docs/specs/**/api/*.api.md`; khi `VITE_API_MOCKS` bật, `rawRequest` trả lời các endpoint đó bằng `src/mocks/server` (cùng envelope `{ data }` / `{ error }`, có độ trễ giả). Endpoint backend đã có (đăng nhập, xe, BK-01 → 04, chat…) vẫn đi tới backend thật.
 
-- **Học dữ liệu thật:** mock ghi lại xe, xưởng gần (BK-01) và booking vừa tạo bằng BK-03 thật, nên dự toán/ticket dùng đúng id và tên thật.
-- **Dữ liệu demo:** lần gọi đầu tạo sẵn lịch hẹn (đã xác nhận, hoàn tất có khảo sát, đã huỷ) và lịch hẹn của khách khác trên Board. Lưu ở `localStorage` (`evcare.mockApi.v1`, dữ liệu phiên bản cũ có báo giá/phiếu bị bỏ khi tải) nên app chủ xe và Workshop Portal mở cùng trình duyệt thấy cùng dữ liệu. Xoá: gõ `evcareMock.reset()` trong console.
+- **Học dữ liệu thật:** mock ghi lại xe, xưởng gần (BK-01) và booking vừa tạo bằng BK-03 thật, nên dự toán/báo giá/ticket dùng đúng id và tên thật. Đặt lịch kèm báo giá mock: `quoteId` được bỏ khỏi BK-03 thật rồi gắn vào bản sao booking trong mock.
+- **Dữ liệu demo:** lần gọi đầu tạo sẵn lịch hẹn (đã xác nhận, hoàn tất có khảo sát, đã huỷ), báo giá (đã duyệt, bị từ chối, chờ duyệt) và lịch hẹn của khách khác trên Board. Lưu ở `localStorage` (`evcare.mockApi.v1`, dữ liệu phiên bản cũ có báo giá/phiếu bị bỏ khi tải) nên app chủ xe và Workshop Portal mở cùng trình duyệt thấy cùng dữ liệu. Xoá: gõ `evcareMock.reset()` trong console.
 - **Khác backend thật:** Board/Portal thấy mọi booking của mock (không lọc theo xưởng); hỏi thăm mở sau 1 phút thay vì 12 giờ; thao tác trên Board chỉ đổi dữ liệu mock (booking thật trong DB không đổi).
 - Khi backend có endpoint nào, tắt nhóm tương ứng (ví dụ `VITE_API_MOCKS=estimate,crm` chỉ còn mock 2 nhóm đó) hoặc `off`.
 - Kịch bản end-to-end của mock API có test: `src/mocks/server/demoFlow.test.ts` (onboarding → đặt lịch → Board → hoàn tất → khảo sát) và `src/features/assistant/transport/mockQuickBooking.test.ts` (us-061).

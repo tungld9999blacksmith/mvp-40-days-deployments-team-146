@@ -1,7 +1,7 @@
-import { useEffect, useId, useLayoutEffect, useRef, type KeyboardEvent } from 'react'
-import { Send } from 'lucide-react'
-import Button from '@/shared/ui/Button'
+import { useEffect, useId, useLayoutEffect, useRef, type KeyboardEvent, type ReactNode } from 'react'
+import { ArrowUp } from 'lucide-react'
 import { cn } from '@/shared/ui/cn'
+import Spinner from '@/shared/ui/Spinner'
 import { formatCountdown } from '@/shared/utils/format'
 
 export const MAX_MESSAGE_CHARS = 2000
@@ -17,6 +17,7 @@ export default function ChatComposer({
   retryInSeconds,
   helper,
   autoFocus,
+  actions,
 }: {
   value: string
   onChange: (value: string) => void
@@ -29,6 +30,8 @@ export default function ChatComposer({
   /** Transient helper (e.g. "Trợ lý đang trả lời tin trước..."). */
   helper?: string | null
   autoFocus?: boolean
+  /** Chips on the composer's bottom row (e.g. quick booking). */
+  actions?: ReactNode
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const helpId = useId()
@@ -67,53 +70,62 @@ export default function ChatComposer({
         : helper
 
   return (
-    <div className="border-t border-border bg-background px-4 sm:px-6 pt-3 pb-4">
+    <div className="bg-background px-3 sm:px-6 pt-2 pb-4">
       <div className="max-w-3xl mx-auto">
         {message && (
           <p
             id={helpId}
             role={rateLimited ? undefined : 'status'}
             aria-live={rateLimited ? 'off' : 'polite'}
-            className={cn('text-xs mb-2', tooLong || rateLimited || lockedReason ? 'text-warning' : 'text-muted')}
+            className={cn('text-xs mb-2 ml-2', tooLong || rateLimited || lockedReason ? 'text-warning' : 'text-muted')}
           >
             {message}
           </p>
         )}
-        <div className="flex items-end gap-2">
-          <div className="relative flex-1">
-            <textarea
-              ref={textareaRef}
-              rows={1}
-              value={value}
-              onChange={e => onChange(e.target.value)}
-              onKeyDown={onKeyDown}
-              disabled={Boolean(lockedReason)}
-              aria-label="Nhập câu hỏi"
-              aria-describedby={message ? helpId : undefined}
-              placeholder="Hỏi về bảo dưỡng, bảo hành…"
-              className={cn(
-                'w-full resize-none bg-card border rounded-xl px-4 py-3 text-sm leading-5 text-foreground placeholder:text-muted',
-                'focus:outline-none focus:ring-1 focus:ring-emerald/40 disabled:opacity-60',
-                tooLong ? 'border-warning' : 'border-border',
-              )}
-            />
-            {length >= COUNTER_FROM && (
-              <span className={cn('absolute right-3 bottom-2 text-[11px] font-mono', tooLong ? 'text-warning' : 'text-muted')}>
+        <div
+          className={cn(
+            'relative rounded-3xl bg-card border elevation-md pl-4 sm:pl-5 pr-2.5 pt-3 pb-2.5 transition-colors',
+            'focus-within:border-emerald/50',
+            tooLong ? 'border-warning' : 'border-border',
+            lockedReason && 'opacity-60',
+          )}
+        >
+          <textarea
+            ref={textareaRef}
+            rows={1}
+            value={value}
+            onChange={e => onChange(e.target.value)}
+            onKeyDown={onKeyDown}
+            disabled={Boolean(lockedReason)}
+            aria-label="Nhập câu hỏi"
+            aria-describedby={message ? helpId : undefined}
+            placeholder="Nhắn cho trợ lý về bảo dưỡng, bảo hành…"
+            className="block w-full resize-none bg-transparent pr-2 py-1 text-[15px] leading-5 text-foreground placeholder:text-muted focus:outline-none"
+          />
+          <div className="flex items-center gap-2 mt-2">
+            <div className="flex flex-wrap items-center gap-2 min-w-0 flex-1">{actions}</div>
+            {length >= COUNTER_FROM ? (
+              <span className={cn('text-[11px] font-mono', tooLong ? 'text-warning' : 'text-muted')}>
                 {length}/{MAX_MESSAGE_CHARS}
               </span>
+            ) : (
+              <span className="text-[11px] text-muted hidden md:inline">Enter để gửi · Shift + Enter để xuống dòng</span>
             )}
+            <button
+              type="button"
+              onClick={onSend}
+              disabled={!canSend}
+              aria-label={streaming ? 'Đang trả lời' : 'Gửi'}
+              className={cn(
+                'w-11 h-11 flex-shrink-0 rounded-full flex items-center justify-center transition-colors',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2 focus-visible:ring-offset-card',
+                canSend ? 'bg-brand text-on-brand hover:bg-emerald-bright' : 'bg-card-hover text-muted cursor-not-allowed',
+              )}
+            >
+              {streaming ? <Spinner className="w-4 h-4" /> : <ArrowUp className="w-5 h-5" strokeWidth={2.4} aria-hidden />}
+            </button>
           </div>
-          <Button
-            onClick={onSend}
-            disabled={!canSend}
-            className="h-11"
-            aria-label={streaming ? 'Đang trả lời' : 'Gửi'}
-            icon={<Send className="w-4 h-4" />}
-          >
-            <span className="hidden sm:inline">{streaming ? 'Đang trả lời...' : 'Gửi'}</span>
-          </Button>
         </div>
-        <p className="text-[11px] text-muted mt-2 hidden sm:block">Enter để gửi · Shift + Enter để xuống dòng</p>
       </div>
     </div>
   )

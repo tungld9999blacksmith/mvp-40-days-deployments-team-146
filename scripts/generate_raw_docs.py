@@ -1,11 +1,19 @@
-import os
-from pathlib import Path
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib import colors
+"""Sinh bộ tài liệu GIẢ LẬP (HTML/PDF) để demo và thử pipeline ingestion.
 
-RAW_DIR = Path("data/knowledge/raw")
+Nội dung được viết tay, KHÔNG phải tài liệu VinFast chính thức và có số liệu
+mâu thuẫn với knowledge/derived/warranty_policy_vi.md. Vì vậy file được ghi vào
+data/knowledge/synthetic, không phải data/knowledge/raw mà
+backend/scripts/reindex_qdrant_from_raw.py index vào Qdrant.
+"""
+
+from pathlib import Path
+
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
+
+RAW_DIR = Path("data/knowledge/synthetic")
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 
 # ── 1. HTML: Chính sách bảo hành toàn diện ─────────────────────────
@@ -456,4 +464,4 @@ elements = [
 ]
 
 doc.build(elements)
-print(f"Generated raw documents in {RAW_DIR}")
+print(f"Generated synthetic documents in {RAW_DIR}")

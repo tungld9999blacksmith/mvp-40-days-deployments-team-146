@@ -1,0 +1,11 @@
+{
+  "decision": "KEEP_MISTRAL_BASELINE",
+  "agent": "mistralai/mistral-small-2603",
+  "rewrite": "mistralai/mistral-small-2603",
+  "generation": "mistralai/mistral-small-2603",
+  "judge": "google/gemini-3.5-flash-lite",
+  "write": "INACTIVE",
+  "gpt4o": "EXCLUDED",
+  "env_changed": false,
+  "reason": "Same automatic PASS25/30 for both; judge disagreements and seven unverified-source results prevent validated quality winner. Gemma full-pipeline receipts50.50% lower but mean2.10 times slower. Both latency gates fail. Keep baseline pending independent holdout/source/staging evidence."
+}

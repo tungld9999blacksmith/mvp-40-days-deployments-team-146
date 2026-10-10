@@ -20,8 +20,11 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / "backend"), str(ROOT / "backend" / "src")]
 load_dotenv(ROOT / ".env")
 
-from src.agents.tools.RAG.ingestion import DocumentChunker, IngestionEngine, TextCleaner  # noqa: E402
-
+from src.agents.tools.RAG.ingestion import (
+    DocumentChunker,
+    IngestionEngine,
+    TextCleaner,
+)
 
 CHUNK_SOURCE_MARKERS = {
     "pricing_tram_sac_ALL_chk_0003": "3,858 VNĐ/kWh",

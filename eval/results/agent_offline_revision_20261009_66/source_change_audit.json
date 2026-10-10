@@ -1,0 +1,24 @@
+{
+  "original_source_file_count": 341,
+  "unchanged_original_source_files": 340,
+  "intentional_existing_source_changes": [
+    {
+      "path": "backend/src/agents/tools/RAG/query/generator.py",
+      "before_sha256": "1c493f43002cd4ffe7ccb29ab2a977d6e9f2e724fb4f0d2b93e42543a2a01318",
+      "after_sha256": "1b3543d99f5ac7203f0a9198f40cb48155207e1cfc2f40995f0374b1f5d4563b",
+      "original_snapshot": "eval\\results\\agent_offline_revision_20261009_66\\before_generator.py"
+    }
+  ],
+  "new_files": [
+    "backend/src/agents/tools/RAG/query/answer_scope.py",
+    "backend/src/agents/tools/RAG/query/documented_procedure.py",
+    "backend/tests/evaluation_budget/test_rag_revision66.py",
+    "eval/offline_evaluator66.py",
+    "eval/test_offline_evaluator66.py",
+    "eval/offline_network_guard66.py",
+    "eval/offline_revision66.py",
+    "eval/finalize_offline66.py"
+  ],
+  "production_env_unchanged": true,
+  "historic_source_manifests_unchanged": true
+}

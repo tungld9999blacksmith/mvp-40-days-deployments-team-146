@@ -13,11 +13,12 @@ import { useMaintenanceStatus } from '@/features/vehicles/hooks/useVehicleQuerie
 import type { VehicleSummary } from '@/features/vehicles/types'
 import HomeCarousel from '../components/HomeCarousel'
 import HomeHighlights from '../components/HomeHighlights'
+import { QUICK_BOOKING_ENTRY_PATH } from '@/features/assistant/quickBooking/entry'
 import RecentServiceHistory from '../components/RecentServiceHistory'
 
 const QUICK_ACTIONS = [
   { icon: Bot, label: 'Hỏi AI', sub: 'Tư vấn 24/7', to: '/ai' },
-  { icon: CalendarClock, label: 'Đặt lịch', sub: 'Chọn xưởng gần nhất', to: '/booking' },
+  { icon: CalendarClock, label: 'Đặt lịch nhanh', sub: 'AI tìm xưởng và giờ trống', to: QUICK_BOOKING_ENTRY_PATH },
   { icon: ClipboardList, label: 'Lịch sử dịch vụ', sub: 'Các lần bảo dưỡng', to: '/history' },
 ]
 

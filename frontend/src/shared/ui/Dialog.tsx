@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, type ReactNode, type RefObject } from 'react'
 import { createPortal } from 'react-dom'
 import { cn } from './cn'
+import { FOCUSABLE, isTopOverlay, pushOverlay, trapTab } from './overlayStack'
 
 interface DialogProps {
   open: boolean
@@ -18,7 +19,6 @@ interface DialogProps {
   className?: string
 }
 
-const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
 
 /** Centered modal on desktop, bottom sheet on mobile. Traps focus while open. */
 export default function Dialog({
@@ -38,6 +38,8 @@ export default function Dialog({
   const panelRef = useRef<HTMLDivElement>(null)
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
+  const dismissableRef = useRef(dismissable)
+  dismissableRef.current = dismissable
 
   useEffect(() => {
     if (!open) return
@@ -46,31 +48,26 @@ export default function Dialog({
     const target = initialFocusRef?.current ?? panel?.querySelector<HTMLElement>(FOCUSABLE) ?? panel
     target?.focus()
 
+    const id = Symbol('dialog')
+    const pop = pushOverlay(id)
+
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape' && dismissable) {
+      // Only the top overlay reacts: a Dialog over a Drawer closes alone.
+      if (!isTopOverlay(id)) return
+      if (event.key === 'Escape') {
         event.preventDefault()
-        onCloseRef.current()
+        if (dismissableRef.current) onCloseRef.current()
         return
       }
-      if (event.key !== 'Tab' || !panel) return
-      const items = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE))
-      if (items.length === 0) return
-      const first = items[0]
-      const last = items[items.length - 1]
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault()
-        last.focus()
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault()
-        first.focus()
-      }
+      trapTab(event, panel)
     }
     document.addEventListener('keydown', onKeyDown)
     return () => {
       document.removeEventListener('keydown', onKeyDown)
+      pop()
       previous?.focus?.()
     }
-  }, [open, dismissable, initialFocusRef])
+  }, [open, initialFocusRef])
 
   if (!open) return null
 

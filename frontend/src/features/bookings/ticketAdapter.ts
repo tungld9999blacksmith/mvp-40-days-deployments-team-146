@@ -18,9 +18,9 @@ interface TicketHistoryDto {
 }
 
 /**
- * API-BR-01 / API-BT-04 payload. The backend sends the us-033 + us-053 ticket fields; the
- * cancel / completion summary, hold deadline and follow-up link are not part of that contract,
- * so they are derived from `history` here or left `null` (the ticket degrades without them).
+ * API-BR-01 / API-BT-04 payload. The backend sends the us-033 + us-053 ticket fields plus the
+ * us-041 follow-up link of a completed booking; the cancel / completion summary and hold deadline
+ * are not part of that contract, so they are derived from `history` here or left `null`.
  */
 export type TicketDto = Omit<
   BookingDetail,
@@ -71,7 +71,7 @@ export function toBookingDetail(dto: TicketDto): BookingDetail {
   const completed = dto.status === 'COMPLETED' ? lastTransitionTo(history, 'COMPLETED') : undefined
   return {
     ...dto,
-    cost: dto.actualCost !== null && dto.actualCost !== undefined ? { amount: dto.actualCost, label: 'ESTIMATE' } : dto.cost,
+    cost: dto.actualCost !== null && dto.actualCost !== undefined ? { amount: dto.actualCost, label: 'ESTIMATE', quoteId: null } : dto.cost,
     estimateLabel: dto.actualCost !== null && dto.actualCost !== undefined ? 'Chi phí thực tế' : dto.estimateLabel,
     history,
     holdExpiresAt: dto.holdExpiresAt ?? null,

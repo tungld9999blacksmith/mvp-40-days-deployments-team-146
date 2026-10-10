@@ -1,0 +1,7 @@
+{
+  "eval\\agent_judge_audit65.py": "465255c7db944235eba755c32892daa27aaefeafb390da6805db7c21ac7fd86d",
+  "eval\\test_agent_judge_audit65.py": "04de21c17f59c6482b4cd3ea7b3bd6200e74e91b3da2793ee49a995d1c285783",
+  "eval\\results\\agent_judge_resume_20261009_64\\closed_master_hashes.json": "8b23e5da42f1e81624a70113c4a96e16c1c5df86f8133a003a289b4370566990",
+  "eval\\results\\agent_judge_resume_20261009_64\\protected_previous_files.json": "8e8f35f0e782e40531d5827ebbfc599b369bf6a1d06fc000d67208ca7c93f2fd",
+  "eval\\results\\agent_judge_resume_20261009_64\\source_revision.json": "57f70248e4c66a1dc04b5f099f2310232035220655503e7de669175fd3df2af1"
+}

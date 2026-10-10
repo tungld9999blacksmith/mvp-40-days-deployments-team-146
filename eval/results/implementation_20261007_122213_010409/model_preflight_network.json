@@ -1,0 +1,9 @@
+{
+  "models": {
+    "mistralai/mistral-small-2603": true,
+    "google/gemma-4-26b-a4b-it": true,
+    "openai/gpt-4o": true
+  },
+  "key_present": true,
+  "http_status": 200
+}

@@ -37,16 +37,16 @@ Frontend đã có 12 màn hình nhưng sử dụng mock và state trong bộ nh�
 - Service sở hữu quy tắc nghiệp vụ. Repository tách truy vấn database khi cần.
 - AI tools gọi service của module tương ứng. API đặt lịch và chat đặt lịch phải dùng chung logic kiểm tra chỗ trống.
 - Module `assistant` gọi graph; `ai` không import router hoặc service của `assistant`, tránh vòng phụ thuộc.
-- Frontend chia feature theo nghiệp vụ, không theo vai trò. Chủ xe và kỹ thuật viên dùng chung feature lịch hẹn.
+- Frontend chia feature theo nghiệp vụ, không theo vai trò. Chủ xe và kỹ thuật viên dùng chung feature báo giá.
 - `shared` không import ngược vào `features`; kiểu dữ liệu riêng của từng feature ở trong feature đó.
 - Chỉ thêm model, repository, component hoặc endpoint khi có chức năng cần triển khai.
 
 ## Các module
 
 `assistant` đã có `router.py`, `schemas.py`, `service.py` và được đăng ký trong `main.py`.
-Các package `auth`, `vehicles`, `maintenance`, `bookings`, `notifications` là khung để phát triển tiếp. Danh sách trách nhiệm nằm tại [modules/README.md](../../backend/app/modules/README.md).
+Các package `auth`, `vehicles`, `maintenance`, `quotes`, `bookings`, `notifications` là khung để phát triển tiếp. Danh sách trách nhiệm nằm tại [modules/README.md](../../backend/app/modules/README.md).
 
-`bookings` quản lý cả xưởng và khung giờ ở giai đoạn đầu. `maintenance` quản lý quy tắc bảo dưỡng và lịch sử dịch vụ. Dự toán chi phí của chủ xe nằm ở `cost_estimate`; không có bước duyệt báo giá.
+`bookings` quản lý cả xưởng và khung giờ ở giai đoạn đầu. `maintenance` quản lý quy tắc bảo dưỡng và lịch sử dịch vụ. `quotes` phục vụ cả dự toán của chủ xe và duyệt báo giá của kỹ thuật viên.
 
 ## Luồng chat hiện tại
 
@@ -98,6 +98,6 @@ Tài liệu khóa học trong `docs/guide`, README boilerplate và các nhật k
 2. Triển khai dự toán và luồng kỹ thuật viên duyệt, kèm phân quyền backend.
 3. Triển khai xưởng, khung giờ và lưu lịch hẹn.
 4. Nối giao diện với API theo từng feature.
-5. Thêm tra cứu tài liệu, nguồn trích dẫn, AI tools và bộ đánh giá trong `eval/datasets`.
+5. Thêm tra cứu tài liệu, nguồn trích dẫn, AI tools và bộ đánh giá trong `eval/test_cases`.
 
 Các bước trên là công việc phát triển tiếp, không nằm trong lần tái cấu trúc này.

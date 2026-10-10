@@ -54,8 +54,8 @@ export default function WorkshopLogin() {
         badge="Workshop Portal"
         headline="Quản lý xưởng dịch vụ"
         highlight="gọn gàng hơn"
-        subtitle="Nhận lịch hẹn từ chủ xe, theo dõi tiến độ dịch vụ và công suất xưởng trên một cổng duy nhất."
-        chips={['Lịch hẹn', 'Tiến độ dịch vụ', 'Công suất xưởng', 'Chính hãng']}
+        subtitle="Nhận lịch hẹn từ chủ xe, duyệt báo giá và theo dõi công suất xưởng trên một cổng duy nhất."
+        chips={['Lịch hẹn', 'Báo giá', 'Công suất xưởng', 'Chính hãng']}
       />
 
       <main className="flex-1 flex flex-col justify-center items-center px-4 sm:px-8 py-12 bg-app-backdrop">

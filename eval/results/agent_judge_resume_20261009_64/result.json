@@ -1,0 +1,56 @@
+{
+  "status": "ALL60_ASSESSED_ACROSS_IMMUTABLE_PRODUCERS",
+  "selected": 60,
+  "attempted": 60,
+  "valid_assessments": 60,
+  "counts": {
+    "PASS": 46,
+    "UNVERIFIABLE": 9,
+    "FAIL": 5
+  },
+  "models": {
+    "base": {
+      "selected": 30,
+      "attempted": 30,
+      "counts": {
+        "PASS": 23,
+        "UNVERIFIABLE": 4,
+        "FAIL": 3
+      }
+    },
+    "agent_gemma": {
+      "selected": 30,
+      "attempted": 30,
+      "counts": {
+        "UNVERIFIABLE": 5,
+        "FAIL": 2,
+        "PASS": 23
+      }
+    }
+  },
+  "reused63_count": 25,
+  "new64": {
+    "selected": 35,
+    "attempted": 35,
+    "selected_controls": 0,
+    "attempted_controls": 0,
+    "complete_without_errors": true,
+    "stop_reason": null,
+    "counts": {
+      "PASS": 28,
+      "UNVERIFIABLE": 5,
+      "FAIL": 2
+    },
+    "known_cost_usd": 0.09634156,
+    "missing_receipts": 0,
+    "independent_labels": 0,
+    "production_acceptance": false
+  },
+  "original63_full_status": "INCOMPLETE_PROVIDER403_RETAINED",
+  "historical_provider_error_rows_retained": 1,
+  "full_review_provider_attempts63_plus64": 61,
+  "semantic_review_three_repeats_completed": false,
+  "independent_labels": 0,
+  "dataset_usage": "DEVELOPMENT_REGRESSION_NOT_HOLDOUT",
+  "production_acceptance": false
+}

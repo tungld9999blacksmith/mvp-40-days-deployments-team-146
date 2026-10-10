@@ -1,0 +1,40 @@
+{
+  "same_runtime_sources_across_new_runs": true,
+  "same_dataset_across_new_runs": true,
+  "same_schema_across_new_runs": true,
+  "active_document_links_valid": true,
+  "artifact_hash_checks": [
+    {
+      "snapshot": "protected_previous_artifacts.json",
+      "files": 677,
+      "unchanged": true
+    },
+    {
+      "snapshot": "completed_default_batch_hashes.json",
+      "files": 9,
+      "unchanged": true
+    },
+    {
+      "snapshot": "completed_preflight_hashes.json",
+      "files": 8,
+      "unchanged": true
+    },
+    {
+      "snapshot": "completed_routed_preflight_hashes.json",
+      "files": 8,
+      "unchanged": true
+    },
+    {
+      "snapshot": "completed_routed_reminder_hashes.json",
+      "files": 8,
+      "unchanged": true
+    },
+    {
+      "snapshot": "completed_sessions_hashes.json",
+      "files": 8,
+      "unchanged": true
+    }
+  ],
+  "plan_sha256": "3434fb11803806d6b49e35804c14bfbf79eaf0d714446b6742bf5807da6ae5ce",
+  "no_runtime_code_edits_this_turn": true
+}

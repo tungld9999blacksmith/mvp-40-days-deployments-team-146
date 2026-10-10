@@ -1,0 +1,450 @@
+case_id,question,expected_answer,actual_answer,correctness,citation_support,reviewer,notes
+M01,Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?,"Mốc 15.000 km xe VF8 cần: kiểm tra OBD và BMS pin, kiểm tra mức dung dịch làm mát pin, kiểm tra má phanh và áp suất lốp, bổ sung nước rửa kính.","Hiện tài liệu chính hãng chưa có thông tin chi tiết về danh sách các hạng mục bảo dưỡng cụ thể cho mốc 15.000 km đối với dòng xe VF8. Các tài liệu hiện có chỉ cung cấp thông tin về mốc bảo dưỡng định kỳ mới cho ô tô điện là 15.000 km hoặc 1 năm (tùy điều kiện nào đến trước) [Tài liệu 1] và lịch bảo dưỡng của dòng xe Fadil (xe xăng) . 
+
+Để biết chính xác các hạng mục cần kiểm tra hoặc thay thế cho xe VF8 tại mốc 15.000 km, Quý khách vui lòng liên hệ trực tiếp với xưởng dịch vụ VinFast hoặc đặt lịch hẹn để kỹ thuật viên kiểm tra và tư vấn cụ thể.",,,,
+M02,Pin chìa khóa điều khiển VF e34 thay theo chu kỳ nào?,Pin chìa khóa điều khiển VF e34 được thay mới mỗi 24 tháng hoặc sau 24.000 km.,"Đối với dòng xe VinFast VF e34, pin chìa khóa điều khiển cần được thay mới định kỳ cứ 24 tháng hoặc sau 24.000km, tùy theo điều kiện nào đến trước [Tài liệu 1].",,,,
+M03,"Từ năm 2026, chu kỳ bảo dưỡng định kỳ của ô tô điện VinFast là bao lâu?","Từ 01/01/2026, VinFast điều chỉnh mốc bảo dưỡng định kỳ cho ô tô điện thành 15.000 km hoặc 1 năm, tùy điều kiện nào đến trước.","Từ ngày 01/01/2026, VinFast chính thức điều chỉnh mốc bảo dưỡng định kỳ cho các dòng ô tô điện là **15.000 km hoặc 1 năm** (tùy theo điều kiện nào đến trước) [Tài liệu 1]. 
+
+Mốc điều chỉnh này thay thế cho mốc cũ là 12.000 km hoặc 1 năm [Tài liệu 1]. Lưu ý rằng quy định này không áp dụng đối với phiên bản Lạc Hồng chống đạn [Tài liệu 1].",,,,
+M04,Pin bộ T-box VF e34 thay ở những mốc nào?,Pin bộ T-box được thay ở tháng thứ 72 và 144 hoặc mốc 72.000 km và 144.000 km.,"Đối với xe VinFast VF e34, pin bộ T-box (Telematics Box) cần được thay mới tại các mốc sau:
+
+* Theo thời gian: Tháng thứ 72 và tháng thứ 144 [Tài liệu 1].
+* Theo quãng đường: 72.000 km hoặc 144.000 km [Tài liệu 1].
+
+Việc thay thế sẽ được thực hiện dựa trên điều kiện nào đến trước [Tài liệu 1].",,,,
+M05,"Theo lịch mới, xe đang ở mốc ODO 36.000 đến 45.000 km được quy đổi mốc nhắc bảo dưỡng nào?","Theo lịch nhắc bảo dưỡng áp dụng từ năm 2026, xe có ODO từ 36.000 đến 45.000 km được quy đổi sang mốc nhắc bảo dưỡng mới 45.000 km.","Theo lịch bảo dưỡng mới của VinFast, đối với xe đang ở mốc ODO từ 36.000 km đến 45.000 km, mốc nhắc bảo dưỡng tiếp theo sẽ được quy đổi về mốc 45.000 km [Tài liệu 1].",,,,
+M06,Xe VF3 cần bảo dưỡng lần đầu tiên sau bao nhiêu km?,"Xe VF3 bảo dưỡng lần đầu sau 15.000 km hoặc 12 tháng kể từ ngày giao xe, tùy điều kiện nào đến trước.","Hiện tài liệu chính hãng chưa có thông tin chi tiết về mốc bảo dưỡng định kỳ lần đầu tiên cụ thể dành riêng cho dòng xe VinFast VF3. Các tài liệu hiện có chỉ cung cấp lịch bảo dưỡng cho dòng xe Lux A2.0 [Tài liệu 1] và các thông tin về thời hạn bảo hành cũng như trách nhiệm bảo dưỡng chung của chủ xe VF3 [Tài liệu 2] [Tài liệu 3].
+
+Để đảm bảo quyền lợi bảo hành và duy trì chất lượng xe tốt nhất, Quý khách vui lòng kiểm tra kỹ Sách Hướng dẫn sử dụng xe hoặc liên hệ trực tiếp với Xưởng dịch vụ/Đại lý ủy quyền của VinFast để được hướng dẫn chính xác về lịch bảo dưỡng đầu tiên cho xe VF3.",,,,
+M07,Nước làm mát pin và động cơ điện VF e34 cần thay hay kiểm tra định kỳ?,Lịch VF e34 ghi nước làm mát pin/động cơ điện cần thay mới theo mốc và kiểm tra thường xuyên ở các kỳ còn lại.,"Đối với dòng xe VinFast VF e34, lịch trình đối với nước làm mát pin và động cơ điện được quy định như sau:
+
+* **Nước làm mát pin/động cơ điện:** Cần thực hiện thay mới ở tháng thứ 120 hoặc sau 12.000km [Tài liệu 1]. Trong thời gian còn lại, cần thực hiện kiểm tra thường xuyên [Tài liệu 1].
+* **Lưu ý về tầm quan trọng:** Việc kiểm tra và bảo dưỡng chất làm mát pin là khâu quan trọng, vì nếu nhiệt độ tăng vượt mức cho phép có thể gây hư hại đến xe hoặc dẫn đến nguy cơ cháy nổ [Tài liệu 2].",,,,
+M08,Dầu phanh VF e34 được kiểm tra và thay mới thế nào trong từng kỳ bảo dưỡng?,Lịch bảo dưỡng VF e34 ghi dầu phanh được kiểm tra và thay mới xen kẽ.,"Đối với dòng xe VinFast VF e34, hạng mục dầu phanh được thực hiện theo hình thức kiểm tra và thay mới xen kẽ nhau trong các kỳ bảo dưỡng định kỳ [Tài liệu 1].",,,,
+M09,Bảo dưỡng xe VF8 mốc 60.000 km có kiểm tra SOH pin không?,"Có. Mốc 60.000 km xe VF8 thực hiện kiểm tra và kiểm định tình trạng suy giảm dung lượng pin (SOH evaluation), cùng kiểm tra gioăng chống nước khoang pin.","Hiện tài liệu chính hãng chưa có thông tin chi tiết về việc liệu hạng mục kiểm tra dung lượng pin (SoH) có được thực hiện cụ thể trong đợt bảo dưỡng định kỳ tại mốc 60.000 km cho xe VF8 hay không.
+
+Tuy nhiên, dựa trên các tài liệu hiện có, tôi có thể cung cấp các thông tin liên quan sau:
+- Pin là bộ phận cần được kiểm tra định kỳ để đảm bảo an toàn, tránh hiện tượng cháy nổ [Tài liệu 1].
+- Phần mềm hệ thống quản lý xe cũng cần được cập nhật thường xuyên để có thể theo dõi và kiểm soát các thông số của xe và pin xe [Tài liệu 1].
+- VinFast có quy định về việc đảm bảo dung lượng pin trên 70% trong phạm vi bảo hành, và phương pháp đo lường để xác định dung lượng pin sẽ do VinFast quyết định [Tài liệu 2].
+
+Để có câu trả lời chính xác nhất về danh mục kiểm tra cụ thể cho mốc 60.000 km trên dòng xe VF8, Quý khách vui lòng liên hệ trực tiếp với xưởng dịch vụ VinFast hoặc đặt lịch hẹn để kỹ thuật viên kiểm tra và tư vấn chi tiết.",,,,
+M10,Vì sao lịch bảo dưỡng ô tô điện VinFast dài hơn xe xăng?,Lịch bảo dưỡng ô tô điện định kỳ dài hơn và tiết kiệm chi phí hơn xe xăng do bộ phận truyền động đơn giản và không trải qua quá trình đốt cháy.,"Lịch bảo dưỡng của ô tô điện VinFast dài hơn so với xe sử dụng động cơ xăng chủ yếu do sự khác biệt về cấu tạo và các bộ phận cần bảo trì, cụ thể:
+
+* **Động cơ điện đơn giản hơn:** Động cơ điện không cần các chi tiết cần bảo dưỡng hoặc thay thế thường xuyên như nước làm mát, chất bôi trơn, lọc nhớt, dây đai dẫn động và lọc gió giống như động cơ xăng [Tài liệu 1]. Ngoài ra, động cơ điện chỉ có 2 chi tiết có thể hao mòn theo thời gian là cụm xoay và cụm đứng yên [Tài liệu 1].
+* **Hệ thống phanh tái sinh:** Các dòng xe điện thường sử dụng hệ thống phanh tái sinh với độ ăn mòn phanh thấp, dẫn đến việc rất ít khi phải thay má phanh [Tài liệu 1].
+* **Tối ưu hóa dựa trên thực tế:** VinFast đã thực hiện quá trình nghiên cứu kỹ lưỡng và kiểm thử khắt khe trong điều kiện thực tế tại Việt Nam để điều chỉnh mốc bảo dưỡng (ví dụ: từ 12.000 km lên 15.000 km hoặc 1 năm từ ngày 01/01/2026) nhằm tối ưu hóa thời gian và giảm chi phí vận hành cho khách hàng mà không ảnh hưởng đến độ bền và an toàn của xe [Tài liệu 2].",,,,
+M11,Lọc gió điều hòa VF e34 là hạng mục kiểm tra hay thay mới?,"Lịch bảo dưỡng VF e34 ghi lọc gió điều hòa là hạng mục thay mới, ký hiệu TM.","Đối với dòng xe VinFast VF e34, lọc gió điều hòa là hạng mục thay mới (TM) theo định kỳ [Tài liệu 1].",,,,
+M12,"Khi tư vấn bảo dưỡng VF e34, những hạng mục phanh nào cần được kiểm tra?","Danh sách hạng mục bảo dưỡng chung của VF e34 có má phanh và đĩa phanh, cùng đường ống và đầu nối hệ thống phanh.","Khi tư vấn bảo dưỡng cho dòng xe VinFast VF e34, các hạng mục thuộc hệ thống phanh cần được kiểm tra bao gồm:
+
+*   **Dầu phanh:** Thực hiện kiểm tra và thay mới xen kẽ theo lịch trình [Tài liệu 1].
+*   **Má phanh và đĩa phanh:** Thuộc danh mục bảo dưỡng chung cần được kiểm tra [Tài liệu 1]. Do xe điện thường sử dụng hệ thống phanh tái sinh có độ ăn mòn thấp nên rất ít khi phải thay thế, tuy nhiên cần kiểm tra thường xuyên để phát hiện kịp thời các vấn đề liên quan, đảm bảo an toàn [Tài liệu 2].
+*   **Đường ống và đầu nối hệ thống phanh:** Thuộc danh mục bảo dưỡng chung cần được kiểm tra [Tài liệu 1].",,,,
+M13,Kiểm tra má phanh xe VF8 định kỳ như thế nào?,Má phanh xe VF8 được kiểm tra độ dày tại mỗi lần bảo dưỡng. Cần thay thế khi độ dày má phanh còn dưới 3mm. Mốc 60.000 km bắt buộc kiểm tra chuyên sâu.,"Đối với dòng xe điện VinFast như VF8, việc kiểm tra má phanh được thực hiện theo các hướng dẫn sau:
+
+* **Tần suất kiểm tra:** Do các dòng xe điện thường sử dụng hệ thống phanh tái sinh có độ ăn mòn phanh thấp nên rất ít khi phải thay thế má phanh. Tuy nhiên, chủ xe cần thực hiện kiểm tra thường xuyên để phát hiện kịp thời các vấn đề liên quan đến má phanh, nhằm đảm bảo an toàn khi di chuyển [Tài liệu 2].
+* **Lưu ý về các bộ phận liên quan:** Ngoài má phanh, chủ xe cũng cần lưu ý kiểm tra định kỳ dầu phanh (thay thế sau mỗi 16.000km hoặc 24 tháng) và các đường ống nối phanh để đảm bảo hệ thống vận hành tốt nhất [Tài liệu 1].
+
+Hiện tại, tài liệu chính hãng chưa cung cấp chi tiết các hạng mục kỹ thuật cụ thể trong quy trình kiểm tra má phanh (như độ dày tối thiểu hay các bước tháo lắp). Để có kết quả chính xác nhất, quý khách nên đưa xe đến xưởng dịch vụ để kỹ thuật viên kiểm tra trực tiếp.",,,,
+M14,Bảo dưỡng VF MPV 7 mốc 15.000 km cần làm gì?,"Mốc 15.000 km VF MPV 7: kiểm tra hệ thống điện tử và BMS, kiểm tra phanh, lốp, dung dịch làm mát pin và bổ sung nước rửa kính theo tiêu chuẩn chính hãng.","Hiện tài liệu chính hãng chưa có thông tin chi tiết về danh sách các hạng mục bảo dưỡng cụ thể cho dòng xe VF MPV 7 tại mốc 15.000 km. Các tài liệu được cung cấp chỉ bao gồm thông tin về việc điều chỉnh mốc bảo dưỡng định kỳ cho các dòng ô tô điện (từ 12.000 km lên 15.000 km hoặc 1 năm áp dụng từ 01/01/2026) [Tài liệu 1] và lịch bảo dưỡng của dòng xe xăng Fadil [Tài liệu 2]. 
+
+Để đảm bảo quyền lợi và sự an toàn cho xe VF MPV 7, Quý khách vui lòng liên hệ trực tiếp với xưởng dịch vụ VinFast hoặc đặt lịch hẹn qua ứng dụng để được kỹ thuật viên cung cấp danh mục kiểm tra chính xác nhất cho dòng xe này.",,,,
+M15,Từ 01/01/2026 mốc bảo dưỡng xe điện VinFast thay đổi như thế nào?,"Từ 01/01/2026, VinFast điều chỉnh mốc bảo dưỡng định kỳ từ 12.000 km lên 15.000 km hoặc 1 năm, tùy điều kiện nào đến trước.","Từ ngày 01/01/2026, VinFast chính thức điều chỉnh mốc bảo dưỡng định kỳ cho các dòng ô tô điện theo hướng tối ưu hơn như sau:
+
+*   **Mốc bảo dưỡng mới:** 15.000 km hoặc 1 năm, tùy theo điều kiện nào đến trước [Tài liệu 1].
+*   **So với mốc cũ:** Mốc cũ là 12.000 km hoặc 1 năm [Tài liệu 1].
+
+**Lưu ý:**
+*   Thay đổi này không áp dụng đối với phiên bản Lạc Hồng chống đạn [Tài liệu 1].
+*   Việc nới rộng chu kỳ bảo dưỡng này đã được VinFast nghiên cứu và kiểm thử kỹ lưỡng để đảm bảo không ảnh hưởng đến độ bền và an toàn của xe [Tài liệu 1].",,,,
+M16,Xưởng dịch vụ VinFast có dùng phụ tùng chính hãng khi bảo dưỡng không?,"Dịch vụ bảo dưỡng chính hãng sử dụng 100% phụ tùng chính hãng, bảo đảm độ tương thích và an toàn.","Có, các xưởng dịch vụ của VinFast cam kết sử dụng 100% phụ tùng chính hãng khi thực hiện bảo dưỡng xe [Tài liệu 1]. Việc sử dụng phụ tùng chính hãng này nhằm đảm bảo độ tương thích và an toàn tối đa cho phương tiện, đồng thời giúp khách hàng hoàn toàn an tâm về chất lượng đồng bộ và không làm ảnh hưởng đến chế độ bảo hành của xe [Tài liệu 1].",,,,
+M17,Cần gạt nước và nước rửa kính VF e34 có nằm trong danh sách bảo dưỡng chung không?,Có. Gạt nước rửa kính/nước rửa kính được liệt kê trong hạng mục bảo dưỡng chung của VF e34.,"Có, cần gạt nước và nước rửa kính của xe VinFast VF e34 nằm trong danh sách hạng mục bảo dưỡng chung [Tài liệu 1]. 
+
+Ngoài ra, đối với cần gạt nước kính chắn gió, chủ xe cần lưu ý bảo dưỡng và thay lưỡi gạt định kỳ 2 lần/năm [Tài liệu 2]. Cần lưu ý rằng các chi tiết hư hỏng do hao mòn sử dụng như thanh gạt nước kèm/không kèm cao su sẽ không thuộc phạm vi được áp dụng bảo hành [Tài liệu 3].",,,,
+M18,"Trong bảo dưỡng VF e34, những hạng mục nào liên quan đến pin cao áp và cổng sạc?","Danh sách bảo dưỡng chung gồm pin, dây cáp hệ thống điện áp cao, đường ống làm mát và cổng sạc.","Trong quy trình bảo dưỡng định kỳ của dòng xe VinFast VF e34, các hạng mục liên quan đến hệ thống pin cao áp và cổng sạc bao gồm:
+
+*   **Hệ thống pin cao áp (Battery):**
+    *   **Pin:** Được đưa vào danh mục bảo dưỡng chung [Tài liệu 1]. Pin cần được kiểm tra và bổ sung chất làm mát định kỳ để tránh nguy cơ cháy nổ do nhiệt độ tăng vượt mức cho phép [Tài liệu 2].
+    *   **Nước làm mát pin/động cơ điện:** Cần thay mới ở tháng thứ 120 hoặc sau 12.000km; thời gian còn lại cần kiểm tra thường xuyên [Tài liệu 1].
+    *   **Dây cáp của hệ thống điện áp cao:** Thuộc danh mục bảo dưỡng chung [Tài liệu 1].
+    *   **Phần mềm:** Cần cập nhật thường xuyên để theo dõi và kiểm soát các thông số của pin xe [Tài liệu 2].
+
+*   **Hệ thống cổng sạc (Charging):**
+    *   **Cổng sạc:** Được đưa vào danh mục bảo dưỡng chung [Tài liệu 1].",,,,
+M19,"Khi tư vấn bảo dưỡng gầm VF e34, những bộ phận nào thuộc nhóm cần kiểm tra?","Danh sách hạng mục bảo dưỡng chung có hệ thống treo, trục truyền động, khớp cầu, thước lái và khớp nối cầu.","Dựa trên lịch bảo dưỡng định kỳ cho dòng xe VinFast VF e34, khi thực hiện tư vấn bảo dưỡng các bộ phận thuộc nhóm gầm và hệ thống liên quan, các hạng mục cần kiểm tra bao gồm:
+
+*   Hệ thống phanh: Má phanh và đĩa phanh, đường ống và đầu nối hệ thống phanh [Tài liệu 1].
+*   Hệ thống treo và dẫn động: Hệ thống treo, trục truyền động, khớp cầu, thước lái và khớp nối cầu [Tài liệu 1].
+*   Bộ phận truyền động: Bộ dẫn động (bao gồm động cơ điện và hộp số) [Tài liệu 1].
+*   Lốp xe: Kiểm tra áp suất, độ mòn, thực hiện đảo và cân bằng lốp [Tài liệu 1].",,,,
+M20,"Để tư vấn chăm sóc lốp VF e34, cần kiểm tra những gì và theo chu kỳ nào?","Lốp VF e34 cần kiểm tra áp suất, độ mòn, đảo và cân bằng lốp định kỳ hàng tháng hoặc sau 12.000 km.","Đối với dòng xe VinFast VF e34, việc chăm sóc lốp xe cần lưu ý các nội dung sau:
+
+* **Các hạng mục cần kiểm tra:** Chủ xe cần kiểm tra thường xuyên áp suất lốp cũng như độ ăn mòn của từng lốp xe để tiến hành sửa chữa, thay thế kịp thời [Tài liệu 1]. Ngoài ra, trong các kỳ bảo dưỡng định kỳ, các hạng mục liên quan đến lốp bao gồm: áp suất, độ mòn, đảo và cân bằng lốp [Tài liệu 2].
+* **Chu kỳ thực hiện:** Việc kiểm tra định kỳ các hạng mục nêu trên cần được thực hiện hàng tháng hoặc sau mỗi 12.000 km, tùy theo điều kiện nào đến trước [Tài liệu 2].",,,,
+M21,"Nếu cần báo giá phụ tùng mà lịch bảo dưỡng không nêu giá, chủ xe nên liên hệ đâu?",Lịch bảo dưỡng hướng dẫn liên hệ xưởng dịch vụ gần nhất hoặc hotline VinFast 1900 23 23 89 để được tư vấn chi phí phụ tùng.,"Vì trang lịch bảo dưỡng công khai không nêu một mức tiền cố định cho từng mốc bảo dưỡng hoặc từng phụ tùng sửa chữa [Tài liệu 1], để nhận được báo giá chi tiết về chi phí bảo dưỡng và phụ tùng, chủ xe nên liên hệ với các đơn vị sau để được hỗ trợ:
+
+* Hotline Xưởng Dịch vụ gần nhất [Tài liệu 1] [Tài liệu 2].
+* Hotline VinFast: 1900 23 23 89 [Tài liệu 1] [Tài liệu 2].",,,,
+M22,Cổng sạc VF e34 có thuộc hạng mục bảo dưỡng chung cần được kiểm tra không?,Có. Cổng sạc được liệt kê trong hạng mục bảo dưỡng chung của VF e34.,"Có, cổng sạc của dòng xe VinFast VF e34 thuộc hạng mục bảo dưỡng chung cần được kiểm tra định kỳ [Tài liệu 1].",,,,
+M23,Xe VF e34 đến 40.000 km cần thay những phụ tùng gì?,"Mốc 40.000 km VF e34 (bảo dưỡng lớn): thay dung dịch làm mát pin cao áp, dầu phanh DOT 4 EV, lọc gió điều hòa. Kiểm tra chuyên sâu phanh, treo và đảo lốp.","Dựa trên lịch bảo dưỡng định kỳ dành cho xe VF e34, tại mốc 40.000 km, tài liệu không chỉ định cụ thể các phụ tùng bắt buộc phải thay mới tại đúng mốc này. Tuy nhiên, có các hạng mục cần lưu ý dựa trên các mốc bảo dưỡng liên quan như sau:
+
+*   **Các hạng mục thay mới theo mốc gần nhất:**
+    *   **Pin chìa khóa điều khiển:** Cần thay mới sau mỗi 24.000 km hoặc 24 tháng [Tài liệu 1]. Do đó, tại mốc 40.000 km, xe đã vượt qua mốc thay thế định kỳ gần nhất (24.000 km).
+    *   **Nước làm mát pin/động cơ điện:** Thay mới sau mỗi 12.000 km hoặc 120 tháng [Tài liệu 1]. Tại mốc 40.000 km, xe đã trải qua các kỳ thay thế tại 12.000 km, 24.000 km và 36.000 km.
+*   **Các hạng mục cần kiểm tra định kỳ:**
+    *   Lốp (áp suất, độ mòn, đảo & cân bằng lốp) [Tài liệu 1].
+    *   Dầu phanh (kiểm tra, thay mới xen kẽ) [Tài liệu 1].
+    *   Lưỡi gạt nước [Tài liệu 2].
+    *   Các bộ phận khác như: Má phanh, hệ thống treo, hệ thống phanh, ắc quy 12V, và các kết nối điện áp cao cần được kiểm tra để đảm bảo an toàn [Tài liệu 1] [Tài liệu 2].
+
+Vì lịch bảo dưỡng có thể thay đổi tùy theo điều kiện sử dụng thực tế, bạn nên liên hệ xưởng dịch vụ VinFast hoặc đặt lịch để kỹ thuật viên kiểm tra trực tiếp tình trạng xe tại mốc 40.000 km.",,,,
+M24,Động cơ điện và hộp số VF e34 nằm trong hạng mục bảo dưỡng nào?,Động cơ điện và hộp số được liệt kê cùng nhau trong hạng mục bộ dẫn động của lịch bảo dưỡng chung VF e34.,"Đối với dòng xe VinFast VF e34, bộ dẫn động bao gồm động cơ điện và hộp số nằm trong nhóm HẠNG MỤC BẢO DƯỠNG CHUNG [Tài liệu 1].",,,,
+M25,Không bảo dưỡng định kỳ có ảnh hưởng đến bảo hành không?,Có. Không thực hiện bảo dưỡng định kỳ đúng lịch tại xưởng dịch vụ chính hãng VinFast là một trong các trường hợp có thể dẫn đến mất quyền bảo hành.,"Có, việc không thực hiện bảo dưỡng định kỳ sẽ ảnh hưởng trực tiếp đến quyền lợi bảo hành của xe. Cụ thể như sau:
+
+* **Điều kiện hưởng bảo hành:** Việc thực hiện bảo dưỡng định kỳ theo một chu kỳ nhất định (quy định bằng quãng đường và thời gian sử dụng) là điều kiện cần để được hưởng chính sách bảo hành từ VinFast [Tài liệu 1].
+* **Các trường hợp không được bảo hành:** Các hư hỏng do việc không tuân thủ lịch bảo dưỡng định kỳ hoặc bảo dưỡng, sửa chữa không đúng theo hướng dẫn của nhà sản xuất sẽ không thuộc phạm vi bảo hành [Tài liệu 2] [Tài liệu 3].
+* **Cơ sở xét duyệt bảo hành:** Các hồ sơ bảo dưỡng, kiểm tra và sửa chữa là cơ sở quan trọng để VinFast xét duyệt bảo hành [Tài liệu 2] [Tài liệu 3].
+
+Vì vậy, để đảm bảo quyền lợi bảo hành và duy trì trạng thái hoạt động ổn định, an toàn của xe, Quý khách cần thực hiện bảo dưỡng định kỳ đúng lịch theo khuyến cáo trong sách Hướng dẫn sử dụng [Tài liệu 1] [Tài liệu 2] [Tài liệu 3].",,,,
+W01,Chính sách bảo hành xe VF8 là bao nhiêu năm?,Xe VF8 được bảo hành 10 năm hoặc 200.000 km tùy điều kiện nào đến trước. Pin cao áp bảo hành 10 năm không giới hạn km.,"Chính sách bảo hành cho dòng xe VinFast VF8 được quy định như sau:
+
+* **Bảo hành chung:** Thời hạn bảo hành là 10 năm hoặc 200.000 km, tùy thuộc vào điều kiện nào đến trước kể từ ngày bán lẻ tới khách hàng ghi trên hóa đơn [Tài liệu 1] [Tài liệu 2].
+* **Bảo hành Pin (mua lần đầu theo xe mới):** 
+    * Đối với mục đích sử dụng thông thường: Thời hạn bảo hành pin là 10 năm kể từ ngày kích hoạt bảo hành xe và không giới hạn quãng đường sử dụng [Tài liệu 1].
+    * Đối với mục đích thương mại (như taxi, xe dịch vụ Grab/Be, xe cho thuê, xe đưa đón, xe giao hàng...): Thời hạn bảo hành pin là 10 năm hoặc 200.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 1].
+* **Bảo hành cho xe sử dụng mục đích thương mại:** Thời hạn bảo hành xe mới (bao gồm cả hệ truyền động) là 5 năm hoặc 100.000 km, tùy điều kiện nào đến trước [Tài liệu 1].",,,,
+W02,Pin cao áp xe VF6 được bảo hành trong bao lâu?,Pin cao áp xe VF6 được bảo hành 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.,"Thời hạn bảo hành pin cao áp cho dòng xe VinFast VF6 (mua lần đầu theo xe mới) là 8 năm hoặc 160.000 km, tùy theo điều kiện nào đến trước [Tài liệu 1] [Tài liệu 2].",,,,
+W03,Hệ truyền động xe mới VF3 được bảo hành bao lâu?,"Xe mới VF3, bao gồm hệ truyền động, được bảo hành 7 năm hoặc 160.000 km trong điều kiện sử dụng tiêu chuẩn.","Thời hạn bảo hành hệ truyền động (bao gồm bảo hành xe mới) của dòng xe VinFast VF 3 được quy định như sau:
+
+* **Đối với điều kiện sử dụng tiêu chuẩn:** 7 năm hoặc 160.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 1] [Tài liệu 2].
+* **Đối với mục đích sử dụng Dịch vụ thương mại:** 3 năm hoặc 100.000 km [Tài liệu 1].",,,,
+W04,Điều kiện để xe VinFast được bảo hành là gì?,"Điều kiện bảo hành: xe đã kích hoạt bảo hành trên hệ thống VinFast, thực hiện bảo dưỡng đúng định kỳ tại xưởng dịch vụ chính hãng, và xe không bị tác động ngoại lực hoặc can thiệp trái phép.","Chính sách bảo hành của xe điện VinFast được quy định dựa trên thời hạn (năm) hoặc quãng đường (km) tùy theo điều kiện nào đến trước, cụ thể cho từng dòng xe và bộ phận như sau:
+
+**1. Thời hạn bảo hành chung cho xe:**
+* **Các dòng xe phổ thông:** Áp dụng thời hạn 10 năm hoặc 200.000 km tùy điều kiện nào đến trước [Tài liệu 2]. (Lưu ý: Tài liệu 1 có đề cập thời hạn 10 năm hoặc 200.000 km cho VF 8 [Tài liệu 1]).
+* **Dòng xe VF 5 và VF 6:** Áp dụng thời hạn 7 năm hoặc 160.000 km tùy điều kiện nào đến trước [Tài liệu 2].
+* **Dòng xe VF MPV 7:** Áp dụng thời hạn 7 năm hoặc 160.000 km tùy điều kiện nào đến trước [Tài liệu 5].
+
+**2. Bảo hành các bộ phận giới hạn:**
+* **Pin (mua kèm xe mới):** 
+    * Đối với xe sử dụng thông thường: Thời hạn là 10 năm không giới hạn quãng đường [Tài liệu 1] hoặc 8 năm/160.000 km tùy dòng xe cụ thể như VF 6 và VF MPV 7 [Tài liệu 4] [Tài liệu 5].
+    * Đối với xe kinh doanh vận tải (taxi, Grab, Be, xe giao hàng, xe cho thuê...): Thời hạn là 10 năm hoặc 200.000 km tùy điều kiện nào đến trước [Tài liệu 1].
+* **Ắc quy 12V:** Bảo hành 1 năm kể từ Ngày Kích Hoạt Bảo Hành, không giới hạn quãng đường [Tài liệu 4] [Tài liệu 5].
+* **Gỉ sét:** Bảo hành 7 năm không giới hạn quãng đường, áp dụng cho tấm kim loại bị xuyên thủng do lỗi nguyên vật liệu hoặc lỗi lắp ráp [Tài liệu 4] [Tài liệu 5].
+* **Sơn ngoại thất:** Bảo hành 7 năm không giới hạn quãng đường [Tài liệu 4] [Tài liệu 5].
+* **Lốp:** Bảo hành theo chính sách riêng của nhà sản xuất lốp đối với lỗi nguyên vật liệu hoặc lỗi sản xuất/lưu kho [Tài liệu 4] [Tài liệu 5].
+
+**3. Điều kiện và lưu ý quan trọng:**
+* **Phụ tùng thay thế:** Có thời hạn bảo hành bằng thời hạn bảo hành còn lại của xe hoặc theo thời hạn riêng của phụ tùng đó [Tài liệu 1] [Tài liệu 4] [Tài liệu 5]. Riêng phụ tùng xe điện (không gồm ắc quy 12V và pin cao áp) được bảo hành 2 năm hoặc 40.000 km kể từ ngày mua, với điều kiện phải được lắp tại Xưởng Dịch vụ hoặc Nhà phân phối ủy quyền của VinFast [Tài liệu 3].
+* **Thừa kế bảo hành:** Quyền lợi bảo hành vẫn được đảm bảo cho chủ sở hữu tiếp theo trong thời hạn còn lại, nhưng cần thông báo thay đổi chủ xe với XDV/ĐLPP của VinFast để đăng ký lại [Tài liệu 1] [Tài liệu 4] [Tài liệu 5].
+* **Trách nhiệm khách hàng:** Đối với bảo hành ăn mòn, khách hàng cần tuân thủ các hướng dẫn bảo dưỡng (như rửa gầm xe nếu đi vùng nhiễm mặn, giữ thông thoáng lỗ thoát nước, xử lý vết xước sơn ngay lập tức...). Việc không tuân thủ có thể dẫn đến việc bị từ chối bảo hành các vấn đề liên quan đến ăn mòn [Tài liệu 4] [Tài liệu 5].",,,,
+W05,Xe ngập nước có được bảo hành không?,Không. Xe bị ngập nước vượt quá mức an toàn khuyến cáo (nước lọt vào khoang pin) thuộc trường hợp loại trừ bảo hành. Chỉ hư hỏng do lỗi sản xuất mới được bảo hành.,"Xe điện VinFast bị ngập nước sẽ KHÔNG được hưởng chính sách bảo hành đối với các hư hỏng phát sinh từ tình trạng này. Cụ thể:
+
+*   Các hư hỏng do sử dụng xe trong điều kiện ngập nước nằm ngoài phạm vi bảo hành [Tài liệu 1] [Tài liệu 2] [Tài liệu 3] [Tài liệu 4] [Tài liệu 5].
+*   Hư hỏng do lũ lụt và các thiên tai khác cũng không được bảo hành [Tài liệu 2] [Tài liệu 3] [Tài liệu 4] [Tài liệu 5].
+
+Nếu xe của bạn gặp sự cố liên quan đến ngập nước, bạn nên liên hệ với xưởng dịch vụ hoặc đặt lịch để kỹ thuật viên kiểm tra và tư vấn phương án sửa chữa trực tiếp.",,,,
+W06,Tự sửa xe VF8 ở garage ngoài có mất bảo hành không?,Có nguy cơ mất bảo hành nếu việc sửa chữa bên ngoài gây hư hỏng cho xe. Bảo hành chỉ được thực hiện tại xưởng dịch vụ và đại lý ủy quyền chính hãng VinFast.,"Việc tự sửa chữa xe VF8 tại garage ngoài có thể dẫn đến việc mất quyền lợi bảo hành đối với các hư hỏng liên quan. Cụ thể, VinFast sẽ không áp dụng bảo hành cho các trường hợp sau:
+
+*   Hư hỏng do nguyên nhân của việc sửa chữa, điều chỉnh, đấu nối phụ kiện không chính hãng, hoặc hoán cải trái phép so với thiết kế ban đầu như thay đổi công suất hoặc cấu trúc [Tài liệu 1], [Tài liệu 2].
+*   Hư hỏng phát sinh do việc sử dụng phụ tùng không chính hãng, các loại dầu mỡ bôi trơn, các loại dung dịch, chất phụ gia có thông số kỹ thuật khác với các thông số kỹ thuật được ghi trên sách Hướng dẫn sử dụng [Tài liệu 1], [Tài liệu 2].
+*   Các trường hợp làm mất trạng thái nguyên bản của các phụ tùng [Tài liệu 2].
+
+Để đảm bảo quyền lợi bảo hành tối đa, bạn nên thực hiện các dịch vụ tại các xưởng dịch vụ chính hãng của VinFast.",,,,
+W07,Bảo hành pin SOH giảm dưới bao nhiêu % thì được thay?,"Nếu dung lượng pin tối đa (SOH) giảm xuống dưới 70% trong thời hạn bảo hành thông thường, khách hàng được sửa chữa hoặc thay thế mô-đun pin miễn phí.","Theo chính sách bảo hành của VinFast, đối với các dòng xe được áp dụng chế độ bảo hành sửa chữa hoặc thay thế pin, VinFast cam kết đảm bảo dung lượng pin trên **70%** [Tài liệu 1] [Tài liệu 2] [Tài liệu 3]. 
+
+Cụ thể, đối với bất kỳ sửa chữa hoặc thay thế nào được thực hiện trong phạm vi bảo hành của pin, VinFast sẽ đảm bảo dung lượng pin không thấp hơn 70% và không thấp hơn dung lượng của pin đã được đổi [Tài liệu 1] [Tài liệu 2] [Tài liệu 3]. Phương pháp đo lường để xác định dung lượng pin và phương án bảo hành sẽ do VinFast quyết định [Tài liệu 1] [Tài liệu 2] [Tài liệu 3].",,,,
+W08,Tai nạn hoặc va chạm có thuộc trường hợp loại trừ bảo hành VinFast không?,Hư hỏng do tai nạn hoặc va chạm thuộc nhóm hư hỏng do nguyên nhân bên ngoài và không thuộc phạm vi bảo hành.,"Có, các trường hợp tai nạn hoặc va chạm thuộc phạm vi loại trừ bảo hành của VinFast. Cụ thể:
+
+* **Đối với xe:** Hư hỏng do tai nạn, sử dụng xe trong điều kiện ngập nước, hoặc do các ngoại vật như đất, cát, sỏi, đá, vật cứng sắc nhọn tác động vào xe trong quá trình vận hành đều không thuộc phạm vi bảo hành [Tài liệu 1] [Tài liệu 3] [Tài liệu 4] [Tài liệu 5].
+* **Đối với lốp xe:** Các hư hỏng do lốp xe bị phá hoại, tai nạn hoặc va chạm cũng nằm trong danh mục loại trừ bảo hành [Tài liệu 2].",,,,
+W09,Thời hạn bảo hành xe VF MPV 7 là bao nhiêu?,Xe VF MPV 7 được bảo hành 7 năm hoặc 160.000 km tùy điều kiện nào đến trước.,"Thời hạn bảo hành chính thức của dòng xe VinFast VF MPV 7 là 7 năm hoặc 160.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 1].",,,,
+W10,Bảo hành ắc quy 12V phụ trợ xe VinFast bao lâu?,Ắc quy 12V phụ trợ được bảo hành 1 năm hoặc 20.000 km tùy điều kiện nào đến trước.,"Ắc quy 12V phụ trợ của xe VinFast có thời hạn bảo hành là 1 năm kể từ ngày mua, không giới hạn quãng đường sử dụng [Tài liệu 1], [Tài liệu 2], [Tài liệu 3], [Tài liệu 4], [Tài liệu 5].",,,,
+W11,Xe VF7 dùng cho mục đích thương mại được bảo hành bao lâu?,VF7 sử dụng cho mục đích dịch vụ thương mại được bảo hành 3 năm hoặc 100.000 km.,"Đối với dòng xe VinFast VF 7, khi sử dụng cho mục đích dịch vụ thương mại (bao gồm nhưng không giới hạn: xe taxi, xe sử dụng cho dịch vụ chở khách như Grab, Be hoặc tương tự; xe cho thuê; xe đưa đón; xe giao hàng), thời hạn bảo hành được áp dụng như sau:
+
+*   **Thời hạn bảo hành chung:** 3 năm kể từ Ngày Kích Hoạt Bảo Hành hoặc 100.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 1], [Tài liệu 2], [Tài liệu 3].
+*   **Bảo hành Pin cao áp:** 3 năm kể từ Ngày Kích Hoạt Bảo Hành hoặc 100.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 1], [Tài liệu 2].
+*   **Bảo hành Gỉ sét:** 3 năm kể từ Ngày Kích Hoạt Bảo Hành hoặc 100.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 1].
+
+**Lưu ý quan trọng:** Chính sách bảo hành dành cho xe sử dụng cho mục đích dịch vụ thương mại sẽ tiếp tục được duy trì và áp dụng ngay cả khi xe được chuyển nhượng cho chủ sở hữu mới hoặc khi xe không còn được sử dụng cho mục đích dịch vụ thương mại [Tài liệu 1], [Tài liệu 3].",,,,
+W12,Xe VinFast từng dùng thương mại sau khi chuyển chủ áp dụng bảo hành nào?,Xe từng được sử dụng thương mại tiếp tục áp dụng thời hạn bảo hành thương mại sau khi chuyển nhượng.,"Khi một chiếc xe VinFast đã từng được sử dụng cho mục đích thương mại (như taxi, Grab, Be, cho thuê, xe đưa đón, giao hàng...) và sau đó chuyển sang mục đích sử dụng thông thường (cá nhân), chính sách bảo hành thương mại vẫn sẽ tiếp tục được duy trì và áp dụng cho chủ sở hữu mới [Tài liệu 1] [Tài liệu 2] [Tài liệu 3] [Tài liệu 4]. 
+
+Cụ thể về thời hạn bảo hành cho các dòng xe như sau:
+
+* Đối với các dòng xe VF 3, VF 7, VF 8, VF 9 và VF 8 The All New: Thời hạn bảo hành thương mại là 3 năm hoặc 100.000 km, tùy điều kiện nào đến trước [Tài liệu 1]. 
+* Riêng đối với dòng VF 8, thời hạn bảo hành xe mới (bao gồm hệ truyền động) cho mục đích thương mại là 5 năm hoặc 100.000 km, tùy điều kiện nào đến trước [Tài liệu 4].
+* Đối với Pin: Nếu xe đã từng được sử dụng cho mục đích thương mại, chính sách bảo hành pin dành cho xe thương mại sẽ tiếp tục được duy trì và áp dụng ngay cả khi đã chuyển nhượng cho chủ sở hữu mới [Tài liệu 4].",,,,
+W13,Sạc pin bằng thiết bị không chính hãng có mất bảo hành không?,Có. Sử dụng thiết bị sạc không chính hãng dẫn đến chập cháy là trường hợp loại trừ bảo hành theo chính sách VinFast.,"Việc sử dụng thiết bị sạc không chính hãng có thể ảnh hưởng trực tiếp đến quyền lợi bảo hành của bạn. Cụ thể:
+
+* **Phạm vi bảo hành:** Các hư hỏng phát sinh do việc sử dụng pin và bộ sạc không chính hãng, không đúng theo tiêu chuẩn VinFast hoặc không đúng theo hướng dẫn của nhà sản xuất sẽ không thuộc phạm vi bảo hành [Tài liệu 1] [Tài liệu 2] [Tài liệu 3].
+* **Trách nhiệm của chủ xe:** Để đảm bảo quyền lợi bảo hành, khách hàng được khuyến cáo chỉ nên sử dụng pin và bộ sạc chính hãng được sản xuất bởi VinFast hoặc nhà sản xuất do VinFast chỉ định [Tài liệu 2] [Tài liệu 3].
+* **Miễn trừ trách nhiệm:** VinFast được miễn trừ trách nhiệm đối với mọi tổn thất và thiệt hại phát sinh từ việc khách hàng sử dụng sạc không chính hãng hoặc sử dụng không đúng hướng dẫn của nhà sản xuất [Tài liệu 1].
+
+Để đảm bảo an toàn và duy trì quyền lợi bảo hành tốt nhất, bạn nên sử dụng các thiết bị sạc chính hãng và tuân thủ nghiêm ngặt hướng dẫn trong sách Hướng dẫn sử dụng xe.",,,,
+W14,Xe VF e34 bảo hành bao nhiêu năm hoặc bao nhiêu km?,Xe VF e34 được bảo hành 7 năm hoặc 160.000 km tùy điều kiện nào đến trước.,"Đối với dòng xe VinFast VF e34, chính sách bảo hành được quy định cụ thể cho từng hạng mục như sau:
+
+* **Pin cao áp:** Thời hạn bảo hành là 8 năm hoặc 160.000 km, tùy theo điều kiện nào đến trước [Tài liệu 2]. (Lưu ý: Có sự khác biệt về thông tin giữa các tài liệu, tài liệu [Tài liệu 3] nêu mức 10 năm hoặc 200.000 km, tuy nhiên theo chính sách bảo hành pin cao áp chuẩn hóa tại [Tài liệu 2], thời hạn cho VF e34 là 8 năm hoặc 160.000 km).
+* **Ắc quy 12V:** Có thời hạn bảo hành 1 năm không giới hạn quãng đường sử dụng kể từ ngày mua [Tài liệu 1].
+* **Phụ kiện chính hãng:** 
+    * Các phụ kiện như móc kéo xe (bao gồm điện), bậc lên xuống xe và giá đỡ hành lý: Bảo hành 5 năm hoặc 100.000 km, tùy điều kiện nào đến trước kể từ ngày mua [Tài liệu 1].
+    * Các phụ kiện không yêu cầu lắp đặt cố định (thảm sàn, rèm trần, xích lốp...): Bảo hành 2 năm hoặc 40.000 km, tùy điều kiện nào đến trước kể từ ngày mua [Tài liệu 1].
+    * Bộ sạc di động và bộ dụng cụ sửa chữa lốp: Bảo hành 2 năm hoặc 40.000 km, tùy điều kiện nào đến trước kể từ ngày mua [Tài liệu 1].",,,,
+W15,Thời hạn bảo hành xe mới VF8 trong điều kiện sử dụng tiêu chuẩn là bao lâu?,"Xe mới VF8, bao gồm hệ truyền động, được bảo hành 10 năm hoặc 200.000 km trong điều kiện sử dụng tiêu chuẩn.","Trong điều kiện sử dụng tiêu chuẩn, thời hạn bảo hành cho xe VinFast VF 8 được quy định như sau:
+
+*   **Bảo hành xe mới (bao gồm hệ truyền động):** 10 năm hoặc 200.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 1] [Tài liệu 2] [Tài liệu 3].
+*   **Bảo hành Pin cao áp (mua lần đầu theo xe mới):** 10 năm không giới hạn quãng đường sử dụng [Tài liệu 1]. Tuy nhiên, có tài liệu khác nêu rõ thời hạn bảo hành Pin cao áp trong điều kiện sử dụng tiêu chuẩn là 10 năm/200.000 km [Tài liệu 2].",,,,
+W16,Xe mới VF6 được bảo hành bao lâu?,"Xe mới VF6, bao gồm hệ truyền động, được bảo hành 7 năm hoặc 160.000 km, tùy điều kiện nào đến trước.","Thời hạn bảo hành cho xe VinFast VF6 được quy định cụ thể như sau:
+
+* **Bảo hành xe mới (bao gồm hệ truyền động):** 7 năm hoặc 160.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 1] [Tài liệu 2] [Tài liệu 3].
+* **Bảo hành Pin (mua lần đầu theo xe mới):** 8 năm hoặc 160.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 1] [Tài liệu 2].
+* **Bảo hành ắc quy 12V:** 1 năm kể từ Ngày Kích Hoạt Bảo Hành (không giới hạn quãng đường sử dụng) [Tài liệu 1].
+* **Bảo hành gỉ sét:** 7 năm kể từ Ngày Kích Hoạt Bảo Hành (không giới hạn quãng đường sử dụng) [Tài liệu 1].
+* **Bảo hành sơn ngoại thất:** 7 năm kể từ Ngày Kích Hoạt Bảo Hành (không giới hạn số km) [Tài liệu 1].
+* **Bảo hành lốp:** Theo chính sách riêng của nhà sản xuất lốp xe đối với các lỗi do nguyên vật liệu hoặc lỗi sản xuất, lưu kho [Tài liệu 1].",,,,
+W17,Khách hàng cần liên hệ đâu khi xe VinFast có hư hỏng cần kiểm tra bảo hành?,Khách hàng cần liên hệ xưởng dịch vụ VinFast hoặc hotline chăm sóc khách hàng để được kiểm tra và hướng dẫn về bảo hành.,"Khi xe VinFast gặp hư hỏng cần kiểm tra bảo hành, khách hàng cần thực hiện các liên hệ sau:
+
+* **Đưa xe đến hệ thống XDV/ĐLPP của VinFast:** Việc sửa chữa bảo hành được thực hiện tại hệ thống Xưởng dịch vụ (XDV) hoặc Đại lý phân phối (ĐLPP) của VinFast [Tài liệu 1] [Tài liệu 2] [Tài liệu 3] [Tài liệu 4].
+* **Liên hệ qua Hotline hoặc XDV/ĐLPP:** Trong trường hợp phát hiện bất kỳ vấn đề gì khi giao - nhận xe, khách hàng vui lòng thông báo cho VinFast trong tuần đầu tiên kể từ khi nhận xe bằng cách liên hệ trực tiếp với XDV/ĐLPP VinFast hoặc gọi tới số Hotline của VinFast [Tài liệu 1] [Tài liệu 2] [Tài liệu 3] [Tài liệu 4].
+* **Tra cứu thông tin:** Khách hàng có thể tìm kiếm thông tin và địa chỉ của các XDV/ĐLPP trên website chính thức: https://vinfastauto.com [Tài liệu 1] [Tài liệu 2] [Tài liệu 3] [Tài liệu 4].",,,,
+W18,Bảo hành thương mại xe VF8 khác bảo hành thông thường thế nào?,"Xe VF8 dùng cho mục đích thương mại (taxi, Grab, vận tải) áp dụng điều kiện bảo hành thương mại với thời hạn và số km bảo hành ngắn hơn so với xe cá nhân.","Đối với dòng xe VinFast VF 8, sự khác biệt giữa bảo hành thông thường và bảo hành thương mại được quy định cụ thể như sau:
+
+*   **Bảo hành thông thường (Sử dụng tiêu chuẩn):**
+    *   **Thời hạn bảo hành xe:** 10 năm hoặc 200.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 2] [Tài liệu 4].
+    *   **Thời hạn bảo hành Pin cao áp (mua kèm xe mới):** 10 năm không giới hạn quãng đường sử dụng [Tài liệu 2] hoặc 10 năm/200.000 km tùy điều kiện nào đến trước [Tài liệu 4].
+
+*   **Bảo hành thương mại (Sử dụng cho mục đích kinh doanh vận tải như taxi, Grab, Be, cho thuê, xe đưa đón, giao hàng...):**
+    *   **Thời hạn bảo hành:** 3 năm hoặc 100.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 3] [Tài liệu 4].
+    *   **Lưu ý về chuyển nhượng:** Nếu xe đang sử dụng cho mục đích thông thường được bán để sử dụng cho mục đích kinh doanh vận tải, hoặc xe đã được sử dụng cho mục đích kinh doanh vận tải được chuyển nhượng, thì phạm vi bảo hành còn lại sẽ áp dụng theo chính sách bảo hành dành cho khách hàng kinh doanh vận tải [Tài liệu 1] [Tài liệu 2].",,,,
+W19,Xe mới VF5 và hệ truyền động được bảo hành bao lâu?,"Xe mới VF5, bao gồm hệ truyền động, được bảo hành 7 năm hoặc 160.000 km, tùy điều kiện nào đến trước.","Đối với dòng xe VinFast VF 5, thời hạn bảo hành xe mới (bao gồm cả hệ truyền động) là 7 năm hoặc 160.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 1], [Tài liệu 2].",,,,
+W20,Xe VF3 dùng 7 năm vẫn còn trong bảo hành không?,"Có thể. Xe VF3 được bảo hành 7 năm hoặc 160.000 km. Nếu xe đạt 7 năm nhưng chưa vượt 160.000 km, bảo hành vẫn còn hiệu lực, tùy điều kiện nào đến trước.","Việc xe VF3 có còn trong thời hạn bảo hành sau 7 năm hay không phụ thuộc vào mục đích sử dụng xe và các điều kiện đi kèm. Cụ thể như sau:
+
+* **Trường hợp sử dụng tiêu chuẩn:** Xe VF3 có thời hạn bảo hành chung là 7 năm hoặc 160.000 km, tùy điều kiện nào đến trước [Tài liệu 1] [Tài liệu 2]. Do đó, nếu xe đã sử dụng được 7 năm, thời hạn bảo hành xe mới có thể đã hết (nếu chưa đạt mốc 160.000 km) hoặc đã hết trước đó (nếu đã đạt mốc 160.000 km). Tuy nhiên, riêng đối với **Pin cao áp** (mua lần đầu theo xe mới), thời hạn bảo hành là 8 năm hoặc 160.000 km, tùy điều kiện nào đến trước [Tài liệu 1] [Tài liệu 2]. Như vậy, sau 7 năm, pin vẫn có thể còn trong thời hạn bảo hành nếu chưa vượt quá 160.000 km.
+* **Trường hợp sử dụng cho mục đích dịch vụ thương mại** (như taxi, Grab, Be, xe cho thuê, xe giao hàng...): Thời hạn bảo hành cho cả xe và pin đều ngắn hơn, chỉ là 3 năm hoặc 100.000 km, tùy điều kiện nào đến trước [Tài liệu 1] [Tài liệu 2] [Tài liệu 3]. Trong trường hợp này, sau 7 năm sử dụng, xe chắc chắn đã hết thời hạn bảo hành.
+* **Bảo hành gỉ sét:** Có thời hạn là 7 năm kể từ Ngày Kích Hoạt Bảo Hành (không giới hạn quãng đường sử dụng) [Tài liệu 1].",,,,
+B01,VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?,Tránh để xe tiếp xúc với nhiệt độ môi trường trên 55°C hoặc dưới -20°C quá 24 giờ tại một địa điểm vì có thể làm giảm vĩnh viễn hiệu suất pin.,"VinFast khuyến cáo người dùng tránh để xe tiếp xúc với nhiệt độ môi trường trên 55°C hoặc dưới -20°C quá 24 giờ tại một địa điểm [Tài liệu 1], [Tài liệu 2]. Việc không tuân thủ khuyến nghị về giới hạn nhiệt độ này có thể làm giảm vĩnh viễn hiệu suất vận hành của pin [Tài liệu 1], [Tài liệu 2].",,,,
+B02,Phanh tái sinh trên VF8 hỗ trợ pin như thế nào?,"VF 8 có hệ thống phanh tái sinh ba cấp độ, chuyển đổi một phần động năng khi phanh thành điện năng để bổ sung cho pin và hỗ trợ tăng phạm vi hoạt động.","Hệ thống phanh tái sinh trên VinFast VF 8 hỗ trợ pin cao áp thông qua cơ chế sau:
+
+* **Chuyển đổi năng lượng:** Hệ thống này có khả năng chuyển đổi động năng (vốn thường bị giải phóng dưới dạng nhiệt trong quá trình phanh thông thường) thành năng lượng điện [Tài liệu 2].
+* **Thu hồi và bổ sung năng lượng:** VF 8 được trang bị hệ thống phanh tái sinh với 3 cấp độ, giúp thu hồi một phần động năng khi phanh để bổ sung điện năng cho pin [Tài liệu 1], [Tài liệu 2].
+* **Lợi ích:** Việc sử dụng năng lượng được thu hồi để bổ sung cho pin sẽ giúp tăng phạm vi hoạt động của xe [Tài liệu 2].",,,,
+B03,Xe VF6 hết pin giữa đường phải làm gì?,Liên hệ dịch vụ cứu hộ pin VinFast qua số 1900 23 23 89. Dịch vụ hoạt động 24/7; chi phí công bố 50.000 VNĐ/lần và xe được sạc tại chỗ trong 15 phút.,"Hiện tài liệu chính hãng chưa có thông tin chi tiết về quy trình xử lý cụ thể khi xe VinFast VF6 hết pin giữa đường. 
+
+Để đảm bảo an toàn và được hỗ trợ kịp thời, Quý khách vui lòng liên hệ ngay với xưởng dịch vụ VinFast hoặc đặt lịch kiểm tra trực tiếp với kỹ thuật viên để được hướng dẫn phương án xử lý phù hợp nhất.",,,,
+B04,VinFast khuyến cáo gì về việc lạm dụng sạc siêu nhanh trên VF e34?,Không nên lạm dụng chế độ sạc siêu nhanh trên VF e34 để bảo vệ tuổi thọ pin lâu dài.,"Đối với dòng xe VinFast VF e34, VinFast khuyến cáo người dùng không lạm dụng chế độ sạc siêu nhanh (DC Fast Charging) nhằm mục đích bảo vệ tuổi thọ pin lâu dài [Tài liệu 1]. Ngoài ra, khách hàng cần lưu ý rằng tuổi thọ của pin phụ thuộc nhiều vào cách sạc, dòng sạc, số lần phóng điện và nhiệt độ môi trường trong quá trình sử dụng [Tài liệu 2].",,,,
+B05,VinFast khuyến cáo thế nào về việc để ô tô điện ở nơi ngập lụt?,Không để xe ở nơi có thể ngập lụt vì ngập lụt có thể làm hỏng pin hoặc xe.,"VinFast khuyến cáo người dùng không để xe ô tô điện tại những nơi có thể xảy ra ngập lụt, vì tình trạng ngập lụt có thể gây hư hỏng cho pin hoặc chính chiếc xe [Tài liệu 1], [Tài liệu 2], [Tài liệu 3].",,,,
+B06,"Sau tai nạn có khả năng ảnh hưởng đến pin, chủ xe VinFast cần làm gì?",Chủ xe cần yêu cầu xưởng dịch vụ VinFast kiểm tra tổng quát hệ thống pin.,"Trong trường hợp xe gặp tai nạn có khả năng ảnh hưởng đến hệ thống pin, chủ xe VinFast cần thực hiện các bước sau:
+
+*   **Yêu cầu kiểm tra:** Chủ xe cần yêu cầu xưởng dịch vụ của VinFast kiểm tra tổng quát hệ thống pin [Tài liệu 1] [Tài liệu 2].
+*   **Thông báo sự cố:** Thông báo ngay cho VinFast khi phát hiện các lỗi, hỏng hóc hoặc sự cố liên quan đến pin [Tài liệu 2].
+*   **Trách nhiệm bảo quản:** Chủ xe có trách nhiệm tự bảo quản pin cho đến khi bàn giao lại cho VinFast xử lý [Tài liệu 1] [Tài liệu 2].",,,,
+B07,Bảo quản xe VF5 không dùng lâu ngày cần lưu ý gì về pin?,"Khi không dùng xe VF5 lâu ngày: duy trì mức sạc 40-60%, không để pin xuống dưới 20%, bảo quản nơi thoáng mát tránh nhiệt độ cực đoan, và sạc bổ sung mỗi 1-2 tháng.","Khi không sử dụng xe VinFast VF5 trong thời gian dài, để bảo quản pin và tránh các hư hỏng không đáng có, bạn cần lưu ý các vấn đề quan trọng sau:
+
+* **Duy trì mức dung lượng pin:** Không được để dung lượng pin xuống thấp hơn 5% (khi chỉ báo trên màn hình chuyển sang màu đỏ). Nếu không sạc kịp thời khi pin ở mức này, có thể gây ra hư hỏng pin vĩnh viễn [Tài liệu 1] [Tài liệu 3].
+* **Kiểm soát nhiệt độ môi trường:** Tránh để xe tiếp xúc với nhiệt độ môi trường trên 55°C hoặc dưới -20°C quá 24 giờ tại một địa điểm. Việc không tuân thủ khuyến nghị này có thể làm giảm vĩnh viễn hiệu suất vận hành của pin [Tài liệu 1] [Tài liệu 2].
+* **Tránh môi trường ngập lụt:** Không để xe tại những nơi có nguy cơ ngập lụt vì nước ngập có thể làm hỏng pin hoặc xe [Tài liệu 1] [Tài liệu 2].
+* **Tuân thủ hướng dẫn:** Luôn tuân thủ các hướng dẫn sử dụng xe và pin của nhà sản xuất để đảm bảo tuổi thọ pin [Tài liệu 1].
+
+Hiện tài liệu chính hãng chưa có thông tin chi tiết về mức dung lượng pin lý tưởng nhất để lưu trữ xe trong thời gian dài (ví dụ: mức 50% hay 70%). Bạn nên liên hệ xưởng dịch vụ VinFast hoặc tham khảo kỹ Sách Hướng dẫn sử dụng để có chỉ dẫn cụ thể nhất cho dòng xe VF5.",,,,
+B08,Nhiệt độ ảnh hưởng thế nào đến phạm vi di chuyển xe VF7?,Nhiệt độ thấp (<10°C) có thể giảm phạm vi di chuyển thực tế của xe VF7 do pin lithium-ion hoạt động kém hiệu quả hơn. BMS tự động điều chỉnh để bảo vệ pin.,"Nhiệt độ môi trường có ảnh hưởng trực tiếp đến phạm vi di chuyển và hiệu suất của xe VF7 thông qua các yếu tố sau:
+
+* **Ảnh hưởng đến quãng đường di chuyển thực tế:** Quãng đường di chuyển thực tế của xe VF7 có thể giảm so với kết quả kiểm định (498 km cho bản Eco hoặc 504 km cho bản Plus theo tiêu chuẩn NEDC) tùy thuộc vào các yếu tố, trong đó có nhiệt độ [Tài liệu 1].
+* **Ảnh hưởng đến tuổi thọ và hiệu suất pin:** Tuổi thọ của pin phụ thuộc nhiều vào nhiệt độ môi trường trong quá trình sử dụng [Tài liệu 2]. Ngoài ra, để bảo vệ hiệu suất vận hành của pin, người dùng cần tránh để xe tiếp xúc với nhiệt độ môi trường trên 55°C hoặc dưới -20°C quá 24 giờ tại một địa điểm; việc không tuân thủ có thể làm giảm vĩnh viễn hiệu suất vận hành của pin [Tài liệu 3].",,,,
+B09,VF3 sạc nhanh DC tối đa bao nhiêu và sạc từ 10% đến 70% mất bao lâu?,VF 3 có công suất sạc nhanh DC tối đa 24 kW và thời gian sạc nhanh nhất từ 10% đến 70% khoảng 36 phút.,"Đối với dòng xe VinFast VF3, thông tin về sạc nhanh như sau:
+* Công suất sạc nhanh DC tối đa là **24 kW** [Tài liệu 1].
+* Thời gian sạc nhanh nhất từ 10% đến 70% dung lượng pin là khoảng **36 phút** [Tài liệu 1], [Tài liệu 2].",,,,
+B10,Giá sạc tại trạm sạc VinFast là bao nhiêu?,Giá sạc tại trạm sạc VinFast được tính theo kWh và có thể thay đổi theo chính sách từng thời điểm. Khách hàng có thể xem giá hiện tại trên app VinFast.,"Thông tin về giá sạc tại trạm sạc công cộng của VinFast như sau:
+
+* **Đơn giá sạc:** 3.858 VNĐ/kWh, áp dụng từ ngày 19/03/2024 cho đến khi có thông báo mới (đã bao gồm VAT) [Tài liệu 3]. Phí sạc này được tính dựa trên lượng điện thực tế mà khách hàng sử dụng [Tài liệu 3].
+* **Phí sử dụng dịch vụ trạm sạc bổ sung:** Áp dụng từ ngày 01/11/2025 với các mức sau [Tài liệu 1] [Tài liệu 2]:
+    * Miễn phí từ phút thứ 1 đến phút thứ 10.
+    * 1.000 đồng/phút từ phút thứ 11 đến phút thứ 60.
+    * 2.000 đồng/phút từ phút thứ 61 đến phút thứ 120.
+    * 4.000 đồng/phút từ phút thứ 121 trở đi.
+
+**Lưu ý quan trọng:**
+* Mức phí sử dụng dịch vụ trạm sạc bổ sung tối đa không quá 1 triệu đồng/lần [Tài liệu 1] [Tài liệu 2].
+* Phí sử dụng dịch vụ trạm sạc bổ sung không áp dụng cho các dòng xe máy điện và các trụ sạc thường ô tô loại AC11kW [Tài liệu 1] [Tài liệu 2].
+* Khách hàng thanh toán phí sạc pin và phí sử dụng dịch vụ trạm sạc bổ sung của tháng trước theo thời hạn VinFast công bố [Tài liệu 3].",,,,
+B11,Cứu hộ pin xe điện VinFast hoạt động như thế nào?,Dịch vụ cứu hộ pin VinFast hoạt động 24/7. Chi phí công bố 50.000 VNĐ/lần; kỹ thuật viên cung cấp giải pháp sạc tại chỗ trong 15 phút để xe có thể di chuyển tới trạm sạc gần nhất.,"Quy trình cứu hộ pin cao áp cho xe điện VinFast được thực hiện qua các bước sau:
+
+* **Bước 1: Liên hệ với đội Cứu hộ pin VinFast**: Khách hàng liên hệ qua Tổng đài Chăm sóc Khách hàng VinFast 1900 23 23 89 hoặc hệ thống NPP/Xưởng dịch vụ của VinFast. Khi liên hệ, người dùng cần cung cấp đầy đủ thông tin về dòng xe, vị trí và tình trạng pin còn lại của xe [Tài liệu 2], [Tài liệu 4].
+* **Bước 2: Kỹ thuật viên kiểm tra và tư vấn**: Kỹ thuật viên sẽ có mặt tại hiện trường để kiểm tra tình trạng năng lượng cụ thể của xe và tư vấn giải pháp phù hợp. Khách hàng sẽ được giải thích rõ về công việc và các chi phí phát sinh (nếu có). Sau khi khách hàng đồng ý, kỹ thuật viên sẽ thực hiện cứu hộ pin [Tài liệu 2]. Mục tiêu là cung cấp giải pháp sạc tại chỗ để xe có thể di chuyển tới trạm sạc gần nhất [Tài liệu 3].
+* **Bước 3: Thanh toán và hướng dẫn**: Khách hàng thực hiện thanh toán chi phí cứu hộ bằng tiền mặt hoặc chuyển khoản (có thể nhận hóa đơn nếu có nhu cầu) và nhận hướng dẫn di chuyển tới trạm sạc gần nhất [Tài liệu 2].
+* **Bước 4: Chăm sóc sau dịch vụ**: Bộ phận Chăm sóc Khách hàng VinFast sẽ liên hệ lại để kiểm tra chất lượng cứu hộ và tiếp tục hỗ trợ nếu khách hàng có nhu cầu [Tài liệu 2].
+
+**Điều kiện để được hỗ trợ cứu hộ pin:**
+* Xe đang hoạt động trên đường cao tốc, quốc lộ trong phạm vi bán kính 100km tính từ cửa ngõ 3 thành phố Hà Nội, Đà Nẵng, Hồ Chí Minh [Tài liệu 1].
+* Tình trạng pin còn dưới 5%, xe cách vị trí trạm sạc gần nhất trên 10km và không thể kết nối với nguồn điện 220V để sử dụng sạc cầm tay (Mobile charger) [Tài liệu 1].
+* Địa điểm cứu hộ phải đảm bảo xe cứu hộ có thể tiếp cận, vận hành và đảm bảo an toàn lao động, an toàn giao thông [Tài liệu 1].
+* Thời gian hỗ trợ: Bất cứ thời điểm nào trong ngày và tất cả các ngày trong tuần (bao gồm cả ngày lễ, Tết) [Tài liệu 1].
+* Lưu ý: Dịch vụ có thể bị hạn chế trong các trường hợp bất khả kháng như thiên tai, dịch bệnh [Tài liệu 1].",,,,
+B12,VinFast quy định nguồn sạc và việc tự sửa chữa pin cao áp thế nào?,"Chỉ sử dụng nguồn sạc theo khuyến cáo của nhà sản xuất; không tự ý tháo rời, sửa chữa hoặc thay thế bộ phận, dây cáp hay đầu nối điện áp cao.","Về các quy định liên quan đến nguồn sạc và việc tự sửa chữa pin cao áp, VinFast có các quy định cụ thể như sau:
+
+* **Về nguồn sạc:** Quý khách chỉ được sử dụng nguồn sạc theo khuyến cáo của nhà sản xuất đã được công bố trên Website chính thức https://vinfastauto.com [Tài liệu 1] [Tài liệu 2] [Tài liệu 3].
+* **Về việc tự sửa chữa pin cao áp:** VinFast nghiêm cấm các hành vi tự ý tháo rời, sửa chữa hoặc thay thế các bộ phận, dây cáp hoặc đầu nối điện áp cao [Tài liệu 1] [Tài liệu 2] [Tài liệu 3].",,,,
+B13,Xe VF3 đang sạc thì bị mưa có sao không?,"Các trạm sạc và cổng sạc xe VF3 được thiết kế chịu mưa theo tiêu chuẩn IP. Tuy nhiên không nên sạc khi có mưa lớn hoặc sấm sét gần, và tránh sạc nơi có khả năng ngập nước.","Khi đang sạc xe VinFast VF3, bạn **không nên** thực hiện việc sạc trong điều kiện thời tiết xấu như trời mưa to hoặc có sấm sét [Tài liệu 2]. Việc tuân thủ các lưu ý này nhằm đảm bảo quá trình sạc pin diễn ra an toàn và giúp kéo dài tuổi thọ pin [Tài liệu 2].
+
+Ngoài ra, bạn cần lưu ý các vấn đề sau để đảm bảo an toàn và quyền lợi bảo hành:
+* **Về bảo hành:** Các hư hỏng do các yếu tố nằm ngoài kiểm soát của nhà sản xuất như bão, sét, mưa đá, lũ lụt hoặc các thiệt hại do thiên tai khác đều không thuộc phạm vi bảo hành [Tài liệu 1].
+* **Về sử dụng:** Chỉ nên sử dụng nguồn sạc theo khuyến cáo của nhà sản xuất [Tài liệu 3].",,,,
+B14,Công suất sạc tối đa của xe VF8 là bao nhiêu kW?,"VF 8 hỗ trợ sạc AC tối đa 6,6 kW với điện một pha hoặc 11 kW với điện ba pha và sạc nhanh DC tối đa 149 kW. Thời gian sạc nhanh từ 10% đến 70% khoảng 31 phút.","Công suất sạc tối đa của xe VinFast VF 8 phụ thuộc vào hình thức sạc như sau:
+
+*   **Sạc nhanh DC:** Công suất tối đa là 149 kW [Tài liệu 1] [Tài liệu 2].
+*   **Sạc chậm AC:**
+    *   Sạc điện 1 pha: Công suất tối đa là 6,6 kW [Tài liệu 1] [Tài liệu 2].
+    *   Sạc điện 3 pha: Công suất tối đa là 11 kW [Tài liệu 1] [Tài liệu 2].",,,,
+B15,Nên mua đứt pin hay thuê pin xe VinFast có lợi hơn?,Mua đứt pin phù hợp cho khách hàng giữ xe lâu dài. Thuê pin giúp giảm giá mua xe ban đầu và không lo chi phí thay pin khi SOH giảm. Mỗi hình thức có ưu nhược điểm khác nhau tùy nhu cầu sử dụng.,"Việc lựa chọn mua đứt pin hay thuê pin phụ thuộc vào nhu cầu sử dụng và khả năng tài chính của khách hàng, vì mỗi hình thức đều có những ưu điểm riêng [Tài liệu 1] [Tài liệu 2]. Cụ thể như sau:
+
+*   **Mua đứt pin:**
+    *   **Về kinh tế:** Là sự lựa chọn kinh tế nhằm tối ưu chi phí vận hành nếu khách hàng có dự định sử dụng xe để di chuyển nhiều với khoảng thời gian trên 5,6 năm [Tài liệu 1] [Tài liệu 2].
+    *   **Về quyền lợi và rủi ro:** Khách hàng có quyền sở hữu hoàn toàn nhưng sẽ phải chịu toàn bộ những rủi ro trong quá trình sử dụng; VinFast không áp dụng đổi trả pin trong mọi trường hợp [Tài liệu 1] [Tài liệu 2].
+
+*   **Thuê pin:**
+    *   **Về kinh tế:** Là giải pháp hữu ích nếu khách hàng có nhu cầu sử dụng trải nghiệm trong thời gian dưới 5,6 năm [Tài liệu 1] [Tài liệu 2].
+    *   **Về quyền lợi và rủi ro:** Khách hàng được đảm bảo về chất lượng pin và được áp dụng chính sách đổi trả miễn phí khi khả năng sạc xả của pin xuống dưới 70% [Tài liệu 1] [Tài liệu 2].",,,,
+B16,Xe VF e34 sạc đầy bằng chế độ sạc thường mất bao lâu?,"Với chế độ sạc thường công suất 3,3 kW, VF e34 cần khoảng 8-10 giờ để sạc đầy. Quãng đường công bố sau một lần sạc đầy là khoảng 285 km theo NEDC.","Với xe VinFast VF e34, khi sử dụng chế độ sạc thường (công suất 3,3 kW), thời gian để sạc đầy pin (dung lượng 42 kWh) sẽ mất khoảng 8-10 giờ [Tài liệu 1].",,,,
+B17,Để pin xe VF6 xuống 0% có hỏng pin không?,Để pin xả kiệt xuống 0% và duy trì trạng thái đó trong thời gian dài có thể gây hư hỏng cell pin. BMS có cơ chế bảo vệ tắt xe trước khi pin về 0% thực sự.,"Việc để pin xe VF6 xuống mức 0% có thể gây ra những hậu quả nghiêm trọng sau:
+
+* **Gây hỏng pin vĩnh viễn:** Nếu dung lượng pin còn lại thấp hơn 5% (hiển thị màu đỏ trên màn hình) mà không được sạc ngay lập tức, điều này có thể gây ra hỏng pin vĩnh viễn [Tài liệu 2].
+* **Trách nhiệm bồi thường:** Việc không thực hiện sạc ngay khi pin ở mức thấp (dưới 5%) có thể dẫn đến trách nhiệm bồi thường thiệt hại của Quý khách [Tài liệu 2].
+
+Để đảm bảo an toàn và kéo dài tuổi thọ pin, Quý khách nên tuân thủ các khuyến cáo của nhà sản xuất [Tài liệu 1].",,,,
+B18,Bộ sạc di động VinFast có dùng được nguồn điện gia dụng 220V không?,"Có. VinFast công bố bộ sạc di động 2,2 kW và 3,5 kW tương thích nguồn điện sinh hoạt 220V; thời gian tham khảo từ 10% đến 70% lần lượt khoảng 11 giờ và 7 giờ.","Có, bộ sạc di động của VinFast có tương thích với nguồn điện gia dụng 220V. Cụ thể:
+
+* VinFast công bố các bộ sạc di động công suất 2,2 kW và 3,5 kW tương thích với nguồn điện sinh hoạt 220V [Tài liệu 1].
+* Riêng loại sạc di động công suất 2,2 kW sử dụng dòng điện AC một pha tại ổ cắm điện 220V [Tài liệu 2].
+
+Lưu ý: Thiết bị cần được sử dụng đúng hướng dẫn và hệ thống điện phải đáp ứng yêu cầu an toàn của bộ sạc [Tài liệu 1].",,,,
+B19,Khi dung lượng pin ô tô điện VinFast dưới 5% và hiển thị màu đỏ thì cần làm gì?,"Khi dung lượng pin thấp hơn 5% và hiển thị màu đỏ, pin cần được sạc ngay lập tức để tránh nguy cơ hỏng pin vĩnh viễn.","Khi dung lượng pin ô tô điện VinFast còn lại thấp hơn 5% và hiển thị màu đỏ trên màn hình, bạn cần thực hiện các bước sau:
+
+* **Sạc pin ngay lập tức:** Đây là yêu cầu bắt buộc để tránh tình trạng pin bị hư hỏng vĩnh viễn [Tài liệu 1] [Tài liệu 2]. Việc không sạc kịp thời có thể dẫn đến trách nhiệm bồi thường thiệt hại của khách hàng [Tài liệu 1].
+* **Sử dụng nguồn sạc đúng quy định:** Chỉ được sử dụng nguồn sạc theo khuyến cáo của nhà sản xuất đã được công bố trên Website chính thức của VinFast [Tài liệu 1] [Tài liệu 3].
+* **Trường hợp khẩn cấp (hết pin giữa đường):** Nếu xe hết pin giữa đường và không thể nạp năng lượng bằng bộ sạc di động hoặc trụ sạc công cộng, bạn có thể yêu cầu dịch vụ cứu hộ pin. Kỹ thuật viên sẽ tiếp cận xe và cung cấp giải pháp sạc tại chỗ để xe có thể di chuyển tới trạm sạc gần nhất [Tài liệu 4].",,,,
+B20,Công suất sạc AC và DC tối đa của VinFast VF7 là bao nhiêu?,"VF7 hỗ trợ công suất sạc chậm AC tối đa 7,2 kW và sạc nhanh DC tối đa 110 kW.","Công suất sạc tối đa của VinFast VF 7 được hỗ trợ qua hai hình thức như sau:
+- Công suất sạc chậm AC tối đa: 7,2 kW [Tài liệu 1], [Tài liệu 2].
+- Công suất sạc nhanh DC tối đa: 110 kW [Tài liệu 1], [Tài liệu 2].",,,,
+P01,Sạc tại nhà VinFast 3 kW có giá bao nhiêu?,Sạc tại nhà VinFast 3 kW có giá niêm yết 8.836.365 VNĐ trên VinFast eStore tại thời điểm đối chiếu.,"Hiện tài liệu chính hãng chưa có thông tin chi tiết về giá của bộ sạc tại nhà VinFast 3 kW. Tài liệu hiện có chỉ cung cấp đơn giá sạc tại trạm sạc công cộng là 3.858 VNĐ/kWh [Tài liệu 1]. Để biết thông tin chính xác về chi phí mua hoặc lắp đặt bộ sạc tại nhà, quý khách vui lòng liên hệ trực tiếp với xưởng dịch vụ hoặc đại lý ủy quyền của VinFast để được hỗ trợ.",,,,
+P02,Bộ sạc treo tường VinFast AC 11 kW giá bao nhiêu?,Bộ sạc treo tường VinFast AC 11 kW có giá niêm yết 11.781.818 VNĐ.,Giá niêm yết của Bộ sạc treo tường AC 11 kW chính hãng VinFast là 11.781.818 VNĐ [Tài liệu 1].,,,,
+P03,"Bộ sạc di động ô tô điện VinFast 2,2 kW giá bao nhiêu?","Bộ sạc di động ô tô điện VinFast 2,2 kW có giá niêm yết 3.927.273 VNĐ.","Giá niêm yết của bộ sạc di động ô tô điện 2,2 kW là 3.927.273 VNĐ [Tài liệu 1].",,,,
+P04,"Bộ sạc treo tường VinFast AC 7,4 kW giá bao nhiêu?","Bộ sạc treo tường VinFast AC 7,4 kW có giá niêm yết 10.800.000 VNĐ.","Bộ sạc treo tường AC 7,4 kW chính hãng VinFast có giá niêm yết là 10.800.000 VNĐ, đã bao gồm thuế VAT [Tài liệu 1].",,,,
+P05,Tấm che pin cao áp VF5 chính hãng giá bao nhiêu?,Tấm che pin cao áp VF 5 có giá niêm yết 4.947.002 VNĐ trên VinFast eStore.,Giá niêm yết của tấm che pin cao áp chính hãng cho dòng xe VinFast VF 5 là 4.947.002 VNĐ [Tài liệu 1].,,,,
+P06,Gói dán film cách nhiệt VinFast VF5 giá bao nhiêu?,Gói dán film cách nhiệt VinFast VF 5 có giá niêm yết 5.130.000 VNĐ.,Giá niêm yết cho Gói dán film cách nhiệt VinFast VF 5 là 5.130.000 VNĐ [Tài liệu 1].,,,,
+P07,Thảm cốp 3D VF5 giá bao nhiêu?,Thảm cốp 3D VF 5 có giá niêm yết 891.000 VNĐ.,Giá niêm yết của Thảm cốp 3D cho dòng xe VinFast VF 5 là 891.000 VNĐ [Tài liệu 1].,,,,
+P08,Thảm sàn nhựa 2D VF5 giá bao nhiêu?,Thảm sàn nhựa 2D VF 5 có giá niêm yết 1.900.215 VNĐ.,Giá niêm yết của thảm sàn nhựa 2D dành cho dòng xe VinFast VF 5 là 1.900.215 VNĐ [Tài liệu 1].,,,,
+P09,Tấm che nắng cửa VinFast VF5 giá bao nhiêu?,Tấm che nắng cửa VinFast VF 5 có giá niêm yết 405.000 VNĐ.,Giá niêm yết của phụ kiện Tấm che nắng cửa VinFast VF 5 là 405.000 VNĐ [Tài liệu 1].,,,,
+P10,Tấm che pin cao áp VF8 chính hãng giá bao nhiêu?,Tấm che pin cao áp VF 8 có giá niêm yết 8.140.001 VNĐ trên VinFast eStore.,Giá niêm yết của tấm che pin cao áp chính hãng cho dòng xe VinFast VF 8 là 8.140.001 VNĐ [Tài liệu 1].,,,,
+P11,Dịch vụ cứu hộ pin xe điện VinFast có mất tiền không?,"Có. Dịch vụ cứu hộ pin VinFast có chi phí 50.000 VNĐ/lần, bao gồm việc kỹ thuật viên đến sạc pin tại chỗ trong 15 phút.",Dịch vụ cứu hộ pin ô tô điện VinFast có tính phí với mức giá là 50.000 VNĐ cho mỗi lần thực hiện [Tài liệu 1].,,,,
+P12,Thanh ngang giá nóc VinFast VF8 giá bao nhiêu?,Thanh ngang giá nóc VinFast VF 8 có giá niêm yết 18.360.000 VNĐ.,Giá niêm yết của thanh ngang giá nóc VinFast VF 8 là 18.360.000 VNĐ [Tài liệu 1].,,,,
+P13,Cốp nóc phi thuyền ô tô VinFast VF8 giá bao nhiêu?,Cốp nóc phi thuyền ô tô VinFast VF 8 có giá niêm yết 6.390.000 VNĐ.,Giá niêm yết của phụ kiện Cốp nóc phi thuyền ô tô VinFast VF 8 là 6.390.000 VNĐ [Tài liệu 1].,,,,
+P14,Tấm che nắng cửa VinFast VF8 giá bao nhiêu?,Tấm che nắng cửa VinFast VF 8 có giá niêm yết 495.000 VNĐ.,Giá niêm yết của tấm che nắng cửa VinFast VF 8 là 495.000 VNĐ [Tài liệu 1].,,,,
+P15,Nếu website không có giá phụ tùng bảo dưỡng thì tôi lấy báo giá VinFast ở đâu?,"Khách hàng cần liên hệ Xưởng Dịch vụ gần nhất hoặc hotline VinFast 1900 23 23 89. Sau khi kiểm tra xe, nhân viên cung cấp báo giá để khách hàng xác nhận trước khi thực hiện dịch vụ.","Trong trường hợp trang lịch bảo dưỡng công khai không nêu mức tiền cố định cho từng mốc bảo dưỡng hoặc từng phụ tùng sửa chữa [Tài liệu 1], để nhận được báo giá chi tiết và chính thức về chi phí bảo dưỡng cũng như phụ tùng, quý khách có thể thực hiện theo các cách sau:
+
+* Liên hệ hotline Xưởng Dịch vụ gần nhất [Tài liệu 1] [Tài liệu 2].
+* Liên hệ hotline VinFast: **1900 23 23 89** [Tài liệu 1] [Tài liệu 2].
+
+Lưu ý rằng chi phí thực tế sẽ phụ thuộc vào dòng xe, tình trạng xe, hạng mục cần thực hiện và phụ tùng cần thay thế [Tài liệu 1]. Bảng giá phụ tùng và phí dịch vụ được VinFast công bố minh bạch và áp dụng đồng nhất tại tất cả hệ thống Showroom và Nhà phân phối trên toàn quốc [Tài liệu 1] [Tài liệu 2].",,,,
+PR01,Đặt lịch bảo dưỡng xe VinFast qua app như thế nào?,Mở app VinFast > chọn Dịch vụ > Đặt lịch bảo dưỡng > chọn xe > chọn xưởng gần nhất > chọn khung giờ hẹn > xác nhận. Hệ thống gửi xác nhận qua SMS và email.,"Để đặt lịch bảo dưỡng xe VinFast thông qua ứng dụng VinFast (dành cho ô tô), bạn thực hiện theo các bước sau:
+
+*   **Bước 1: Đặt lịch hẹn:** Bạn truy cập vào ứng dụng VinFast, vào mục **Dịch vụ**, chọn **Đặt dịch vụ** [Tài liệu 2]. Khi đặt lịch, bạn cần cung cấp các thông tin về nội dung cần sửa chữa, địa điểm và thời gian mong muốn [Tài liệu 1].
+*   **Bước 2: Xác nhận lịch và báo giá:** VinFast sẽ liên hệ để tiếp nhận, đánh giá tình trạng xe, các hạng mục công việc, thời gian, địa điểm và báo giá chi phí [Tài liệu 1]. Trên ứng dụng, bạn kiểm tra bảng báo giá VinFast gửi và chọn **Đồng ý** để tiến hành dịch vụ [Tài liệu 2]. Lưu ý, đối với dịch vụ Mobile Service, báo giá cần được xác nhận tối thiểu bốn giờ trước lịch hẹn [Tài liệu 2].
+*   **Bước 3: Theo dõi và thanh toán:** Trong quá trình sửa chữa, ứng dụng sẽ hiển thị thời gian hoàn thành dự kiến [Tài liệu 2]. Sau khi hoàn thành, bạn có thể xem hóa đơn và chọn thanh toán qua ứng dụng, thanh toán tại xưởng hoặc thanh toán trực tiếp cho kỹ thuật viên VinFast [Tài liệu 2].
+*   **Bước 4: Xem lại lịch sử:** Bạn có thể xem lại các lịch hẹn đã thực hiện trong mục **Lịch sử dịch vụ** [Tài liệu 2].",,,,
+PR02,Kỹ thuật viên duyệt báo giá HITL là gì?,"HITL (Human-In-The-Loop) là quy trình kỹ thuật viên trưởng tại xưởng dịch vụ xem xét và phê duyệt báo giá do AI đề xuất trước khi gửi cho khách hàng, đảm bảo tính chính xác và minh bạch.","Hiện tài liệu chính hãng chưa có thông tin chi tiết về nội dung ""Kỹ thuật viên duyệt báo giá HITL"" (Human In The Loop). 
+
+Các tài liệu hiện có chỉ cung cấp thông tin về quy trình liên quan đến báo giá như sau:
+* Sau khi kiểm tra xe, nhân viên VinFast sẽ cung cấp thông tin báo giá các hạng mục bảo dưỡng hoặc sửa chữa [Tài liệu 5].
+* Khách hàng kiểm tra thông tin báo giá và thực hiện ký xác nhận trước khi tiến hành dịch vụ [Tài liệu 3] [Tài liệu 4] [Tài liệu 5].
+* Đối với việc theo dõi qua ứng dụng, VinFast sẽ gửi bảng báo giá dịch vụ và người dùng chọn **Đồng ý** để tiến hành [Tài liệu 1] [Tài liệu 2].
+
+Để biết chính xác về quy trình kỹ thuật HITL, vui lòng liên hệ trực tiếp xưởng dịch vụ hoặc đặt lịch hẹn để kỹ thuật viên có thể giải thích chi tiết.",,,,
+PR03,Quy trình tiếp nhận xe bảo dưỡng tại xưởng VinFast như thế nào?,"Quy trình tiếp nhận: khách đến xưởng theo lịch hẹn, nhân viên tiếp đón và hướng dẫn đỗ xe, kỹ thuật viên kiểm tra ban đầu và đọc lỗi OBD, lập báo giá và gửi cho khách xác nhận, sau đó thực hiện dịch vụ.","Quy trình bảo dưỡng xe tại xưởng dịch vụ VinFast được thực hiện qua các bước cụ thể sau:
+
+*   **Bước 1: Nhắc bảo dưỡng và đặt hẹn:** Khách hàng mua xe mới và làm dịch vụ tại xưởng sẽ được nhắc lịch bảo dưỡng trước 10 ngày so với lịch dự kiến [Tài liệu 1]. Khách hàng đặt lịch trước ít nhất 4 tiếng sẽ được tiếp nhận và xác nhận hẹn [Tài liệu 1].
+*   **Bước 2: Tiếp nhận và tư vấn:** Ngay khi tới xưởng, khách hàng được nhận biết và hướng dẫn đỗ xe, sau đó được chào đón và ghi nhận yêu cầu [Tài liệu 2]. Khách hàng có hẹn sẽ được ưu tiên tiếp nhận và bảo dưỡng theo đúng thời gian đã hẹn [Tài liệu 2]. Sau khi kiểm tra xe, nhân viên sẽ cung cấp thông tin báo giá các hạng mục bảo dưỡng hoặc sửa chữa (nếu có) và yêu cầu khách hàng kiểm tra, ký xác nhận trước khi tiến hành dịch vụ [Tài liệu 1] [Tài liệu 2] [Tài liệu 3].
+*   **Bước 3: Sửa chữa/Bảo dưỡng:** Trong quá trình thực hiện, xe sẽ được phủ ghế, sàn và đặt mũ trạng thái trước mặt khách hàng [Tài liệu 2]. Khách hàng luôn được cập nhật tiến độ thực hiện trong thời gian chờ và sẽ được thông báo, xin ý kiến nếu có các nội dung công việc phát sinh [Tài liệu 2].
+*   **Bước 4: Bàn giao xe:** Xe được rửa sạch trước khi giao nếu khách hàng có nhu cầu [Tài liệu 1] [Tài liệu 2]. Khách hàng thực hiện ký xác nhận các thông tin quyết toán, được chỉ dẫn khu vực nhận xe và nhận xe đúng hẹn như đã cam kết [Tài liệu 2].
+*   **Bước 5: Chăm sóc sau bảo dưỡng:** Nhân viên tư vấn sẽ gọi điện để ghi nhận phản hồi hoặc ý kiến của khách hàng trong vòng 2 đến 3 ngày sau khi xe ra xưởng [Tài liệu 1] [Tài liệu 2]. Các phản ánh, khiếu nại sẽ được phản hồi về giải pháp trong vòng 24 giờ [Tài liệu 2].",,,,
+PR04,Xác nhận đặt lịch bảo dưỡng VinFast được gửi như thế nào?,"Sau khi đặt lịch thành công, VinFast gửi xác nhận qua SMS và email. Hệ thống cũng gửi nhắc nhở trước ngày hẹn 24 giờ qua app và thông báo đẩy.","Việc xác nhận đặt lịch bảo dưỡng xe VinFast được thực hiện thông qua các phương thức sau:
+
+*   **Thông qua Ứng dụng VinFast:** Sau khi người dùng thực hiện các bước đặt lịch (chọn dịch vụ, địa điểm, thời gian và xác nhận), người dùng có thể kiểm tra lại lịch hẹn trong mục **Lịch sử dịch vụ** trên ứng dụng [Tài liệu 1]. Ngoài ra, đối với dịch vụ Mobile Service, báo giá cần được khách hàng xác nhận tối thiểu bốn giờ trước lịch hẹn [Tài liệu 1].
+*   **Thông báo nhắc lịch:** Khách hàng đăng ký dịch vụ bảo dưỡng tại xưởng sẽ được nhắc lịch trước 10 ngày so với khuyến cáo của VinFast [Tài liệu 2].
+*   **Tiếp nhận tại xưởng:** Sau khi khách hàng đặt lịch trước ít nhất 4 tiếng, yêu cầu sẽ được tiếp nhận và xác nhận hẹn [Tài liệu 2]. Tại xưởng, sau khi kiểm tra xe, nhân viên sẽ báo giá và xin chữ ký xác nhận của khách hàng [Tài liệu 2].",,,,
+PR05,Sửa chữa lưu động Mobile Service của VinFast hoạt động thế nào?,"Mobile Service là dịch vụ kỹ thuật viên VinFast đến tận nơi sửa chữa hoặc bảo dưỡng xe cho khách hàng. Khách đặt lịch qua app, kỹ thuật viên mang thiết bị đến địa điểm yêu cầu trong khung giờ đã hẹn.","Quy trình hoạt động của dịch vụ sửa chữa lưu động (Mobile Service) của VinFast được thực hiện thông qua các hình thức sau:
+
+* **Đặt lịch dịch vụ qua ứng dụng:** Người dùng có thể đặt lịch Mobile Service bằng cách truy cập ứng dụng VinFast cho ô tô điện, chọn mục ""Đặt dịch vụ"", sau đó chọn loại dịch vụ là ""Mobile Service"" [Tài liệu 2]. Tại bước này, người dùng cần nhập địa chỉ cụ thể để VinFast kiểm tra khả năng phục vụ tại địa điểm đó, sau đó chọn thời gian mong muốn và xác nhận đặt lịch [Tài liệu 2].
+
+* **Thông qua dịch vụ cứu hộ 24/7:** Khi gặp sự cố, khách hàng liên hệ tổng đài 1900 23 23 89 và cung cấp thông tin cá nhân, vị trí, tình trạng hư hỏng để được hướng dẫn [Tài liệu 1]. Trong trường hợp không thể tự khắc phục, kỹ thuật viên sẽ hỗ trợ xử lý trực tiếp các hạng mục có thể triển khai theo quy trình vận hành dịch vụ sửa chữa lưu động (Mobile Service) tùy theo khả năng cung cấp của từng nhà phân phối hoặc xưởng dịch vụ [Tài liệu 1].
+
+**Lưu ý:** Đối với những hư hỏng mà VinFast đánh giá không thể khắc phục tại chỗ, xe sẽ được kéo tới nhà phân phối hoặc xưởng dịch vụ gần nhất [Tài liệu 1].",,,,
+PR06,Có thể hủy hoặc đổi lịch dịch vụ VinFast trên ứng dụng khi nào?,Người dùng có thể xem chi tiết dịch vụ và hủy hoặc đổi lịch trước khi lịch hẹn diễn ra trên ứng dụng VinFast.,Người dùng có thể thực hiện hủy hoặc đổi lịch dịch vụ trên ứng dụng VinFast trước khi lịch hẹn diễn ra [Tài liệu 1].,,,,
+PR07,Xưởng dịch vụ VinFast có hotline nào để liên hệ?,Hotline hỗ trợ khách hàng VinFast: 1900 23 23 89 (1.000đ/phút). Hỗ trợ 24/7 cho cứu hộ và các sự cố khẩn cấp. Website: vinfastauto.com.,"Để liên hệ hỗ trợ, Quý khách có thể sử dụng các thông tin hotline sau:
+
+*   **Hotline VinFast:** 1900 23 23 89 [Tài liệu 1] [Tài liệu 3] [Tài liệu 4].
+*   **Hotline Xưởng dịch vụ VinFast gần nhất:** Quý khách có thể liên hệ trực tiếp với hotline của xưởng dịch vụ gần nhất để được hỗ trợ [Tài liệu 1].
+
+Ngoài ra, Quý khách có thể đặt lịch dịch vụ thông qua các hình thức khác như: Ứng dụng VinFast trên điện thoại hoặc đặt lịch trực tuyến qua website VinFast [Tài liệu 1] [Tài liệu 2].",,,,
+PR08,AI Agent có thể tự đặt lịch bảo dưỡng giúp tôi không?,"Có. AI Agent EV Care có thể gợi ý lịch bảo dưỡng dựa trên số km xe, sau đó hỗ trợ đặt lịch tại xưởng dịch vụ gần nhất. Tuy nhiên, báo giá vẫn cần kỹ thuật viên xác nhận (HITL) trước khi thực hiện.","Hiện tài liệu chính hãng chưa có thông tin chi tiết về việc AI Agent có khả năng tự động đặt lịch bảo dưỡng cho khách hàng hay không. 
+
+Theo các tài liệu hiện có, việc đặt lịch bảo dưỡng, sửa chữa hoặc gọi cứu hộ hiện được thực hiện bởi người dùng thông qua Ứng dụng VinFast theo các bước sau [Tài liệu 1] [Tài liệu 2]:
+- Bước 1: Bấm **Đặt dịch vụ**.
+- Bước 2: Chọn loại dịch vụ và thêm mô tả chi tiết.
+- Bước 3: Chọn Xưởng dịch vụ phù hợp hoặc nhập địa chỉ nếu chọn dịch vụ lưu động (Mobile Service) để kiểm tra khả năng phục vụ [Tài liệu 1] [Tài liệu 2].
+- Bước 4: Chọn thời gian mong muốn.
+- Bước 5: Kiểm tra lại thông tin và xác nhận đặt lịch [Tài liệu 1] [Tài liệu 2].
+
+Ngoài ra, khách hàng đăng ký dịch vụ tại xưởng sẽ được hệ thống nhắc lịch trước 10 ngày so với khuyến cáo của VinFast [Tài liệu 3]. Để đảm bảo việc tiếp nhận và xác nhận hẹn, khách hàng cần đặt lịch trước ít nhất 4 tiếng [Tài liệu 3].
+
+Để biết thêm thông tin về các tính năng hỗ trợ tự động, bạn vui lòng liên hệ trực tiếp với xưởng dịch vụ VinFast hoặc kiểm tra các cập nhật mới nhất trên Ứng dụng VinFast.",,,,
+PR09,"Khi xe sửa xong, có thể xem hóa đơn và thanh toán trên ứng dụng VinFast không?","Có. Khi hoàn thành dịch vụ, người dùng có thể xem hóa đơn và chọn thanh toán qua ứng dụng, tại xưởng hoặc trực tiếp cho kỹ thuật viên VinFast.","Có, sau khi hoàn tất dịch vụ sửa chữa, bạn có thể xem hóa đơn và thực hiện thanh toán trực tuyến ngay trên ứng dụng VinFast. Cụ thể, khi dịch vụ hoàn thành, ứng dụng sẽ hiển thị đầy đủ thông tin hóa đơn và bạn có các lựa chọn thanh toán sau [Tài liệu 1], [Tài liệu 2]:
+* Thanh toán ngay qua ứng dụng [Tài liệu 1], [Tài liệu 2].
+* Thanh toán tại xưởng khi nhận xe [Tài liệu 1], [Tài liệu 2].
+* Thanh toán trực tiếp cho kỹ thuật viên VinFast [Tài liệu 1], [Tài liệu 2].",,,,
+PR10,Nhận xe lại sau bảo dưỡng tại xưởng VinFast cần kiểm tra gì không?,"Trước khi nhận xe, khách hàng kiểm tra: hóa đơn dịch vụ khớp báo giá đã duyệt, xe được bàn giao sạch sẽ, kỹ thuật viên giải thích kết quả bảo dưỡng và các hạng mục cần theo dõi tiếp theo.","Khi nhận xe trở lại sau khi thực hiện các dịch vụ sửa chữa lưu động (Mobile Service), khách hàng cần kiểm tra và xác nhận các hạng mục theo các tiêu chí: đúng, đủ và đảm bảo chất lượng theo yêu cầu trước khi tiếp nhận lại xe [Tài liệu 1].
+
+Ngoài ra, đối với việc giao - nhận xe nói chung, khách hàng được khuyến cáo lưu ý các điểm sau:
+* Vui lòng kiểm tra kỹ khi giao - nhận xe [Tài liệu 2] [Tài liệu 3].
+* Nếu phát hiện bất kỳ vấn đề gì, khách hàng cần thông báo cho VinFast trong tuần đầu tiên kể từ khi nhận xe bằng cách liên hệ Xưởng dịch vụ/Đại lý ủy quyền VinFast hoặc gọi tới số Hotline của VinFast [Tài liệu 2] [Tài liệu 3].",,,,
+PR11,Cứu hộ 24/7 xe VinFast có phạm vi toàn quốc không?,"Có. Dịch vụ cứu hộ 24/7 của VinFast phủ sóng toàn quốc, bao gồm dịch vụ kéo xe về xưởng gần nhất, cứu hộ pin và hỗ trợ sự cố trên đường.","Dịch vụ hỗ trợ và cứu hộ 24/7 của VinFast hiện đang được triển khai trên toàn quốc, áp dụng cho tất cả các dòng xe điện và xe xăng của VinFast [Tài liệu 1].",,,,
+PR12,Xem lại lịch hẹn dịch vụ VinFast ở đâu trên ứng dụng?,Người dùng có thể xem lại lịch hẹn trong mục Lịch sử dịch vụ trên ứng dụng VinFast.,"Để xem lại các lịch hẹn dịch vụ trên ứng dụng VinFast, bạn có thể thực hiện theo các cách sau:
+
+* **Đối với các lịch hẹn sắp tới:** Bạn vào mục **Dịch vụ**, chọn **Đặt dịch vụ**, sau đó chọn **lịch hẹn sắp tới** để theo dõi quá trình sửa chữa, bảo dưỡng [Tài liệu 1] [Tài liệu 2].
+* **Đối với các lịch hẹn đã qua:** Bạn có thể xem lại các lịch hẹn trong mục **Lịch sử dịch vụ** [Tài liệu 1] [Tài liệu 2].",,,,
+G01,Xe tôi sắp đến mốc bảo dưỡng rồi phải làm gì?,"Khi sắp đến kỳ, khách hàng có thể đặt lịch dịch vụ và sẽ được VinFast nhắc bảo dưỡng trước 10 ngày so với ngày dự kiến.","Khi xe VinFast của Quý khách sắp đến mốc bảo dưỡng định kỳ, Quý khách cần thực hiện các thủ tục và lưu ý các trách nhiệm sau để đảm bảo an toàn cho xe và duy trì quyền lợi bảo hành:
+
+*   **Đưa xe đến hệ thống Xưởng dịch vụ (XDV) hoặc Đại lý phân phối (ĐLPP) của VinFast:** Quý khách có trách nhiệm đưa xe đến các địa điểm này để thực hiện kiểm tra, điều chỉnh và thay thế các vật tư, phụ tùng định kỳ theo đúng lịch trình khuyến cáo [Tài liệu 3] [Tài liệu 4] [Tài liệu 5]. Thông tin địa chỉ các XDV/ĐLPP có sẵn trên website https://vinfastauto.com [Tài liệu 3] [Tài liệu 4] [Tài liệu 5].
+*   **Kiểm tra kỹ khi giao - nhận xe:** Khi thực hiện bảo dưỡng, Quý khách vui lòng kiểm tra kỹ tình trạng xe lúc giao và nhận. Nếu phát hiện bất kỳ vấn đề gì, cần thông báo cho VinFast trong tuần đầu tiên kể từ khi nhận xe thông qua XDV/ĐLPP hoặc Hotline của VinFast [Tài liệu 3] [Tài liệu 4] [Tài liệu 5].
+*   **Ghi chép và lưu giữ hồ sơ bảo dưỡng:** Theo quy định, chủ xe có trách nhiệm theo dõi và lưu giữ tất cả các ghi chép/hồ sơ của những lần bảo dưỡng [Tài liệu 3] [Tài liệu 4] [Tài liệu 5]. Các hồ sơ này là cơ sở quan trọng để VinFast xét duyệt bảo hành sau này. Quý khách cũng có thể tra cứu lịch sử sửa chữa, bảo dưỡng, bảo hành trên phần mềm hoặc website của VinFast [Tài liệu 4] [Tài liệu 5].
+*   **Lưu ý về mốc bảo dưỡng:** Việc bảo dưỡng định kỳ đúng thời điểm (theo km hoặc thời gian vận hành thực tế) là điều kiện cần để được hưởng chính sách bảo hành từ VinFast [Tài liệu 2]. Đối với các dòng ô tô điện, từ ngày 01/01/2026, mốc bảo dưỡng định kỳ được điều chỉnh thành 15.000 km hoặc 1 năm, tùy theo điều kiện nào đến trước (không áp dụng cho phiên bản Lạc Hồng chống đạn) [Tài liệu 1].",,,,
+G02,VinFast có ứng dụng di động để theo dõi xe không?,"Có. App VinFast cho phép theo dõi tình trạng xe, mức pin, lịch bảo dưỡng, đặt dịch vụ, xem lịch sử sửa chữa và nhận thông báo nhắc bảo dưỡng.","Có, VinFast có cung cấp ứng dụng di động dành cho ô tô điện giúp người lái kết nối và điều khiển xe từ xa thông qua thiết bị di động [Tài liệu 1]. Thông qua ứng dụng này, khách hàng có thể thực hiện các tính năng sau:
+
+*   **Theo dõi trạng thái xe:** Theo dõi tình trạng pin, trạng thái sạc [Tài liệu 1], và theo dõi tình trạng xe nói chung [Tài liệu 1].
+*   **Quản lý và cài đặt:** Đăng ký/đăng nhập tài khoản, cài đặt nâng cao, quản lý phần mềm và thay đổi vai trò của người lái trên xe [Tài liệu 1].
+*   **Tiện ích di chuyển:** Lên lịch hành trình và chuyển đến xe [Tài liệu 1].
+*   **Tra cứu trạm sạc:** Tra cứu vị trí trạm sạc và chi phí sạc [Tài liệu 3].
+*   **Dịch vụ hậu mãi:** Đặt lịch hẹn dịch vụ, theo dõi quá trình sửa chữa hoặc bảo dưỡng (xem thời gian hoàn thành dự kiến), xem hóa đơn và thanh toán qua ứng dụng [Tài liệu 2].",,,,
+G03,Khách hàng được tặng bao nhiêu VPoint khi đặt lịch dịch vụ trước và đến đúng hẹn?,Khách hàng được tặng 50 điểm VPoint khi đặt lịch trước qua App hoặc Website và đến làm dịch vụ đúng hẹn trong vòng 30 phút.,Khách hàng sẽ được tặng 50 điểm VPoint khi thực hiện đặt lịch trước qua App/Website và đến làm dịch vụ đúng hẹn (trong vòng 30 phút) [Tài liệu 1].,,,,
+G04,Quãng đường một lần sạc của VF8 Eco và VF8 Plus là bao nhiêu?,VF8 Eco đi được 562 km theo NEDC; VF8 Plus đi được 457 km theo WLTP. Quãng đường thực tế có thể giảm tùy điều kiện vận hành.,"Quãng đường di chuyển tối đa của hai phiên bản VF 8 như sau:
+
+*   **VinFast VF 8 Eco:** 562 km theo tiêu chuẩn NEDC [Tài liệu 1].
+*   **VinFast VF 8 Plus:** 457 km theo tiêu chuẩn WLTP [Tài liệu 1].
+
+Lưu ý rằng quãng đường thực tế sẽ phụ thuộc vào các yếu tố như tốc độ, phong cách lái, thời tiết, địa hình, tải trọng và các điều kiện vận hành khác [Tài liệu 1].",,,,
+G05,Vì sao lịch bảo dưỡng ô tô điện dài hơn xe xăng?,"Lịch bảo dưỡng ô tô điện dài hơn và tiết kiệm hơn xe xăng do bộ phận truyền động đơn giản, không trải qua quá trình đốt cháy.","Lịch bảo dưỡng của ô tô điện có chu kỳ dài hơn so với xe sử dụng động cơ xăng chủ yếu do sự khác biệt về cấu tạo và cơ chế vận hành của các bộ phận quan trọng, cụ thể như sau:
+
+* **Động cơ điện đơn giản hơn:** Khác với động cơ xăng, động cơ điện không cần các chi tiết như nước làm mát, chất bôi trơn, lọc nhớt, dây đai dẫn động và lọc gió... do đó không cần phải bảo dưỡng hoặc thay thế các chi tiết này thường xuyên [Tài liệu 1]. Động cơ điện chỉ có 2 chi tiết có thể hao mòn theo thời gian là cụm xoay và cụm đứng yên [Tài liệu 1].
+* **Hệ thống phanh:** Các dòng xe điện thường sử dụng hệ thống phanh tái sinh, giúp giảm độ ăn mòn phanh, dẫn đến việc rất ít khi phải thay thế má phanh [Tài liệu 1].
+* **Tối ưu hóa từ nhà sản xuất:** VinFast đã thực hiện nghiên cứu và kiểm thử khắt khe trong điều kiện thực tế tại Việt Nam để điều chỉnh mốc bảo dưỡng định kỳ cho các dòng ô tô điện (từ mốc cũ 12.000 km lên 15.000 km hoặc 1 năm, tùy điều kiện nào đến trước) nhằm tối ưu thời gian và giảm chi phí vận hành cho khách hàng [Tài liệu 2].",,,,
+G06,Ứng dụng VinFast có giúp tìm xưởng dịch vụ gần nhất không?,Có. Tính năng Bản đồ trên ứng dụng VinFast hỗ trợ tìm trạm sạc và xưởng dịch vụ gần nhất.,"Có, ứng dụng VinFast có hỗ trợ người dùng tìm kiếm xưởng dịch vụ gần nhất thông qua các tính năng sau:
+
+* **Tính năng Bản đồ:** Người dùng có thể sử dụng mục **Bản đồ** để tìm kiếm địa điểm, xem danh sách các địa điểm gần nhất hoặc nhập địa điểm/tìm kiếm bằng giọng nói [Tài liệu 1]. 
+* **Đặt lịch dịch vụ:** Khi người dùng thực hiện đặt lịch sửa chữa tại Xưởng thông qua ứng dụng, ứng dụng sẽ hiển thị danh sách các địa điểm xưởng dịch vụ phù hợp với khách hàng [Tài liệu 2].",,,,
+G07,Có thể xem những thông tin gì trong lịch sử sạc trên ứng dụng VinFast?,"Trong Lịch sử sạc, người dùng xem được thời gian, địa điểm sạc, chi phí và phụ phí của từng phiên sạc.","Trên ứng dụng xe ô tô điện VinFast, khi kiểm tra lịch sử sạc, người dùng có thể xem được các thông tin sau:
+
+* Danh sách lịch sử các phiên sạc được sắp xếp theo thời gian [Tài liệu 1].
+* Khi bấm chọn vào một lịch sạc cụ thể, người dùng có thể xem chi tiết các thông tin bao gồm: thời gian sạc, địa điểm sạc, chi phí sạc và phụ phí sạc (nếu có) [Tài liệu 1].",,,,
+G08,Sổ bảo hành xe VinFast xem ở đâu?,"Sổ bảo hành điện tử xe VinFast có thể xem trên app VinFast sau khi kích hoạt bảo hành. Tại thời điểm giao xe, đại lý sẽ hướng dẫn kích hoạt và truy cập Sổ bảo hành điện tử.","Để kiểm tra sổ bảo hành xe ô tô VinFast, Khách hàng có thể thực hiện tra cứu trực tuyến theo các bước sau trên website chính thức:
+
+* **Bước 1:** Truy cập trang chủ website VinFast, chọn mục ""Dịch vụ hậu mãi"" => ""Thông tin bảo hành"" [Tài liệu 1].
+* **Bước 2:** Tại mục ""Thời hạn bảo hành ô tô"", Khách hàng lựa chọn sổ bảo hành => Chọn loại xe cần kiểm tra thông tin [Tài liệu 1].
+
+Ngoài ra, đối với dòng xe VF3, chủ xe cũng có thể tra cứu lịch sử sửa chữa, bảo dưỡng, bảo hành trên phần mềm hoặc website của VinFast [Tài liệu 2].",,,,

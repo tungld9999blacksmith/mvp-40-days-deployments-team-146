@@ -35,6 +35,7 @@ class BookingConfig:
     lock_ttl_seconds: int = 10
     reschedule_min_lead_minutes: int = 60  # us-053 BR-1206
     reschedule_max_count: int = 2  # us-053 BR-1207
+    pricing_flow: str = "legacy"  # QUOTE_FLOW — flow of new bookings (bao-gia-hai-tang D7)
 
 
 class AnchorSource(StrEnum):

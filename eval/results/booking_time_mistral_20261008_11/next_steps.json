@@ -1,0 +1,16 @@
+{
+  "stage": "3_DEVELOPMENT_NOT_ACCEPTANCE",
+  "source_owner_queue": "eval/results/rag_policy_mistral_20261008_09/source_owner_review_queue.json",
+  "rag_independent_review": "eval/results/rag_policy_mistral_20261008_09/rag_review.html",
+  "session_independent_review": "eval/results/schema_source_mistral_20261008_08/session_review.html",
+  "booking_independent_review": "eval/results/agent_v2_1_time_booking_54_mistral_20261008_12/human_review.csv",
+  "independent_labels_available": 0,
+  "pending": [
+    "Independent task/citation/source review and adjudication",
+    "Lock acceptance holdout separate from development cases",
+    "Step4 smoke30 to shortlist candidates; retain current application model",
+    "Step5 shortlisted2-3 models x3 on locked acceptance",
+    "Step6 HTTP/Firebase/UI confirmation, TTFT/concurrency and pilot"
+  ],
+  "golden_reused_not_replaced": true
+}

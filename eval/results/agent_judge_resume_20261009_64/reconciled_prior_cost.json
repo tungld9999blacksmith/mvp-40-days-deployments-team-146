@@ -1,0 +1,13 @@
+{
+  "pipeline": 0.25706310225,
+  "judge": 0.10593406,
+  "all": 0.36299716225,
+  "new63_judge_known_cost_usd": 0.09382556,
+  "new63_missing_receipts": 1,
+  "embedding_calls": 69,
+  "embedding_cost_usd": null,
+  "unknown_inflight_cost_usd": null,
+  "unknown_inflight_budget_reserve_usd": 0.01,
+  "scope": "All55-63 fees once including failed62 pilot and63 partial403. Reused25 judgments/pilot not charged again.",
+  "anchor": "eval\\results\\agent_judge_20261009_63\\all_attempts_cost.json"
+}

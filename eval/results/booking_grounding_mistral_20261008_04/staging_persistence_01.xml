@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="13.082" timestamp="2026-10-08T09:26:37.265433+07:00" hostname="LAPTOP-HFJC033G"><testcase classname="backend.tests.test_agents.test_evaluation_persistence" name="test_sqlite_proposal_survives_engine_restart_and_confirm_is_idempotent" time="1.128" /><testcase classname="backend.tests.test_agents.test_evaluation_persistence" name="test_postgres_redis_restart_and_confirm_in_isolated_schema" time="0.914"><failure message="sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedFunction) function immutable_unaccent(text) does not exist&#10;LINE 18: ...VECTOR GENERATED ALWAYS AS (to_tsvector('simple', immutable_...&#10;                                                              ^&#10;HINT:  No function matches the given name and argument types. You might need to add explicit type casts.&#10;[SQL: &#10;CREATE TABLE chat_message (&#10;&#09;id UUID NOT NULL, &#10;&#09;conversation_id UUID NOT NULL, &#10;&#09;seq BIGINT GENERATED ALWAYS AS IDENTITY, &#10;&#09;role chat_message_role_enum NOT NULL, &#10;&#09;content TEXT DEFAULT '' NOT NULL, &#10;&#09;client_message_id UUID, &#10;&#09;citations JSONB DEFAULT '[]' NOT NULL, &#10;&#09;tool_calls JSONB DEFAULT '[]' NOT NULL, &#10;&#09;tool_call_id VARCHAR(64), &#10;&#09;tool_name VARCHAR(64), &#10;&#09;refs JSONB DEFAULT '{}' NOT NULL, &#10;&#09;card JSONB, &#10;&#09;intent VARCHAR(50), &#10;&#09;agent_run_id UUID, &#10;&#09;trace_id VARCHAR(64), &#10;&#09;search_vector TSVECTOR GENERATED ALWAYS AS (to_tsvector('simple', immutable_unaccent(coalesce(content, '')))) STORED, &#10;&#09;embedded BOOLEAN DEFAULT 'false' NOT NULL, &#10;&#09;created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL, &#10;&#09;PRIMARY KEY (id), &#10;&#09;UNIQUE (seq), &#10;&#09;CONSTRAINT ck_chat_message_tool_shape CHECK (role &lt;&gt; 'tool' OR (tool_call_id IS NOT NULL AND tool_name IS NOT NULL)), &#10;&#09;FOREIGN KEY(conversation_id) REFERENCES conversation (id) ON DELETE CASCADE, &#10;&#09;CONSTRAINT ck_chat_message_user_shape CHECK (role &lt;&gt; 'user' OR (length(content) &gt; 0 AND jsonb_array_length(citations) = 0 AND jsonb_array_length(tool_calls) = 0)), &#10;&#09;CONSTRAINT ck_chat_message_assistant_shape CHECK (role &lt;&gt; 'assistant' OR (length(content) &gt; 0 OR jsonb_array_length(tool_calls) &gt; 0))&#10;)&#10;&#10;]&#10;(Background on this error at: https://sqlalche.me/e/20/f405)">self = &lt;sqlalchemy.engine.base.Connection object at 0x0000013823980650&gt;
+dialect = &lt;sqlalchemy.dialects.postgresql.psycopg.PGDialect_psycopg object at 0x0000013823A56CD0&gt;
+context = &lt;sqlalchemy.dialects.postgresql.psycopg.PGExecutionContext_psycopg object at 0x0000013825150750&gt;
+statement = &lt;sqlalchemy.dialects.postgresql.base.PGDDLCompiler object at 0x0000013825150790&gt;
+parameters = [immutabledict({})]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -&gt; CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+    
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+    
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+    
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+    
+        effective_parameters: Optional[_AnyExecuteParams]
+    
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+    
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+    
+        if self._echo:
+            self._log_info(str_statement)
+    
+            stats = context._get_cache_stats()
+    
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+    
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+&gt;                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+..\.venv\Lib\site-packages\sqlalchemy\engine\base.py:1969: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\.venv\Lib\site-packages\sqlalchemy\engine\default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;psycopg.Cursor [closed] [IDLE] (host=127.0.0.1 port=35432 user=p146_eval database=p146_eval_booking) at 0x13824d08ac0&gt;
+query = "\nCREATE TABLE chat_message (\n\tid UUID NOT NULL, \n\tconversation_id UUID NOT NULL, \n\tseq BIGINT GENERATED ALWAYS...sage_assistant_shape CHECK (role &lt;&gt; 'assistant' OR (length(content) &gt; 0 OR jsonb_array_length(tool_calls) &gt; 0))\n)\n\n"
+params = immutabledict({}), prepare = None, binary = None
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool | None = None,
+    ) -&gt; Self:
+        """
+        Execute a query or command to the database.
+        """
+        try:
+            with self._conn.lock:
+                self._conn.wait(
+                    self._execute_gen(query, params, prepare=prepare, binary=binary)
+                )
+        except e._NO_TRACEBACK as ex:
+&gt;           raise ex.with_traceback(None)
+E           psycopg.errors.UndefinedFunction: function immutable_unaccent(text) does not exist
+E           LINE 18: ...VECTOR GENERATED ALWAYS AS (to_tsvector('simple', immutable_...
+E                                                                         ^
+E           HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+
+..\.venv\Lib\site-packages\psycopg\cursor.py:117: UndefinedFunction
+
+The above exception was the direct cause of the following exception:
+
+    @pytest.mark.staging
+    @pytest.mark.asyncio
+    async def test_postgres_redis_restart_and_confirm_in_isolated_schema():
+        database_url = os.getenv("EVAL_DATABASE_URL", "")
+        redis_url = os.getenv("EVAL_REDIS_URL", "")
+        if not database_url or not redis_url:
+            pytest.fail("Set EVAL_DATABASE_URL and EVAL_REDIS_URL for a dedicated evaluation database; production settings are never used")
+        admin = create_engine(database_url)
+        if admin.dialect.name != "postgresql" or not str(admin.url.database).startswith("p146_eval"):
+            admin.dispose()
+            pytest.fail("PostgreSQL evaluation database name must start with p146_eval")
+        schema = "eval_" + uuid4().hex
+        prefix = "eval-v2-" + uuid4().hex
+        sandbox = None
+        redis = Redis.from_url(redis_url, socket_timeout=5, socket_connect_timeout=5)
+        created = False
+        connected = False
+        try:
+            await redis.ping()
+            connected = True
+            with admin.begin() as connection:
+                connection.execute(CreateSchema(schema))
+                created = True
+            def reopen():
+                return create_engine(database_url, connect_args={"options": "-csearch_path=" + schema})
+&gt;           sandbox = Sandbox({}, engine=reopen(), redis_client=redis, key_prefix=prefix)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_agents\test_evaluation_persistence.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\evaluation_v2\sandbox.py:72: in __init__
+    metadata.create_all(self.engine)
+..\.venv\Lib\site-packages\sqlalchemy\sql\schema.py:5929: in create_all
+    bind._run_ddl_visitor(
+..\.venv\Lib\site-packages\sqlalchemy\engine\base.py:3270: in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+..\.venv\Lib\site-packages\sqlalchemy\engine\base.py:2469: in _run_ddl_visitor
+    ).traverse_single(element)
+      ^^^^^^^^^^^^^^^^^^^^^^^^
+..\.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:661: in traverse_single
+    return meth(obj, **kw)
+           ^^^^^^^^^^^^^^^
+..\.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:985: in visit_metadata
+    self.traverse_single(
+..\.venv\Lib\site-packages\sqlalchemy\sql\visitors.py:661: in traverse_single
+    return meth(obj, **kw)
+           ^^^^^^^^^^^^^^^
+..\.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:1023: in visit_table
+    )._invoke_with(self.connection)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:322: in _invoke_with
+    return bind.execute(self)
+           ^^^^^^^^^^^^^^^^^^
+..\.venv\Lib\site-packages\sqlalchemy\engine\base.py:1421: in execute
+    return meth(
+..\.venv\Lib\site-packages\sqlalchemy\sql\ddl.py:188: in _execute_on_connection
+    return connection._execute_ddl(
+..\.venv\Lib\site-packages\sqlalchemy\engine\base.py:1532: in _execute_ddl
+    ret = self._execute_context(
+..\.venv\Lib\site-packages\sqlalchemy\engine\base.py:1848: in _execute_context
+    return self._exec_single_context(
+..\.venv\Lib\site-packages\sqlalchemy\engine\base.py:1988: in _exec_single_context
+    self._handle_dbapi_exception(
+..\.venv\Lib\site-packages\sqlalchemy\engine\base.py:2365: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+..\.venv\Lib\site-packages\sqlalchemy\engine\base.py:1969: in _exec_single_context
+    self.dialect.do_execute(
+..\.venv\Lib\site-packages\sqlalchemy\engine\default.py:952: in do_execute
+    cursor.execute(statement, parameters)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;psycopg.Cursor [closed] [IDLE] (host=127.0.0.1 port=35432 user=p146_eval database=p146_eval_booking) at 0x13824d08ac0&gt;
+query = "\nCREATE TABLE chat_message (\n\tid UUID NOT NULL, \n\tconversation_id UUID NOT NULL, \n\tseq BIGINT GENERATED ALWAYS...sage_assistant_shape CHECK (role &lt;&gt; 'assistant' OR (length(content) &gt; 0 OR jsonb_array_length(tool_calls) &gt; 0))\n)\n\n"
+params = immutabledict({}), prepare = None, binary = None
+
+    def execute(
+        self,
+        query: Query,
+        params: Params | None = None,
+        *,
+        prepare: bool | None = None,
+        binary: bool | None = None,
+    ) -&gt; Self:
+        """
+        Execute a query or command to the database.
+        """
+        try:
+            with self._conn.lock:
+                self._conn.wait(
+                    self._execute_gen(query, params, prepare=prepare, binary=binary)
+                )
+        except e._NO_TRACEBACK as ex:
+&gt;           raise ex.with_traceback(None)
+E           sqlalchemy.exc.ProgrammingError: (psycopg.errors.UndefinedFunction) function immutable_unaccent(text) does not exist
+E           LINE 18: ...VECTOR GENERATED ALWAYS AS (to_tsvector('simple', immutable_...
+E                                                                         ^
+E           HINT:  No function matches the given name and argument types. You might need to add explicit type casts.
+E           [SQL: 
+E           CREATE TABLE chat_message (
+E           	id UUID NOT NULL, 
+E           	conversation_id UUID NOT NULL, 
+E           	seq BIGINT GENERATED ALWAYS AS IDENTITY, 
+E           	role chat_message_role_enum NOT NULL, 
+E           	content TEXT DEFAULT '' NOT NULL, 
+E           	client_message_id UUID, 
+E           	citations JSONB DEFAULT '[]' NOT NULL, 
+E           	tool_calls JSONB DEFAULT '[]' NOT NULL, 
+E           	tool_call_id VARCHAR(64), 
+E           	tool_name VARCHAR(64), 
+E           	refs JSONB DEFAULT '{}' NOT NULL, 
+E           	card JSONB, 
+E           	intent VARCHAR(50), 
+E           	agent_run_id UUID, 
+E           	trace_id VARCHAR(64), 
+E           	search_vector TSVECTOR GENERATED ALWAYS AS (to_tsvector('simple', immutable_unaccent(coalesce(content, '')))) STORED, 
+E           	embedded BOOLEAN DEFAULT 'false' NOT NULL, 
+E           	created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL, 
+E           	PRIMARY KEY (id), 
+E           	UNIQUE (seq), 
+E           	CONSTRAINT ck_chat_message_tool_shape CHECK (role &lt;&gt; 'tool' OR (tool_call_id IS NOT NULL AND tool_name IS NOT NULL)), 
+E           	FOREIGN KEY(conversation_id) REFERENCES conversation (id) ON DELETE CASCADE, 
+E           	CONSTRAINT ck_chat_message_user_shape CHECK (role &lt;&gt; 'user' OR (length(content) &gt; 0 AND jsonb_array_length(citations) = 0 AND jsonb_array_length(tool_calls) = 0)), 
+E           	CONSTRAINT ck_chat_message_assistant_shape CHECK (role &lt;&gt; 'assistant' OR (length(content) &gt; 0 OR jsonb_array_length(tool_calls) &gt; 0))
+E           )
+E           
+E           ]
+E           (Background on this error at: https://sqlalche.me/e/20/f405)
+
+..\.venv\Lib\site-packages\psycopg\cursor.py:117: ProgrammingError</failure></testcase></testsuite></testsuites>

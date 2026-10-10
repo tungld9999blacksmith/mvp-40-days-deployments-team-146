@@ -1,0 +1,442 @@
+[
+  {
+    "session_id": "SESSION-01",
+    "turn": 3,
+    "user": "Xem lịch 2026-10-10 tại xưởng f6c3d232-a40f-450e-8384-ec4260a56df2.",
+    "raw_model_answer": "Tại **VinFast Thanh Xuân** vào **thứ Bảy, 10/10/2026**, xưởng có 24 khung giờ trống, mỗi khung còn 4 chỗ. Bạn có thể chọn bất kỳ khung giờ nào trong ngày.",
+    "delivered_answer": "Ngày 10/10/2026, xưởng f6c3d232-a40f-450e-8384-ec4260a56df2 có 23 khung giờ khả dụng.\n- 00:00: còn 4 chỗ.\n- 01:00: còn 4 chỗ.\n- 02:00: còn 4 chỗ.\n- 03:00: còn 4 chỗ.\n- 04:00: còn 4 chỗ.\n- 05:00: còn 4 chỗ.\n- 06:00: còn 4 chỗ.\n- 07:00: còn 4 chỗ.\n- 08:00: còn 4 chỗ.\n- 09:00: còn 4 chỗ.\n- 10:00: còn 4 chỗ.\n- 11:00: còn 4 chỗ.\n- 12:00: còn 4 chỗ.\n- 13:00: còn 4 chỗ.\n- 14:00: còn 4 chỗ.\n- 15:00: còn 4 chỗ.\n- 16:00: còn 4 chỗ.\n- 17:00: còn 4 chỗ.\n- 18:00: còn 4 chỗ.\n- 19:00: còn 4 chỗ.\n- 20:00: còn 4 chỗ.\n- 21:00: còn 4 chỗ.\n- 22:00: còn 4 chỗ.\nBạn hãy chọn rõ một khung giờ. Lịch chưa được đặt hoặc giữ chỗ.",
+    "current_turn_calls": [
+      {
+        "name": "get_available_slots",
+        "args": {
+          "workshop_id": "f6c3d232-a40f-450e-8384-ec4260a56df2",
+          "target_date": "2026-10-10"
+        },
+        "result": {
+          "workshop_id": "f6c3d232-a40f-450e-8384-ec4260a56df2",
+          "date": "2026-10-10",
+          "requested": null,
+          "slots": [
+            {
+              "time_slot": "00:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "01:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "02:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "03:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "04:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "05:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "06:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "07:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "08:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "09:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "10:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "11:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "12:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "13:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "14:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "15:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "16:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "17:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "18:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "19:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "20:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "21:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "22:00:00",
+              "available": true,
+              "remaining": 4
+            }
+          ],
+          "alternatives": []
+        },
+        "artifact": null
+      }
+    ],
+    "note": "Current live run, model output and runtime delivery; no historical trace was edited."
+  },
+  {
+    "session_id": "SESSION-01",
+    "turn": 4,
+    "user": "Tôi chọn 14:00; tạo thẻ để tôi bấm xác nhận.",
+    "raw_model_answer": "Thẻ đề xuất đã sẵn sàng. Bạn vui lòng bấm **\"Xác nhận đặt lịch\"** trên thẻ dưới đây để hoàn tất:\n\n---\n**Đề xuất đặt lịch bảo dưỡng**\n📍 **Xưởng**: VinFast Thanh Xuân\n📅 **Ngày**: 10/10/2026\n⏰ **Giờ**: 14:00\n🚗 **Xe**: VinFast VF6 (12.500 km)\n🔧 **Mốc bảo dưỡng**: 12.000 km\n\n**Lưu ý**:\n- Lịch **CHƯA được đặt** cho tới khi bạn bấm \"Xác nhận đặt lịch\".\n- Sau khi xác nhận, bạn sẽ nhận được thông tin xác nhận qua kênh đã đăng ký (ứng dụng/email nếu bật).\n- Nếu không bấm xác nhận, đề xuất sẽ tự động hủy sau một thời gian.\n\n---\nBấm nút dưới đây để xác nhận:\n<propose_booking>\n  <status>PROPOSED</status>\n  <proposal_id>227b732f-846a-4d08-89f1-1ee928c80052</proposal_id>\n  <summary>Đề xuất VinFast Thanh Xuan lúc 14:00 ngày 2026-10-10.</summary>\n  <next_step>Chủ xe bấm \"Xác nhận đặt lịch\" trên thẻ để đặt. Lịch CHƯA được tạo; không có tool nào tạo lịch thay chủ xe.</next_step>\n</propose_booking>",
+    "delivered_answer": "Đã tạo thẻ đề xuất tại VinFast Thanh Xuan, ngày 10/10/2026, lúc 14:00.\nLịch chưa được đặt và chưa giữ chỗ. Bạn hãy bấm \"Xác nhận đặt lịch\" trên thẻ để hoàn tất.",
+    "current_turn_calls": [
+      {
+        "name": "propose_booking",
+        "args": {
+          "workshop_id": "f6c3d232-a40f-450e-8384-ec4260a56df2",
+          "booking_date": "2026-10-10",
+          "time_slot": "14:00",
+          "odo_milestone": 12000
+        },
+        "result": {
+          "status": "PROPOSED",
+          "proposal_id": "227b732f-846a-4d08-89f1-1ee928c80052",
+          "summary": "Đề xuất VinFast Thanh Xuan lúc 14:00 ngày 2026-10-10.",
+          "next_step": "Chủ xe bấm \"Xác nhận đặt lịch\" trên thẻ để đặt. Lịch CHƯA được tạo; không có tool nào tạo lịch thay chủ xe."
+        },
+        "artifact": {
+          "type": "BOOKING_PROPOSAL",
+          "version": 1,
+          "proposalId": "227b732f-846a-4d08-89f1-1ee928c80052",
+          "vehicle": {
+            "userVehicleId": "2e1923fb-9810-499a-b98e-28db37bc396c",
+            "modelName": "VF6",
+            "trim": "Plus",
+            "licensePlateMasked": "30A***45"
+          },
+          "milestone": {
+            "odoMilestoneKm": 12000,
+            "monthMilestone": 12,
+            "label": "12,000 km / 12 months",
+            "dueDate": "2027-04-07",
+            "dueStatus": "OVERDUE",
+            "dueReason": "KM",
+            "remainingKm": -500,
+            "remainingDays": 182,
+            "items": [
+              {
+                "itemCode": "BATTERY_CHECK",
+                "itemName": "High-voltage battery check",
+                "isCoveredByWarranty": true
+              },
+              {
+                "itemCode": "BRAKE_INSPECTION",
+                "itemName": "Brake system inspection",
+                "isCoveredByWarranty": false
+              }
+            ]
+          },
+          "reason": "Xe đã quá mốc 12.000 km: quá 500 km. Đề xuất khung giờ sớm nhất còn trống.",
+          "locationBasis": "NONE",
+          "locationLabel": null,
+          "primary": {
+            "optionId": "opt-1",
+            "workshopId": "f6c3d232-a40f-450e-8384-ec4260a56df2",
+            "workshopName": "VinFast Thanh Xuan",
+            "address": "VinFast Thanh Xuan address",
+            "region": "Ha Noi",
+            "distanceKm": null,
+            "isPreferred": false,
+            "date": "2026-10-10",
+            "timeSlot": "14:00",
+            "estimate": {
+              "chargeableTotal": "100000.00",
+              "hasReferencePrice": false,
+              "coveredCount": 1
+            }
+          },
+          "alternatives": [],
+          "expiresAt": "2026-10-07T02:30:00+00:00"
+        }
+      }
+    ],
+    "note": "Current live run, model output and runtime delivery; no historical trace was edited."
+  },
+  {
+    "session_id": "SESSION-05",
+    "turn": 4,
+    "user": "Tôi chọn 15:00; tạo thẻ đề xuất.",
+    "raw_model_answer": "Thẻ đề xuất đã sẵn sàng:\n\n---\n**📌 Đề xuất đặt lịch**\n**Xưởng:** VinFast Thanh Xuân\n**Địa chỉ:** (xem trong thẻ)\n**Ngày:** 10/10/2026\n**Giờ:** 15:00\n**Mốc bảo dưỡng:** 12.000 km\n**Xe:** VF6 (12.500 km)\n\n👉 **Lịch CHƯA được đặt.** Bạn vui lòng bấm **\"Xác nhận đặt lịch\"** trên thẻ để hoàn tất.\nSau khi bấm, hệ thống sẽ gửi thông tin xác nhận (nếu email của bạn đã bật nhận thông báo).\n\n---\nNếu bạn muốn thay đổi xưởng/ngày/giờ hoặc hủy thẻ này, hãy nói \"hủy đề xuất\" hoặc chọn khung giờ khác.",
+    "delivered_answer": "Đã tạo thẻ đề xuất tại VinFast Thanh Xuan, ngày 10/10/2026, lúc 15:00.\nLịch chưa được đặt và chưa giữ chỗ. Bạn hãy bấm \"Xác nhận đặt lịch\" trên thẻ để hoàn tất.",
+    "current_turn_calls": [
+      {
+        "name": "propose_booking",
+        "args": {
+          "workshop_id": "54cefeb0-c8fd-438e-976b-48e0c49773a9",
+          "booking_date": "2026-10-10",
+          "time_slot": "15:00",
+          "odo_milestone": 12000
+        },
+        "result": {
+          "status": "PROPOSED",
+          "proposal_id": "56aff969-0515-40d5-b08a-c3acdcde5a1a",
+          "summary": "Đề xuất VinFast Thanh Xuan lúc 15:00 ngày 2026-10-10.",
+          "next_step": "Chủ xe bấm \"Xác nhận đặt lịch\" trên thẻ để đặt. Lịch CHƯA được tạo; không có tool nào tạo lịch thay chủ xe."
+        },
+        "artifact": {
+          "type": "BOOKING_PROPOSAL",
+          "version": 1,
+          "proposalId": "56aff969-0515-40d5-b08a-c3acdcde5a1a",
+          "vehicle": {
+            "userVehicleId": "40f54da9-5677-49bd-bfbb-1fda21d63214",
+            "modelName": "VF6",
+            "trim": "Plus",
+            "licensePlateMasked": "30A***45"
+          },
+          "milestone": {
+            "odoMilestoneKm": 12000,
+            "monthMilestone": 12,
+            "label": "12,000 km / 12 months",
+            "dueDate": "2027-04-07",
+            "dueStatus": "OVERDUE",
+            "dueReason": "KM",
+            "remainingKm": -500,
+            "remainingDays": 182,
+            "items": [
+              {
+                "itemCode": "BATTERY_CHECK",
+                "itemName": "High-voltage battery check",
+                "isCoveredByWarranty": true
+              },
+              {
+                "itemCode": "BRAKE_INSPECTION",
+                "itemName": "Brake system inspection",
+                "isCoveredByWarranty": false
+              }
+            ]
+          },
+          "reason": "Xe đã quá mốc 12.000 km: quá 500 km. Đề xuất khung giờ sớm nhất còn trống.",
+          "locationBasis": "NONE",
+          "locationLabel": null,
+          "primary": {
+            "optionId": "opt-1",
+            "workshopId": "54cefeb0-c8fd-438e-976b-48e0c49773a9",
+            "workshopName": "VinFast Thanh Xuan",
+            "address": "VinFast Thanh Xuan address",
+            "region": "Ha Noi",
+            "distanceKm": null,
+            "isPreferred": false,
+            "date": "2026-10-10",
+            "timeSlot": "15:00",
+            "estimate": {
+              "chargeableTotal": "100000.00",
+              "hasReferencePrice": false,
+              "coveredCount": 1
+            }
+          },
+          "alternatives": [],
+          "expiresAt": "2026-10-07T02:30:00+00:00"
+        }
+      }
+    ],
+    "note": "Current live run, model output and runtime delivery; no historical trace was edited."
+  },
+  {
+    "session_id": "SESSION-06",
+    "turn": 4,
+    "user": "Tôi muốn xưởng 114b13a9-a561-44c4-86af-4678d02f63a6, hãy kiểm tra lịch ở đó trước.",
+    "raw_model_answer": "Xưởng 114b13a9-a561-44c4-86af-4678d02f63a6 có lịch trống toàn bộ 23 khung giờ trong hôm nay (07/10/2026), mỗi khung còn 4 chỗ.\nBạn hãy chọn rõ một khung giờ nếu muốn đặt lịch. Lịch chưa được đặt hoặc giữ chỗ.",
+    "delivered_answer": "Ngày 07/10/2026, xưởng 114b13a9-a561-44c4-86af-4678d02f63a6 có 23 khung giờ khả dụng.\n- 00:00: còn 4 chỗ.\n- 01:00: còn 4 chỗ.\n- 02:00: còn 4 chỗ.\n- 03:00: còn 4 chỗ.\n- 04:00: còn 4 chỗ.\n- 05:00: còn 4 chỗ.\n- 06:00: còn 4 chỗ.\n- 07:00: còn 4 chỗ.\n- 08:00: còn 4 chỗ.\n- 09:00: còn 4 chỗ.\n- 10:00: còn 4 chỗ.\n- 11:00: còn 4 chỗ.\n- 12:00: còn 4 chỗ.\n- 13:00: còn 4 chỗ.\n- 14:00: còn 4 chỗ.\n- 15:00: còn 4 chỗ.\n- 16:00: còn 4 chỗ.\n- 17:00: còn 4 chỗ.\n- 18:00: còn 4 chỗ.\n- 19:00: còn 4 chỗ.\n- 20:00: còn 4 chỗ.\n- 21:00: còn 4 chỗ.\n- 22:00: còn 4 chỗ.\nBạn hãy chọn rõ một khung giờ. Lịch chưa được đặt hoặc giữ chỗ.",
+    "current_turn_calls": [
+      {
+        "name": "get_available_slots",
+        "args": {
+          "workshop_id": "114b13a9-a561-44c4-86af-4678d02f63a6",
+          "target_date": "2026-10-07"
+        },
+        "result": {
+          "workshop_id": "114b13a9-a561-44c4-86af-4678d02f63a6",
+          "date": "2026-10-07",
+          "requested": null,
+          "slots": [
+            {
+              "time_slot": "00:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "01:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "02:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "03:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "04:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "05:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "06:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "07:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "08:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "09:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "10:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "11:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "12:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "13:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "14:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "15:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "16:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "17:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "18:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "19:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "20:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "21:00:00",
+              "available": true,
+              "remaining": 4
+            },
+            {
+              "time_slot": "22:00:00",
+              "available": true,
+              "remaining": 4
+            }
+          ],
+          "alternatives": []
+        },
+        "artifact": null
+      }
+    ],
+    "note": "Current live run, model output and runtime delivery; no historical trace was edited."
+  }
+]

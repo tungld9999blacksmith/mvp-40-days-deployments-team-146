@@ -1,0 +1,8 @@
+{
+  "models": {},
+  "key_present": true,
+  "embedding_provider": "gemini",
+  "embedding_model": "gemini-embedding-001",
+  "embedding_dimensions": 3072,
+  "error": "ConnectError: [WinError 10061] No connection could be made because the target machine actively refused it"
+}

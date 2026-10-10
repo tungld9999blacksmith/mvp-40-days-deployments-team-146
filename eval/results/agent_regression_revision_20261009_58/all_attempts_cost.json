@@ -1,0 +1,11 @@
+{
+  "pipeline": 0.08904071725,
+  "judge": 0,
+  "all": 0.08904071725,
+  "embedding_calls": 24,
+  "embedding_cost_usd": null,
+  "missing_pipeline_receipts": 0,
+  "missing_judge_receipts": 0,
+  "scope": "Reconciled55/57 plus new58 development attempts/pilots/judge controls within original shared cap; embedding fees unknown.",
+  "prior55_57_pipeline_usd": 0.04645228325
+}

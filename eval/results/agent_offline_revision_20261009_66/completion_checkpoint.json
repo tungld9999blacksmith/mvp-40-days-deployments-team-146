@@ -1,0 +1,44 @@
+{
+  "revision": 66,
+  "status": "DEVELOPMENT_REPORT_AND_OFFLINE_REPAIRS_COMPLETE",
+  "approved_four_steps_complete": true,
+  "approved_step5_development_scope_already_complete": true,
+  "historical_technical_observations_per_model": 90,
+  "historical_unique_judged_answers": 60,
+  "historical_flagged_samples_audited": 14,
+  "new_diagnostics_not_judge_labels": 60,
+  "new_cached_rag_replays": 12,
+  "new_live_model_outputs": 0,
+  "procedure_omissions_repaired_in_replay": 2,
+  "new_api_calls": 0,
+  "new_api_cost_usd": 0,
+  "final_regression_passed": 256,
+  "new_test_count": 36,
+  "fresh_semantic_accuracy": "NOT_MEASURED",
+  "independent_source_validation": "NOT_COMPLETED",
+  "production_acceptance": false,
+  "model_change": false,
+  "env_change": false,
+  "deferred": [
+    "220 questions +20 sessions",
+    "120 more judgments",
+    "New model comparisons/repeats",
+    "Independent holdout/source/judge validation",
+    "Live staging/UI",
+    "Production acceptance"
+  ],
+  "preservation": {
+    "history": {
+      "files_verified": 2986,
+      "unchanged": true,
+      "changed": []
+    },
+    "intentional_runtime_changes": [
+      "backend/src/agents/tools/RAG/query/generator.py"
+    ],
+    "unchanged_original_source_files": 340,
+    "original_generator_preserved": true,
+    "env_unchanged": true
+  },
+  "cost_ledger": "all_attempts_cost.json"
+}

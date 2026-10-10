@@ -1,0 +1,61 @@
+{
+  "producers": {
+    "repeat1_base": {
+      "files_verified": 7,
+      "unchanged": true,
+      "changed": []
+    },
+    "repeat2_base": {
+      "files_verified": 7,
+      "unchanged": true,
+      "changed": []
+    },
+    "repeat3_base": {
+      "files_verified": 7,
+      "unchanged": true,
+      "changed": []
+    },
+    "repeat1_agent_gemma": {
+      "files_verified": 7,
+      "unchanged": true,
+      "changed": []
+    },
+    "repeat2_agent_gemma": {
+      "files_verified": 7,
+      "unchanged": true,
+      "changed": []
+    },
+    "repeat3_agent_gemma": {
+      "files_verified": 7,
+      "unchanged": true,
+      "changed": []
+    }
+  },
+  "preservation": {
+    "history": {
+      "files_verified": 2812,
+      "unchanged": true,
+      "changed": []
+    },
+    "corpus": {
+      "files_verified": 43,
+      "unchanged": true,
+      "changed": []
+    },
+    "source": {
+      "files_verified": 335,
+      "unchanged": true,
+      "changed": []
+    },
+    "env_unchanged": true,
+    "dataset_unchanged": true,
+    "rubric_unchanged": true
+  },
+  "master_final_seal": "PENDING: judge authorization or explicit final close",
+  "original60_master": {
+    "files_verified": 39,
+    "unchanged": true,
+    "changed": []
+  },
+  "historical57_changed_files": "Original3 replaced files remain disclosed in58 audit; not restored."
+}

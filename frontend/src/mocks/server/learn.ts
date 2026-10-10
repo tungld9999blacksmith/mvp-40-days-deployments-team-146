@@ -2,7 +2,7 @@
  * Learns reference data from real backend responses so mock screens reuse real ids and names:
  * the owner, their vehicle, nearby workshops, and bookings the real API-BK-03 creates.
  */
-import { observe } from './core'
+import { observe, rewrite } from './core'
 import {
   getDb,
   hash01,
@@ -102,6 +102,18 @@ export function registerLearners() {
     save()
   })
 
+  // A mock quote id means nothing to the real backend: drop it from API-BK-03 and attach
+  // the quote to the shadow booking once the real hold succeeds (us-049 HOOK-QT-01).
+  rewrite(GROUP, 'POST', '/bookings', req => {
+    const body = { ...(req.body as Record<string, unknown>) }
+    const quoteId = typeof body.quoteId === 'string' ? body.quoteId : null
+    if (quoteId && getDb().quotes.some(quote => quote.quoteId === quoteId)) {
+      pendingQuote = quoteId
+      delete body.quoteId
+    }
+    return body
+  })
+
   observe(GROUP, 'POST', '/bookings', (req, data) => {
     const booking = data as {
       bookingId: string
@@ -134,6 +146,8 @@ export function registerLearners() {
     }
     const status = booking.status.toLowerCase() as BookingState
     const odoMilestone = body.milestoneRef && /^\d+$/.test(body.milestoneRef) ? Number(body.milestoneRef) : null
+    const quote = pendingQuote ? db.quotes.find(item => item.quoteId === pendingQuote) ?? null : null
+    pendingQuote = null
     const now = nowIso()
     const shadow: MockBooking = {
       bookingId: booking.bookingId,
@@ -152,7 +166,8 @@ export function registerLearners() {
       ownerCancelableUntil: booking.ownerCancelableUntil,
       confirmationMode: booking.confirmationMode.toUpperCase() === 'AUTO' ? 'AUTO' : 'MANUAL',
       odoMilestone,
-      estimatedCost: booking.estimatedCost === null ? null : Number(booking.estimatedCost),
+      quoteId: quote?.quoteId ?? null,
+      estimatedCost: quote?.approvedTotal ?? (booking.estimatedCost === null ? null : Number(booking.estimatedCost)),
       actualCost: null,
       note: body.note ?? null,
       attendanceConfirmedAt: null,
@@ -167,6 +182,7 @@ export function registerLearners() {
       reschedules: [],
       progress: [],
     }
+    if (quote) quote.bookingId = shadow.bookingId
     db.bookings = db.bookings.filter(item => item.bookingId !== shadow.bookingId)
     db.bookings.push(shadow)
     save()
@@ -185,6 +201,9 @@ export function registerLearners() {
       at: nowIso(),
     })
     booking.status = 'cancelled'
+    for (const quote of getDb().quotes) if (quote.bookingId === booking.bookingId) quote.bookingId = null
     save()
   })
 }
+
+let pendingQuote: string | null = null

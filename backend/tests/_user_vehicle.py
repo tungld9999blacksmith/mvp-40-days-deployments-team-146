@@ -26,6 +26,10 @@ from src.common.core.maintenance.booking import Booking
 from src.common.core.maintenance.maintenance_rule import MaintenanceRule
 from src.common.core.maintenance.reminder import Reminder
 from src.common.core.notification import (
+    EmailOutbox,
+    EmailSuppression,
+    EmailVehicleGate,
+    EmailWebhookEvent,
     ReminderDelivery,
     UserNotificationChannel,
     UserNotificationSetting,
@@ -59,6 +63,7 @@ from src.modules.vehicle_owner_onboarding.domain import (
 )
 
 TABLES = [
+    EmailOutbox.__table__, EmailSuppression.__table__, EmailVehicleGate.__table__, EmailWebhookEvent.__table__,
     VehicleUser.__table__,
     WorkshopOwner.__table__,
     Workshop.__table__,

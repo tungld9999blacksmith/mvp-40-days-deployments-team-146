@@ -13,13 +13,13 @@
 | Field | Value |
 | --- | --- |
 | Product | EV Care — AI Agent Chăm sóc sau bán & lịch bảo dưỡng xe điện |
-| Version | v3.5 |
+| Version | v3.8.1 |
 | Status | Draft — chờ PO/Mentor duyệt |
 | Product Owner | Lê Đức Tùng |
 | Project Manager | Mai Văn Trung |
 | Tech Lead | Nguyễn Lê Phước Tiến · Đinh Kim Thái · Lê Đức Tùng |
 | Mentor | Phạm Văn Ngoan |
-| Ngày cập nhật | 28/09/2026 |
+| Ngày cập nhật | 07/10/2026 |
 | Khung thời gian | 21/09 → 30/10/2026 |
 
 ### Change log
@@ -36,6 +36,8 @@
 | v3.5 | 28/09/2026 | Chốt PQ-11: mỗi chủ xe nhận thông báo ở **kênh Discord riêng** (bot + liên kết tài khoản Discord một lần, ENT-417); chốt Q-310: mock hãng gửi webhook |
 | v3.6 | 28/09/2026 | F7: số ngày nhắc trước do chủ xe cấu hình (mặc định 2 ngày); khung cài đặt kênh thông báo (mặc định Discord) đưa vào MVP, các kênh khác chờ adapter (NOTI-01 một phần) |
 | v3.7 | 02/10/2026 | **Bỏ khỏi phạm vi:** kết nối Discord (ENT-417), báo giá HITL (F5b, `quote`/`quote_item`) và phiếu hỗ trợ (`support_ticket`). Mọi thông báo hiện trong mục Thông báo của app; khung cài đặt kênh giữ lại, các kênh ngoài (Zalo/Telegram/SMS/Email) "Sắp có". F9 chỉ còn hỏi thăm và ghi nhận phản hồi. |
+| v3.8 | 07/10/2026 | **Đưa F5b — Báo giá HITL trở lại phạm vi (Should, S3).** Khôi phục bảng `quote`/`quote_item` (migration `b4e6f8a1c3d5`), API us-049 (API-QT-01…05, 11…14), job dọn nháp, màn báo giá của chủ xe và chủ xưởng, kết quả duyệt trong mục Thông báo. Kết nối Discord và phiếu hỗ trợ vẫn ngoài phạm vi. |
+| v3.8.1 | 07/10/2026 | Chỉ sửa tài liệu cho khớp spec và code, không đổi phạm vi: §4 thêm ghi chú "Kỹ thuật viên/Technician" trên giao diện = Chủ xưởng; §9 sửa Frontend từ Next.js thành React + Vite, thêm dòng Triển khai (Vercel + Railway) kèm runbook; F1 ghi đúng bước chọn model (us-001 API-004); F6 viết lại phần giữ chỗ/xác nhận theo us-029 (BR-007/010/013/014/015), sửa AC-F6-03 và thêm AC-F6-04; F7 sửa mức nhắc và tần suất theo us-021 (BR-501/502), viết lại AC-F7-01 (báo cáo 03/10, C-07). |
 
 ---
 
@@ -47,7 +49,7 @@
 
 ```
 Xe đã xác thực → Trạng thái đến hạn → Hỏi đáp có trích nguồn (RAG) → Dự toán chi phí
-→ Đặt lịch theo sức chứa xưởng
+→ (tuỳ chọn) Báo giá được chủ xưởng duyệt → Đặt lịch theo sức chứa xưởng
 → Check-in → Hoàn tất → Hỏi thăm sau dịch vụ
 ```
 
@@ -89,7 +91,7 @@ Cột **Bằng chứng** cho biết mức độ đã kiểm chứng. Pain point 
 | G1 | Chủ xe biết xe đang **Bình thường / Sắp đến hạn / Quá hạn** và mốc tiếp theo cần làm gì. | PP-01 |
 | G2 | Thông tin hạng mục, chi phí, bảo hành đúng model + mốc, **có trích nguồn chính hãng**; không có nguồn thì không khẳng định. | PP-03, PP-04 |
 | G3 | Đặt được lịch qua chat 24/7, **không vượt sức chứa** xưởng. | PP-02, PP-06 |
-| G4 | Chủ xưởng xem và xử lý lịch hẹn trên một màn hình; giảm hỏi đáp lặp lại. | PP-05 |
+| G4 | Chủ xưởng xem và xử lý lịch hẹn, báo giá trên một màn hình; giảm hỏi đáp lặp lại. | PP-05 |
 | G5 | Nhắc lịch hẹn và cho phép huỷ/đổi sớm để giải phóng slot. | PP-07 |
 
 ### 3.2 Phi mục tiêu
@@ -103,10 +105,12 @@ Tối ưu doanh thu xưởng, upsell, dự đoán hỏng hóc, chẩn đoán l�
 | Persona | Mô tả | Kênh | Spec |
 | --- | --- | --- | --- |
 | **Chủ xe** | Chủ **01** xe điện đã được hãng xác nhận sở hữu. Ưu tiên tài xế dịch vụ chạy 100–200 km/ngày và người mới mua xe. | Web App chủ xe (mobile-first) | FEAT-AUTH-001, 002 |
-| **Chủ xưởng** | Người quản lý **01** xưởng thuộc mạng lưới hãng, được hãng xác nhận qua Gmail + CCCD. Kiêm vai trò cố vấn dịch vụ. | Workshop Portal (desktop-first) | FEAT-AUTH-003, 004 |
+| **Chủ xưởng** | Người quản lý **01** xưởng thuộc mạng lưới hãng, được hãng xác nhận qua Gmail + CCCD. Kiêm vai trò cố vấn dịch vụ/người duyệt báo giá. | Workshop Portal (desktop-first) | FEAT-AUTH-003, 004 |
 | **Hệ thống hãng (mock)** | Nguồn sự thật: chủ xe, xe, model, ODO, bảo hành, xưởng, lịch sử dịch vụ. | API mock | `mock-system/proposed_erd.latest.md` |
 
 Không có role Service Advisor, nhân viên xưởng, Admin trong MVP.
+
+> **Thuật ngữ vai trò.** MVP có đúng **2 vai trò người dùng: Chủ xe và Chủ xưởng.** Các tài liệu thiết kế, giao diện và mã nguồn gọi vai trò thứ hai là **"Kỹ thuật viên" / "Technician"** (route `/technician/*`, wireframe "Technician Dashboard", "kỹ thuật viên duyệt báo giá"). Các tên này đều chỉ **Chủ xưởng** (tài khoản `workshop_owner`), không phải một vai trò riêng. Spec nghiệp vụ, API và entity dùng "Chủ xưởng" / `workshop_owner`; giao diện có thể hiển thị "Kỹ thuật viên". Khi phân quyền hay viết spec mới, luôn dùng `workshop_owner`.
 
 ### Use case tiêu biểu
 
@@ -128,10 +132,11 @@ Không có role Service Advisor, nhân viên xưởng, Admin trong MVP.
 | Must | F8 | Workshop Board | S3 |
 | Should | F7 | Nhắc mốc bảo dưỡng + nhắc lịch hẹn | S3–S4 |
 | Should | F6b | Booking Ticket + QR, huỷ/đổi lịch | S3–S4 |
+| Should | F5b | Báo giá HITL (AI lập nháp → chủ xưởng duyệt) | S3 |
 | Could | F9 | Hỏi thăm sau dịch vụ | S4 |
 | Could | F8b | Tiến độ chi tiết 6 bước (`service_progress`) | S4 |
 
-**Out of scope (MVP):** báo giá HITL do chủ xưởng duyệt và phiếu hỗ trợ (bỏ ở v3.7); kết nối Discord (bỏ ở v3.7); đăng nhập SĐT/OTP; nhiều xe/tài khoản; nhiều xưởng/chủ xưởng; Zalo Mini App; app native; các kênh Email/SMS/Telegram/Slack/Zalo/push (phase sau — Phụ lục B); khung cài đặt kênh và số ngày nhắc trước đã có (v3.6); chẩn đoán lỗi qua ảnh; telematics/OBD/SOH; thanh toán/đặt cọc; kho phụ tùng (WMS/ERP); voicebot; CDP hành vi; role nhân viên xưởng/Admin; xưởng ngoài mạng lưới hãng; nhiều ca/ngày, giờ nghỉ trưa, lịch nghỉ lễ.
+**Out of scope (MVP):** phiếu hỗ trợ (bỏ ở v3.7); kết nối Discord (bỏ ở v3.7); đăng nhập SĐT/OTP; nhiều xe/tài khoản; nhiều xưởng/chủ xưởng; Zalo Mini App; app native; các kênh Email/SMS/Telegram/Slack/Zalo/push (phase sau — Phụ lục B); khung cài đặt kênh và số ngày nhắc trước đã có (v3.6); chẩn đoán lỗi qua ảnh; telematics/OBD/SOH; thanh toán/đặt cọc; kho phụ tùng (WMS/ERP); voicebot; CDP hành vi; role nhân viên xưởng/Admin; xưởng ngoài mạng lưới hãng; nhiều ca/ngày, giờ nghỉ trưa, lịch nghỉ lễ.
 
 > F5b và F9 xuất phát từ `core.entity.md` (BR-004, BR-006) và Charter §4.1, không phải từ pain point đã kiểm chứng.
 
@@ -144,7 +149,7 @@ Không có role Service Advisor, nhân viên xưởng, Admin trong MVP.
 Đặc tả đầy đủ tại `docs/specs/sprint-1/feature-functional/us-001, us-005, us-009, us-013`. PRD không định nghĩa lại, chỉ chốt:
 
 - Chỉ **Google OAuth qua Firebase Authentication**.
-- Chủ xe khai **VIN / biển số**; hãng xác thực và trả về model, thông tin bảo hành, thông số kỹ thuật. Không có dropdown chọn model.
+- Chủ xe khai **VIN, biển số** và **chọn model** từ danh sách model của hãng (dropdown, us-001 API-004; năm sản xuất tuỳ chọn). Hãng đối chiếu VIN + biển số + model với hồ sơ sở hữu, rồi trả về thông tin bảo hành và thông số kỹ thuật. Model khai không khớp hồ sơ của hãng ⇒ xác thực thất bại với lý do `MODEL_MISMATCH`; dữ liệu của hãng là nguồn sự thật.
 - Chủ xưởng không chọn xưởng; hãng trả về đúng một xưởng theo Gmail + CCCD.
 
 ### F3 — Hồ sơ xe & trạng thái đến hạn
@@ -175,14 +180,14 @@ Không có role Service Advisor, nhân viên xưởng, Admin trong MVP.
 **Lưu trữ & truy vấn hội thoại** (dùng chung cho mọi tính năng chat: F4, F5, F6)
 
 - Mỗi chủ xe có các **hội thoại** (`conversation`) gắn với tài khoản và xe; mỗi hội thoại gồm các **tin nhắn** (`chat_message`) theo thứ tự thời gian.
-- Lưu tin nhắn của người dùng, của trợ lý và kết quả tool call. Mỗi tin nhắn của trợ lý lưu kèm trích dẫn nguồn, tool đã gọi, id đối tượng nghiệp vụ được tạo (booking) và trace id.
+- Lưu tin nhắn của người dùng, của trợ lý và kết quả tool call. Mỗi tin nhắn của trợ lý lưu kèm trích dẫn nguồn, tool đã gọi, id đối tượng nghiệp vụ được tạo (booking, quote) và trace id.
 - Backend là nơi **duy nhất** ghi tin nhắn. Câu trả lời của trợ lý được stream về client bằng SSE; chỉ lưu tin nhắn hoàn chỉnh.
 - Trạng thái Agent giữa các lượt (LangGraph checkpoint) lưu cùng database với tin nhắn.
 - Truy vấn cần hỗ trợ:
   - Mở lại app → tải hội thoại gần nhất (phân trang theo thời gian, mới nhất trước).
   - Danh sách hội thoại của chủ xe theo xe, theo thời gian.
   - Tìm theo từ khoá trong lịch sử chat của chính chủ xe.
-  - Chủ xưởng xem đoạn hội thoại dẫn tới một booking của xưởng mình (chỉ đọc).
+  - Chủ xưởng xem đoạn hội thoại dẫn tới một booking/quote của xưởng mình (chỉ đọc).
   - Xuất tin nhắn theo khoảng thời gian cho bộ eval và phân tích (ẩn danh).
 - Chủ xe chỉ đọc hội thoại của mình. Chủ xe yêu cầu xoá thì xoá toàn bộ hội thoại và checkpoint liên quan.
 - Thời gian lưu giữ: PQ-09.
@@ -207,9 +212,18 @@ Không có role Service Advisor, nhân viên xưởng, Admin trong MVP.
 - AC-F5-01: Tổng dự toán bằng đúng tổng giá các hạng mục tính phí do tool trả về.
 - AC-F5-02: Hạng mục không có giá xưởng hiển thị giá tham khảo kèm nhãn.
 
-### F5b — Báo giá HITL (đã bỏ ở v3.7)
+### F5b — Báo giá HITL
 
-Không còn trong phạm vi. Chủ xe xem dự toán (F5) rồi đặt lịch trực tiếp; chi phí cuối cùng do xưởng xác nhận khi kiểm tra xe.
+Bỏ ở v3.7, đưa lại vào phạm vi ở v3.8. Đặc tả đầy đủ: [us-049 FF](../specs/sprint-3/feature-functional/us-049-sprint-3-spec.ff.md), [API](../specs/sprint-3/api/us-049-sprint-3-spec.api.md), [AI-005](../specs/ai-agent/ai-005-sprint-3-spec.agent.md).
+
+- AI lập `quote` nháp từ dự toán → chủ xe bấm "Gửi xưởng duyệt" → `pending_approval`.
+- Chủ xưởng duyệt / sửa / từ chối kèm ghi chú (`reviewer_note`).
+- Báo giá có `expires_at`; quá hạn không gắn được vào booking (EDGE-006).
+- **Đặt lịch không bắt buộc có báo giá** (AF-001).
+
+**Acceptance criteria**
+- AC-F5b-01: Chỉ báo giá `approved` còn hạn mới gắn được vào booking.
+- AC-F5b-02: Báo giá bị từ chối hiển thị lý do cho chủ xe.
 
 ### F6 — Đặt lịch theo sức chứa
 
@@ -218,13 +232,16 @@ Không còn trong phạm vi. Chủ xe xem dự toán (F5) rồi đặt lịch tr
 - Chỉ nhận khung giờ nằm trong giờ hoạt động của xưởng (1 khung/ngày theo FEAT-AUTH-003).
 - Hết chỗ → đề xuất 2–3 phương án: khung gần nhất cùng xưởng, hoặc xưởng khác cùng khu vực.
 - Hiển thị thẻ tóm tắt; **chỉ tạo booking khi chủ xe bấm Xác nhận**.
-- Giữ chỗ: booking `pending` với `hold_expires_at` (PQ-02); khoá bằng Redis và kiểm tra lại trong transaction DB. Hết hạn → `cancelled` (EF-001).
+- Giữ chỗ: bấm Xác nhận tạo booking `pending` với `hold_expires_at = now + 10 phút` (PQ-02); khoá bằng Redis và kiểm tra lại trong transaction DB. Trong 10 phút này chủ xe được tự huỷ giữ chỗ; hết 10 phút booking **không** tự huỷ.
+- Xác nhận lịch hẹn theo chế độ của xưởng (`workshop.booking_confirmation_mode`): `auto` ⇒ `confirmed` ngay; `manual` ⇒ chờ chủ xưởng chấp nhận/từ chối trên Workshop Board. Xưởng thủ công không xử lý trước hạn chót (`BOOKING_WS_CONFIRM_DEADLINE_HOURS`, mặc định 12 giờ từ lúc giữ chỗ, không muộn hơn giờ hẹn) ⇒ hệ thống tự huỷ, giải phóng chỗ và báo chủ xe. Chi tiết: [us-029 FF](../specs/sprint-3/feature-functional/us-029-sprint-3-spec.ff.md) BR-007, BR-010, BR-014, BR-015.
+- Mỗi xe có tối đa 1 booking đang mở (`pending`/`confirmed`/`checked_in`/`in_progress`); đặt thêm ⇒ gợi ý đổi lịch (us-029 BR-013).
 - Tool đặt lịch của Agent và API đặt lịch trên UI dùng **chung một service** kiểm tra chỗ trống.
 
 **Acceptance criteria**
 - AC-F6-01: 20 request đồng thời vào khung còn 1 chỗ → đúng 1 booking thành công, 19 nhận phương án thay thế.
 - AC-F6-02: Không có booking nào được tạo khi chưa có xác nhận của chủ xe.
-- AC-F6-03: Booking `pending` quá hạn giữ chỗ tự chuyển `cancelled` và giải phóng chỗ.
+- AC-F6-03: Chủ xe huỷ giữ chỗ trong 10 phút ⇒ booking `cancelled`, chỗ được giải phóng ngay. Hết 10 phút, booking `pending` vẫn giữ chỗ và chờ xưởng (không tự huỷ).
+- AC-F6-04: Xưởng chế độ `manual` không chấp nhận/từ chối trước hạn chót (12 giờ từ lúc giữ chỗ, hoặc giờ hẹn nếu sớm hơn) ⇒ booking tự chuyển `cancelled`, giải phóng chỗ và chủ xe nhận thông báo. Xưởng chế độ `auto` ⇒ booking `confirmed` ngay khi chủ xe bấm Xác nhận.
 
 ### F6b — Booking Ticket, QR, huỷ/đổi
 
@@ -233,7 +250,7 @@ Không còn trong phạm vi. Chủ xe xem dự toán (F5) rồi đặt lịch tr
 
 ### F7 — Nhắc
 
-- **Nhắc mốc bảo dưỡng:** job hằng ngày theo cấp `early / warning / urgent / expired`; tối đa 1 lần/xe/tuần (PQ-04); dừng khi mốc đã có booking. Xe hết bảo hành → bỏ nội dung cảnh báo bảo hành.
+- **Nhắc mốc bảo dưỡng:** job chạy hằng ngày (mặc định 08:00, Asia/Ho_Chi_Minh) với 2 mức: `early` khi còn ≤ `lead_days` ngày (chủ xe cấu hình, mặc định 2) **hoặc** ≤ `DUE_SOON_KM` km (mặc định 500); `expired` khi đã quá hạn. Mỗi (xe, mốc, mức) chỉ nhắc **một lần**, nên một mốc có tối đa 2 nhắc; điều này đáp ứng giới hạn tối đa 1 lần/xe/tuần (PQ-04). Dừng và đóng nhắc đang mở khi mốc đã có booking. Chi tiết: us-021 BR-501…503. Xe hết bảo hành → bỏ nội dung cảnh báo bảo hành.
 - **Nhắc lịch hẹn:** 24h trước giờ hẹn, nút Xác nhận / Đổi / Huỷ.
 - **Thời điểm nhắc mốc do chủ xe cấu hình:** mặc định nhắc **trước ngày đến hạn 2 ngày** (đổi được 0–30 ngày, hoặc tắt nhắc). Chi tiết: [us-021 FF](../specs/sprint-2/feature-functional/us-021-sprint-2-spec.ff.md).
 - **Kênh: trong app.** Mọi lần nhắc được ghi lại và hiện trong mục **Thông báo** của app (bỏ kết nối Discord ở v3.7). Chủ xe có màn cài đặt kênh; khung cấu hình liệt kê Zalo / Telegram / SMS / Email nhưng MVP chưa có adapter nào, các kênh này hiện "Sắp có". Bật nhắc không bắt buộc chọn kênh ngoài.
@@ -243,7 +260,7 @@ Không còn trong phạm vi. Chủ xe xem dự toán (F5) rồi đặt lịch tr
 - Nhắc lịch hẹn 24h (F7) và hỏi thăm sau dịch vụ (F9) cũng hiện trong mục Thông báo.
 
 **Acceptance criteria**
-- AC-F7-01: Mọi xe `DUE_SOON` chưa có booking nhận nhắc trong lần chạy job kế tiếp, không quá 1 lần/tuần.
+- AC-F7-01: Xe chưa có booking cho mốc tiếp theo, đã bật nhắc và thoả điều kiện nhắc của us-021 (còn ≤ `lead_days` ngày, hoặc ≤ `DUE_SOON_KM` km, hoặc quá hạn) nhận nhắc trong lần chạy job kế tiếp. Chạy lại job trong ngày không tạo nhắc trùng; mỗi (xe, mốc, mức) chỉ một nhắc. Xe `DUE_SOON` (còn ≤ 14 ngày) nhưng chưa tới `lead_days` thì **chưa** nhận nhắc.
 - AC-F7-02: Huỷ từ nhắc 24h giải phóng chỗ ngay lập tức.
 
 ### F8 — Workshop Board
@@ -251,6 +268,7 @@ Không còn trong phạm vi. Chủ xe xem dự toán (F5) rồi đặt lịch tr
 - Danh sách booking hôm nay / 7 ngày tới, lọc theo trạng thái.
 - Chuyển trạng thái theo state machine: `confirmed → checked_in → in_progress → completed`, hoặc `cancelled`. Check-in bằng quét QR hoặc bấm tay.
 - `completed` kích hoạt: cập nhật lịch sử và mốc tiếp theo; lên lịch hỏi thăm (F9).
+- Duyệt báo giá (F5b).
 - Khoá bớt chỗ trong một khung giờ (khách gọi điện, khách vãng lai).
 - Chủ xưởng chỉ thấy dữ liệu xưởng mình.
 
@@ -272,8 +290,8 @@ Không còn trong phạm vi. Chủ xe xem dự toán (F5) rồi đặt lịch tr
 | Official-source first | Thông tin kỹ thuật/bảo hành chỉ từ tài liệu chính hãng đã ingest, có trích dẫn. |
 | No source = no claim | Không tìm thấy nguồn đủ liên quan → không khẳng định, chuyển xưởng. |
 | Deterministic rules | Trạng thái đến hạn, giá, sức chứa, tạo booking do backend/tool xử lý. LLM chỉ gọi tool và diễn giải. |
-| Confirm before side effect | Không tạo booking, huỷ lịch khi chưa có xác nhận rõ của người dùng. |
-| Estimate label | Mọi con số chi phí gắn nhãn "ước tính". |
+| Confirm before side effect | Không tạo booking, gửi báo giá, huỷ lịch khi chưa có xác nhận rõ của người dùng. |
+| Estimate label | Mọi con số chi phí gắn nhãn "ước tính", trừ báo giá đã được chủ xưởng duyệt. |
 | Privacy | Chủ xe chỉ thấy dữ liệu của mình; chủ xưởng chỉ thấy dữ liệu xưởng mình. Không đưa CCCD/VIN vào prompt khi không cần. |
 | Escalation | Tranh chấp bảo hành, yêu cầu đặc biệt → AI thừa nhận giới hạn và chuyển xưởng kèm tóm tắt ngữ cảnh. |
 
@@ -308,8 +326,9 @@ Không còn trong phạm vi. Chủ xe xem dự toán (F5) rồi đặt lịch tr
 | File | Supabase Storage | PDF tài liệu chính hãng (nguồn ingest). |
 | Thông báo | Feed trong app (MVP) | Nhắc mốc, nhắc lịch hẹn, hỏi thăm hiện trong mục Thông báo. Zalo/Email/SMS/Telegram ở phase sau qua adapter của `NotificationService` (NOTI-01). |
 | Cache / queue | Redis | Khoá giữ chỗ (TTL = thời gian giữ), rate limit, hàng đợi job: đồng bộ ODO/lịch sử dịch vụ từ hãng, nhắc mốc, nhắc 24h, follow-up, thu hồi token. |
-| Frontend | Next.js + Tailwind | Web App chủ xe (mobile-first), Workshop Portal (desktop-first). |
+| Frontend | React 19 + Vite + TypeScript + Tailwind 4 + React Router 7 | Web App chủ xe (mobile-first), Workshop Portal (desktop-first) trong cùng một SPA. |
 | Đóng gói | Docker / docker-compose | backend, worker, redis; Postgres/Storage dùng Supabase. |
+| Triển khai (web) | Vercel (frontend) + Railway (backend, worker, Redis) | Vercel phục vụ SPA và chuyển tiếp `/api/*` sang Railway. Runbook: [`deployments/VERCEL_FRONTEND_DEPLOYMENT.MD`](../deployments/VERCEL_FRONTEND_DEPLOYMENT.MD), [`deployments/RAILWAY_BACKEND_DEPLOYMENT.MD`](../deployments/RAILWAY_BACKEND_DEPLOYMENT.MD). |
 | LLM | Gemini Flash-tier đang được hỗ trợ — chốt ở Tech Spec | Function calling tiếng Việt. |
 | Embedding | `bge-m3` (1024 chiều, đa ngôn ngữ) | Khớp `vector(1024)` (Q-408). |
 
@@ -325,7 +344,7 @@ Không còn trong phạm vi. Chủ xe xem dự toán (F5) rồi đặt lịch tr
 
 | Tiêu chí | A. Supabase PostgreSQL (+ Realtime khi cần) | B. Firestore |
 | --- | --- | --- |
-| Truy vấn cần có (F4) | SQL: join với `user_vehicle`, `booking`; full-text search; tổng hợp cho eval | Truy vấn theo 1 collection; không join; tìm từ khoá cần dịch vụ ngoài; tổng hợp hạn chế |
+| Truy vấn cần có (F4) | SQL: join với `user_vehicle`, `booking`, `quote`; full-text search; tổng hợp cho eval | Truy vấn theo 1 collection; không join; tìm từ khoá cần dịch vụ ngoài; tổng hợp hạn chế |
 | Truy ngược booking ↔ tin nhắn (AC-F4-06) | FK và cùng transaction với booking | Hai database, không có transaction chung; phải tự đồng bộ |
 | LangGraph checkpoint | Có checkpointer Postgres chính thức | Không có checkpointer chính thức; phải tự viết hoặc dùng thư viện cộng đồng |
 | Realtime | Không cần cho chat (đã có SSE). Supabase Realtime dùng được cho Board nếu cần | Mạnh nhất ở realtime + offline trên client — nhưng chat này không cần client tự đồng bộ |
@@ -355,6 +374,7 @@ Không còn trong phạm vi. Chủ xe xem dự toán (F5) rồi đặt lịch tr
 | Booking | Vượt sức chứa | 0 lần | AC-F6-01 |
 | Booking | Thời gian từ ý định đến xác nhận (median) | < 2 phút | Log trace |
 | Booking | Hoàn tất khi có ý định đặt | ≥ 60% | Log phiên với 15–30 người thử |
+| HITL | Thời gian duyệt báo giá (median) | Đo, chưa đặt mục tiêu | Log |
 
 **Chuyển sang pilot thật (không đo trong MVP):** số chủ xe thật tham gia, mức giảm thời gian trao đổi của xưởng, tỷ lệ xác nhận có mặt sau nhắc hẹn. Lý do: OEM mock khiến chủ xe thật không xác thực được xe, và chưa có baseline từ xưởng thật.
 
@@ -366,7 +386,7 @@ Không còn trong phạm vi. Chủ xe xem dự toán (F5) rồi đặt lịch tr
 | --- | --- | --- | --- |
 | M3 | 28/09–04/10 | Thiết kế giải pháp | Spec F3, F4, F5 + tool contract + chốt PQ-01…07 |
 | M4 — Demo 1 | 05–11/10 | Xác thực → trạng thái đến hạn → RAG → dự toán | AC-F3, AC-F4, AC-F5 đạt |
-| M5 | 12–18/10 | Đặt lịch + Board | AC-F6, AC-F8 đạt |
+| M5 | 12–18/10 | Đặt lịch + Board + báo giá HITL | AC-F6, AC-F8, AC-F5b đạt |
 | M6 — Demo 2 | 19–25/10 | Luồng xuyên suốt + nhắc | Chỉ số mục 10 có số liệu |
 | M7 — Pilot | 26–30/10 | Deploy staging, runbook | Người thử dùng được |
 | M8 | 30/10 | Đánh giá cuối kỳ | Báo cáo + roadmap phase sau |
@@ -421,7 +441,7 @@ Không còn trong phạm vi. Chủ xe xem dự toán (F5) rồi đặt lịch tr
 | F3 | `docs/specs/sprint-2/feature-functional/us-017`, `api/us-017`, `entity/us-017` |
 | F3, F7 | `docs/specs/entity/maintenance/maintenance_rule`, `reminder` |
 | F4 | `docs/specs/entity/knowledge/*` |
-| F5 | `docs/specs/entity/workshop/service_price` |
+| F5, F5b | `docs/specs/entity/workshop/service_price`, `maintenance/quote`, `quote_item` |
 | F6, F6b, F8 | `docs/specs/entity/maintenance/booking`, `workshop/workshop` |
 | F9 | `docs/specs/entity/crm/follow_up` |
 | Mốc, rủi ro | `docs/project/ProjectCharter_EV_Care_MVP.docx` |
@@ -448,7 +468,7 @@ Không còn trong phạm vi. Chủ xe xem dự toán (F5) rồi đặt lịch tr
 | 1 | Đăng nhập SĐT hoặc Google | Chỉ Google qua Firebase; OTP phase sau | Chỉ Google |
 | 2 | Chọn model từ dropdown | Khai VIN/biển số, hãng xác thực | Theo spec; ODO chỉ đồng bộ từ hãng (định kỳ / webhook), chủ xe không nhập |
 | 3 | Người dùng phụ là Service Advisor | Không có role Advisor (W-11) | Chủ xưởng |
-| 4 | v2 không có HITL báo giá | BR-004: chủ xưởng duyệt `quote` | Không làm (bỏ F5b ở v3.7) |
+| 4 | v2 không có HITL báo giá | BR-004: chủ xưởng duyệt `quote` | F5b (bỏ ở v3.7, làm lại ở v3.8); booking không bắt buộc có quote |
 | 5 | Sức chứa theo thợ × thời lượng | `workshop` chỉ có số thợ, slot khẩn cấp | Đếm theo đầu thợ/khung |
 | 6 | Mini-board chỉ Check-in/Huỷ | `booking.status` có `in_progress`, `completed` | Board chuyển đủ trạng thái |
 | 7 | v2 bỏ follow-up/tiến độ | Entity có `service_progress`, `follow_up` | F9 (không phiếu hỗ trợ), F8b (Could) |

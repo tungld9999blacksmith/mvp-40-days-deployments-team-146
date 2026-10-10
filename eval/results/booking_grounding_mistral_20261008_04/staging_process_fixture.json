@@ -1,0 +1,7 @@
+{
+  "user_id": 1,
+  "conversation_id": "fc564c06-96ac-422c-a0e4-cd77018e73a0",
+  "proposal_id": "6261e540-5d0d-44a3-900f-7cef6162ed95",
+  "proposal_message_id": "37e1d330-fe6a-4863-b654-45f81864c40b",
+  "redis_prefix": "eval-process-ffb359cd5b594e9a8f1a09611d2d78db"
+}

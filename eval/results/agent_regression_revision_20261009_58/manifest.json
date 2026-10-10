@@ -1,0 +1,97 @@
+{
+  "date": "2026-10-09",
+  "scope": "DEVELOPMENT_REGRESSION_REVISION58_TWO_CONFIGURATIONS_THREE_REPEATS",
+  "independent_holdout_certified": false,
+  "production_acceptance": false,
+  "dataset_sha256": "f6d83be7c7d36fa00c7247f1130cf1ad1dd7bc87c8fe87f1efd0f082abd657f6",
+  "rubric_sha256": "54d15659b634442c6ff4531acc18d89741310996b71c41f7246d3b1dccc7a7b5",
+  "env_sha256": "76dadfbc681b8175ff3d347e61b41c6926926b916a9024c7a108430ec98fdfbc",
+  "models": {
+    "base": "mistralai/mistral-small-2603",
+    "agent_gemma": "google/gemma-4-26b-a4b-it"
+  },
+  "rewrite_model": "mistralai/mistral-small-2603",
+  "generation_model": "mistralai/mistral-small-2603",
+  "embedding": "models/gemini-embedding-001/3072",
+  "clock": "2026-10-07T09:00:00+07:00",
+  "dataset_usage": "Existing candidate30 used to fix reminder/booking; now development regression. Original dataset unchanged.",
+  "pilot_ids": [
+    "NEW-R02",
+    "NEW-B04",
+    "NEW-N01",
+    "NEW-N02"
+  ],
+  "selected_ids": [
+    "NEW-R01",
+    "NEW-R02",
+    "NEW-R03",
+    "NEW-R04",
+    "NEW-R05",
+    "NEW-R06",
+    "NEW-G01",
+    "NEW-G02",
+    "NEW-G03",
+    "NEW-G04",
+    "NEW-G05",
+    "NEW-B01",
+    "NEW-B02",
+    "NEW-B03",
+    "NEW-B04",
+    "NEW-B05",
+    "NEW-B06",
+    "NEW-B07",
+    "NEW-B08",
+    "NEW-M01",
+    "NEW-M02",
+    "NEW-M03",
+    "NEW-M04",
+    "NEW-M05",
+    "NEW-M06",
+    "NEW-N01",
+    "NEW-N02",
+    "NEW-N03",
+    "NEW-N04",
+    "NEW-N05"
+  ],
+  "order": [
+    [
+      1,
+      "base"
+    ],
+    [
+      1,
+      "agent_gemma"
+    ],
+    [
+      2,
+      "agent_gemma"
+    ],
+    [
+      2,
+      "base"
+    ],
+    [
+      3,
+      "base"
+    ],
+    [
+      3,
+      "agent_gemma"
+    ]
+  ],
+  "full_outputs": 180,
+  "receipt_caps_usd": {
+    "all": 0.75,
+    "pipeline": 0.23,
+    "judge": 0.5
+  },
+  "prior_known_pipeline_cost_usd": 0.04645228325,
+  "budget": "Shared original cap includes all reconciled55/57 costs plus58; check before next case/request, in-flight may cross threshold. Embedding fees unknown.",
+  "transport": "Fresh readonly Qdrant client per read operation,60s. No retry of complete cases or model calls.",
+  "call_caps": {
+    "agent_per_case": 6,
+    "rag_per_case": 2
+  },
+  "gpt4o": "EXCLUDED",
+  "write": "INACTIVE"
+}

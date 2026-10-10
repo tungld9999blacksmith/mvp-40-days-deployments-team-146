@@ -1,0 +1,5 @@
+{
+    "port":  5177,
+    "pid":  1212,
+    "component":  "real_frontend_auth_emulator"
+}

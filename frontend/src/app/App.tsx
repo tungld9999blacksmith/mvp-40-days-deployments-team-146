@@ -14,6 +14,11 @@ import TechnicianLayout from '@/layouts/TechnicianLayout'
 import Dashboard from '@/features/dashboard/pages/Dashboard'
 import VehicleDetail from '@/features/vehicles/pages/VehicleDetail'
 import ServiceHistory from '@/features/maintenance/pages/ServiceHistory'
+import MyQuotes from '@/features/quotes/pages/MyQuotes'
+import QuoteNew from '@/features/quotes/pages/QuoteNew'
+import QuoteDetail from '@/features/quotes/pages/QuoteDetail'
+import PendingQuotes from '@/features/quotes/pages/PendingQuotes'
+import QuoteReview from '@/features/quotes/pages/QuoteReview'
 import AIAssistant from '@/features/assistant/pages/AIAssistant'
 import Estimate from '@/features/estimate/pages/Estimate'
 import EstimateCompare from '@/features/estimate/pages/EstimateCompare'
@@ -25,6 +30,7 @@ import WorkshopBoard from '@/features/workshop-board/pages/WorkshopBoard'
 import CheckIn from '@/features/workshop-board/pages/CheckIn'
 import Capacity from '@/features/workshop-board/pages/Capacity'
 import BookingSettingsPage from '@/features/workshop-board/pages/BookingSettingsPage'
+import PriceListPage from '@/features/workshop-pricing/PriceListPage'
 import BookingLayout from '@/features/bookings/pages/BookingLayout'
 import BookingStart from '@/features/bookings/pages/BookingStart'
 import BookingProposal from '@/features/bookings/pages/BookingProposal'
@@ -34,6 +40,8 @@ import BookingConfirm from '@/features/bookings/pages/BookingConfirm'
 import BookingTicket from '@/features/bookings/pages/BookingTicket'
 import Notifications from '@/features/notifications/pages/Notifications'
 import NotificationSettings from '@/features/notifications/pages/NotificationSettings'
+import ReminderDetail from '@/features/notifications/pages/ReminderDetail'
+import DemoEmailOutbox from '@/features/notifications/pages/DemoEmailOutbox'
 import TechnicianDashboard from '@/features/dashboard/pages/TechnicianDashboard'
 import { WorkshopAuthProvider } from '@/features/workshop-auth/context/WorkshopAuthContext'
 import RequireActiveWorkshopOwner from '@/features/workshop-auth/guards/RequireActiveWorkshopOwner'
@@ -103,6 +111,9 @@ function AppRoutes() {
             <Route path="/ai/:conversationId" element={<AIAssistant />} />
             <Route path="/estimate" element={<Estimate />} />
             <Route path="/estimate/compare" element={<EstimateCompare />} />
+            <Route path="/quotes" element={<MyQuotes />} />
+            <Route path="/quotes/new" element={<QuoteNew />} />
+            <Route path="/quotes/:quoteId" element={<QuoteDetail />} />
             <Route path="/booking" element={<BookingLayout />}>
               <Route index element={<BookingStart />} />
               <Route path="proposal" element={<BookingProposal />} />
@@ -118,6 +129,8 @@ function AppRoutes() {
             <Route path="/follow-ups/:followUpId" element={<FollowUp />} />
             <Route path="/notifications" element={<Notifications variant="owner" />} />
             <Route path="/notifications/settings" element={<NotificationSettings />} />
+            <Route path="/notifications/reminders/:reminderId" element={<ReminderDetail />} />
+            <Route path="/notifications/demo-email" element={<DemoEmailOutbox />} />
           </Route>
         </Route>
       </Route>
@@ -140,9 +153,12 @@ function AppRoutes() {
             <Route path="/technician/bookings/:bookingId" element={<WorkshopBookingRedirect />} />
             <Route path="/technician/board" element={<WorkshopBoard />} />
             <Route path="/technician/board/:bookingId" element={<WorkshopBoard />} />
+            <Route path="/technician/quotes" element={<PendingQuotes />} />
+            <Route path="/technician/quote-review" element={<QuoteReview />} />
             <Route path="/technician/check-in" element={<CheckIn />} />
             <Route path="/technician/capacity" element={<Capacity />} />
             <Route path="/technician/settings/booking" element={<BookingSettingsPage />} />
+            <Route path="/technician/price-list" element={<PriceListPage />} />
             <Route path="/technician/notifications" element={<Notifications variant="portal" />} />
           </Route>
         </Route>

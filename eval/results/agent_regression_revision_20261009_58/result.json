@@ -1,0 +1,134 @@
+{
+  "pipeline": {
+    "pilot_base": {
+      "selected": 4,
+      "attempted": 4,
+      "complete": true,
+      "technical_pass": 4,
+      "scorer_pass": 4,
+      "safety_violations": 0,
+      "raw_argument_errors": 0,
+      "preflight_error": null,
+      "known_stage_cost_usd": {
+        "agent": 0.0063107219999999995,
+        "rewrite": 7.72365e-05,
+        "generation": 0.000203511
+      },
+      "known_total_llm_cost_usd": 0.0065914695,
+      "missing_receipts_by_stage": {
+        "agent": 0,
+        "rewrite": 0,
+        "generation": 0
+      },
+      "embedding_calls": 1,
+      "embedding_cost_usd": null,
+      "stage_calls": {
+        "agent": 11,
+        "rewrite": 1,
+        "generation": 1
+      },
+      "live_rag_calls": 1,
+      "mean_task_seconds": 10.301,
+      "production_acceptance": false,
+      "independent_labels": 0,
+      "semantic_correctness": "NOT_MEASURED"
+    },
+    "pilot_agent_gemma": {
+      "selected": 4,
+      "attempted": 4,
+      "complete": true,
+      "technical_pass": 4,
+      "scorer_pass": 4,
+      "safety_violations": 0,
+      "raw_argument_errors": 0,
+      "preflight_error": null,
+      "known_stage_cost_usd": {
+        "agent": 0.0025853060000000003,
+        "rewrite": 7.72365e-05,
+        "generation": 0.000134211
+      },
+      "known_total_llm_cost_usd": 0.0027967535,
+      "missing_receipts_by_stage": {
+        "agent": 0,
+        "rewrite": 0,
+        "generation": 0
+      },
+      "embedding_calls": 1,
+      "embedding_cost_usd": null,
+      "stage_calls": {
+        "agent": 11,
+        "rewrite": 1,
+        "generation": 1
+      },
+      "live_rag_calls": 1,
+      "mean_task_seconds": 11.8015,
+      "production_acceptance": false,
+      "independent_labels": 0,
+      "semantic_correctness": "NOT_MEASURED"
+    },
+    "repeat1_base": {
+      "selected": 30,
+      "attempted": 30,
+      "complete": true,
+      "technical_pass": 29,
+      "scorer_pass": 29,
+      "safety_violations": 0,
+      "raw_argument_errors": 0,
+      "preflight_error": null,
+      "known_stage_cost_usd": {
+        "agent": 0.030195264,
+        "rewrite": 0.0005929109999999999,
+        "generation": 0.002412036
+      },
+      "known_total_llm_cost_usd": 0.033200211,
+      "missing_receipts_by_stage": {
+        "agent": 0,
+        "rewrite": 0,
+        "generation": 0
+      },
+      "embedding_calls": 6,
+      "embedding_cost_usd": null,
+      "stage_calls": {
+        "agent": 58,
+        "rewrite": 6,
+        "generation": 6
+      },
+      "live_rag_calls": 6,
+      "mean_task_seconds": 5.6465000000000005,
+      "production_acceptance": false,
+      "independent_labels": 0,
+      "semantic_correctness": "NOT_MEASURED"
+    }
+  },
+  "judge": {},
+  "comparisons": {
+    "base": {
+      "repeats": [
+        {
+          "repeat": 1,
+          "selected": 30,
+          "attempted": 30,
+          "technical_pass": 29,
+          "raw_argument_errors": 0,
+          "safety_violations": 0,
+          "mean_seconds": 5.6465000000000005,
+          "p90_seconds": 13.0873,
+          "known_pipeline_cost_usd": 0.033200211,
+          "judge_attempted": 0,
+          "automatic_counts": {}
+        }
+      ],
+      "mean_latency_between_repeats_stdev": null,
+      "unique_case_count": 30,
+      "repeated_observations_not90_independent_cases": true
+    },
+    "agent_gemma": {
+      "repeats": [],
+      "mean_latency_between_repeats_stdev": null,
+      "unique_case_count": 30,
+      "repeated_observations_not90_independent_cases": true
+    }
+  },
+  "independent_holdout_certified": false,
+  "production_acceptance": false
+}

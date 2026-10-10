@@ -23,6 +23,7 @@ def create_llm_provider(settings: Settings, provider: str | None = None) -> LLMP
             provider_name="openrouter",
             base_url=settings.openrouter_base_url,
             default_max_tokens=settings.openrouter_max_tokens,
+            default_endpoint_order=[value.strip() for value in settings.openrouter_endpoint_order.split(",") if value.strip()],
         )
     if name == "openai":
         from .openai_compatible_provider import OpenAICompatibleProvider

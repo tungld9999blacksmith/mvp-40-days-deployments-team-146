@@ -1,0 +1,14 @@
+{
+  "status": "DEVELOPMENT_ITERATION_STOP_FOR_IDENTIFIED_REMINDER_FAILURE",
+  "full_complete": 1,
+  "full_planned": 6,
+  "repeat1_base": {
+    "attempted": 30,
+    "technical_pass": 29,
+    "safety_violations": 0
+  },
+  "remaining_runs_unattempted": 5,
+  "judge_calls": 0,
+  "reason": "NEW-N03 master-disable with preserved Email/days was rejected as explanation because purpose clause contains co the. Close58 without changing labels; fix in separate59 before spending on remaining comparisons.",
+  "independent_holdout_certified": false
+}

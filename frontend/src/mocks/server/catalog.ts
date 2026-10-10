@@ -1,6 +1,6 @@
 /**
  * Maintenance rules, workshop prices and the deterministic estimate (us-045 BR-1001/BR-1004).
- * Shared by the estimate and booking-ticket mocks so every screen shows the same numbers.
+ * Shared by the estimate, quote and booking-ticket mocks so every screen shows the same numbers.
  */
 import { fold, getDb, hash01, isDemo, nowIso, type MockVehicle, type MockWorkshop } from './db'
 

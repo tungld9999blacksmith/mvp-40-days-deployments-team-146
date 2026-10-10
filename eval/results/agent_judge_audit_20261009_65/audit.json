@@ -1,0 +1,597 @@
+{
+  "flag_count": 14,
+  "flags": [
+    {
+      "origin": {
+        "sample_id": "sample-002",
+        "configuration": "base",
+        "repeat": 1,
+        "case_id": "NEW-R02",
+        "original_row_sha256": "aae32fbef53b63ef98804fece555912ff7f5a201429711e958c497f2fadcdb6e",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+      },
+      "original_label_retained": "UNVERIFIABLE",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "PASS"
+      },
+      "classification": "PROCEDURE_OMISSION_AND_JUDGE_RELIABILITY_REVIEW",
+      "slot_claim_check": {
+        "applicable": false,
+        "reason": "Requires one tool list and an explicit count/list"
+      },
+      "procedure_check": {
+        "applicable": true,
+        "sources_with_steps": [
+          {
+            "source_id": "S2",
+            "chunk_id": "quy_trinh_ung_dung_ALL_chk_0002",
+            "source_sha256": "32d370cc7d1f0b7596464d98840e9c7d42af953c5fe0f4e38ccc5f17222e5e90",
+            "steps": [
+              "1. Mở **Bản đồ**, chọn địa điểm trên thanh gợi ý hoặc nhập địa điểm vào thanh\ntìm kiếm; người dùng cũng có thể tìm bằng giọng nói.",
+              "2. Ứng dụng hiển thị danh sách địa điểm gần nhất; chọn địa điểm mong muốn.",
+              "3. Khi tìm trạm sạc, người dùng có thể xem các trụ sạc tại trạm, thời gian đi\ntới trạm và mức pin dự kiến còn lại khi đến nơi để chọn trạm phù hợp."
+            ],
+            "full_chunk_present_in_generation_request": true
+          }
+        ],
+        "answer_numbered_steps": [],
+        "answer_denies_or_abstains": true,
+        "omission_candidate": true,
+        "generation_models": [
+          "mistralai/mistral-small-2603"
+        ],
+        "scope": "Evidence omission diagnostic, not source authority or independent quality label"
+      },
+      "uncertainty_trace": [
+        {
+          "fallback_required": true,
+          "source_rule_verified": null,
+          "source_rule_verified_field_present": false,
+          "reason": null,
+          "confidence": "low"
+        }
+      ],
+      "source_uncertainty_input": true,
+      "delivered_citation_count": 2,
+      "rag_tool_answer_equals_final": true,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-003",
+        "configuration": "base",
+        "repeat": 1,
+        "case_id": "NEW-R03",
+        "original_row_sha256": "066a3894df9a34b0422e33d2b9e816c640f52a66537c54c91f9a348fbb30b362",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+      },
+      "original_label_retained": "UNVERIFIABLE",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "PASS"
+      },
+      "classification": "SOURCE_UNCERTAINTY_PROPAGATED_FROM_RAG_TRACE",
+      "slot_claim_check": {
+        "applicable": false,
+        "reason": "Requires one tool list and an explicit count/list"
+      },
+      "procedure_check": {
+        "applicable": false
+      },
+      "uncertainty_trace": [
+        {
+          "fallback_required": true,
+          "source_rule_verified": null,
+          "source_rule_verified_field_present": false,
+          "reason": null,
+          "confidence": "low"
+        }
+      ],
+      "source_uncertainty_input": true,
+      "delivered_citation_count": 2,
+      "rag_tool_answer_equals_final": true,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-004",
+        "configuration": "base",
+        "repeat": 1,
+        "case_id": "NEW-R04",
+        "original_row_sha256": "0ed9186c0e05bb665bc966d1b5f4a5e2c384f2c09a7120aee256b221d219753e",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+      },
+      "original_label_retained": "UNVERIFIABLE",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "PASS"
+      },
+      "classification": "SOURCE_UNCERTAINTY_PROPAGATED_FROM_RAG_TRACE",
+      "slot_claim_check": {
+        "applicable": false,
+        "reason": "Requires one tool list and an explicit count/list"
+      },
+      "procedure_check": {
+        "applicable": false
+      },
+      "uncertainty_trace": [
+        {
+          "fallback_required": true,
+          "source_rule_verified": false,
+          "source_rule_verified_field_present": true,
+          "reason": "coolant_source_value_unverified",
+          "confidence": "low"
+        }
+      ],
+      "source_uncertainty_input": true,
+      "delivered_citation_count": 1,
+      "rag_tool_answer_equals_final": true,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-005",
+        "configuration": "base",
+        "repeat": 1,
+        "case_id": "NEW-R05",
+        "original_row_sha256": "32f514f18d77c5e01467bfd60e081b6e79e7e7221646f482c776dd63f64b787f",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+      },
+      "original_label_retained": "FAIL",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "FAIL"
+      },
+      "classification": "SOURCE_AND_ABSTENTION_BOUNDARY_REVIEW_REQUIRED",
+      "slot_claim_check": {
+        "applicable": false,
+        "reason": "Requires one tool list and an explicit count/list"
+      },
+      "procedure_check": {
+        "applicable": false
+      },
+      "uncertainty_trace": [
+        {
+          "fallback_required": true,
+          "source_rule_verified": null,
+          "source_rule_verified_field_present": false,
+          "reason": null,
+          "confidence": "low"
+        }
+      ],
+      "source_uncertainty_input": true,
+      "delivered_citation_count": 0,
+      "rag_tool_answer_equals_final": true,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-006",
+        "configuration": "base",
+        "repeat": 1,
+        "case_id": "NEW-R06",
+        "original_row_sha256": "810902c300b3c4189cbcffd40d34cf2d015261daf6ecfd5ce4762eb227b9e7f3",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+      },
+      "original_label_retained": "UNVERIFIABLE",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "PASS"
+      },
+      "classification": "SOURCE_UNCERTAINTY_PROPAGATED_FROM_RAG_TRACE",
+      "slot_claim_check": {
+        "applicable": false,
+        "reason": "Requires one tool list and an explicit count/list"
+      },
+      "procedure_check": {
+        "applicable": false
+      },
+      "uncertainty_trace": [
+        {
+          "fallback_required": true,
+          "source_rule_verified": null,
+          "source_rule_verified_field_present": false,
+          "reason": null,
+          "confidence": "low"
+        }
+      ],
+      "source_uncertainty_input": true,
+      "delivered_citation_count": 1,
+      "rag_tool_answer_equals_final": true,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-012",
+        "configuration": "base",
+        "repeat": 1,
+        "case_id": "NEW-B01",
+        "original_row_sha256": "bbf7dbc551ec8867879bb1084ea292dca34a3d5034ca0aa624f0bfb497ef83af",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+      },
+      "original_label_retained": "FAIL",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "FAIL",
+        "task_success": "PASS",
+        "citation_support": "NOT_APPLICABLE"
+      },
+      "classification": "BOOKING_JUDGE_SLOT_OBJECTION_CONTRADICTED",
+      "slot_claim_check": {
+        "applicable": true,
+        "tool_count": 23,
+        "stated_count": 23,
+        "listed_count": 23,
+        "scope_matches": true,
+        "times_and_remaining_match": true,
+        "count_matches": true,
+        "claim_matches": true,
+        "scope": "Availability count/time/remaining/workshop/date only; not an overall label"
+      },
+      "procedure_check": {
+        "applicable": false
+      },
+      "uncertainty_trace": [],
+      "source_uncertainty_input": false,
+      "delivered_citation_count": 0,
+      "rag_tool_answer_equals_final": false,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-014",
+        "configuration": "base",
+        "repeat": 1,
+        "case_id": "NEW-B03",
+        "original_row_sha256": "604551f1d7e0f839943f3efea35f566777ec7a54d7161a24c33faa86c870b565",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+      },
+      "original_label_retained": "FAIL",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "NOT_APPLICABLE"
+      },
+      "classification": "BOOKING_JUDGE_SLOT_OBJECTION_CONTRADICTED",
+      "slot_claim_check": {
+        "applicable": true,
+        "tool_count": 23,
+        "stated_count": 23,
+        "listed_count": 23,
+        "scope_matches": true,
+        "times_and_remaining_match": true,
+        "count_matches": true,
+        "claim_matches": true,
+        "scope": "Availability count/time/remaining/workshop/date only; not an overall label"
+      },
+      "procedure_check": {
+        "applicable": false
+      },
+      "uncertainty_trace": [],
+      "source_uncertainty_input": false,
+      "delivered_citation_count": 0,
+      "rag_tool_answer_equals_final": false,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-031",
+        "configuration": "agent_gemma",
+        "repeat": 1,
+        "case_id": "NEW-R01",
+        "original_row_sha256": "303452bdfea5cb8f4add4de55434dfe9e56ef1057be662798b7f03a689aeaa02",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+      },
+      "original_label_retained": "UNVERIFIABLE",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "PASS"
+      },
+      "classification": "SOURCE_UNCERTAINTY_PROPAGATED_FROM_RAG_TRACE",
+      "slot_claim_check": {
+        "applicable": false,
+        "reason": "Requires one tool list and an explicit count/list"
+      },
+      "procedure_check": {
+        "applicable": false
+      },
+      "uncertainty_trace": [
+        {
+          "fallback_required": true,
+          "source_rule_verified": null,
+          "source_rule_verified_field_present": false,
+          "reason": null,
+          "confidence": "low"
+        }
+      ],
+      "source_uncertainty_input": true,
+      "delivered_citation_count": 1,
+      "rag_tool_answer_equals_final": true,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-032",
+        "configuration": "agent_gemma",
+        "repeat": 1,
+        "case_id": "NEW-R02",
+        "original_row_sha256": "17af89b0b8804830a6602cf5d639c6764f95a362ce3cf68581ed17905c9e35a7",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+      },
+      "original_label_retained": "FAIL",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "FAIL",
+        "task_success": "FAIL",
+        "citation_support": "FAIL"
+      },
+      "classification": "PROCEDURE_OMISSION_AND_JUDGE_RELIABILITY_REVIEW",
+      "slot_claim_check": {
+        "applicable": false,
+        "reason": "Requires one tool list and an explicit count/list"
+      },
+      "procedure_check": {
+        "applicable": true,
+        "sources_with_steps": [
+          {
+            "source_id": "S2",
+            "chunk_id": "quy_trinh_ung_dung_ALL_chk_0002",
+            "source_sha256": "32d370cc7d1f0b7596464d98840e9c7d42af953c5fe0f4e38ccc5f17222e5e90",
+            "steps": [
+              "1. Mở **Bản đồ**, chọn địa điểm trên thanh gợi ý hoặc nhập địa điểm vào thanh\ntìm kiếm; người dùng cũng có thể tìm bằng giọng nói.",
+              "2. Ứng dụng hiển thị danh sách địa điểm gần nhất; chọn địa điểm mong muốn.",
+              "3. Khi tìm trạm sạc, người dùng có thể xem các trụ sạc tại trạm, thời gian đi\ntới trạm và mức pin dự kiến còn lại khi đến nơi để chọn trạm phù hợp."
+            ],
+            "full_chunk_present_in_generation_request": true
+          }
+        ],
+        "answer_numbered_steps": [],
+        "answer_denies_or_abstains": true,
+        "omission_candidate": true,
+        "generation_models": [
+          "mistralai/mistral-small-2603"
+        ],
+        "scope": "Evidence omission diagnostic, not source authority or independent quality label"
+      },
+      "uncertainty_trace": [
+        {
+          "fallback_required": true,
+          "source_rule_verified": null,
+          "source_rule_verified_field_present": false,
+          "reason": null,
+          "confidence": "low"
+        }
+      ],
+      "source_uncertainty_input": true,
+      "delivered_citation_count": 2,
+      "rag_tool_answer_equals_final": true,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-033",
+        "configuration": "agent_gemma",
+        "repeat": 1,
+        "case_id": "NEW-R03",
+        "original_row_sha256": "d59c398784c0ad228b7752844db6a1d7a0cfe7a859f28068be85ab4c6eb05da8",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+      },
+      "original_label_retained": "UNVERIFIABLE",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "PASS"
+      },
+      "classification": "SOURCE_UNCERTAINTY_PROPAGATED_FROM_RAG_TRACE",
+      "slot_claim_check": {
+        "applicable": false,
+        "reason": "Requires one tool list and an explicit count/list"
+      },
+      "procedure_check": {
+        "applicable": false
+      },
+      "uncertainty_trace": [
+        {
+          "fallback_required": true,
+          "source_rule_verified": null,
+          "source_rule_verified_field_present": false,
+          "reason": null,
+          "confidence": "low"
+        }
+      ],
+      "source_uncertainty_input": true,
+      "delivered_citation_count": 2,
+      "rag_tool_answer_equals_final": true,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-034",
+        "configuration": "agent_gemma",
+        "repeat": 1,
+        "case_id": "NEW-R04",
+        "original_row_sha256": "89fd2d2c0cc11d8e72600a782c75dea4424f5afc8c95282052cb6634bd2df91c",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+      },
+      "original_label_retained": "UNVERIFIABLE",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "PASS"
+      },
+      "classification": "SOURCE_UNCERTAINTY_PROPAGATED_FROM_RAG_TRACE",
+      "slot_claim_check": {
+        "applicable": false,
+        "reason": "Requires one tool list and an explicit count/list"
+      },
+      "procedure_check": {
+        "applicable": false
+      },
+      "uncertainty_trace": [
+        {
+          "fallback_required": true,
+          "source_rule_verified": false,
+          "source_rule_verified_field_present": true,
+          "reason": "coolant_source_value_unverified",
+          "confidence": "low"
+        }
+      ],
+      "source_uncertainty_input": true,
+      "delivered_citation_count": 1,
+      "rag_tool_answer_equals_final": true,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-035",
+        "configuration": "agent_gemma",
+        "repeat": 1,
+        "case_id": "NEW-R05",
+        "original_row_sha256": "8cb796d00b00e48a45b9919645be7b5077f2a4215de9474b1a627741dda899f7",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+      },
+      "original_label_retained": "UNVERIFIABLE",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "PASS"
+      },
+      "classification": "SOURCE_UNCERTAINTY_PROPAGATED_FROM_RAG_TRACE",
+      "slot_claim_check": {
+        "applicable": false,
+        "reason": "Requires one tool list and an explicit count/list"
+      },
+      "procedure_check": {
+        "applicable": false
+      },
+      "uncertainty_trace": [
+        {
+          "fallback_required": true,
+          "source_rule_verified": null,
+          "source_rule_verified_field_present": false,
+          "reason": null,
+          "confidence": "medium"
+        }
+      ],
+      "source_uncertainty_input": true,
+      "delivered_citation_count": 2,
+      "rag_tool_answer_equals_final": true,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-036",
+        "configuration": "agent_gemma",
+        "repeat": 1,
+        "case_id": "NEW-R06",
+        "original_row_sha256": "170cc62b2e0819e9190b7e913f02e2b17aa67eacbd9efd0a92947ac7649742f5",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+      },
+      "original_label_retained": "UNVERIFIABLE",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "PASS"
+      },
+      "classification": "SOURCE_UNCERTAINTY_PROPAGATED_FROM_RAG_TRACE",
+      "slot_claim_check": {
+        "applicable": false,
+        "reason": "Requires one tool list and an explicit count/list"
+      },
+      "procedure_check": {
+        "applicable": false
+      },
+      "uncertainty_trace": [
+        {
+          "fallback_required": true,
+          "source_rule_verified": null,
+          "source_rule_verified_field_present": false,
+          "reason": null,
+          "confidence": "low"
+        }
+      ],
+      "source_uncertainty_input": true,
+      "delivered_citation_count": 1,
+      "rag_tool_answer_equals_final": true,
+      "replacement_label": null,
+      "independent_source_verification": false
+    },
+    {
+      "origin": {
+        "sample_id": "sample-044",
+        "configuration": "agent_gemma",
+        "repeat": 1,
+        "case_id": "NEW-B03",
+        "original_row_sha256": "3cc28b7ec7fdf59c53debbff7fab0ca44cb02f5211f582f5d0e638029770715f",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+      },
+      "original_label_retained": "FAIL",
+      "original_judge_components": {
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "NOT_APPLICABLE"
+      },
+      "classification": "BOOKING_JUDGE_SLOT_OBJECTION_CONTRADICTED",
+      "slot_claim_check": {
+        "applicable": true,
+        "tool_count": 23,
+        "stated_count": 23,
+        "listed_count": 23,
+        "scope_matches": true,
+        "times_and_remaining_match": true,
+        "count_matches": true,
+        "claim_matches": true,
+        "scope": "Availability count/time/remaining/workshop/date only; not an overall label"
+      },
+      "procedure_check": {
+        "applicable": false
+      },
+      "uncertainty_trace": [],
+      "source_uncertainty_input": false,
+      "delivered_citation_count": 0,
+      "rag_tool_answer_equals_final": false,
+      "replacement_label": null,
+      "independent_source_verification": false
+    }
+  ],
+  "original_counts_retained": {
+    "PASS": 46,
+    "UNVERIFIABLE": 9,
+    "FAIL": 5
+  },
+  "raw_judgments_modified": false,
+  "independent_labels": 0,
+  "new_provider_calls": 0,
+  "production_acceptance": false
+}

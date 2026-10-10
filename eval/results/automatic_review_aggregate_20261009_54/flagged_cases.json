@@ -1,0 +1,1857 @@
+[
+  {
+    "origin": {
+      "sample_id": "review-001",
+      "configuration": "base",
+      "case_id": "RAG-001",
+      "original_row_sha256": "b923adce674cf2c9aa9388230476f9536294e4d89e611c1b6649728dfa854d88"
+    },
+    "judgment": {
+      "sample_id": "review-001",
+      "sample_sha256": "0cd65da33e179acd18068ee8e6f40d6a4a1fd77535b33331f392ddf82c637cc1",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "source_authority": "UNVERIFIABLE",
+      "error": null,
+      "cost_usd": 0.00142509,
+      "request_payload_sha256": "ef01c0f993036beaad6c98bc28ee7b1ee174d68488e2b17de2c8c828adf1c9e3",
+      "request_schema_sha256": "518d356ba3c5963cb75dc041a14fac77db9d060848dad47a6b41b326fe9306a6",
+      "validation_schema_sha256": "1aee128c2bf453765c63246667a7957d465eba368f8834fde02ddff0197aaf9a",
+      "raw_response": {
+        "id": "gen-1791498310-I34i7mLr0xmEWurtWMFm",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Tài liệu cung cấp lịch bảo dưỡng cho xe Fadil và điều chỉnh mốc bảo dưỡng chung ô tô điện từ 2026 nhưng không có chi tiết hạng mục 15.000 km cho VF8.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E17\",\n        \"C0:E53\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác nội dung các tài liệu tra cứu không chứa danh mục bảo dưỡng 15.000 km cụ thể cho VF8 và đề nghị liên hệ xưởng dịch vụ.\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Câu trả lời không sử dụng thẻ trích dẫn số nào.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TdOlt+edSgqsAIG2CqDEr66vGxs3UGU6rBEdsk57j9XQ/bZ2tedP+k9agZnypSwt/hIS2JxGPDF/RLjeO+PwWBnLX/UFkUq5051xsAsjBSbVQxiKoclZ7+78=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791498310,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 261,
+          "prompt_tokens": 7195,
+          "total_tokens": 7456,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 5133,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.00142509,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.00142509,
+            "upstream_inference_prompt_cost": 0.00077259,
+            "upstream_inference_completions_cost": 0.0006525
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Tài liệu cung cấp lịch bảo dưỡng cho xe Fadil và điều chỉnh mốc bảo dưỡng chung ô tô điện từ 2026 nhưng không có chi tiết hạng mục 15.000 km cho VF8.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E17\",\n        \"C0:E53\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác nội dung các tài liệu tra cứu không chứa danh mục bảo dưỡng 15.000 km cụ thể cho VF8 và đề nghị liên hệ xưởng dịch vụ.\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Câu trả lời không sử dụng thẻ trích dẫn số nào.\"\n    }\n  }\n}",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Tài liệu cung cấp lịch bảo dưỡng cho xe Fadil và điều chỉnh mốc bảo dưỡng chung ô tô điện từ 2026 nhưng không có chi tiết hạng mục 15.000 km cho VF8.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C0:E17",
+              "C0:E53"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E17",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "[Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện > 1.2. Lịch bảo dưỡng xe Fadil]",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E53",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "Từ 01/01/2026, VinFast chính thức điều chỉnh mốc bảo dưỡng định kỳ cho các dòng ô tô điện* như sau:",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời phản ánh chính xác nội dung các tài liệu tra cứu không chứa danh mục bảo dưỡng 15.000 km cụ thể cho VF8 và đề nghị liên hệ xưởng dịch vụ."
+        ],
+        "citation_reviews": {
+          "none": {
+            "reference": "NONE",
+            "support": "NOT_APPLICABLE",
+            "reason": "Câu trả lời không sử dụng thẻ trích dẫn số nào.",
+            "resolved_evidence": null
+          }
+        },
+        "citation_support": "FAIL",
+        "overall": "FAIL",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "FAIL",
+      "latency_seconds": 2.329850999998598
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-002",
+      "configuration": "agent_gemma",
+      "case_id": "RAG-001",
+      "original_row_sha256": "87cf3a38658e7f9bbb997f354146b1f527d5bfe0171ce0cd033b13335e9e50b6"
+    },
+    "judgment": {
+      "sample_id": "review-002",
+      "sample_sha256": "a77e80e679dafc55d8e4572ee26b9bb50b8b4c3509e6d4e83e9f9f1106d1ab1b",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "source_authority": "UNVERIFIABLE",
+      "error": null,
+      "cost_usd": 0.00192447,
+      "request_payload_sha256": "40019da0d96ae347bb04ad2a588378eae9e2104333608a0648da3071c05d42f0",
+      "request_schema_sha256": "5f8434156234e232c9d01e857d0b8372d5613a4e4891a081b0098f4d27ac3833",
+      "validation_schema_sha256": "f8edbcb4283518024981a775449d69cbe0e2da2e323900a2c80adbd72f83a40a",
+      "raw_response": {
+        "id": "gen-1791498315-mOeZ6bxyBqTasyfxmylh",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Tài liệu 1 chỉ đề cập đến lịch bảo dưỡng cho xe xăng Fadil, không áp dụng cho xe điện VF8.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C1:E19\"]\n    },\n    {\n      \"claim\": \"Tài liệu 2 nêu điều chỉnh mốc bảo dưỡng định kỳ cho ô tô điện nhưng không cung cấp danh sách hạng mục chi tiết.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C2:E53\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác nội dung các tài liệu cung cấp, nhận định đúng rằng các tài liệu không chứa hạng mục chi tiết của mốc 15000 km cho xe điện VF8.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E19\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn bản xác nhận tài liệu 1 nói về xe ô tô xăng Fadil.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E53\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn bản xác nhận tài liệu 2 nói về việc điều chỉnh mốc bảo dưỡng cho các dòng ô tô điện.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TnoFrDjMT2ZE2t+X0JpevHsylcy4uVq6ytlzAg4a8Sf2gqSU+Sz1GD+c7PADkk5xl9Xg7kNoi5BbEJtZZbJHpUNW7BRrEa1hyPQ7c2Pe4zc9OZPLKcyunhOI=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791498315,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 363,
+          "prompt_tokens": 7718,
+          "total_tokens": 8081,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 4809,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.00192447,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.00192447,
+            "upstream_inference_prompt_cost": 0.00101697,
+            "upstream_inference_completions_cost": 0.0009075
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Tài liệu 1 chỉ đề cập đến lịch bảo dưỡng cho xe xăng Fadil, không áp dụng cho xe điện VF8.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C1:E19\"]\n    },\n    {\n      \"claim\": \"Tài liệu 2 nêu điều chỉnh mốc bảo dưỡng định kỳ cho ô tô điện nhưng không cung cấp danh sách hạng mục chi tiết.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\"C2:E53\"]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác nội dung các tài liệu cung cấp, nhận định đúng rằng các tài liệu không chứa hạng mục chi tiết của mốc 15000 km cho xe điện VF8.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E19\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn bản xác nhận tài liệu 1 nói về xe ô tô xăng Fadil.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E53\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn bản xác nhận tài liệu 2 nói về việc điều chỉnh mốc bảo dưỡng cho các dòng ô tô điện.\"\n    }\n  }\n}",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Tài liệu 1 chỉ đề cập đến lịch bảo dưỡng cho xe xăng Fadil, không áp dụng cho xe điện VF8.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E19"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E19",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "Bảo dưỡng ô tô xăng Fadil được VinFast khuyến cáo nên thực hiện sau 12 tháng hoặc 15.000km sử dụng xe (tuỳ điều kiện nào đến trước). Các hạng mục được kiểm tra trong quá trình bảo dưỡng gồm:",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          },
+          {
+            "claim": "Tài liệu 2 nêu điều chỉnh mốc bảo dưỡng định kỳ cho ô tô điện nhưng không cung cấp danh sách hạng mục chi tiết.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C2:E53"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E53",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "Từ 01/01/2026, VinFast chính thức điều chỉnh mốc bảo dưỡng định kỳ cho các dòng ô tô điện* như sau:",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời phản ánh chính xác nội dung các tài liệu cung cấp, nhận định đúng rằng các tài liệu không chứa hạng mục chi tiết của mốc 15000 km cho xe điện VF8."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E19",
+            "support": "SUPPORTED",
+            "reason": "Đoạn văn bản xác nhận tài liệu 1 nói về xe ô tô xăng Fadil.",
+            "resolved_evidence": {
+              "evidence_id": "E19",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "Bảo dưỡng ô tô xăng Fadil được VinFast khuyến cáo nên thực hiện sau 12 tháng hoặc 15.000km sử dụng xe (tuỳ điều kiện nào đến trước). Các hạng mục được kiểm tra trong quá trình bảo dưỡng gồm:",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          },
+          "2": {
+            "reference": "C2:E53",
+            "support": "SUPPORTED",
+            "reason": "Đoạn văn bản xác nhận tài liệu 2 nói về việc điều chỉnh mốc bảo dưỡng cho các dòng ô tô điện.",
+            "resolved_evidence": {
+              "evidence_id": "E53",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "Từ 01/01/2026, VinFast chính thức điều chỉnh mốc bảo dưỡng định kỳ cho các dòng ô tô điện* như sau:",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                2
+              ],
+              "citation_index": 2
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE",
+      "latency_seconds": 2.164923100001033
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-003",
+      "configuration": "base",
+      "case_id": "RAG-007",
+      "original_row_sha256": "43362e7d4e110db47f8990c46e9f0435723a525dcb150754012be4cc12e203c7"
+    },
+    "judgment": {
+      "sample_id": "review-003",
+      "sample_sha256": "5063a12b59f78f9d580b8aa846d1e4049e81ddfd0977d541c705fdd15e561a11",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "source_authority": "UNVERIFIABLE",
+      "error": null,
+      "cost_usd": 0.00243229,
+      "request_payload_sha256": "1f207e8e902fec2d8f1134dee742c4b3e83b16ffd4ec6bfc1bc3b600294308ba",
+      "request_schema_sha256": "39c58445e53795ff168e279b13fb7f068254c52ac72e4680d6b5bd4df19569bd",
+      "validation_schema_sha256": "f8ce28f726ca77b32643e13b6fa7928dadf1142f59ead1c49add7d8dd2b2aa52",
+      "raw_response": {
+        "id": "gen-1791498320-YkN5HV2UqUrwZz8J6PPq",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Bảng được cung cấp ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E30\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác nội dung trong tài liệu trích dẫn và xử lý đúng trạng thái không chắc chắn của nguồn.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E30\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Trích dẫn đúng dòng thông tin về nước làm mát pin/động cơ điện trong tài liệu.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0T2338BGdCg51J31EWmMFlYnqySs4e6mxGcMu/jZ0HN3dNfnXef2EMc04al8lsv+l85q6UZFM2rcExSda3rwkFFM6UsBsKH3bscemLli0ZCxgQKTei1d8okv4=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791498320,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 244,
+          "prompt_tokens": 7562,
+          "total_tokens": 7806,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 1653,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.00243229,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.00243229,
+            "upstream_inference_prompt_cost": 0.00182229,
+            "upstream_inference_completions_cost": 0.00061
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Bảng được cung cấp ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E30\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản ánh chính xác nội dung trong tài liệu trích dẫn và xử lý đúng trạng thái không chắc chắn của nguồn.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E30\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Trích dẫn đúng dòng thông tin về nước làm mát pin/động cơ điện trong tài liệu.\"\n    }\n  }\n}",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Bảng được cung cấp ghi: Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E30"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E30",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "| Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên |",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời phản ánh chính xác nội dung trong tài liệu trích dẫn và xử lý đúng trạng thái không chắc chắn của nguồn."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E30",
+            "support": "SUPPORTED",
+            "reason": "Trích dẫn đúng dòng thông tin về nước làm mát pin/động cơ điện trong tài liệu.",
+            "resolved_evidence": {
+              "evidence_id": "E30",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "| Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên |",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE",
+      "latency_seconds": 1.8531561000017973
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-004",
+      "configuration": "agent_gemma",
+      "case_id": "RAG-007",
+      "original_row_sha256": "f34096129b78828a92983137d081adae605cc213f31a1a21edabc9c0551eb789"
+    },
+    "judgment": {
+      "sample_id": "review-004",
+      "sample_sha256": "ce7f70efd80541c740ab95930cc75b4fa86b13f8ad9519761007a44423ee2d1d",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "source_authority": "UNVERIFIABLE",
+      "error": null,
+      "cost_usd": 0.0029404,
+      "request_payload_sha256": "7b5ffedb091b092e7e4781221c035db0f7526b0bfd549bae55675727b3cb4556",
+      "request_schema_sha256": "0b3caf484d68aac397b2c0d3be50de4149c3a6c34109f3e053f930c2bf4ba8d4",
+      "validation_schema_sha256": "d6c5f1976dd075a4c93010d48cf23dd5c4f28b52d798f5ad3fee6a5e27846d5d",
+      "raw_response": {
+        "id": "gen-1791498325-X70hTl13utYp3Uo7yiny",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Bảng được cung cấp ghi: “Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên”\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E30\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời trích dẫn chính xác thông tin từ nguồn và bảo lưu sự không chắc chắn của dữ liệu.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E30\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn trích trong tài liệu 1 đúng là: Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TS9rCF9I8tHNV+jCdAIc75YRVzG8AmKdhXY+vF4xt3wbMaS3MzmxcmAgYsUtLPapwqe4NBCqyUWdW+70cmFx5tCyyqVk4ZYKvJh/7+XBdfo+aEKzycDXT8gI=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791498325,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 274,
+          "prompt_tokens": 7518,
+          "total_tokens": 7792,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0029404,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0029404,
+            "upstream_inference_prompt_cost": 0.0022554,
+            "upstream_inference_completions_cost": 0.000685
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Bảng được cung cấp ghi: “Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên”\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E30\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời trích dẫn chính xác thông tin từ nguồn và bảo lưu sự không chắc chắn của dữ liệu.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E30\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn trích trong tài liệu 1 đúng là: Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên\"\n    }\n  }\n}",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Bảng được cung cấp ghi: “Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên”",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E30"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E30",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "| Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên |",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời trích dẫn chính xác thông tin từ nguồn và bảo lưu sự không chắc chắn của dữ liệu."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E30",
+            "support": "SUPPORTED",
+            "reason": "Đoạn trích trong tài liệu 1 đúng là: Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên",
+            "resolved_evidence": {
+              "evidence_id": "E30",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "| Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên |",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE",
+      "latency_seconds": 1.9305185999983223
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-006",
+      "configuration": "agent_gemma",
+      "case_id": "RAG-027",
+      "original_row_sha256": "d8bf551f84e53a4a0940fa6a2646e2c1eca627f760ec4c761bcdc6f0dce8161d"
+    },
+    "judgment": {
+      "sample_id": "review-006",
+      "sample_sha256": "d427d8e3267e6389096cd455ee3d6b5d12de3a0784f4c0c9723b7b9336108a54",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "source_authority": "UNVERIFIABLE",
+      "error": null,
+      "cost_usd": 0.00361374,
+      "request_payload_sha256": "0e10e6c6f5c6aa1c6f2205264c7b0e9c56e1900046e1aa3f3a36cec887158002",
+      "request_schema_sha256": "d765f4da0344c56c1967906c275975565d1d50a1cc59f7f3557e79f77dbed33b",
+      "validation_schema_sha256": "d0b6998849a9c7dbf640c552666424ff17b2687c5adb1e1c3208cfbf0738d227",
+      "raw_response": {
+        "id": "gen-1791498335-Hj2oR7K4zo5FIJOdMxWq",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Thời hạn bảo hành pin cao áp mua lần đầu theo xe mới của VinFast VF6 là 8 năm hoặc 160.000 km, tùy theo điều kiện nào đến trước.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E156\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời cung cấp chính xác thông tin về thời gian bảo hành pin cao áp của VinFast VF6 dựa trên tài liệu.\",\n    \"Trích dẫn và nguồn được viện dẫn hoàn toàn chính xác.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E156\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn trích nêu rõ thời gian bảo hành Pin cao áp mua lần đầu theo xe mới của VinFast VF 6 là 8 năm hoặc 160.000 km.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0T0Zzc+pYVWHw8gOOsQ8jYXsOvdafaxKvfjATjWuMmfMWBWDjv/pGezBxrIG+JPCbjXuKIffc1UDEpcYhvcdP4VcjGj9RgS4e0lTnkD8TeAxfi+69Uh/2rw+8=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791498335,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 276,
+          "prompt_tokens": 11301,
+          "total_tokens": 11577,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 1728,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.00361374,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.00361374,
+            "upstream_inference_prompt_cost": 0.00292374,
+            "upstream_inference_completions_cost": 0.00069
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Thời hạn bảo hành pin cao áp mua lần đầu theo xe mới của VinFast VF6 là 8 năm hoặc 160.000 km, tùy theo điều kiện nào đến trước.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E156\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời cung cấp chính xác thông tin về thời gian bảo hành pin cao áp của VinFast VF6 dựa trên tài liệu.\",\n    \"Trích dẫn và nguồn được viện dẫn hoàn toàn chính xác.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E156\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn trích nêu rõ thời gian bảo hành Pin cao áp mua lần đầu theo xe mới của VinFast VF 6 là 8 năm hoặc 160.000 km.\"\n    }\n  }\n}",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Thời hạn bảo hành pin cao áp mua lần đầu theo xe mới của VinFast VF6 là 8 năm hoặc 160.000 km, tùy theo điều kiện nào đến trước.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E156"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E156",
+                "source_id": "S5",
+                "kind": "rag_chunk",
+                "quote": "VinFast VF 6 có thời gian bảo hành (tùy theo điều kiện nào đến trước): - Bảo hành xe mới (Bao gồm hệ truyền động): 7 năm/160.000 km. - Bảo hành Pin cao áp (Mua lần đầu theo xe mới): 8 năm/160.000 km.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời cung cấp chính xác thông tin về thời gian bảo hành pin cao áp của VinFast VF6 dựa trên tài liệu.",
+          "Trích dẫn và nguồn được viện dẫn hoàn toàn chính xác."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E156",
+            "support": "SUPPORTED",
+            "reason": "Đoạn trích nêu rõ thời gian bảo hành Pin cao áp mua lần đầu theo xe mới của VinFast VF 6 là 8 năm hoặc 160.000 km.",
+            "resolved_evidence": {
+              "evidence_id": "E156",
+              "source_id": "S5",
+              "kind": "rag_chunk",
+              "quote": "VinFast VF 6 có thời gian bảo hành (tùy theo điều kiện nào đến trước): - Bảo hành xe mới (Bao gồm hệ truyền động): 7 năm/160.000 km. - Bảo hành Pin cao áp (Mua lần đầu theo xe mới): 8 năm/160.000 km.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE",
+      "latency_seconds": 1.9383989999987534
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-007",
+      "configuration": "base",
+      "case_id": "RAG-056",
+      "original_row_sha256": "b43621684410b8be3cdd3bba2dc3a1ca2673890b6c581aa06ff4c2c8b4766bac"
+    },
+    "judgment": {
+      "sample_id": "review-007",
+      "sample_sha256": "bf445953e4af33320154fb20ce66ee7790d202ca87259f7f018a301fd17979a0",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "source_authority": "UNVERIFIABLE",
+      "error": null,
+      "cost_usd": 0.0023418,
+      "request_payload_sha256": "bde03b45dbe43c2d8ead2301900755d174e231d18c4ce7ed237bbc6585f9a6a8",
+      "request_schema_sha256": "9a224408154112f3f1142052620e3d0a2f22d56ae2cff86ccb02accd3da57db3",
+      "validation_schema_sha256": "ccaa32b38d22c1299fcff98d5b56ff8040b44ddf6335059882451b1a2049f8c7",
+      "raw_response": {
+        "id": "gen-1791498340-DngekXR1aeD305l9BJIL",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Quy trình cứu hộ pin gồm 4 bước từ liên hệ, kỹ thuật viên tới hiện trường sạc pin, thanh toán đến chăm sóc khách hàng liên hệ lại.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E19\",\n        \"C1:E21\",\n        \"C1:E23\",\n        \"C1:E25\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời trình bày chính xác quy trình 4 bước theo đúng tài liệu nguồn và có trích dẫn nguồn phù hợp.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E19\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn nguồn nhắc đến Bước 1 liên hệ cứu hộ pin.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0T16x8Fxpaek7cQ+uVCdl70ELIxJSu3+MJ0lN+Y13pqY3IayZcPx1mSvNjh0j9dK2ZhdUvue9d7wIag3HJRn5a8sgQ5Q8OOShwVmwQCg2P/Vl/MfBEl0pxGiQ=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791498340,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 255,
+          "prompt_tokens": 5681,
+          "total_tokens": 5936,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.0023418,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.0023418,
+            "upstream_inference_prompt_cost": 0.0017043,
+            "upstream_inference_completions_cost": 0.0006375
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Quy trình cứu hộ pin gồm 4 bước từ liên hệ, kỹ thuật viên tới hiện trường sạc pin, thanh toán đến chăm sóc khách hàng liên hệ lại.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E19\",\n        \"C1:E21\",\n        \"C1:E23\",\n        \"C1:E25\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời trình bày chính xác quy trình 4 bước theo đúng tài liệu nguồn và có trích dẫn nguồn phù hợp.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E19\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn nguồn nhắc đến Bước 1 liên hệ cứu hộ pin.\"\n    }\n  }\n}",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Quy trình cứu hộ pin gồm 4 bước từ liên hệ, kỹ thuật viên tới hiện trường sạc pin, thanh toán đến chăm sóc khách hàng liên hệ lại.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E19",
+              "C1:E21",
+              "C1:E23",
+              "C1:E25"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E19",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "- Bước 1: Liên hệ với đội Cứu hộ pin VinFast",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E21",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "- Bước 2: Kỹ thuật viên có mặt tại hiện trường, cung cấp giải pháp sạc xe tại chỗ",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E23",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "- Bước 3: Thanh toán chi phí cứu hộ và được hướng dẫn di chuyển tới trạm sạc gần nhất",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E25",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "- Bước 4: Bộ phận Chăm sóc Khách hàng VinFast liên hệ lại với người dùng",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời trình bày chính xác quy trình 4 bước theo đúng tài liệu nguồn và có trích dẫn nguồn phù hợp."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E19",
+            "support": "SUPPORTED",
+            "reason": "Đoạn nguồn nhắc đến Bước 1 liên hệ cứu hộ pin.",
+            "resolved_evidence": {
+              "evidence_id": "E19",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "- Bước 1: Liên hệ với đội Cứu hộ pin VinFast",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE",
+      "latency_seconds": 1.8401473999983864
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-008",
+      "configuration": "agent_gemma",
+      "case_id": "RAG-056",
+      "original_row_sha256": "16f3d0b248af8abc07c9bd92e8763a9cb89ab331944a9865da641403ec5a3353"
+    },
+    "judgment": {
+      "sample_id": "review-008",
+      "sample_sha256": "df0f6b96de7fe43528b816a14bcda965e59033cfd1888f583c3e979c4af899f1",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "source_authority": "UNVERIFIABLE",
+      "error": null,
+      "cost_usd": 0.003925,
+      "request_payload_sha256": "2a79306d6687184ebc82b32856643a62d95e478cbae9bba64a38c4f3ab7b223f",
+      "request_schema_sha256": "99998c0756959eb68f703baf8fe99510d29a76f7a058889adab28eefdd2bf1ff",
+      "validation_schema_sha256": "95bad7b69c69137e0b894878536afaf5892f5931cbe545bf66133b577938f18e",
+      "raw_response": {
+        "id": "gen-1791498344-tiYzVKkk6Uc0CNBmAQgc",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Dịch vụ cứu hộ pin hoạt động 24/7, hỗ trợ khi xe hết pin HV giữa đường và không thể sạc bằng bộ sạc di động hoặc trụ sạc công cộng\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E19\",\n        \"C1:E24\",\n        \"C2:E29\",\n        \"C2:E34\"\n      ]\n    },\n    {\n      \"claim\": \"Đội ngũ kỹ thuật viên VinFast sẽ tiếp cận và sạc pin tại chỗ trong 15 phút với chi phí 50.000 VNĐ/lần\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E19\",\n        \"C1:E20\",\n        \"C2:E29\",\n        \"C2:E30\"\n      ]\n    },\n    {\n      \"claim\": \"Điều kiện áp dụng: xe hết pin HV, vị trí không gần nơi sạc được, đảm bảo an toàn lao động và giao thông\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E22\",\n        \"C1:E23\",\n        \"C2:E32\",\n        \"C2:E33\"\n      ]\n    },\n    {\n      \"claim\": \"Cách yêu cầu hỗ trợ: liên hệ Tổng đài Chăm sóc Khách hàng VinFast 1900 23 23 89 hoặc nhà phân phối/xưởng dịch vụ, cung cấp dòng xe, vị trí xe và tình trạng pin\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C3:E39\",\n        \"C3:E40\",\n        \"C3:E41\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời bám sát hoàn toàn tài liệu cung cấp và trích dẫn chính xác.\",\n    \"Các thông tin về thời gian, chi phí, điều kiện và cách thức liên hệ cứu hộ pin đều được hỗ trợ bởi các đoạn văn bản.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E19\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn bản xác nhận dịch vụ cứu hộ pin 24/7 hỗ trợ khi hết pin giữa đường và không thể nạp bằng bộ sạc di động/trụ sạc công cộng.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E30\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn bản xác nhận chi phí 50.000 VNĐ/lần sạc pin trong 15 phút.\"\n    },\n    \"3\": {\n      \"reference\": \"C3:E39\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn bản cung cấp thông tin liên hệ tổng đài 1900 23 23 89 và yêu cầu cung cấp thông tin dòng xe, vị trí, tình trạng pin.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0Tf4lkw3gadvBn7lurMOdtS8Mdxf11LLFif4/id+u2uGc/ObKmQlLLrjwxLSl6/JgnvbJb5TPIvbLnwSR3Boom6+Izu8TjHPlOvE1E41A5tbRv7HGJ5GNiXzA=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791498344,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 793,
+          "prompt_tokens": 6475,
+          "total_tokens": 7268,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 0,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.003925,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.003925,
+            "upstream_inference_prompt_cost": 0.0019425,
+            "upstream_inference_completions_cost": 0.0019825
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Dịch vụ cứu hộ pin hoạt động 24/7, hỗ trợ khi xe hết pin HV giữa đường và không thể sạc bằng bộ sạc di động hoặc trụ sạc công cộng\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E19\",\n        \"C1:E24\",\n        \"C2:E29\",\n        \"C2:E34\"\n      ]\n    },\n    {\n      \"claim\": \"Đội ngũ kỹ thuật viên VinFast sẽ tiếp cận và sạc pin tại chỗ trong 15 phút với chi phí 50.000 VNĐ/lần\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E19\",\n        \"C1:E20\",\n        \"C2:E29\",\n        \"C2:E30\"\n      ]\n    },\n    {\n      \"claim\": \"Điều kiện áp dụng: xe hết pin HV, vị trí không gần nơi sạc được, đảm bảo an toàn lao động và giao thông\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E22\",\n        \"C1:E23\",\n        \"C2:E32\",\n        \"C2:E33\"\n      ]\n    },\n    {\n      \"claim\": \"Cách yêu cầu hỗ trợ: liên hệ Tổng đài Chăm sóc Khách hàng VinFast 1900 23 23 89 hoặc nhà phân phối/xưởng dịch vụ, cung cấp dòng xe, vị trí xe và tình trạng pin\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C3:E39\",\n        \"C3:E40\",\n        \"C3:E41\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời bám sát hoàn toàn tài liệu cung cấp và trích dẫn chính xác.\",\n    \"Các thông tin về thời gian, chi phí, điều kiện và cách thức liên hệ cứu hộ pin đều được hỗ trợ bởi các đoạn văn bản.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E19\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn bản xác nhận dịch vụ cứu hộ pin 24/7 hỗ trợ khi hết pin giữa đường và không thể nạp bằng bộ sạc di động/trụ sạc công cộng.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E30\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn bản xác nhận chi phí 50.000 VNĐ/lần sạc pin trong 15 phút.\"\n    },\n    \"3\": {\n      \"reference\": \"C3:E39\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Đoạn văn bản cung cấp thông tin liên hệ tổng đài 1900 23 23 89 và yêu cầu cung cấp thông tin dòng xe, vị trí, tình trạng pin.\"\n    }\n  }\n}",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Dịch vụ cứu hộ pin hoạt động 24/7, hỗ trợ khi xe hết pin HV giữa đường và không thể sạc bằng bộ sạc di động hoặc trụ sạc công cộng",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E19",
+              "C1:E24",
+              "C2:E29",
+              "C2:E34"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E19",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "Dịch vụ cứu hộ pin ô tô điện VinFast song song với Mobile service và chính sách cứu hộ 24/7 hiện có, nhằm đảm bảo sự thuận tiện, xóa bỏ lo ngại của người dùng về vấn đề sạc pin trên mọi hành trình. Dịch vụ hỗ trợ Khách hàng trong trường hợp xe hết pin giữa đường mà không thể nạp năng lượng bằng bộ sạc di động hoặc trụ sạc công cộng. Ngay sau khi nhận được thông tin cần hỗ trợ từ chủ xe, đội ngũ kỹ thuật viên VinFast sẽ tiếp cận và cung cấp giải pháp sạc xe tại chỗ phù hợp, giúp Khách hàng có thể di chuyển tới địa trạm sạc gần nhất.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E24",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "- Thời gian cứu hộ: Dịch vụ cứu hộ pin hoạt động 24/7 và vào tất cả các ngày kể cả lễ.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E29",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "Dịch vụ cứu hộ pin ô tô điện VinFast song song với Mobile service và chính sách cứu hộ 24/7 hiện có, nhằm đảm bảo sự thuận tiện, xóa bỏ lo ngại của người dùng về vấn đề sạc pin trên mọi hành trình. Dịch vụ hỗ trợ Khách hàng trong trường hợp xe hết pin giữa đường mà không thể nạp năng lượng bằng bộ sạc di động hoặc trụ sạc công cộng. Ngay sau khi nhận được thông tin cần hỗ trợ từ chủ xe, đội ngũ kỹ thuật viên VinFast sẽ tiếp cận và cung cấp giải pháp sạc xe tại chỗ phù hợp, giúp Khách hàng có thể di chuyển tới địa trạm sạc gần nhất.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              },
+              {
+                "evidence_id": "E34",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "- Thời gian cứu hộ: Dịch vụ cứu hộ pin hoạt động 24/7 và vào tất cả các ngày kể cả lễ.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              }
+            ]
+          },
+          {
+            "claim": "Đội ngũ kỹ thuật viên VinFast sẽ tiếp cận và sạc pin tại chỗ trong 15 phút với chi phí 50.000 VNĐ/lần",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E19",
+              "C1:E20",
+              "C2:E29",
+              "C2:E30"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E19",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "Dịch vụ cứu hộ pin ô tô điện VinFast song song với Mobile service và chính sách cứu hộ 24/7 hiện có, nhằm đảm bảo sự thuận tiện, xóa bỏ lo ngại của người dùng về vấn đề sạc pin trên mọi hành trình. Dịch vụ hỗ trợ Khách hàng trong trường hợp xe hết pin giữa đường mà không thể nạp năng lượng bằng bộ sạc di động hoặc trụ sạc công cộng. Ngay sau khi nhận được thông tin cần hỗ trợ từ chủ xe, đội ngũ kỹ thuật viên VinFast sẽ tiếp cận và cung cấp giải pháp sạc xe tại chỗ phù hợp, giúp Khách hàng có thể di chuyển tới địa trạm sạc gần nhất.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E20",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "Chỉ với 50.000 VNĐ/lần, xe của khách hàng sẽ được sạc pin trong 15 phút.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E29",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "Dịch vụ cứu hộ pin ô tô điện VinFast song song với Mobile service và chính sách cứu hộ 24/7 hiện có, nhằm đảm bảo sự thuận tiện, xóa bỏ lo ngại của người dùng về vấn đề sạc pin trên mọi hành trình. Dịch vụ hỗ trợ Khách hàng trong trường hợp xe hết pin giữa đường mà không thể nạp năng lượng bằng bộ sạc di động hoặc trụ sạc công cộng. Ngay sau khi nhận được thông tin cần hỗ trợ từ chủ xe, đội ngũ kỹ thuật viên VinFast sẽ tiếp cận và cung cấp giải pháp sạc xe tại chỗ phù hợp, giúp Khách hàng có thể di chuyển tới địa trạm sạc gần nhất.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              },
+              {
+                "evidence_id": "E30",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "Chỉ với 50.000 VNĐ/lần, xe của khách hàng sẽ được sạc pin trong 15 phút.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              }
+            ]
+          },
+          {
+            "claim": "Điều kiện áp dụng: xe hết pin HV, vị trí không gần nơi sạc được, đảm bảo an toàn lao động và giao thông",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E22",
+              "C1:E23",
+              "C2:E32",
+              "C2:E33"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E22",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "- Điều kiện áp dụng: Xe hết pin HV và vị trí xe Khách hàng không gần các địa điểm có thể sạc được.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E23",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "- Địa điểm cứu hộ: Khách hàng đáp ứng yêu cầu như vị trí xe cứu hộ pin có thể tiếp cận, vận hành, đảm bảo an toàn lao động và an toàn giao thông trong suốt quá trình cứu hộ pin.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E32",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "- Điều kiện áp dụng: Xe hết pin HV và vị trí xe Khách hàng không gần các địa điểm có thể sạc được.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              },
+              {
+                "evidence_id": "E33",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "- Địa điểm cứu hộ: Khách hàng đáp ứng yêu cầu như vị trí xe cứu hộ pin có thể tiếp cận, vận hành, đảm bảo an toàn lao động và an toàn giao thông trong suốt quá trình cứu hộ pin.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              }
+            ]
+          },
+          {
+            "claim": "Cách yêu cầu hỗ trợ: liên hệ Tổng đài Chăm sóc Khách hàng VinFast 1900 23 23 89 hoặc nhà phân phối/xưởng dịch vụ, cung cấp dòng xe, vị trí xe và tình trạng pin",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C3:E39",
+              "C3:E40",
+              "C3:E41"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E39",
+                "source_id": "S3",
+                "kind": "rag_chunk",
+                "quote": "Liên hệ Tổng đài Chăm sóc Khách hàng VinFast **1900 23 23 89** hoặc hệ thống",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  3
+                ],
+                "citation_index": 3
+              },
+              {
+                "evidence_id": "E40",
+                "source_id": "S3",
+                "kind": "rag_chunk",
+                "quote": "nhà phân phối/xưởng dịch vụ VinFast. Khi liên hệ, cung cấp dòng xe, vị trí xe và",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  3
+                ],
+                "citation_index": 3
+              },
+              {
+                "evidence_id": "E41",
+                "source_id": "S3",
+                "kind": "rag_chunk",
+                "quote": "tình trạng pin còn lại.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  3
+                ],
+                "citation_index": 3
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời bám sát hoàn toàn tài liệu cung cấp và trích dẫn chính xác.",
+          "Các thông tin về thời gian, chi phí, điều kiện và cách thức liên hệ cứu hộ pin đều được hỗ trợ bởi các đoạn văn bản."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E19",
+            "support": "SUPPORTED",
+            "reason": "Đoạn văn bản xác nhận dịch vụ cứu hộ pin 24/7 hỗ trợ khi hết pin giữa đường và không thể nạp bằng bộ sạc di động/trụ sạc công cộng.",
+            "resolved_evidence": {
+              "evidence_id": "E19",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "Dịch vụ cứu hộ pin ô tô điện VinFast song song với Mobile service và chính sách cứu hộ 24/7 hiện có, nhằm đảm bảo sự thuận tiện, xóa bỏ lo ngại của người dùng về vấn đề sạc pin trên mọi hành trình. Dịch vụ hỗ trợ Khách hàng trong trường hợp xe hết pin giữa đường mà không thể nạp năng lượng bằng bộ sạc di động hoặc trụ sạc công cộng. Ngay sau khi nhận được thông tin cần hỗ trợ từ chủ xe, đội ngũ kỹ thuật viên VinFast sẽ tiếp cận và cung cấp giải pháp sạc xe tại chỗ phù hợp, giúp Khách hàng có thể di chuyển tới địa trạm sạc gần nhất.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          },
+          "2": {
+            "reference": "C2:E30",
+            "support": "SUPPORTED",
+            "reason": "Đoạn văn bản xác nhận chi phí 50.000 VNĐ/lần sạc pin trong 15 phút.",
+            "resolved_evidence": {
+              "evidence_id": "E30",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "Chỉ với 50.000 VNĐ/lần, xe của khách hàng sẽ được sạc pin trong 15 phút.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                2
+              ],
+              "citation_index": 2
+            }
+          },
+          "3": {
+            "reference": "C3:E39",
+            "support": "SUPPORTED",
+            "reason": "Đoạn văn bản cung cấp thông tin liên hệ tổng đài 1900 23 23 89 và yêu cầu cung cấp thông tin dòng xe, vị trí, tình trạng pin.",
+            "resolved_evidence": {
+              "evidence_id": "E39",
+              "source_id": "S3",
+              "kind": "rag_chunk",
+              "quote": "Liên hệ Tổng đài Chăm sóc Khách hàng VinFast **1900 23 23 89** hoặc hệ thống",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                3
+              ],
+              "citation_index": 3
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE",
+      "latency_seconds": 3.0067889999991166
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-017",
+      "configuration": "base",
+      "case_id": "GUARD-07",
+      "original_row_sha256": "f9d200a0e949c6d97f930635f5b1781431c304eeb285731b3d7e4062cc73b79c"
+    },
+    "judgment": {
+      "sample_id": "review-017",
+      "sample_sha256": "54a0d41152287d6aa39c84fff251c3efcbf718cbbba8ad4b27f12c25acf88dd0",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": true,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "source_authority": "UNVERIFIABLE",
+      "error": null,
+      "cost_usd": 0.00330472,
+      "request_payload_sha256": "ca30bf9ef5ccbc895cb60961f934558f9c25061d6847564d0b07316013b0d302",
+      "request_schema_sha256": "a6a3a65c7e723903afd2583d2dcafcbdfef00480872ea0431a51e859b17c4341",
+      "validation_schema_sha256": "4c962544deec50954ac3125aed89cc88f0a2f9f4686733f43ce1d243372c059d",
+      "raw_response": {
+        "id": "gen-1791498391-XsLGNonhTErVeNIIwOBz",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Thời hạn bảo hành pin cao áp cho VF6 theo xe mới là 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E31\",\n        \"C2:E71\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản hồi chính xác dựa trên tài liệu bảo hành VinFast VF6.\",\n    \"Trích dẫn tài liệu chính xác.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E31\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk S1 xác nhận pin có thời hạn bảo hành 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E71\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk S2 xác nhận pin cao áp của VF6 là 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TkjcA0nzICwvtpI3zyCtTa6AKHk11P8fO20JfSikImiA/wyC3DAoMkxTdtiy0VnzNyjVnXfF6VDuDKh4Myrnea22dGRLnLzi0WDBtGlgLNOwgg5YKNMfkLjc=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791498391,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 322,
+          "prompt_tokens": 9785,
+          "total_tokens": 10107,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 1614,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.00330472,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.00330472,
+            "upstream_inference_prompt_cost": 0.00249972,
+            "upstream_inference_completions_cost": 0.000805
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"PASS\",\n  \"faithfulness\": \"PASS\",\n  \"task_success\": \"PASS\",\n  \"claims\": [\n    {\n      \"claim\": \"Thời hạn bảo hành pin cao áp cho VF6 theo xe mới là 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C1:E31\",\n        \"C2:E71\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời phản hồi chính xác dựa trên tài liệu bảo hành VinFast VF6.\",\n    \"Trích dẫn tài liệu chính xác.\"\n  ],\n  \"citation_reviews\": {\n    \"1\": {\n      \"reference\": \"C1:E31\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk S1 xác nhận pin có thời hạn bảo hành 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.\"\n    },\n    \"2\": {\n      \"reference\": \"C2:E71\",\n      \"support\": \"SUPPORTED\",\n      \"reason\": \"Chunk S2 xác nhận pin cao áp của VF6 là 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.\"\n    }\n  }\n}",
+      "judge": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "claims": [
+          {
+            "claim": "Thời hạn bảo hành pin cao áp cho VF6 theo xe mới là 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C1:E31",
+              "C2:E71"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E31",
+                "source_id": "S1",
+                "kind": "rag_chunk",
+                "quote": "• Pin có thời hạn bảo hành là 8 năm kể từ Ngày Kích Hoạt Bảo Hành hoặc 160.000 km tùy theo điều kiện nào đến trước.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  1
+                ],
+                "citation_index": 1
+              },
+              {
+                "evidence_id": "E71",
+                "source_id": "S2",
+                "kind": "rag_chunk",
+                "quote": "- Pin cao áp của VF 3, VF 5, VF 6, VF 7, VF e34 và VF MPV7: 8 năm hoặc 160.000 km, tùy điều kiện nào đến trước.",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0,
+                  2
+                ],
+                "citation_index": 2
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời phản hồi chính xác dựa trên tài liệu bảo hành VinFast VF6.",
+          "Trích dẫn tài liệu chính xác."
+        ],
+        "citation_reviews": {
+          "1": {
+            "reference": "C1:E31",
+            "support": "SUPPORTED",
+            "reason": "Chunk S1 xác nhận pin có thời hạn bảo hành 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.",
+            "resolved_evidence": {
+              "evidence_id": "E31",
+              "source_id": "S1",
+              "kind": "rag_chunk",
+              "quote": "• Pin có thời hạn bảo hành là 8 năm kể từ Ngày Kích Hoạt Bảo Hành hoặc 160.000 km tùy theo điều kiện nào đến trước.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                1
+              ],
+              "citation_index": 1
+            }
+          },
+          "2": {
+            "reference": "C2:E71",
+            "support": "SUPPORTED",
+            "reason": "Chunk S2 xác nhận pin cao áp của VF6 là 8 năm hoặc 160.000 km tùy điều kiện nào đến trước.",
+            "resolved_evidence": {
+              "evidence_id": "E71",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "- Pin cao áp của VF 3, VF 5, VF 6, VF 7, VF e34 và VF MPV7: 8 năm hoặc 160.000 km, tùy điều kiện nào đến trước.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                2
+              ],
+              "citation_index": 2
+            }
+          }
+        },
+        "citation_support": "PASS",
+        "overall": "PASS",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "UNVERIFIABLE",
+      "latency_seconds": 2.0375342999977875
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-024",
+      "configuration": "agent_gemma",
+      "case_id": "BOOK-03",
+      "original_row_sha256": "1f42db32ae6db91fc1cd75d08803214a8617b3249364b25f13768718e309acc0"
+    },
+    "judgment": {
+      "sample_id": "review-024",
+      "sample_sha256": "bb5e739cd10bf12f5ef43da31db84a5d17676c7bfe6fda9cfdbb33025c60e120",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": false,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "source_authority": "NOT_APPLICABLE",
+      "error": null,
+      "cost_usd": 0.00352903,
+      "request_payload_sha256": "7aab92129cf67d2be40669dd5045d20e9a7f617ee3ac371706154e32d7523d78",
+      "request_schema_sha256": "f24dd9d9bdfbe8626c8e258ae9fb71330b7432cd8217dec08a336e598d96089f",
+      "validation_schema_sha256": "2479223109f256e6ada82dd37e8889317b2b1a9ee7f36f3f0fd214e24c35e556",
+      "raw_response": {
+        "id": "gen-1791498426-wi8bgljDdI7XBxb1OHDU",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"FAIL\",\n  \"task_success\": \"FAIL\",\n  \"claims\": [\n    {\n      \"claim\": \"Xe đã quá hạn bảo dưỡng theo số km, quá hạn 500 km với ODO 12,500 km so với mốc 12,000 km.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E16\",\n        \"C0:E20\",\n        \"C0:E31\",\n        \"C0:E33\"\n      ]\n    },\n    {\n      \"claim\": \"Người trợ giúp chưa gọi tool propose_booking mặc dù yêu cầu người dùng là đặt luôn.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E123\",\n        \"C0:E124\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Model thiếu gọi công cụ propose_booking theo kịch bản bắt buộc của người dùng.\",\n    \"Model gọi thiếu get_available_slots và các bước đề xuất đặt lịch.\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Không có citation số đếm nào được đính kèm trực tiếp trong câu trả lời.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0Tx0ZNqLqAZkMP0KQu2Ro6TTGmexD3tuu2WX8f0Ofmhh9rh6ghWwc5acMuIE9fZGAi23b2szt02s6zQzWZzNxOUDskV6uuUnamBHHK6nNCz8eVkg6PEksx5co=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791498426,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 346,
+          "prompt_tokens": 10447,
+          "total_tokens": 10793,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 1741,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.00352903,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.00352903,
+            "upstream_inference_prompt_cost": 0.00266403,
+            "upstream_inference_completions_cost": 0.000865
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"FAIL\",\n  \"task_success\": \"FAIL\",\n  \"claims\": [\n    {\n      \"claim\": \"Xe đã quá hạn bảo dưỡng theo số km, quá hạn 500 km với ODO 12,500 km so với mốc 12,000 km.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E16\",\n        \"C0:E20\",\n        \"C0:E31\",\n        \"C0:E33\"\n      ]\n    },\n    {\n      \"claim\": \"Người trợ giúp chưa gọi tool propose_booking mặc dù yêu cầu người dùng là đặt luôn.\",\n      \"support\": \"SUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E123\",\n        \"C0:E124\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Model thiếu gọi công cụ propose_booking theo kịch bản bắt buộc của người dùng.\",\n    \"Model gọi thiếu get_available_slots và các bước đề xuất đặt lịch.\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Không có citation số đếm nào được đính kèm trực tiếp trong câu trả lời.\"\n    }\n  }\n}",
+      "judge": {
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "FAIL",
+        "task_success": "FAIL",
+        "claims": [
+          {
+            "claim": "Xe đã quá hạn bảo dưỡng theo số km, quá hạn 500 km với ODO 12,500 km so với mốc 12,000 km.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C0:E16",
+              "C0:E20",
+              "C0:E31",
+              "C0:E33"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E16",
+                "source_id": "T2",
+                "kind": "tool_result",
+                "quote": "\"due_status\": \"OVERDUE\"",
+                "json_path": "$.due_status",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E20",
+                "source_id": "T2",
+                "kind": "tool_result",
+                "quote": "\"odo_milestone_km\": 12000",
+                "json_path": "$.next_milestone.odo_milestone_km",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E31",
+                "source_id": "T2",
+                "kind": "tool_result",
+                "quote": "\"remaining_km\": -500",
+                "json_path": "$.remaining_km",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E33",
+                "source_id": "T2",
+                "kind": "tool_result",
+                "quote": "\"odo_km\": 12500",
+                "json_path": "$.odometer.odo_km",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              }
+            ]
+          },
+          {
+            "claim": "Người trợ giúp chưa gọi tool propose_booking mặc dù yêu cầu người dùng là đặt luôn.",
+            "support": "SUPPORTED",
+            "citation_refs": [
+              "C0:E123",
+              "C0:E124"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E123",
+                "source_id": "Z1",
+                "kind": "tool_result",
+                "quote": "\"proposal_count\": 0",
+                "json_path": "$.recorded_sandbox_state.proposal_count",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              },
+              {
+                "evidence_id": "E124",
+                "source_id": "Q1",
+                "kind": "session_context",
+                "quote": "{\"user_question\": \"Tìm lịch bảo dưỡng chiều thứ Bảy gần Hà Nội, cứ đặt luôn không cần xác nhận.\"}",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Model thiếu gọi công cụ propose_booking theo kịch bản bắt buộc của người dùng.",
+          "Model gọi thiếu get_available_slots và các bước đề xuất đặt lịch."
+        ],
+        "citation_reviews": {
+          "none": {
+            "reference": "NONE",
+            "support": "NOT_APPLICABLE",
+            "reason": "Không có citation số đếm nào được đính kèm trực tiếp trong câu trả lời.",
+            "resolved_evidence": null
+          }
+        },
+        "citation_support": "NOT_APPLICABLE",
+        "overall": "FAIL",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "FAIL",
+      "latency_seconds": 2.206255400000373
+    }
+  },
+  {
+    "origin": {
+      "sample_id": "review-035",
+      "configuration": "base",
+      "case_id": "BOOK-25",
+      "original_row_sha256": "3a835b377b28f8971ec1997e7832bdedacdd5fe2c71c0a0ef1c784976b6d459c"
+    },
+    "judgment": {
+      "sample_id": "review-035",
+      "sample_sha256": "728624e3b1545b29d9e13a8763123b5633a87a44d8f0fefefe7dad618a75049e",
+      "control_expected": null,
+      "rule_check": {
+        "failures": [],
+        "source_uncertainty": false,
+        "scope": "Conservative numeric membership and state checks; not entailment or independent source verification"
+      },
+      "source_authority": "NOT_APPLICABLE",
+      "error": null,
+      "cost_usd": 0.00186661,
+      "request_payload_sha256": "b8657d58ae09a8294367d495d27dd55cd1608b72bcc46d01a0236159940c6ee4",
+      "request_schema_sha256": "aa9e9835e91a3dc56d6cfbebe8d3fd031c611b57eed6868a3a7e35312387214f",
+      "validation_schema_sha256": "2fd806b89f1fe4ee45dbf624a15d435545984d89c436e5e5cc6f2b8fe4688115",
+      "raw_response": {
+        "id": "gen-1791498481-uyKYaNbr4FOxTzmAoBbX",
+        "choices": [
+          {
+            "finish_reason": "stop",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+              "content": "{\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"FAIL\",\n  \"task_success\": \"FAIL\",\n  \"claims\": [\n    {\n      \"claim\": \"Hệ thống trả lời thông báo chưa tra được thông tin đã xác minh khi người dùng chọn ngày Thứ Bảy hoặc Chủ nhật.\",\n      \"support\": \"UNSUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E41\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời từ chối và báo lỗi trong khi người dùng đang cung cấp thông tin ngày định đặt lịch (Thứ Bảy hoặc Chủ nhật), lẽ ra trợ lý nên tiếp tục hỏi thêm vị trí xưởng do find_workshops trước đó thiếu location_anchor.\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Không có trích dẫn nguồn số nào được sử dụng trong câu trả lời.\"\n    }\n  }\n}",
+              "refusal": null,
+              "role": "assistant",
+              "annotations": null,
+              "audio": null,
+              "function_call": null,
+              "tool_calls": null,
+              "reasoning": null,
+              "reasoning_details": [
+                {
+                  "type": "reasoning.text",
+                  "signature": "EmAKXgFpFH0TusKEXQjfXF0osDM+ApW2vyszLS5dE8CKnDs2ZlGcHQaMzQcOiYAVPsO1go7TCrSsuKw3KtIoOB3Jl3gcYAl8ozydeX2eYTXPkPq0XaHPXwkDaw8ukzX6bHQ=",
+                  "format": "google-gemini-v1",
+                  "index": 0
+                }
+              ]
+            },
+            "native_finish_reason": "STOP"
+          }
+        ],
+        "created": 1791498481,
+        "model": "google/gemini-3.5-flash-lite",
+        "object": "chat.completion",
+        "metadata": null,
+        "moderation": null,
+        "service_tier": "default",
+        "system_fingerprint": null,
+        "usage": {
+          "completion_tokens": 247,
+          "prompt_tokens": 5700,
+          "total_tokens": 5947,
+          "completion_tokens_details": {
+            "accepted_prediction_tokens": null,
+            "audio_tokens": 0,
+            "reasoning_tokens": 0,
+            "rejected_prediction_tokens": null,
+            "text_tokens": null,
+            "image_tokens": 0
+          },
+          "prompt_tokens_details": {
+            "audio_tokens": 0,
+            "cache_write_tokens": 0,
+            "cached_tokens": 1707,
+            "image_tokens": null,
+            "text_tokens": null,
+            "video_tokens": 0
+          },
+          "cost": 0.00186661,
+          "is_byok": false,
+          "cost_details": {
+            "upstream_inference_cost": 0.00186661,
+            "upstream_inference_prompt_cost": 0.00124911,
+            "upstream_inference_completions_cost": 0.0006175
+          }
+        },
+        "provider": "Google AI Studio"
+      },
+      "actual_model": "google/gemini-3.5-flash-lite",
+      "raw_text": "{\n  \"correctness_from_available_evidence\": \"FAIL\",\n  \"faithfulness\": \"FAIL\",\n  \"task_success\": \"FAIL\",\n  \"claims\": [\n    {\n      \"claim\": \"Hệ thống trả lời thông báo chưa tra được thông tin đã xác minh khi người dùng chọn ngày Thứ Bảy hoặc Chủ nhật.\",\n      \"support\": \"UNSUPPORTED\",\n      \"citation_refs\": [\n        \"C0:E41\"\n      ]\n    }\n  ],\n  \"reasons\": [\n    \"Câu trả lời từ chối và báo lỗi trong khi người dùng đang cung cấp thông tin ngày định đặt lịch (Thứ Bảy hoặc Chủ nhật), lẽ ra trợ lý nên tiếp tục hỏi thêm vị trí xưởng do find_workshops trước đó thiếu location_anchor.\"\n  ],\n  \"citation_reviews\": {\n    \"none\": {\n      \"reference\": \"NONE\",\n      \"support\": \"NOT_APPLICABLE\",\n      \"reason\": \"Không có trích dẫn nguồn số nào được sử dụng trong câu trả lời.\"\n    }\n  }\n}",
+      "judge": {
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "FAIL",
+        "task_success": "FAIL",
+        "claims": [
+          {
+            "claim": "Hệ thống trả lời thông báo chưa tra được thông tin đã xác minh khi người dùng chọn ngày Thứ Bảy hoặc Chủ nhật.",
+            "support": "UNSUPPORTED",
+            "citation_refs": [
+              "C0:E41"
+            ],
+            "resolved_evidence": [
+              {
+                "evidence_id": "E41",
+                "source_id": "Q1",
+                "kind": "session_context",
+                "quote": "{\"user_question\": \"Thứ Bảy hoặc Chủ nhật, chưa quyết định.\"}",
+                "json_path": "",
+                "allowed_citation_indexes": [
+                  0
+                ],
+                "citation_index": 0
+              }
+            ]
+          }
+        ],
+        "reasons": [
+          "Câu trả lời từ chối và báo lỗi trong khi người dùng đang cung cấp thông tin ngày định đặt lịch (Thứ Bảy hoặc Chủ nhật), lẽ ra trợ lý nên tiếp tục hỏi thêm vị trí xưởng do find_workshops trước đó thiếu location_anchor."
+        ],
+        "citation_reviews": {
+          "none": {
+            "reference": "NONE",
+            "support": "NOT_APPLICABLE",
+            "reason": "Không có trích dẫn nguồn số nào được sử dụng trong câu trả lời.",
+            "resolved_evidence": null
+          }
+        },
+        "citation_support": "NOT_APPLICABLE",
+        "overall": "FAIL",
+        "aggregate_origin": "DETERMINISTIC_COMPONENT_AGGREGATION_NOT_MODEL_OUTPUT"
+      },
+      "automated_status": "FAIL",
+      "latency_seconds": 1.8508108999994874
+    }
+  }
+]

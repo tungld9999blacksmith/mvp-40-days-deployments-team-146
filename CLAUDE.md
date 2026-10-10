@@ -21,3 +21,9 @@ Key routing rules:
 Read DESIGN.md before visual or UI work: it defines the fonts, colors, spacing, and
 aesthetic direction. Ask the user before departing from it. When reviewing or QA-ing
 UI, flag code that doesn't match DESIGN.md.
+
+## Testing
+
+- Backend: `cd backend && APP_ENV=test OPENAI_API_KEY=test-key uv run --frozen pytest tests/` (use `uv`: the root `.venv` python lacks tzdata). Values in the root `.env` leak into Settings-based tests (e.g. `LLM_*_MODEL`); blank them when a routing test fails only locally.
+- Frontend: `cd frontend && npm test` (vitest; pure-logic tests next to the code, e.g. `features/booking-lines/logic.test.ts`), plus `npx tsc --noEmit -p .`.
+- New behavior gets a test; bug fixes get a regression test that fails before the fix.

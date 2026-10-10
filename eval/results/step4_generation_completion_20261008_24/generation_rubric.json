@@ -1,0 +1,17 @@
+{
+  "status": "DEVELOPMENT_NOT_ACCEPTANCE",
+  "pilot_ids": [
+    "M01",
+    "M07",
+    "W02",
+    "B11",
+    "B16",
+    "PR03"
+  ],
+  "pilot_gate": "6 complete, zero provider/truncation/offline-summary/strict-raw-contract failures, exact requested model on every call, expected deterministic preprovider gates and citation ID membership",
+  "raw_contract": "exact four existing GroundedAnswerPayload fields, strict JSON/types/enums, no duplicate keys/Markdown, nonempty answer; original outputs never corrected for scoring",
+  "citation_structure": "range/tag declaration diagnostics only; citation identity membership is not claim support",
+  "full": "one fresh 30-original-golden-question run per eligible model; don't pool pilot/full as independent cases",
+  "stop": "first provider/model/retrieval-independent execution error or truncation; raw contract failures recorded, no hidden retries",
+  "semantic_review": "DEFERRED_BY_USER; blank labels; correctness/claim support not measured"
+}

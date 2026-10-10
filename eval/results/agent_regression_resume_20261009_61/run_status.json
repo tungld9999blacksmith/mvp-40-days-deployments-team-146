@@ -1,0 +1,11 @@
+{
+  "status": "SIX_TECHNICAL_FULL_REPEATS_COMPLETE_JUDGE_NOT_AUTHORIZED",
+  "judge_requests_sent": 0,
+  "automatic_approval_rejection": "Pilot9 judge payload to Gemini/OpenRouter not explicitly authorized",
+  "user_reply": "Requested recommendation, not authorization",
+  "recommendation": "Pilot9 and60 fixed repeat1 answers, estimate0.16-0.18USD; await explicit authorization before provider calls",
+  "current_manifest180_judge_scope_not_silently_changed": true,
+  "future_judge_run": "Use a new output directory referencing closed61 producers/inputs, no Agent replay or duplicate costs",
+  "production_acceptance": false,
+  "dataset_usage": "DEVELOPMENT_REGRESSION_NOT_HOLDOUT"
+}

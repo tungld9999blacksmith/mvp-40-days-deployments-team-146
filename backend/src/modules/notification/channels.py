@@ -1,9 +1,10 @@
 """Notification module - channel abstraction (FEAT-NOTI-001 BR-506).
 
 ``NotificationService`` routes a message to the adapter registered for an
-external channel. No adapter exists yet (reminders are shown in the in-app
-feed only). Adding a channel means writing an adapter and registering it; the
-reminder job, the rules and the API do not change.
+external channel. Email (Resend, ``email_service.py``) and SMS (eSMS, ``adapters/``) are
+registered in ``dependency.py`` once configured; reminders are also always
+shown in the in-app feed. Adding a channel means writing an adapter and
+registering it; the reminder job, the rules and the API do not change.
 """
 
 from __future__ import annotations
@@ -33,20 +34,27 @@ class NotificationMessage:
     subject: str
     body: str
     link: str | None = None
+    html: str | None = None
+    kind: str = "GENERAL"
+    delivery_id: str | None = None
+    recipient_hash: str | None = None
+    sender: str | None = None
 
 
 @dataclass(frozen=True)
 class DeliveryResult:
     status: DeliveryStatus
     error_code: str | None = None
+    provider_message_id: str | None = None
+    deferred: bool = False
 
     @property
     def retryable(self) -> bool:
         return self.status is DeliveryStatus.FAILED and self.error_code in RETRYABLE_ERRORS
 
     @classmethod
-    def sent(cls) -> DeliveryResult:
-        return cls(DeliveryStatus.SENT)
+    def sent(cls, provider_message_id: str | None = None) -> DeliveryResult:
+        return cls(DeliveryStatus.SENT, provider_message_id=provider_message_id)
 
     @classmethod
     def no_recipient(cls) -> DeliveryResult:
@@ -84,6 +92,9 @@ class NotificationService:
         return set(self._adapters)
 
     async def deliver(self, channel: ReminderChannel, user_id: int, message: NotificationMessage) -> DeliveryResult:
+        # Email is opt-in for maintenance only. Shared booking/CRM callers cannot send it.
+        if channel is ReminderChannel.EMAIL and message.kind != "MAINTENANCE_REMINDER":
+            return DeliveryResult.failed("EMAIL_MAINTENANCE_ONLY")
         adapter = self._adapters.get(channel)
         if adapter is None:
             return DeliveryResult.failed(CHANNEL_NOT_AVAILABLE)

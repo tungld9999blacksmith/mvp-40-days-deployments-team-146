@@ -254,6 +254,11 @@ class CostEstimationService:
         )
 
     def _effective_prices(self, workshop_id: UUID, model_id: str, codes: list[str], today: date) -> dict[str, Decimal]:
+        return {code: row.price for code, row in self.effective_price_rows(workshop_id, model_id, codes, today).items()}
+
+    def effective_price_rows(
+        self, workshop_id: UUID, model_id: str, codes: list[str], today: date
+    ) -> dict[str, ServicePrice]:
         """BR-1004: price valid today; overlapping periods → newest ``valid_from`` + WARN."""
         rows = self._db.exec(
             select(ServicePrice).where(
@@ -276,7 +281,7 @@ class CostEstimationService:
             )
             if (row.valid_from or date.min) > (current.valid_from or date.min):
                 chosen[row.item_code] = row
-        return {code: row.price for code, row in chosen.items()}
+        return chosen
 
     def _chassis_end_date(self, user_vehicle_id: UUID) -> date | None:
         return self._db.exec(

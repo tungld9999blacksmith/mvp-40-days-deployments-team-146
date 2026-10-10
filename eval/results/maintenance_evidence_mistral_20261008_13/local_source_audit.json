@@ -1,0 +1,35 @@
+{
+  "source_owner_verified": false,
+  "source_mutated": false,
+  "files": [
+    {
+      "file": "data/knowledge/raw/lich_bao_duong_ALL.md",
+      "sha256": "335c2420eda29dd3cb9b49d8ff26685475fbe5ab25d8931697594bda1b66e91c",
+      "matching_rows": [
+        {
+          "line": 264,
+          "text": "| Hệ thống điều hòa | Thay mới ở tháng thứ 60, 120 và 180 hoặc km thứ 60.000, 12.000 và 180.000 |"
+        },
+        {
+          "line": 267,
+          "text": "| Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên |"
+        }
+      ]
+    },
+    {
+      "file": "data/knowledge/processed/lich_bao_duong_ALL_cleaned.md",
+      "sha256": "10d8ac5da71cdf2fb237af1da3b3c80dddae9df352502d93185a2b3314d0a60c",
+      "matching_rows": [
+        {
+          "line": 264,
+          "text": "| Hệ thống điều hòa | Thay mới ở tháng thứ 60, 120 và 180 hoặc km thứ 60.000, 12.000 và 180.000 |"
+        },
+        {
+          "line": 267,
+          "text": "| Nước làm mát pin/động cơ điện | Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên |"
+        }
+      ]
+    }
+  ],
+  "interpretation": "Both local source forms preserve the observed120months/12.000km text. The agent must not replace it with120.000km by inference."
+}

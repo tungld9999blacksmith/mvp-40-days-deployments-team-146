@@ -1,0 +1,276 @@
+{
+  "scope": "DEVELOPMENT_STRUCTURED_REWRITE_AND_LIVE_RETRIEVAL",
+  "models": {
+    "mistral": {
+      "pilot": {
+        "selected": 5,
+        "attempted": 5,
+        "complete": true,
+        "raw_contract_pass": 5,
+        "provider_errors": 0,
+        "truncated_cases": 0,
+        "errors": 0,
+        "runtime_fallback_cases": 0,
+        "anchor_all_match": 5,
+        "category_draft_agreement": {
+          "matched": 3,
+          "scored": 3
+        },
+        "actual_models": [
+          "mistralai/mistral-small-2603"
+        ],
+        "rewrite_mean_seconds": 1.3218354200012983,
+        "rewrite_p90_seconds": 1.999204000003374,
+        "total_mean_seconds": 2.1626505800006273,
+        "known_rewrite_cost_usd": 0.000859254,
+        "missing_rewrite_receipts": 0,
+        "embedding_calls": 4,
+        "embedding_cost_usd": null,
+        "reranker_cost_usd": "NOT_MEASURED_IF_REMOTE",
+        "retrieval": {
+          "scored_golden_cases": 3,
+          "attempted": 3,
+          "errors": 0,
+          "document_hit_at_1": 0.6666666666666666,
+          "document_hit_at_3": 0.6666666666666666,
+          "document_hit_at_5": 1.0,
+          "document_mrr": 0.75,
+          "evidence_chunk_recall": "NOT_MEASURED_WITHOUT_GOLDEN_CHUNK_IDS"
+        },
+        "semantic_preservation": "NOT_MEASURED",
+        "independent_labels": 0,
+        "production_acceptance": false,
+        "preflight_error": null,
+        "corpus_verified_after": true,
+        "pilot_eligible": true
+      },
+      "full": {
+        "selected": 30,
+        "attempted": 30,
+        "complete": true,
+        "raw_contract_pass": 30,
+        "provider_errors": 0,
+        "truncated_cases": 0,
+        "errors": 0,
+        "runtime_fallback_cases": 0,
+        "anchor_all_match": 30,
+        "category_draft_agreement": {
+          "matched": 20,
+          "scored": 24
+        },
+        "actual_models": [
+          "mistralai/mistral-small-2603"
+        ],
+        "rewrite_mean_seconds": 1.1266699166664087,
+        "rewrite_p90_seconds": 1.235082199997123,
+        "total_mean_seconds": 1.9166274833331651,
+        "known_rewrite_cost_usd": 0.0031730654999999994,
+        "missing_rewrite_receipts": 0,
+        "embedding_calls": 29,
+        "embedding_cost_usd": null,
+        "reranker_cost_usd": "NOT_MEASURED_IF_REMOTE",
+        "retrieval": {
+          "scored_golden_cases": 24,
+          "attempted": 24,
+          "errors": 0,
+          "document_hit_at_1": 0.75,
+          "document_hit_at_3": 0.9166666666666666,
+          "document_hit_at_5": 0.9583333333333334,
+          "document_mrr": 0.84375,
+          "evidence_chunk_recall": "NOT_MEASURED_WITHOUT_GOLDEN_CHUNK_IDS"
+        },
+        "semantic_preservation": "NOT_MEASURED",
+        "independent_labels": 0,
+        "production_acceptance": false,
+        "preflight_error": null,
+        "corpus_verified_after": true,
+        "pilot_eligible": false
+      }
+    },
+    "gemma": {
+      "pilot": {
+        "selected": 5,
+        "attempted": 5,
+        "complete": true,
+        "raw_contract_pass": 5,
+        "provider_errors": 0,
+        "truncated_cases": 0,
+        "errors": 0,
+        "runtime_fallback_cases": 0,
+        "anchor_all_match": 5,
+        "category_draft_agreement": {
+          "matched": 2,
+          "scored": 3
+        },
+        "actual_models": [
+          "google/gemma-4-26b-a4b-it"
+        ],
+        "rewrite_mean_seconds": 2.403552180001134,
+        "rewrite_p90_seconds": 2.559318700001313,
+        "total_mean_seconds": 3.863736720000452,
+        "known_rewrite_cost_usd": 0.000429908,
+        "missing_rewrite_receipts": 0,
+        "embedding_calls": 4,
+        "embedding_cost_usd": null,
+        "reranker_cost_usd": "NOT_MEASURED_IF_REMOTE",
+        "retrieval": {
+          "scored_golden_cases": 3,
+          "attempted": 3,
+          "errors": 0,
+          "document_hit_at_1": 1.0,
+          "document_hit_at_3": 1.0,
+          "document_hit_at_5": 1.0,
+          "document_mrr": 1.0,
+          "evidence_chunk_recall": "NOT_MEASURED_WITHOUT_GOLDEN_CHUNK_IDS"
+        },
+        "semantic_preservation": "NOT_MEASURED",
+        "independent_labels": 0,
+        "production_acceptance": false,
+        "preflight_error": null,
+        "corpus_verified_after": true,
+        "pilot_eligible": true
+      },
+      "full": {
+        "selected": 30,
+        "attempted": 30,
+        "complete": true,
+        "raw_contract_pass": 30,
+        "provider_errors": 0,
+        "truncated_cases": 0,
+        "errors": 0,
+        "runtime_fallback_cases": 0,
+        "anchor_all_match": 30,
+        "category_draft_agreement": {
+          "matched": 20,
+          "scored": 24
+        },
+        "actual_models": [
+          "google/gemma-4-26b-a4b-it"
+        ],
+        "rewrite_mean_seconds": 4.038562896666796,
+        "rewrite_p90_seconds": 12.802594699998735,
+        "total_mean_seconds": 5.475933886666583,
+        "known_rewrite_cost_usd": 0.003073575999999999,
+        "missing_rewrite_receipts": 0,
+        "embedding_calls": 29,
+        "embedding_cost_usd": null,
+        "reranker_cost_usd": "NOT_MEASURED_IF_REMOTE",
+        "retrieval": {
+          "scored_golden_cases": 24,
+          "attempted": 24,
+          "errors": 0,
+          "document_hit_at_1": 0.875,
+          "document_hit_at_3": 0.9583333333333334,
+          "document_hit_at_5": 0.9583333333333334,
+          "document_mrr": 0.9166666666666666,
+          "evidence_chunk_recall": "NOT_MEASURED_WITHOUT_GOLDEN_CHUNK_IDS"
+        },
+        "semantic_preservation": "NOT_MEASURED",
+        "independent_labels": 0,
+        "production_acceptance": false,
+        "preflight_error": null,
+        "corpus_verified_after": true,
+        "pilot_eligible": false
+      }
+    },
+    "gemini_lite": {
+      "pilot": {
+        "selected": 5,
+        "attempted": 5,
+        "complete": true,
+        "raw_contract_pass": 5,
+        "provider_errors": 0,
+        "truncated_cases": 0,
+        "errors": 0,
+        "runtime_fallback_cases": 0,
+        "anchor_all_match": 5,
+        "category_draft_agreement": {
+          "matched": 3,
+          "scored": 3
+        },
+        "actual_models": [
+          "google/gemini-3.5-flash-lite"
+        ],
+        "rewrite_mean_seconds": 1.3393704199996137,
+        "rewrite_p90_seconds": 1.7410684999995283,
+        "total_mean_seconds": 2.0908556800008227,
+        "known_rewrite_cost_usd": 0.0027114,
+        "missing_rewrite_receipts": 0,
+        "embedding_calls": 4,
+        "embedding_cost_usd": null,
+        "reranker_cost_usd": "NOT_MEASURED_IF_REMOTE",
+        "retrieval": {
+          "scored_golden_cases": 3,
+          "attempted": 3,
+          "errors": 0,
+          "document_hit_at_1": 0.6666666666666666,
+          "document_hit_at_3": 1.0,
+          "document_hit_at_5": 1.0,
+          "document_mrr": 0.8333333333333334,
+          "evidence_chunk_recall": "NOT_MEASURED_WITHOUT_GOLDEN_CHUNK_IDS"
+        },
+        "semantic_preservation": "NOT_MEASURED",
+        "independent_labels": 0,
+        "production_acceptance": false,
+        "preflight_error": null,
+        "corpus_verified_after": true,
+        "pilot_eligible": true
+      },
+      "full": {
+        "selected": 30,
+        "attempted": 30,
+        "complete": true,
+        "raw_contract_pass": 30,
+        "provider_errors": 0,
+        "truncated_cases": 0,
+        "errors": 0,
+        "runtime_fallback_cases": 0,
+        "anchor_all_match": 30,
+        "category_draft_agreement": {
+          "matched": 22,
+          "scored": 24
+        },
+        "actual_models": [
+          "google/gemini-3.5-flash-lite"
+        ],
+        "rewrite_mean_seconds": 1.3527672066668552,
+        "rewrite_p90_seconds": 1.3462345999978425,
+        "total_mean_seconds": 2.2781109233337093,
+        "known_rewrite_cost_usd": 0.0165336,
+        "missing_rewrite_receipts": 0,
+        "embedding_calls": 29,
+        "embedding_cost_usd": null,
+        "reranker_cost_usd": "NOT_MEASURED_IF_REMOTE",
+        "retrieval": {
+          "scored_golden_cases": 24,
+          "attempted": 24,
+          "errors": 0,
+          "document_hit_at_1": 0.7916666666666666,
+          "document_hit_at_3": 0.9583333333333334,
+          "document_hit_at_5": 0.9583333333333334,
+          "document_mrr": 0.875,
+          "evidence_chunk_recall": "NOT_MEASURED_WITHOUT_GOLDEN_CHUNK_IDS"
+        },
+        "semantic_preservation": "NOT_MEASURED",
+        "independent_labels": 0,
+        "production_acceptance": false,
+        "preflight_error": null,
+        "corpus_verified_after": true,
+        "pilot_eligible": false
+      }
+    }
+  },
+  "known_rewrite_spend_usd": 0.0267808035,
+  "missing_rewrite_receipts": 0,
+  "embedding_calls": 99,
+  "embedding_cost_usd": null,
+  "total_pipeline_cost_usd": null,
+  "independent_labels": 0,
+  "semantic_accuracy": "NOT_MEASURED",
+  "production_acceptance": false,
+  "production_model_change": false,
+  "app_restarted": false,
+  "gpt4o": "EXCLUDED_ALL_STAGES",
+  "source_revision_sha256": "65871abe0fd5fce2eae57c7d1e7bc216d554bee5e7da197958b23d546de2c8fb",
+  "report_controller_sha256": "c35bfb4727ec0ec57374705202604a48b94fb6822253243f91d247cc934e4a22"
+}

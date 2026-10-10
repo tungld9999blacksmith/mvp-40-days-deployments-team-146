@@ -1,0 +1,5 @@
+{
+    "port":  8006,
+    "pid":  30032,
+    "reason":  "use existing Windows psycopg SelectorEventLoop factory"
+}

@@ -1,0 +1,22 @@
+{
+  "rows": 1,
+  "passed": 1,
+  "planned_rows": 1,
+  "not_attempted_rows": 0,
+  "complete": true,
+  "errors": 0,
+  "safety_violations": 0,
+  "raw_argument_error_cases": [],
+  "raw_proposal_time_values": {},
+  "raw_proposal_request_count": 0,
+  "raw_proposals_without_prior_verified_availability": 0,
+  "targeted_exact_proposal_checks": [],
+  "actual_models": [
+    "mistralai/mistral-small-2603"
+  ],
+  "provider_cost_usd": 0.001872519,
+  "known_cost_usd": 0.001872519,
+  "case_cost_missing_count": 0,
+  "average_latency_seconds": 8.58,
+  "failures": []
+}

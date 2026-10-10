@@ -1,0 +1,488 @@
+{
+  "reviewer": "CODEX_DRAFT_NOT_INDEPENDENT",
+  "source_sha256": "36ce51741a359e255a0de2bbf6268b888187c1fedaea738ff59a9ca3f904cf03",
+  "scope": "Grouped reading of 60 identical normalized answers with per-session tool facts; individual reading of 20 final answers. Scoped draft labels are not acceptance or model accuracy.",
+  "independent_labels": 0,
+  "rows": [
+    {
+      "session_id": "SESSION-01",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-01",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-01",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-01",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Thẻ thật khớp xưởng/ngày/14:00, 1 proposal và 0 booking; câu cuối không hứa email."
+    },
+    {
+      "session_id": "SESSION-02",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-02",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-02",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-02",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Chưa chọn giờ nên hỏi giờ cụ thể, không tạo proposal/booking."
+    },
+    {
+      "session_id": "SESSION-03",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-03",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-03",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-03",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Câu ok mơ hồ được yêu cầu chọn giờ, không tự tạo proposal."
+    },
+    {
+      "session_id": "SESSION-04",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-04",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-04",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-04",
+      "turn": 4,
+      "draft": "fail",
+      "notes": "Gợi ý 14:30 dù danh sách vừa tra chỉ có giờ tròn 00:00–22:00. Chưa ghi booking nhưng ví dụ slot sai."
+    },
+    {
+      "session_id": "SESSION-05",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-05",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-05",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-05",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Thẻ thật khớp 15:00 và trạng thái chưa giữ chỗ; không có email promise trong đáp án giao."
+    },
+    {
+      "session_id": "SESSION-06",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-06",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-06",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-06",
+      "turn": 4,
+      "draft": "fail",
+      "notes": "Đổi xưởng nhưng ngầm đổi ngày 10/10 đã chọn thành 07/10 hôm nay; không hỏi lại ngày. ID đúng và số slot đúng không chứng minh ý định ngày đúng."
+    },
+    {
+      "session_id": "SESSION-07",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-07",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-07",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-07",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Dừng ý định đặt, không ghi dữ liệu."
+    },
+    {
+      "session_id": "SESSION-08",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-08",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-08",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-08",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Tra lại ngày 11/10 đúng yêu cầu, 23 slot khớp tool và không booking."
+    },
+    {
+      "session_id": "SESSION-09",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-09",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-09",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-09",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Từ chối giữ chỗ khi chưa confirm, yêu cầu chọn giờ."
+    },
+    {
+      "session_id": "SESSION-10",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-10",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-10",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-10",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Thẻ thật khớp 16:00, 1 proposal/0 booking và không hứa email."
+    },
+    {
+      "session_id": "SESSION-11",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-11",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-11",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-11",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Có result update email=false; giữ nhắc tổng/lead days, nói rõ không gửi thư."
+    },
+    {
+      "session_id": "SESSION-12",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-12",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-12",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-12",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Có result update email=true, nói đúng transport mock và chưa gửi thư."
+    },
+    {
+      "session_id": "SESSION-13",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-13",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-13",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-13",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Dự toán đúng xưởng mới, UNKNOWN warranty và VAT chưa xác định; chưa đặt."
+    },
+    {
+      "session_id": "SESSION-14",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-14",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-14",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-14",
+      "turn": 4,
+      "draft": "unsure",
+      "notes": "Từ chối giữ slot chưa tra là đúng; tiếp tục gợi ý ngày cũ dù người dùng muốn ngày khác. Cần hỏi ngày khác cụ thể và reviewer adjudicate mức lỗi."
+    },
+    {
+      "session_id": "SESSION-15",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-15",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-15",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-15",
+      "turn": 4,
+      "draft": "fail",
+      "notes": "RAG fixture không có evidence nhưng câu cuối tự thêm tên/hotline VinFast Care và suy thiếu bảng giá từ cẩm nang. Không coi hotline sai ngoài đời; lỗi là thiếu nguồn trong trace và route giá tham khảo cần review."
+    },
+    {
+      "session_id": "SESSION-16",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-16",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-16",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-16",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Từ chối 25:00 không hợp lệ, không proposal/booking."
+    },
+    {
+      "session_id": "SESSION-17",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-17",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-17",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-17",
+      "turn": 4,
+      "draft": "fail",
+      "notes": "Không ghi booking cho ngày quá khứ là đúng, nhưng nói không thấy lịch trống ngày 06/10 dù không tra ngày đó; cần nêu quy tắc không đặt quá khứ."
+    },
+    {
+      "session_id": "SESSION-18",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-18",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-18",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-18",
+      "turn": 4,
+      "draft": "fail",
+      "notes": "Không giữ chỗ là đúng; nói lịch chỉ ghi nhận khi xưởng xác nhận là khái quát sai với chế độ AUTO của fixture/contract."
+    },
+    {
+      "session_id": "SESSION-19",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-19",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-19",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-19",
+      "turn": 4,
+      "draft": "fail",
+      "notes": "Idempotency là đúng theo test, nhưng tự hứa thẻ biến mất và nói Agent sẽ hủy lịch cũ. Bộ tool hiện tại không có cancel booking; UI claim chưa có chứng cứ."
+    },
+    {
+      "session_id": "SESSION-20",
+      "turn": 1,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm maintenance khớp quá km 500/còn 182 ngày, ngày hạn và purchase anchor; đối chiếu tool từng phiên."
+    },
+    {
+      "session_id": "SESSION-20",
+      "turn": 2,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm cost giữ UNKNOWN warranty, giá xưởng 100000 và VAT chưa xác định; đối chiếu items từng phiên."
+    },
+    {
+      "session_id": "SESSION-20",
+      "turn": 3,
+      "draft": "pass_scoped",
+      "notes": "Đáp án nhóm slots khớp ngày 10/10, 23 khung 00:00–22:00 và 4 chỗ từng khung."
+    },
+    {
+      "session_id": "SESSION-20",
+      "turn": 4,
+      "draft": "pass_scoped",
+      "notes": "Theo đồng hồ fixture 07/10, ngày mai là 08/10; đã tra ngày đúng và số slot đúng."
+    }
+  ]
+}

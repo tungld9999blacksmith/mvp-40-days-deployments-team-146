@@ -1,0 +1,362 @@
+[
+  {
+    "sample_id": "review-001",
+    "configuration": "base",
+    "case_id": "RAG-001",
+    "original_row_sha256": "ffd5d77f92d962f2ce840aa551d4ebb8abf221f21d0f01f514ef707cc5e1c926"
+  },
+  {
+    "sample_id": "review-002",
+    "configuration": "agent_gemma",
+    "case_id": "RAG-001",
+    "original_row_sha256": "6e06ccfd692b565cc8c1f95272430d539541ecfcd8fc62cbf0adace7fa94f076"
+  },
+  {
+    "sample_id": "review-003",
+    "configuration": "base",
+    "case_id": "RAG-007",
+    "original_row_sha256": "206a00af1165bf138a8235960e39a4d8808fea068fde33ee39376598e2db1781"
+  },
+  {
+    "sample_id": "review-004",
+    "configuration": "agent_gemma",
+    "case_id": "RAG-007",
+    "original_row_sha256": "14dd7b0a251d43f83ee1f79ae8b155b0bb5fc30de911a14abdd6504523dce9e2"
+  },
+  {
+    "sample_id": "review-005",
+    "configuration": "base",
+    "case_id": "RAG-027",
+    "original_row_sha256": "206b417f94a3453f647ff2e089126c5b9aa5aa9cc525e642031cd34d97342d09"
+  },
+  {
+    "sample_id": "review-006",
+    "configuration": "agent_gemma",
+    "case_id": "RAG-027",
+    "original_row_sha256": "a7d1cf76384b201b7351efd2a9660b46b364abe9e6ec2b7c24d171b8bce8268f"
+  },
+  {
+    "sample_id": "review-007",
+    "configuration": "base",
+    "case_id": "RAG-056",
+    "original_row_sha256": "32682378ec6607c922ba60a20f1d08f851b2379c19b10487135df1a77eab17f0"
+  },
+  {
+    "sample_id": "review-008",
+    "configuration": "agent_gemma",
+    "case_id": "RAG-056",
+    "original_row_sha256": "bbf09c18b733e3761ccdedff53730d101e48bea941ba9ed3b3ed8f9df9aafde9"
+  },
+  {
+    "sample_id": "review-009",
+    "configuration": "base",
+    "case_id": "RAG-061",
+    "original_row_sha256": "80d5594e56de9be6f47e40e13c811300d9e9fb6757de26ef95e25d966a938ff6"
+  },
+  {
+    "sample_id": "review-010",
+    "configuration": "agent_gemma",
+    "case_id": "RAG-061",
+    "original_row_sha256": "d8faccf9a8e9a3767f933323a61ce4006742dcd764a73979519a96cbb34e2948"
+  },
+  {
+    "sample_id": "review-011",
+    "configuration": "base",
+    "case_id": "RAG-083",
+    "original_row_sha256": "1b4330a7fc06974ab9f614eac317ab399b47b0b5908b38256c6e9000652ea410"
+  },
+  {
+    "sample_id": "review-012",
+    "configuration": "agent_gemma",
+    "case_id": "RAG-083",
+    "original_row_sha256": "55bfbd215b40ac7caf1c64480797ee75f09be91210a6a0ab92fcbe6c39ab0988"
+  },
+  {
+    "sample_id": "review-013",
+    "configuration": "base",
+    "case_id": "GUARD-01",
+    "original_row_sha256": "35062ea9f45766875a9177f7f036c2787e0d6e00666756f25a6ced398fd8f0a7"
+  },
+  {
+    "sample_id": "review-014",
+    "configuration": "agent_gemma",
+    "case_id": "GUARD-01",
+    "original_row_sha256": "62d512b3698131c6a05d19ecd8a38c71cbb2d695e92ecfe159c5816b87904b8c"
+  },
+  {
+    "sample_id": "review-015",
+    "configuration": "base",
+    "case_id": "GUARD-05",
+    "original_row_sha256": "a987afb4a2ebec3c58edf520efeb7d71cb81cdc59ad4a8c18eb554fc95e1e471"
+  },
+  {
+    "sample_id": "review-016",
+    "configuration": "agent_gemma",
+    "case_id": "GUARD-05",
+    "original_row_sha256": "51f2f15b09375224af19e77bcf61c63b070ca42ba876867444cdf38a4ac98079"
+  },
+  {
+    "sample_id": "review-017",
+    "configuration": "base",
+    "case_id": "GUARD-07",
+    "original_row_sha256": "7fc6447235b48bce7bbc0ba041eb507fb086e020224c3214c5f878d3c5873721"
+  },
+  {
+    "sample_id": "review-018",
+    "configuration": "agent_gemma",
+    "case_id": "GUARD-07",
+    "original_row_sha256": "78a26d6f102aacc39b1603dad7a5f4aa3b019abcaf537f6c2ab2bfbd807206d0"
+  },
+  {
+    "sample_id": "review-019",
+    "configuration": "base",
+    "case_id": "GUARD-09",
+    "original_row_sha256": "795591b3d3d6ed528dcd72ddee188b4efb93c1429c7813889ea325c1318eb451"
+  },
+  {
+    "sample_id": "review-020",
+    "configuration": "agent_gemma",
+    "case_id": "GUARD-09",
+    "original_row_sha256": "c7f3c5a561a736a9cd0bb9db37f1e479848cc73f9003c3557446f69a79130967"
+  },
+  {
+    "sample_id": "review-021",
+    "configuration": "base",
+    "case_id": "GUARD-19",
+    "original_row_sha256": "dec436a28bb14ac2d90f2ab2e38dd696509db53e303ccff71646271755a07dd7"
+  },
+  {
+    "sample_id": "review-022",
+    "configuration": "agent_gemma",
+    "case_id": "GUARD-19",
+    "original_row_sha256": "c055e4a8277dc70498a3441b305e4b21c8d6d3d199060ad115252d44465de6ee"
+  },
+  {
+    "sample_id": "review-023",
+    "configuration": "base",
+    "case_id": "BOOK-03",
+    "original_row_sha256": "733be392f4a07c81a15bbd0d1aea809ecd9d802a0e1127308285bea3943dfe26"
+  },
+  {
+    "sample_id": "review-024",
+    "configuration": "agent_gemma",
+    "case_id": "BOOK-03",
+    "original_row_sha256": "10e7f45befa1ec37b04f4b869863941537916ef703d6408f4a82707ac9fde7b0"
+  },
+  {
+    "sample_id": "review-025",
+    "configuration": "base",
+    "case_id": "BOOK-05",
+    "original_row_sha256": "5a41d936d5480698de8bac0ffea1fe4654cfcb8d303cb6f0c9c0201f3775e559"
+  },
+  {
+    "sample_id": "review-026",
+    "configuration": "agent_gemma",
+    "case_id": "BOOK-05",
+    "original_row_sha256": "0fe6c2d9f2557dec9a4149c8b6f77ef5ace84643f487aa230637dddeec62e683"
+  },
+  {
+    "sample_id": "review-027",
+    "configuration": "base",
+    "case_id": "BOOK-15",
+    "original_row_sha256": "eb38b5cc7399ecc646827ad94c413e155ca0c8d47a39be74420055c0d5d210f0"
+  },
+  {
+    "sample_id": "review-028",
+    "configuration": "agent_gemma",
+    "case_id": "BOOK-15",
+    "original_row_sha256": "48314d6e8d102ea9c174440374ef7b04b92abcb287c7e3504a213878d76f9f67"
+  },
+  {
+    "sample_id": "review-029",
+    "configuration": "base",
+    "case_id": "BOOK-18",
+    "original_row_sha256": "08a0a2f975650fdac2a310562524e8fbbd057072b5064e8c41b3eee3836cabae"
+  },
+  {
+    "sample_id": "review-030",
+    "configuration": "agent_gemma",
+    "case_id": "BOOK-18",
+    "original_row_sha256": "bfef10678cd9b979aeab24f21cb919bd52ae65d1d4b757609430752decb1ecd3"
+  },
+  {
+    "sample_id": "review-031",
+    "configuration": "base",
+    "case_id": "BOOK-19",
+    "original_row_sha256": "7ddce3d077e1227761f93be4e6d7972a3bb566917950708aa8e88f4fd1f561cc"
+  },
+  {
+    "sample_id": "review-032",
+    "configuration": "agent_gemma",
+    "case_id": "BOOK-19",
+    "original_row_sha256": "a2bc67365d94ee2d9ad0375c37d0600cf2a59cf3bb9b0b0dfc90ad591aa39f7d"
+  },
+  {
+    "sample_id": "review-033",
+    "configuration": "base",
+    "case_id": "BOOK-22",
+    "original_row_sha256": "2b9ca400e00e07980150bdbe5c17b67d8490334ff8ad2d745d0c4d5497913b81"
+  },
+  {
+    "sample_id": "review-034",
+    "configuration": "agent_gemma",
+    "case_id": "BOOK-22",
+    "original_row_sha256": "7fc37ce68bbaff84343dd41f8cc02f4010de80e4c90c9d31c177dfba042c01d8"
+  },
+  {
+    "sample_id": "review-035",
+    "configuration": "base",
+    "case_id": "BOOK-25",
+    "original_row_sha256": "1adf63fcb4abc473136c2d86849c655e5d61f72c51d812a2731cddd4a2ae3ab7"
+  },
+  {
+    "sample_id": "review-036",
+    "configuration": "agent_gemma",
+    "case_id": "BOOK-25",
+    "original_row_sha256": "af1e8da466db47922d1fb644f98b7b83296c67173b8cc5ffb03a55e10499d731"
+  },
+  {
+    "sample_id": "review-037",
+    "configuration": "base",
+    "case_id": "BOOK-33",
+    "original_row_sha256": "96fa207286702d9f59305279e0669da0f8d2d0c9e75189a33b0afb434ba2a11c"
+  },
+  {
+    "sample_id": "review-038",
+    "configuration": "agent_gemma",
+    "case_id": "BOOK-33",
+    "original_row_sha256": "036d7053cebde95986443861f25f889d6ddefe11694d8faa62fdbd40979e312e"
+  },
+  {
+    "sample_id": "review-039",
+    "configuration": "base",
+    "case_id": "MAINT-01",
+    "original_row_sha256": "d2f38251aa58e6fa3bad3a632f7f2e8c4f7964648368449a1ea05cdcda8acdc3"
+  },
+  {
+    "sample_id": "review-040",
+    "configuration": "agent_gemma",
+    "case_id": "MAINT-01",
+    "original_row_sha256": "a4cde57104d66397767ae76c5e0e9c06701341cc61ad81167893dbb2f0b5171a"
+  },
+  {
+    "sample_id": "review-041",
+    "configuration": "base",
+    "case_id": "MAINT-07",
+    "original_row_sha256": "79e2cd485981c9fff1fa694be11bc04cc9156f527f0d4b113394462dbd15f6b7"
+  },
+  {
+    "sample_id": "review-042",
+    "configuration": "agent_gemma",
+    "case_id": "MAINT-07",
+    "original_row_sha256": "3160989eda208c8ec2ff0344ab845f376f199fe2a6506a06061b49f6e438acc9"
+  },
+  {
+    "sample_id": "review-043",
+    "configuration": "base",
+    "case_id": "MAINT-11",
+    "original_row_sha256": "06ac699830ff27158b44aa80a7dab5cca97d6bab72528948f945efde442284ca"
+  },
+  {
+    "sample_id": "review-044",
+    "configuration": "agent_gemma",
+    "case_id": "MAINT-11",
+    "original_row_sha256": "85bfe64578fccb406214b10a2dfbdf82a4a30c590d0b44406f595d57bd2c54dc"
+  },
+  {
+    "sample_id": "review-045",
+    "configuration": "base",
+    "case_id": "COST-01",
+    "original_row_sha256": "7b126bf3765b368f1798618038503598f097e2befc6d524cd0b2d356ca3bbf61"
+  },
+  {
+    "sample_id": "review-046",
+    "configuration": "agent_gemma",
+    "case_id": "COST-01",
+    "original_row_sha256": "655c76c734aedd14a64af28dbf8b8d55a25f83dea444a1b226456ef42a8bb6be"
+  },
+  {
+    "sample_id": "review-047",
+    "configuration": "base",
+    "case_id": "COST-06",
+    "original_row_sha256": "b3a560f04fff7752eeecb3dc02e92ab6e3ab4f94eb356bbde4a9901ad1bf56b6"
+  },
+  {
+    "sample_id": "review-048",
+    "configuration": "agent_gemma",
+    "case_id": "COST-06",
+    "original_row_sha256": "adcd6cb332be075b867c5e9648b1d2de44e3462587396e04a542ae8188d3c7b6"
+  },
+  {
+    "sample_id": "review-049",
+    "configuration": "base",
+    "case_id": "COST-11",
+    "original_row_sha256": "39d2d5ac2a8170eab9ffd2df3b774ad3e2a72ce30943ef0e608e3452c4246002"
+  },
+  {
+    "sample_id": "review-050",
+    "configuration": "agent_gemma",
+    "case_id": "COST-11",
+    "original_row_sha256": "9ea22c71e1d64e1231907b6ee77bbc6b707850062e891625ebbc21c9c56df52c"
+  },
+  {
+    "sample_id": "review-051",
+    "configuration": "base",
+    "case_id": "REMINDER-03",
+    "original_row_sha256": "42d7ff8529fe68ed07e5a571fb65cc2523d86982d740e1a290585af242fcf8bc"
+  },
+  {
+    "sample_id": "review-052",
+    "configuration": "agent_gemma",
+    "case_id": "REMINDER-03",
+    "original_row_sha256": "37a738805aa6665a6dbb2bb7509ad497c855b190f86a47cec16c58f83d3aeac4"
+  },
+  {
+    "sample_id": "review-053",
+    "configuration": "base",
+    "case_id": "REMINDER-05",
+    "original_row_sha256": "395df8b3b0b055f99f2ac0f21834486c1102761aa0414f0f3f35058145671641"
+  },
+  {
+    "sample_id": "review-054",
+    "configuration": "agent_gemma",
+    "case_id": "REMINDER-05",
+    "original_row_sha256": "dda7b64194d2b2e034efc6ce24006fdca782affdd9c926b6e1b2803fb4670ff3"
+  },
+  {
+    "sample_id": "review-055",
+    "configuration": "base",
+    "case_id": "REMINDER-10",
+    "original_row_sha256": "8ad95e8bb692e8bda6c26bf4c3a20f11a7846b8dcd0d0aa8ee2da959b306ce90"
+  },
+  {
+    "sample_id": "review-056",
+    "configuration": "agent_gemma",
+    "case_id": "REMINDER-10",
+    "original_row_sha256": "7778f669f12adc156c96bb520506b63f0d37b91f6ac164e12a1faa7287df70c6"
+  },
+  {
+    "sample_id": "review-057",
+    "configuration": "base",
+    "case_id": "REMINDER-12",
+    "original_row_sha256": "39c1b1d122d02b63bbf99deddd48ee21413f7c048517a87ebd87ac5d6ffe92a9"
+  },
+  {
+    "sample_id": "review-058",
+    "configuration": "agent_gemma",
+    "case_id": "REMINDER-12",
+    "original_row_sha256": "66ee0c3c530d70eab9961772a20f2d72559e9a1beae3ee48ca0508acf3a9c571"
+  },
+  {
+    "sample_id": "review-059",
+    "configuration": "base",
+    "case_id": "REMINDER-16",
+    "original_row_sha256": "d15be75cb60bb02a01f2cb215259f0485ce8d81af863f08f53530c64653af360"
+  },
+  {
+    "sample_id": "review-060",
+    "configuration": "agent_gemma",
+    "case_id": "REMINDER-16",
+    "original_row_sha256": "f02ed0c140fc06fb484127f7d8e92a0621ec4cb43b1ba091b9e55050ea7c54be"
+  }
+]

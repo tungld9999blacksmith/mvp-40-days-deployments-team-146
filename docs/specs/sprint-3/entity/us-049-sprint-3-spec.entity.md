@@ -1,6 +1,6 @@
 # Entity Specification — Báo giá có chủ xưởng duyệt (HITL)
 
-> **Đã loại khỏi phạm vi (02/10/2026).** Chức năng báo giá có chủ xưởng duyệt (F5b, us-049, AI-005) đã bị bỏ khỏi sản phẩm: code backend/frontend đã gỡ, bảng `quote`, `quote_item` được xoá bởi migration `backend/alembic/versions/a3c7e9f1b2d4_drop_quote_support_ticket_discord.py`. Tài liệu giữ lại để tham khảo lịch sử, **không dùng để triển khai**.
+> **Đưa lại vào phạm vi (07/10/2026, PRD v3.8).** Báo giá có chủ xưởng duyệt (F5b, us-049, AI-005) là chức năng MVP trở lại: bảng `quote`, `quote_item` được tạo lại bởi migration `backend/alembic/versions/b4e6f8a1c3d5_restore_quote_hitl.py`; code backend/frontend đã khôi phục. Tài liệu này là đặc tả để triển khai.
 
 > Entity cho Feature `FEAT-QUOTE-001` — PRD F5b (US-049 → US-052).
 >

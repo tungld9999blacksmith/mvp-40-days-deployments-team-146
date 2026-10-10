@@ -1,0 +1,17 @@
+{
+  "selected": 35,
+  "attempted": 35,
+  "selected_controls": 0,
+  "attempted_controls": 0,
+  "complete_without_errors": true,
+  "stop_reason": null,
+  "counts": {
+    "PASS": 28,
+    "UNVERIFIABLE": 5,
+    "FAIL": 2
+  },
+  "known_cost_usd": 0.09634156,
+  "missing_receipts": 0,
+  "independent_labels": 0,
+  "production_acceptance": false
+}

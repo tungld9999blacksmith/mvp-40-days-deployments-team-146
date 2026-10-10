@@ -450,7 +450,7 @@ flowchart TD
 
 ## BR-007 — Mốc lặp sau bảng định mức
 
-**Rule:** Mốc cuối trong bảng định mức đã hoàn thành ⇒ mốc tiếp theo = mốc cuối + bước cố định `MAINTENANCE_RECURRING_KM` km (mặc định 12.000) và `MAINTENANCE_RECURRING_MONTHS` tháng (mặc định 12), hạng mục theo mốc đầu tiên. Bước cố định là tạm thời; sẽ dựa trên rule bảo hành, xem [pending-questions.md](../pending-questions.md) (Q-301).
+**Rule:** Mốc cuối trong bảng định mức đã hoàn thành ⇒ mốc tiếp theo = mốc cuối + bước cố định `MAINTENANCE_RECURRING_KM` km (mặc định 15.000, theo chu kỳ 15.000 km hoặc 1 năm của VinFast từ 01/01/2026) và `MAINTENANCE_RECURRING_MONTHS` tháng (mặc định 12), hạng mục theo mốc đầu tiên. Bước cố định là tạm thời; sẽ dựa trên rule bảo hành, xem [pending-questions.md](../pending-questions.md) (Q-301).
 
 **Priority:** Medium
 

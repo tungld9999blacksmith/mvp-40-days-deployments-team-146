@@ -1,0 +1,9 @@
+{
+  "qualified_pilot": "eval\\results\\agent_judge_20261009_63\\judge_pilot",
+  "full_partial": "eval\\results\\agent_judge_20261009_63\\judge_full",
+  "reused_count": 25,
+  "all_fail_and_unverifiable_labels_retained": true,
+  "prior_error_row_retained_in63": true,
+  "cost_charged_again": false,
+  "new_agent_rag_embedding_requests": 0
+}

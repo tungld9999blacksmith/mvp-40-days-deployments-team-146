@@ -45,6 +45,14 @@ class DemoStore:
     operations: dict[tuple[int, str], tuple[str, str]] = field(default_factory=dict)
     chat_locks: dict[str, asyncio.Lock] = field(default_factory=dict)
     booking_lock: asyncio.Lock = field(default_factory=asyncio.Lock)
+    reminder_lock: asyncio.Lock = field(default_factory=asyncio.Lock)
+    notifications_path: Path | None = None
+    notification_preferences: dict[str, dict] = field(default_factory=dict)
+    reminders: dict[str, dict] = field(default_factory=dict)
+    email_deliveries: dict[str, dict] = field(default_factory=dict)
+    email_cooldowns: dict[str, str] = field(default_factory=dict)
+    email_suppressions: dict[str, str] = field(default_factory=dict)
+    email_events: dict[str, dict] = field(default_factory=dict)
     seq: int = 0
 
     def timestamp(self) -> str:

@@ -1,0 +1,6 @@
+{
+  "fixture_file": "backend\\tests\\test_agents\\test_evaluation_persistence.py",
+  "sha256": "0f24b686e47903b7ea6e7e26015234a086ad422fbc7929b9f3d9cf5d1eccdf12",
+  "application_source_unchanged": true,
+  "fixture_fix": "schema-local immutable_unaccent uses explicitly qualified public extension; search_path remains isolated"
+}

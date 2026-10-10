@@ -45,8 +45,9 @@ def mask_plate(plate: str) -> str:
     return plate[:2] + "*" * (len(plate) - 4) + plate[-2:]
 
 
-def _plural(count: int, word: str) -> str:
-    return f"{count} {word}" if count == 1 else f"{count} {word}s"
+def _km(value: int) -> str:
+    """Vietnamese grouping, as in the app: ``12000`` -> ``12.000 km``."""
+    return f"{value:,} km".replace(",", ".")
 
 
 def build_message(
@@ -60,35 +61,36 @@ def build_message(
     """BR-509: no VIN / phone / email / national id; plate partly masked; link to the app."""
     milestone = result.next_milestone
     vehicle = f"{model_name} ({mask_plate(license_plate)})"
+    # The API label ("12,000 km / 12 months") stays English; messages use their own.
+    label = f"{_km(milestone.odo_milestone_km)} / {milestone.month_milestone} tháng"
+    due = milestone.due_date.strftime("%d/%m/%Y")
     days = result.remaining_days or 0
     km = result.remaining_km
 
     if level is ReminderLevel.EXPIRED:
         overdue: list[str] = []
         if days < 0:
-            overdue.append(_plural(-days, "day"))
+            overdue.append(f"{-days} ngày")
         if km is not None and km < 0:
-            overdue.append(f"{-km:,} km")
-        how_late = " and ".join(overdue) if overdue else "just now"
-        subject = "Maintenance overdue"
-        body = (
-            f"Your {vehicle} is overdue for the {milestone.label} maintenance "
-            f"(due {milestone.due_date.isoformat()}, overdue by {how_late})."
-        )
+            overdue.append(_km(-km))
+        how_late = f"đã quá {' và '.join(overdue)}" if overdue else "vừa quá hạn"
+        subject = "Xe đã quá hạn bảo dưỡng"
+        body = f"Xe {vehicle} đã quá hạn bảo dưỡng mốc {label} (hạn {due}, {how_late})."
     else:
+        # Due at whichever comes first: the date or the km milestone.
         left: list[str] = []
-        if days >= 0:
-            left.append(_plural(days, "day") if days else "today")
+        if days > 0:
+            left.append(f"{days} ngày")
         if km is not None and km >= 0:
-            left.append(f"{km:,} km")
-        remaining = " / ".join(left) if left else "very soon"
-        subject = "Maintenance coming up"
-        body = (
-            f"Your {vehicle} is approaching the {milestone.label} maintenance "
-            f"(due {milestone.due_date.isoformat()}, remaining: {remaining})."
-        )
+            left.append(_km(km))
+        if days == 0:
+            remaining = "đến hạn hôm nay"
+        else:
+            remaining = f"còn {' hoặc '.join(left)}" if left else "sắp đến hạn"
+        subject = "Xe sắp đến hạn bảo dưỡng"
+        body = f"Xe {vehicle} sắp đến mốc bảo dưỡng {label} (hạn {due}, {remaining})."
 
     link = f"{app_url.rstrip('/')}/booking" if app_url else None
     if link:
-        body += f" Book a visit: {link}"
+        body += f" Đặt lịch bảo dưỡng: {link}"
     return NotificationMessage(subject=subject, body=body, link=link)

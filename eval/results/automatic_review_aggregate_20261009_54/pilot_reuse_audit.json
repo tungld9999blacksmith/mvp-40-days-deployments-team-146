@@ -1,0 +1,12 @@
+{
+  "attempted": 8,
+  "selected": 8,
+  "complete_without_errors": true,
+  "known_cost_usd": 0.0142498,
+  "missing_receipts": 0,
+  "eligible_under_new_budget": true,
+  "budget_estimate_usd": 0.22137724249999996,
+  "budget_estimate_origin": "Larger52 pilot12, aggregate contract changed; estimate only, actual sequential full stop0.25USD.",
+  "origin": "FRESH54_PILOT_NOT_REUSED_LABELS",
+  "new_api_calls": 8
+}

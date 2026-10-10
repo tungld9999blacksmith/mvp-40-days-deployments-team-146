@@ -42,6 +42,17 @@ async def test_repeated_native_cancel_waits_for_the_task():
 
 
 @pytest.mark.asyncio
+async def test_timeout_stops_waiting_for_a_stuck_task():
+    inner = asyncio.create_task(asyncio.Event().wait())
+    outer = asyncio.create_task(wait_through_cancellation(inner, timeout=0.05))
+    await asyncio.sleep(0)
+    outer.cancel()
+    assert await asyncio.wait_for(outer, 1) is True
+    assert not inner.done()
+    inner.cancel()
+
+
+@pytest.mark.asyncio
 async def test_anyio_cancellation_does_not_spin_the_event_loop(monkeypatch):
     """Starlette cancels a disconnected stream through an anyio scope, which re-delivers every tick."""
     calls = 0

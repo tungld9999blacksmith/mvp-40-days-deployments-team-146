@@ -1,0 +1,14 @@
+{
+  "golden_count": 100,
+  "golden_objects_equal_in_order": true,
+  "v2_v21_user_queries_equal": true,
+  "v21_categories": {
+    "rag": 100,
+    "guardrail": 20,
+    "booking": 50,
+    "maintenance_cost": 30,
+    "reminder": 20
+  },
+  "v21_sessions": 20,
+  "status": "DEVELOPMENT_PENDING_INDEPENDENT_REVIEW"
+}

@@ -73,7 +73,7 @@ export function EstimateTotal({ estimate }: { estimate: ReadyEstimate }) {
         <Badge tone="neutral">{estimate.estimateLabel}</Badge>
       </div>
       <p className="text-xs text-muted leading-relaxed">
-        Chi phí thực tế có thể thay đổi tuỳ tình trạng xe khi kiểm tra tại xưởng. Dự toán chỉ để tham khảo, chi phí cuối cùng do xưởng xác nhận.
+        Chi phí thực tế có thể thay đổi tuỳ tình trạng xe khi kiểm tra tại xưởng. Dự toán chỉ để tham khảo, không phải báo giá.
       </p>
       {estimate.hasReferencePrice && <p className="text-xs text-muted">* Giá tham khảo của hãng (xưởng chưa có giá riêng cho hạng mục này).</p>}
       {estimate.warrantyStatus === 'EXPIRED' && <p className="text-xs text-warning">Xe đã hết thời hạn bảo hành chung — mọi hạng mục đều tính phí.</p>}

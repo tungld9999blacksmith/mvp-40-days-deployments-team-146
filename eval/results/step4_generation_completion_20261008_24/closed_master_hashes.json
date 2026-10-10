@@ -1,0 +1,21 @@
+{
+  "eval\\results\\step4_generation_completion_20261008_24\\all_attempts_cost.json": "4759806140ad3d4135dd09cf5a524126be3f5b48645439818e4235965f52c095",
+  "eval\\results\\step4_generation_completion_20261008_24\\comparison_conditions.json": "08683b9c0fb94cedf7c85908f76f6e104a14913cb4ac090b9da1f1d8456b44b4",
+  "eval\\results\\step4_generation_completion_20261008_24\\completed_producer_hashes.json": "f7d175f73a0438466be297eda7fce815d2f44509f8fdf7ca16be6f754e610f16",
+  "eval\\results\\step4_generation_completion_20261008_24\\final_preservation.json": "e4acedb9f3b9a6d40a7cfe08b557a7678172615e23ddc56991655c1b202be1dd",
+  "eval\\results\\step4_generation_completion_20261008_24\\fixed_inputs.json": "1f3f77de7fea0638976e9740881ea617bec9b84d0eb8cc755164beaf7c269065",
+  "eval\\results\\step4_generation_completion_20261008_24\\generation_decision.json": "e9b55606bea258d23fb38fb5aad9ad1201341ec8a71e6bd297203fd56b7046c3",
+  "eval\\results\\step4_generation_completion_20261008_24\\generation_rubric.json": "4d67e80b9f40c86379c7354dafa648ce60236af654c1923e2703c2cc043e45c2",
+  "eval\\results\\step4_generation_completion_20261008_24\\manifest.json": "758e20fda971bc2346b4519606457302ce7d9bdb5caa5031f7f2aaf9781459ea",
+  "eval\\results\\step4_generation_completion_20261008_24\\NHAN_XET_GENERATION.md": "9167e45e60b0e938ec0adc6e955156660492e0584a9c4c33142574dd51a46812",
+  "eval\\results\\step4_generation_completion_20261008_24\\protected_corpus.json": "f7fc2f55859fbed7751b0792815c1bd516bc06aa76b829dee9a55fb102dae991",
+  "eval\\results\\step4_generation_completion_20261008_24\\protected_previous_files.json": "72d919331a596a802f51bbc5f5c69ff76c8ecf220729b0aff84ff72c2e86acfa",
+  "eval\\results\\step4_generation_completion_20261008_24\\report.md": "fe568b0fe214de3d96f832b52497f1e6c6eb30ca09e77cc9742275bc3c006c0e",
+  "eval\\results\\step4_generation_completion_20261008_24\\report_controller.py": "93d7ac657c46c9ba796c7d530fd8ac6cfeb905ebb73acbf54ad142676c66a12a",
+  "eval\\results\\step4_generation_completion_20261008_24\\result.json": "e67dd3f273044cd1bb622a1813c74dadbdbcf12dabf63b2d36a2afec006d5b09",
+  "eval\\results\\step4_generation_completion_20261008_24\\runtime_and_raw_audit.json": "21d2604ee82920fbbe8a0b15fc273d003971b086c4511d87e7e416ac662466e0",
+  "eval\\results\\step4_generation_completion_20261008_24\\selected_cases.json": "a664839a64327bd42586df4869407e5f0e4ec9e2e6833295c595a953e85ef7df",
+  "eval\\results\\step4_generation_completion_20261008_24\\shortlist_by_stage.json": "227047a261a44502585a60a91c843b6b429d5a07a10f02778d60eb7568d99831",
+  "eval\\results\\step4_generation_completion_20261008_24\\source_revision.json": "f80c0ed354239aafea1fc2d75fe0319f3a21e50a86e9c19b6b536232b90dcaff",
+  "eval\\results\\step4_generation_completion_20261008_24\\stage_comparison.csv": "928de67de7adf8d0259c2763bdef037f7aaa2b126cb1649b87c5b0747c122bed"
+}

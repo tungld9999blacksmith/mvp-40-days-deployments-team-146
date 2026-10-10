@@ -164,7 +164,7 @@ export function useChatSession({
           conversationId = conversation.id
           skipLoadFor.current = conversation.id
           dispatch({ type: 'conversation-created', conversationId: conversation.id, title: conversation.title })
-          navigate(`/ai/${conversation.id}`, { replace: true })
+          navigate(`/ai/${conversation.id}?userVehicleId=${encodeURIComponent(userVehicleId)}`, { replace: true })
         } catch (error) {
           if (!isApiError(error)) throw error
           if (isApiError(error, 'VEHICLE_NOT_ACTIVE')) {
@@ -296,7 +296,7 @@ export function useChatSession({
           province,
           onConversationCreated: id => {
             skipLoadFor.current = id
-            navigate(`/ai/${id}`, { replace: true })
+            navigate(`/ai/${id}?userVehicleId=${encodeURIComponent(userVehicleId)}`, { replace: true })
           },
         })
         const card = assistantMessage.card

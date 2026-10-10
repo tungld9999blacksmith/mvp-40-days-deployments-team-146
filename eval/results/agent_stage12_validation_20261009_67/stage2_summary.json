@@ -1,0 +1,18 @@
+{
+  "requested": 12,
+  "attempted": 1,
+  "not_run": 11,
+  "technical_pass": 0,
+  "technical_fail": 1,
+  "known_new_cost_usd": 0.0,
+  "receipt_count": 1,
+  "unknown_receipts": 1,
+  "stopping_reason": "OpenAIRateLimitError",
+  "pending": 0,
+  "judge_calls": 0,
+  "embedding_calls": 0,
+  "qdrant_calls": 0,
+  "source_changed": [],
+  "semantic_accuracy": "NOT_INDEPENDENTLY_MEASURED",
+  "production_acceptance": false
+}

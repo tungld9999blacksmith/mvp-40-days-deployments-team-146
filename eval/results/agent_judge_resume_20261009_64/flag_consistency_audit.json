@@ -1,0 +1,199 @@
+{
+  "checks": "Deterministic comparison of current answer slot count, exact local times and remaining values against frozen tool results; original judge labels unchanged. RAG flags remain separately reviewable.",
+  "flags": [
+    {
+      "sample_id": "sample-005",
+      "origin": {
+        "sample_id": "sample-005",
+        "configuration": "base",
+        "repeat": 1,
+        "case_id": "NEW-R05",
+        "original_row_sha256": "32f514f18d77c5e01467bfd60e081b6e79e7e7221646f482c776dd63f64b787f",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+      },
+      "original_label_retained": "FAIL",
+      "judge_reasons": [
+        "Câu trả lời phản ánh chính xác nội dung các đoạn tài liệu được cung cấp về bảo hành pin VF6 mà không bịa đặt thêm thông tin."
+      ],
+      "human_independent_adjudication": false,
+      "components": {
+        "correctness_from_available_evidence": "PASS",
+        "faithfulness": "PASS",
+        "task_success": "PASS",
+        "citation_support": "FAIL"
+      },
+      "assessment": "RAG_SOURCE_OR_ABSTENTION_CITATION_REVIEW_REQUIRED",
+      "claims": [
+        {
+          "claim": "Tài liệu được cung cấp chưa xác định nội dung phân biệt điều kiện bảo hành pin VF6 giữa pin mới và pin thay thế.",
+          "support": "SUPPORTED",
+          "resolved_evidence": [
+            {
+              "evidence_id": "E44",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "VinFast VF 6 có thời gian bảo hành (tùy theo điều kiện nào đến trước): - Bảo hành xe mới (Bao gồm hệ truyền động): 7 năm/160.000 km. - Bảo hành Pin cao áp (Mua lần đầu theo xe mới): 8 năm/160.000 km.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0
+              ],
+              "citation_index": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "sample-012",
+      "origin": {
+        "sample_id": "sample-012",
+        "configuration": "base",
+        "repeat": 1,
+        "case_id": "NEW-B01",
+        "original_row_sha256": "bbf7dbc551ec8867879bb1084ea292dca34a3d5034ca0aa624f0bfb497ef83af",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+      },
+      "original_label_retained": "FAIL",
+      "judge_reasons": [
+        "Câu trả lời bịa đặt số lượng khung giờ trống và danh sách giờ (từ 00:00 đến 22:00) không khớp với kết quả tool get_available_slots thực tế trả về."
+      ],
+      "human_independent_adjudication": false,
+      "available_tool_count": 23,
+      "stated_count": 23,
+      "listed_count": 23,
+      "exact_times_and_remaining_match": true,
+      "slot_count_claim_matches_tool": true,
+      "assessment": "DETERMINISTIC_DISAGREEMENT_WITH_JUDGE_SLOT_OBJECTION",
+      "scope": "Availability count/time/remaining claims only, not general correctness or a replacement quality label."
+    },
+    {
+      "sample_id": "sample-014",
+      "origin": {
+        "sample_id": "sample-014",
+        "configuration": "base",
+        "repeat": 1,
+        "case_id": "NEW-B03",
+        "original_row_sha256": "604551f1d7e0f839943f3efea35f566777ec7a54d7161a24c33faa86c870b565",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_base"
+      },
+      "original_label_retained": "FAIL",
+      "judge_reasons": [
+        "Câu trả lời nhầm lẫn tổng số khung giờ khả dụng từ tool trả về (có 23 slot từ 00:00 đến 22:00 nhưng thực tế có cả slot 23:00 trong tool hoặc đếm nhầm thành 23 khung giờ trong khi có 24 khung giờ tổng hoặc các slot không khả dụng đầy đủ).",
+        "Tuy nhiên đáp án tuân thủ đúng yêu cầu không tạo thẻ/propose khi chưa có lệnh."
+      ],
+      "human_independent_adjudication": false,
+      "available_tool_count": 23,
+      "stated_count": 23,
+      "listed_count": 23,
+      "exact_times_and_remaining_match": true,
+      "slot_count_claim_matches_tool": true,
+      "assessment": "DETERMINISTIC_DISAGREEMENT_WITH_JUDGE_SLOT_OBJECTION",
+      "scope": "Availability count/time/remaining claims only, not general correctness or a replacement quality label."
+    },
+    {
+      "sample_id": "sample-032",
+      "origin": {
+        "sample_id": "sample-032",
+        "configuration": "agent_gemma",
+        "repeat": 1,
+        "case_id": "NEW-R02",
+        "original_row_sha256": "17af89b0b8804830a6602cf5d639c6764f95a362ce3cf68581ed17905c9e35a7",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+      },
+      "original_label_retained": "FAIL",
+      "judge_reasons": [
+        "Câu trả lời phủ nhận việc tài liệu có hướng dẫn tìm điểm sạc, nhưng S2 thực tế chứa quy trình chi tiết từng bước.",
+        "Bỏ sót thông tin có sẵn trong tài liệu được cung cấp."
+      ],
+      "human_independent_adjudication": false,
+      "components": {
+        "correctness_from_available_evidence": "FAIL",
+        "faithfulness": "FAIL",
+        "task_success": "FAIL",
+        "citation_support": "FAIL"
+      },
+      "assessment": "RAG_SOURCE_OR_ABSTENTION_CITATION_REVIEW_REQUIRED",
+      "claims": [
+        {
+          "claim": "Câu trả lời cho rằng tài liệu không cung cấp quy trình chi tiết cách tìm điểm sạc trong khi Tài liệu 2 (quy_trinh_ung_dung_ALL_chk_0002) thực tế có nêu các bước chi tiết tìm trạm sạc.",
+          "support": "UNSUPPORTED",
+          "resolved_evidence": [
+            {
+              "evidence_id": "E30",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "Các bước tìm địa điểm hoặc trạm sạc:",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                2
+              ],
+              "citation_index": 2
+            },
+            {
+              "evidence_id": "E31",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "1. Mở **Bản đồ**, chọn địa điểm trên thanh gợi ý hoặc nhập địa điểm vào thanh",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                2
+              ],
+              "citation_index": 2
+            },
+            {
+              "evidence_id": "E32",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "tìm kiếm; người dùng cũng có thể tìm bằng giọng nói.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                2
+              ],
+              "citation_index": 2
+            },
+            {
+              "evidence_id": "E33",
+              "source_id": "S2",
+              "kind": "rag_chunk",
+              "quote": "2. Ứng dụng hiển thị danh sách địa điểm gần nhất; chọn địa điểm mong muốn.",
+              "json_path": "",
+              "allowed_citation_indexes": [
+                0,
+                2
+              ],
+              "citation_index": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sample_id": "sample-044",
+      "origin": {
+        "sample_id": "sample-044",
+        "configuration": "agent_gemma",
+        "repeat": 1,
+        "case_id": "NEW-B03",
+        "original_row_sha256": "3cc28b7ec7fdf59c53debbff7fab0ca44cb02f5211f582f5d0e638029770715f",
+        "producer": "eval\\results\\agent_regression_resume_20261009_61\\repeat1_agent_gemma"
+      },
+      "original_label_retained": "FAIL",
+      "judge_reasons": [
+        "Câu trả lời liệt kê 23 khung giờ nhưng dữ liệu tool thực tế có 23 slot từ 00:00 đến 22:00 (thực tế tool trả về 23 slot nhưng có thể số lượng hoặc các mốc thời gian không khớp hoàn toàn đúng với tổng số slot khả dụng thực tế trên toàn bộ dãy slot được trả về)."
+      ],
+      "human_independent_adjudication": false,
+      "available_tool_count": 23,
+      "stated_count": 23,
+      "listed_count": 23,
+      "exact_times_and_remaining_match": true,
+      "slot_count_claim_matches_tool": true,
+      "assessment": "DETERMINISTIC_DISAGREEMENT_WITH_JUDGE_SLOT_OBJECTION",
+      "scope": "Availability count/time/remaining claims only, not general correctness or a replacement quality label."
+    }
+  ],
+  "independent_labels": 0,
+  "raw_judgments_modified": false
+}

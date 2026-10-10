@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from src.agents.tools.RAG.ingestion import (
     DocumentChunker,
     DocumentMetadata,
@@ -115,6 +117,7 @@ def test_vector_store_and_pipeline_end_to_end(tmp_path: Path):
     assert len(docs) == 1
 
 
+@pytest.mark.live
 def test_rag_tools_invoke():
     # Test tools invoke with existing indexed knowledge
     res_warranty = get_warranty_policy_rag.invoke({"model": "VF8", "component": "pin"})

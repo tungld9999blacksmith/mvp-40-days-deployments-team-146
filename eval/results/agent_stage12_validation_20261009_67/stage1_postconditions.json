@@ -1,0 +1,18 @@
+{
+  "postgres_database": "p146_eval67",
+  "migration_head": "c6f2a8d4e9b1",
+  "table_counts": {
+    "vehicle_user": 2,
+    "user_vehicle": 2,
+    "workshop": 1,
+    "booking": 1,
+    "booking_proposal": 3,
+    "checkpoints": 4
+  },
+  "booking_statuses": {
+    "confirmed": 1
+  },
+  "redis_ping": true,
+  "redis_keys": 5,
+  "scope": "Only our isolated database and Redis; persisted main graph checkpoints after browser chat; no production source/env changes"
+}

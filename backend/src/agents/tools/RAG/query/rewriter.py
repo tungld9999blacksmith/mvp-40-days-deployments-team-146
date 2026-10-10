@@ -9,13 +9,14 @@ from typing import Any
 from src.infrastructure.llm.base import ChatMessage, GenerationConfig, LLMProvider
 
 from ..ingestion.metadata import canonicalize_vehicle_model
-from .schemas import QueryAnalysis, UserVehicleContext
+from .schemas import QueryAnalysis, RewritePayload, UserVehicleContext
 
 logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """Bạn là Chuyên gia Kỹ thuật và Phân tích Truy vấn cho Hệ thống Chăm sóc Sau bán hàng Xe điện VinFast (EV Care).
 Nhiệm vụ của bạn là nhận câu hỏi thô của người dùng (kèm thông tin xe nếu có), sau đó:
 1. Viết lại câu hỏi (Rewritten Query) rõ ràng, đầy đủ ngữ cảnh, loại bỏ đại từ mơ hồ ("xe tôi", "nó", "xe này"), chuẩn hóa thuật ngữ kỹ thuật xe điện.
+   Giữ nguyên ý câu hỏi gốc. Không thêm tên ứng dụng, chức năng, số liệu, chính sách hoặc câu trả lời mà người dùng/ngữ cảnh chưa cung cấp. "Ứng dụng VinFast" không tự đổi thành "VinFast Care". Query viết lại chỉ phục vụ tìm kiếm, không phải bằng chứng.
 2. Trích xuất danh sách từ khóa cốt lõi (Keywords) phục vụ thuật toán tìm kiếm từ vựng BM25.
 3. Trích xuất các trường Metadata Filter:
    - model: Mã dòng xe cụ thể (VF3, VF5, VF6, VF7, VF8, VF9, VFe34, VFMPV7, Evo200, Feliz, Klara, Vento, Theon). Nếu câu hỏi áp dụng chung cho mọi xe hoặc không xác định được dòng xe, trả về "ALL".
@@ -27,11 +28,13 @@ Nhiệm vụ của bạn là nhận câu hỏi thô của người dùng (kèm t
      + "procedure": Quy trình đặt lịch, quy trình tiếp nhận, duyệt báo giá tại xưởng.
      + "safety": Cảnh báo nguy hiểm, xử lý sự cố khẩn cấp, cứu hộ.
      + "general": Các câu hỏi chung khác.
-   - milestone_km: Số nguyên chỉ mốc km bảo dưỡng (ví dụ: 12000, 15000, 24000, 30000, 48000). Nếu không có, trả về null.
+   - milestone_km: Chỉ trích số km được người dùng nêu rõ là mốc bảo dưỡng trong CÂU HỎI GỐC. Không có mốc cụ thể thì bắt buộc null. ODO hiện tại, quãng đường đã đi, giới hạn km bảo hành và quãng đường một lần sạc không phải mốc bảo dưỡng. Không làm tròn ODO, không suy mốc tiếp theo từ dòng xe hoặc lịch bảo dưỡng đã biết.
+     Ví dụ: câu hỏi "xe tôi sắp đến hạn bảo dưỡng, cần làm gì?" cùng bất kỳ ODO nào trong ngữ cảnh vẫn có milestone_km=null. Câu hỏi "bảo dưỡng mốc 24.000 km gồm gì?" có milestone_km=24000. Câu hỏi "bảo hành 100.000 km" có milestone_km=null.
+     Không đưa mốc tự suy vào rewritten_query hoặc keywords. Chỉ bổ sung thông tin xe đã được cung cấp; giữ nguyên câu hỏi chưa xác định mốc.
    - subsystem: Bộ phận liên quan (battery, charging, motor, brake, hvac, software, chassis). Nếu không có, trả về null.
    - is_out_of_scope: true nếu câu hỏi hoàn toàn không liên quan đến xe điện, xe cộ, bảo dưỡng hoặc dịch vụ (ví dụ: hỏi thời tiết, nấu ăn, chứng khoán...). Ngược lại trả về false.
 
-BẮT BUỘC trả về đúng định dạng JSON thuần túy (không kèm giải thích bên ngoài), theo schema:
+BẮT BUỘC trả về một object JSON thuần túy với đúng 7 trường, không Markdown, không dấu ``` và không giải thích bên ngoài, theo schema:
 {
   "rewritten_query": "string",
   "keywords": ["string", "string"],
@@ -123,7 +126,7 @@ class QueryRewriter:
             if vehicle_context.model:
                 context_desc.append(f"Dòng xe người dùng sở hữu: {vehicle_context.model}")
             if vehicle_context.current_odometer_km:
-                context_desc.append(f"Số ODO hiện tại: {vehicle_context.current_odometer_km:,} km")
+                context_desc.append(f"Số ODO hiện tại (không phải mốc bảo dưỡng được hỏi): {vehicle_context.current_odometer_km:,} km")
             if vehicle_context.battery_type:
                 context_desc.append(f"Loại pin: {vehicle_context.battery_type}")
             if context_desc:
@@ -132,15 +135,30 @@ class QueryRewriter:
         user_content = "\n".join(user_prompt_lines)
 
         try:
+            extra = {}
+            if getattr(provider, "provider_name", None) in {"openrouter", "openai"}:
+                extra["response_format"] = {
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "query_rewrite", "strict": True,
+                        "schema": RewritePayload.model_json_schema(),
+                    },
+                }
+                if provider.provider_name == "openrouter":
+                    extra["extra_body"] = {"provider": {"require_parameters": True}}
             response = await provider.chat(
                 messages=[
                     ChatMessage(role="system", content=SYSTEM_PROMPT),
                     ChatMessage(role="user", content=user_content),
                 ],
-                config=GenerationConfig(temperature=0.0, max_tokens=500),
+                config=GenerationConfig(temperature=0.0, max_tokens=500, extra=extra),
             )
+            if response.stop_reason in {"error", "length"}:
+                raise RuntimeError(f"LLM Rewrite finish_reason={response.stop_reason}")
             raw_text = response.text.strip()
             parsed_json = self._extract_json(raw_text)
+            if extra:
+                parsed_json = RewritePayload.model_validate(parsed_json, strict=True).model_dump()
 
             return QueryAnalysis(
                 original_query=cleaned_query,

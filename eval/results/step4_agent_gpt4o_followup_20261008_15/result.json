@@ -1,0 +1,141 @@
+{
+  "scope": "DEVELOPMENT_ONLY",
+  "models": {
+    "mistral": {
+      "attempted": 30,
+      "selected": 30,
+      "complete": true,
+      "passed": 30,
+      "errors": 0,
+      "safety_violations": 0,
+      "raw_argument_error_cases": 0,
+      "truncated_cases": 0,
+      "actual_models": [
+        "mistralai/mistral-small-2603"
+      ],
+      "mean_seconds": 4.130233333333333,
+      "p90_seconds": 7.518,
+      "known_cost_usd": 0.029214768,
+      "missing_cost_cases": 0,
+      "categories": {
+        "rag": {
+          "passed": 6,
+          "attempted": 6
+        },
+        "guardrail": {
+          "passed": 5,
+          "attempted": 5
+        },
+        "booking": {
+          "passed": 8,
+          "attempted": 8
+        },
+        "maintenance_cost": {
+          "passed": 6,
+          "attempted": 6
+        },
+        "reminder": {
+          "passed": 5,
+          "attempted": 5
+        }
+      },
+      "raw_proposal_requests": 4,
+      "raw_proposals_before_verified_availability": 2,
+      "extra_read_calls": 8,
+      "duplicate_calls": 1
+    },
+    "gemma": {
+      "attempted": 30,
+      "selected": 30,
+      "complete": true,
+      "passed": 30,
+      "errors": 0,
+      "safety_violations": 0,
+      "raw_argument_error_cases": 0,
+      "truncated_cases": 0,
+      "actual_models": [
+        "google/gemma-4-26b-a4b-it"
+      ],
+      "mean_seconds": 8.4382,
+      "p90_seconds": 13.537,
+      "known_cost_usd": 0.013019318000000005,
+      "missing_cost_cases": 0,
+      "categories": {
+        "rag": {
+          "passed": 6,
+          "attempted": 6
+        },
+        "guardrail": {
+          "passed": 5,
+          "attempted": 5
+        },
+        "booking": {
+          "passed": 8,
+          "attempted": 8
+        },
+        "maintenance_cost": {
+          "passed": 6,
+          "attempted": 6
+        },
+        "reminder": {
+          "passed": 5,
+          "attempted": 5
+        }
+      },
+      "raw_proposal_requests": 3,
+      "raw_proposals_before_verified_availability": 1,
+      "extra_read_calls": 4,
+      "duplicate_calls": 0
+    },
+    "gpt4o": {
+      "attempted": 27,
+      "selected": 30,
+      "complete": false,
+      "passed": 22,
+      "errors": 5,
+      "safety_violations": 0,
+      "raw_argument_error_cases": 0,
+      "truncated_cases": 0,
+      "actual_models": [
+        "openai/gpt-4o"
+      ],
+      "mean_seconds": 3.115037037037037,
+      "p90_seconds": 5.818,
+      "known_cost_usd": 0.35893499999999995,
+      "missing_cost_cases": 4,
+      "categories": {
+        "rag": {
+          "passed": 6,
+          "attempted": 6
+        },
+        "guardrail": {
+          "passed": 5,
+          "attempted": 5
+        },
+        "booking": {
+          "passed": 6,
+          "attempted": 8
+        },
+        "maintenance_cost": {
+          "passed": 5,
+          "attempted": 6
+        },
+        "reminder": {
+          "passed": 0,
+          "attempted": 2
+        }
+      },
+      "raw_proposal_requests": 1,
+      "raw_proposals_before_verified_availability": 0,
+      "extra_read_calls": 2,
+      "duplicate_calls": 0
+    }
+  },
+  "new_model": "openai/gpt-4o",
+  "review_deferred": true,
+  "independent_labels": 0,
+  "production_acceptance": false,
+  "new_preflight_known_cost_usd": 0.035269999999999996,
+  "new_total_known_cost_usd": 0.3942049999999999,
+  "cost_missing_cases": 4
+}

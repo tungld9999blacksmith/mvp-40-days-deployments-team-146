@@ -1,4 +1,4 @@
-import { Bell, CalendarDays, Gauge, LayoutDashboard, QrCode, Settings2, Users } from 'lucide-react'
+import { Bell, CalendarDays, FileText, Gauge, LayoutDashboard, QrCode, Settings2, Tags, Users } from 'lucide-react'
 import { useWorkshopAuth } from '@/features/workshop-auth/context/WorkshopAuthContext'
 import AppLayout, { type NavItem } from './AppLayout'
 
@@ -8,8 +8,10 @@ export default function TechnicianLayout() {
   const nav: NavItem[] = [
     { to: '/technician', label: 'Dashboard', icon: LayoutDashboard, end: true },
     { to: '/technician/board', label: 'Lịch hẹn', icon: CalendarDays },
+    { to: '/technician/quotes', label: 'Báo giá', icon: FileText },
     { to: '/technician/check-in', label: 'Check-in', icon: QrCode },
     { to: '/technician/capacity', label: 'Sức chứa', icon: Gauge },
+    { to: '/technician/price-list', label: 'Bảng giá', icon: Tags },
     { to: '/technician/settings/booking', label: 'Cài đặt đặt lịch', icon: Settings2 },
     { to: '/technician/notifications', label: 'Thông báo', icon: Bell },
     { to: '/customers', label: 'Khách hàng', icon: Users, disabled: true },

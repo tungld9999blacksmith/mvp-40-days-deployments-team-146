@@ -1,0 +1,182 @@
+{
+  "cards": [
+    {
+      "type": "BOOKING_PROPOSAL",
+      "reason": "Xe đã quá mốc 12.000 km: quá 500 km. Đề xuất khung giờ sớm nhất còn trống.",
+      "primary": {
+        "date": "2026-10-09",
+        "region": "Ha Noi",
+        "address": "EV Care Evaluation67 address",
+        "estimate": {
+          "coveredCount": 1,
+          "chargeableTotal": "100000.00",
+          "hasReferencePrice": false
+        },
+        "optionId": "opt-1",
+        "timeSlot": "20:00",
+        "distanceKm": 2.0,
+        "workshopId": "d6e51d91-a042-47d6-adef-413beddc887c",
+        "isPreferred": false,
+        "workshopName": "EV Care Evaluation67"
+      },
+      "vehicle": {
+        "trim": "Plus",
+        "modelName": "VF6",
+        "userVehicleId": "ae6be15a-68d3-42fd-b4bb-6f62f85c3fee",
+        "licensePlateMasked": "30A***45"
+      },
+      "version": 1,
+      "expiresAt": "2026-10-09T11:08:00.677431+00:00",
+      "milestone": {
+        "items": [
+          {
+            "itemCode": "BATTERY_CHECK",
+            "itemName": "High-voltage battery check",
+            "isCoveredByWarranty": true
+          },
+          {
+            "itemCode": "BRAKE_INSPECTION",
+            "itemName": "Brake system inspection",
+            "isCoveredByWarranty": false
+          }
+        ],
+        "label": "12,000 km / 12 months",
+        "dueDate": "2027-04-09",
+        "dueReason": "KM",
+        "dueStatus": "OVERDUE",
+        "remainingKm": -500,
+        "remainingDays": 182,
+        "monthMilestone": 12,
+        "odoMilestoneKm": 12000
+      },
+      "proposalId": "451af021-493f-49e8-95b4-8c1c5ef1b464",
+      "alternatives": [
+        {
+          "date": "2026-10-09",
+          "region": "Ha Noi",
+          "address": "EV Care Evaluation67 address",
+          "estimate": {
+            "coveredCount": 1,
+            "chargeableTotal": "100000.00",
+            "hasReferencePrice": false
+          },
+          "optionId": "opt-2",
+          "timeSlot": "21:00",
+          "distanceKm": 2.0,
+          "workshopId": "d6e51d91-a042-47d6-adef-413beddc887c",
+          "isPreferred": false,
+          "workshopName": "EV Care Evaluation67"
+        },
+        {
+          "date": "2026-10-09",
+          "region": "Ha Noi",
+          "address": "EV Care Evaluation67 address",
+          "estimate": {
+            "coveredCount": 1,
+            "chargeableTotal": "100000.00",
+            "hasReferencePrice": false
+          },
+          "optionId": "opt-3",
+          "timeSlot": "22:00",
+          "distanceKm": 2.0,
+          "workshopId": "d6e51d91-a042-47d6-adef-413beddc887c",
+          "isPreferred": false,
+          "workshopName": "EV Care Evaluation67"
+        }
+      ],
+      "locationBasis": "DEVICE",
+      "locationLabel": null,
+      "status": "PROPOSED",
+      "booking": null
+    },
+    {
+      "type": "BOOKING_PROPOSAL",
+      "reason": "Xe đã quá mốc 12.000 km: quá 500 km. Đề xuất khung giờ sớm nhất còn trống.",
+      "primary": {
+        "date": "2026-10-09",
+        "region": "Ha Noi",
+        "address": "EV Care Evaluation67 address",
+        "estimate": {
+          "coveredCount": 1,
+          "chargeableTotal": "100000.00",
+          "hasReferencePrice": false
+        },
+        "optionId": "opt-1",
+        "timeSlot": "20:00",
+        "distanceKm": 2.0,
+        "workshopId": "d6e51d91-a042-47d6-adef-413beddc887c",
+        "isPreferred": false,
+        "workshopName": "EV Care Evaluation67"
+      },
+      "vehicle": {
+        "trim": "Plus",
+        "modelName": "VF6",
+        "userVehicleId": "a8cb1d70-2c61-404f-b4e0-e81290d1c593",
+        "licensePlateMasked": "30A***45"
+      },
+      "version": 1,
+      "expiresAt": "2026-10-09T11:08:01.278831+00:00",
+      "milestone": {
+        "items": [
+          {
+            "itemCode": "BATTERY_CHECK",
+            "itemName": "High-voltage battery check",
+            "isCoveredByWarranty": true
+          },
+          {
+            "itemCode": "BRAKE_INSPECTION",
+            "itemName": "Brake system inspection",
+            "isCoveredByWarranty": false
+          }
+        ],
+        "label": "12,000 km / 12 months",
+        "dueDate": "2027-04-09",
+        "dueReason": "KM",
+        "dueStatus": "OVERDUE",
+        "remainingKm": -500,
+        "remainingDays": 182,
+        "monthMilestone": 12,
+        "odoMilestoneKm": 12000
+      },
+      "proposalId": "51c5d9f0-0cd3-439c-b552-2d383ec36daf",
+      "alternatives": [
+        {
+          "date": "2026-10-09",
+          "region": "Ha Noi",
+          "address": "EV Care Evaluation67 address",
+          "estimate": {
+            "coveredCount": 1,
+            "chargeableTotal": "100000.00",
+            "hasReferencePrice": false
+          },
+          "optionId": "opt-2",
+          "timeSlot": "21:00",
+          "distanceKm": 2.0,
+          "workshopId": "d6e51d91-a042-47d6-adef-413beddc887c",
+          "isPreferred": false,
+          "workshopName": "EV Care Evaluation67"
+        },
+        {
+          "date": "2026-10-09",
+          "region": "Ha Noi",
+          "address": "EV Care Evaluation67 address",
+          "estimate": {
+            "coveredCount": 1,
+            "chargeableTotal": "100000.00",
+            "hasReferencePrice": false
+          },
+          "optionId": "opt-3",
+          "timeSlot": "22:00",
+          "distanceKm": 2.0,
+          "workshopId": "d6e51d91-a042-47d6-adef-413beddc887c",
+          "isPreferred": false,
+          "workshopName": "EV Care Evaluation67"
+        }
+      ],
+      "locationBasis": "DEVICE",
+      "locationLabel": null,
+      "status": "PROPOSED",
+      "booking": null
+    }
+  ]
+}

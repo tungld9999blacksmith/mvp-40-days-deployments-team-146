@@ -1,0 +1,15 @@
+{
+  "unique_answers_with_valid_judgments": 60,
+  "reused63": 25,
+  "fresh64": 35,
+  "pilot63_reused_without_fee": true,
+  "counts": {
+    "PASS": 46,
+    "FAIL": 5,
+    "UNVERIFIABLE": 9
+  },
+  "historical_full_provider_error_rows_retained": 1,
+  "three_booking_slot_objections_disagree_with_exact_tool_values": 3,
+  "source_or_production_acceptance": false,
+  "semantic_review_three_repeats_completed": false
+}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { AlarmClock, Car, CheckCircle2, FileText, LogIn, Phone, Play, User, XCircle } from 'lucide-react'
 import Badge from '@/shared/ui/Badge'
 import Button from '@/shared/ui/Button'
@@ -6,13 +7,17 @@ import { Card, CardHeader, InfoRow } from '@/shared/ui/Card'
 import { ACTOR_LABEL, bookingStatusLabel, PORTAL_BOOKING_STATUS as BOOKING_STATUS, REASON_LABEL, SOURCE_LABEL } from '@/shared/domain/bookingLabels'
 import { formatLicensePlate, formatTimeDayMonth } from '@/shared/utils/format'
 import ConversationExcerptPanel from '@/features/assistant/components/ConversationExcerptPanel'
+import QuoteStatusBadge from '@/features/quotes/components/QuoteStatusBadge'
 import { formatVnd } from '@/features/estimate/utils'
 import { formatLongDay, slotLabel } from '@/features/bookings/utils'
 import ProgressPanel from '@/features/progress/components/ProgressPanel'
 import type { Stage } from '@/features/progress/types'
 import type { BoardAction, BoardDetail } from '../types'
 import { appointmentIso } from '../utils'
+import { getWorkshopBookingLines } from '@/features/booking-lines/api'
+import { blockedReason } from '@/features/booking-lines/logic'
 import { CompleteDialog, ReasonDialog } from './BoardDialogs'
+import PricingCard from './PricingCard'
 
 /** "Hạn xác nhận HH:mm", red under one hour (§4.4). */
 export function DeadlineBadge({ deadline }: { deadline: string }) {
@@ -64,6 +69,8 @@ export default function BoardBookingDetail({
   readOnly,
   dialogError,
   progressKey,
+  linesKey,
+  onLinesChanged,
   onAction,
 }: {
   detail: BoardDetail
@@ -71,12 +78,16 @@ export default function BoardBookingDetail({
   readOnly: boolean
   dialogError: string | null
   progressKey: number
+  /** Bumped by the board's refresh so the price lines follow the owner's decisions (OV3). */
+  linesKey: number
+  onLinesChanged: () => void
   onAction: (action: BoardAction, extra?: { reasonCode?: string; note?: string; actualCost?: number | null }) => Promise<boolean>
 }) {
   const [dialog, setDialog] = useState<'REJECT' | 'CANCEL' | 'COMPLETE' | null>(null)
   const [stage, setStage] = useState<Stage | null>(null)
   const status = BOOKING_STATUS[detail.status]
   const appt = appointmentIso(detail.bookingDate, detail.timeSlot)
+  const twoTier = detail.pricingFlow === 'two_tier'
 
   async function run(action: BoardAction, extra?: Parameters<typeof onAction>[1]) {
     const ok = await onAction(action, extra)
@@ -94,23 +105,43 @@ export default function BoardBookingDetail({
 
       {!readOnly && detail.allowedActions.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {ACTION_BUTTONS.filter(button => detail.allowedActions.includes(button.action)).map(({ action, label, variant, icon: Icon }) => (
-            <Button
-              key={action}
-              variant={variant}
-              size="sm"
-              icon={<Icon className="w-4 h-4" />}
-              loading={pendingAction === action}
-              disabled={pendingAction !== null}
-              onClick={() => {
-                if (action === 'REJECT' || action === 'CANCEL' || action === 'COMPLETE') setDialog(action)
-                else void run(action)
-              }}
-            >
-              {label}
-            </Button>
-          ))}
+          {ACTION_BUTTONS.filter(button => detail.allowedActions.includes(button.action)).map(({ action, label, variant, icon: Icon }) => {
+            const blocked = blockedReason(detail.blockedActions, action)
+            return (
+              <div key={action} className="flex flex-col gap-1">
+                <Button
+                  variant={variant}
+                  size="sm"
+                  icon={<Icon className="w-4 h-4" />}
+                  loading={pendingAction === action}
+                  disabled={pendingAction !== null || blocked !== null}
+                  aria-describedby={blocked ? `blocked-${action}` : undefined}
+                  onClick={() => {
+                    if (action === 'REJECT' || action === 'CANCEL' || action === 'COMPLETE') setDialog(action)
+                    else void run(action)
+                  }}
+                >
+                  {label}
+                </Button>
+                {blocked && (
+                  <span id={`blocked-${action}`} className="text-xs text-warning">
+                    {blocked}
+                  </span>
+                )}
+              </div>
+            )
+          })}
         </div>
+      )}
+
+      {twoTier && (
+        <PricingCard
+          bookingId={detail.bookingId}
+          bookingStatus={detail.status}
+          readOnly={readOnly}
+          refreshKey={linesKey}
+          onChanged={onLinesChanged}
+        />
       )}
 
       <Card>
@@ -138,6 +169,16 @@ export default function BoardBookingDetail({
         {detail.milestoneLabel && <InfoRow label="Hạng mục" value={detail.milestoneLabel} />}
         <InfoRow label="Chi phí ước tính" value={detail.estimatedCost !== null ? formatVnd(detail.estimatedCost) : '—'} />
         {detail.actualCost !== null && <InfoRow label="Chi phí thực tế" value={formatVnd(detail.actualCost)} />}
+        {detail.quote && (
+          <InfoRow
+            label="Báo giá"
+            value={
+              <Link to={`/technician/quote-review?quoteId=${encodeURIComponent(detail.quote.quoteId)}`} className="inline-flex items-center gap-2">
+                <QuoteStatusBadge status={detail.quote.status} />
+              </Link>
+            }
+          />
+        )}
         {detail.note && <p className="text-sm text-muted mt-3">Ghi chú của khách: "{detail.note}"</p>}
       </Card>
 
@@ -163,6 +204,7 @@ export default function BoardBookingDetail({
         open={dialog === 'COMPLETE'}
         plate={formatLicensePlate(detail.vehicle.licensePlate)}
         notReadyForPickup={stage !== null && stage !== 'READY_FOR_PICKUP'}
+        loadSystemTotal={twoTier ? () => getWorkshopBookingLines(detail.bookingId).then(view => view.currentTotal) : undefined}
         submitting={pendingAction === 'COMPLETE'}
         serverError={dialogError}
         onClose={() => setDialog(null)}

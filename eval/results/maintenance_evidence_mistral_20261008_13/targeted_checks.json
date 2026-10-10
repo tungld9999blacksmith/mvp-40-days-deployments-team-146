@@ -1,0 +1,106 @@
+{
+  "status": "NARROW_CHECKS_NOT_SEMANTIC_ACCURACY",
+  "passed": 6,
+  "total": 6,
+  "checks": [
+    {
+      "run": "generation_mistral_maintenance_preflight_20261008_13",
+      "case_id": "M07",
+      "passed": true,
+      "answer": "Bảng được cung cấp ghi: “Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên” [Tài liệu 1].\n\nMốc thay trong dòng này chưa được xác minh với bảng gốc đầy đủ và phiên bản áp dụng. Tôi chưa thể chốt lịch thay cho xe từ bản trích này; không tự sửa số km trong nguồn hoặc ngoại suy chu kỳ. Cần đối chiếu đúng lịch bảo dưỡng trước khi áp dụng.",
+      "metadata": {
+        "reason": "coolant_source_value_unverified",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "literal_source_row": "Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên",
+        "source_rule_verified": false
+      }
+    },
+    {
+      "run": "generation_mistral_maintenance_preflight_20261008_13",
+      "case_id": "M18",
+      "passed": true,
+      "answer": "Bảng liệt kê các hạng mục “Pin”, “Dây cáp của hệ thống điện áp cao”, “Cổng sạc” [Tài liệu 1]. Tuy nhiên, các dòng này trong bản trích không có thao tác hoặc chu kỳ đi kèm; chưa thể kết luận chúng đều phải kiểm tra định kỳ theo lịch cụ thể.\n\nBảng cũng nêu “Nước làm mát pin/động cơ điện” [Tài liệu 1], nhưng mốc thay của dòng này cần xác minh với bảng gốc.\n\nCần lịch đầy đủ, đúng phiên bản để xác định thao tác và thời điểm cho từng hạng mục.",
+      "metadata": {
+        "reason": "maintenance_component_actions_missing",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "literal_component_labels": [
+          "Pin",
+          "Dây cáp của hệ thống điện áp cao",
+          "Cổng sạc"
+        ],
+        "source_rule_verified": false
+      }
+    },
+    {
+      "run": "generation_mistral_maintenance_preflight_20261008_13",
+      "case_id": "M23",
+      "passed": true,
+      "answer": "Chưa xác định được danh sách phụ tùng bắt buộc thay tại mốc 40.000 km từ các đoạn được cung cấp. Bảng có các mốc km/tháng nhưng các dòng hạng mục thiếu cột thao tác tương ứng [Tài liệu 1].\n\nKhông dùng các dòng đã mất ánh xạ để suy ra thao tác tại mốc bạn hỏi. Cần bảng đầy đủ, đúng dòng xe và phiên bản; không áp toàn bộ danh sách thay thế vào mốc này.",
+      "metadata": {
+        "reason": "maintenance_period_mapping_missing",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "requested_milestone_km": 40000,
+        "source_rule_verified": false
+      }
+    },
+    {
+      "run": "generation_mistral_maintenance_100_20261008_13",
+      "case_id": "M07",
+      "passed": true,
+      "answer": "Bảng được cung cấp ghi: “Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên” [Tài liệu 1].\n\nMốc thay trong dòng này chưa được xác minh với bảng gốc đầy đủ và phiên bản áp dụng. Tôi chưa thể chốt lịch thay cho xe từ bản trích này; không tự sửa số km trong nguồn hoặc ngoại suy chu kỳ. Cần đối chiếu đúng lịch bảo dưỡng trước khi áp dụng.",
+      "metadata": {
+        "reason": "coolant_source_value_unverified",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "literal_source_row": "Nước làm mát pin/động cơ điện: Thay mới ở tháng thứ 120 hoặc sau 12.000km. Thời gian còn lại kiểm tra thường xuyên",
+        "source_rule_verified": false
+      }
+    },
+    {
+      "run": "generation_mistral_maintenance_100_20261008_13",
+      "case_id": "M18",
+      "passed": true,
+      "answer": "Bảng liệt kê các hạng mục “Pin”, “Dây cáp của hệ thống điện áp cao”, “Cổng sạc” [Tài liệu 1]. Tuy nhiên, các dòng này trong bản trích không có thao tác hoặc chu kỳ đi kèm; chưa thể kết luận chúng đều phải kiểm tra định kỳ theo lịch cụ thể.\n\nBảng cũng nêu “Nước làm mát pin/động cơ điện” [Tài liệu 1], nhưng mốc thay của dòng này cần xác minh với bảng gốc.\n\nCần lịch đầy đủ, đúng phiên bản để xác định thao tác và thời điểm cho từng hạng mục.",
+      "metadata": {
+        "reason": "maintenance_component_actions_missing",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "literal_component_labels": [
+          "Pin",
+          "Dây cáp của hệ thống điện áp cao",
+          "Cổng sạc"
+        ],
+        "source_rule_verified": false
+      }
+    },
+    {
+      "run": "generation_mistral_maintenance_100_20261008_13",
+      "case_id": "M23",
+      "passed": true,
+      "answer": "Chưa xác định được danh sách phụ tùng bắt buộc thay tại mốc 40.000 km từ các đoạn được cung cấp. Bảng có các mốc km/tháng nhưng các dòng hạng mục thiếu cột thao tác tương ứng [Tài liệu 1].\n\nKhông dùng các dòng đã mất ánh xạ để suy ra thao tác tại mốc bạn hỏi. Cần bảng đầy đủ, đúng dòng xe và phiên bản; không áp toàn bộ danh sách thay thế vào mốc này.",
+      "metadata": {
+        "reason": "maintenance_period_mapping_missing",
+        "evidence_gate": true,
+        "source_cited_doc_indexes": [
+          1
+        ],
+        "requested_milestone_km": 40000,
+        "source_rule_verified": false
+      }
+    }
+  ],
+  "independent_labels": 0
+}

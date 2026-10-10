@@ -39,7 +39,8 @@ class SubmitQuoteRequest(CamelModel):
 
 class ApproveItemIn(CamelModel):
     quote_item_id: UUID
-    approved_price: Decimal = Field(..., ge=0, decimal_places=2)
+    # Upper bound = quote_item.approved_price NUMERIC(12, 2); larger values would be a DB error (500).
+    approved_price: Decimal = Field(..., ge=0, le=Decimal("9999999999.99"), decimal_places=2)
     note: str | None = Field(default=None, max_length=255)
 
 

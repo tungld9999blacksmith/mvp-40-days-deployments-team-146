@@ -1,0 +1,107 @@
+{
+  "status": "TECHNICAL_COMPLETE_JUDGE_PENDING_AUTHORIZATION",
+  "models": {
+    "base": {
+      "model": "mistralai/mistral-small-2603",
+      "full_repeats": 3,
+      "observations": 90,
+      "unique_cases": 30,
+      "technical_pass": 90,
+      "booking_pass": 24,
+      "reminder_pass": 15,
+      "mean_seconds": 4.9115,
+      "p90_pooled_seconds": 10.902100000000003,
+      "between_repeat_mean_stdev_seconds": 0.07990203028987732,
+      "known_full_llm_cost_usd": 0.10169050650000003,
+      "repeats": [
+        {
+          "repeat": 1,
+          "attempted": 30,
+          "technical_pass": 30,
+          "mean_seconds": 4.842833333333333,
+          "p90_seconds": 11.627300000000002,
+          "known_llm_cost_usd": 0.033496551000000006,
+          "reused_original60": true
+        },
+        {
+          "repeat": 2,
+          "attempted": 30,
+          "technical_pass": 30,
+          "mean_seconds": 4.9992,
+          "p90_seconds": 10.220500000000001,
+          "known_llm_cost_usd": 0.0362779395,
+          "reused_original60": false
+        },
+        {
+          "repeat": 3,
+          "attempted": 30,
+          "technical_pass": 30,
+          "mean_seconds": 4.8924666666666665,
+          "p90_seconds": 9.639300000000004,
+          "known_llm_cost_usd": 0.03191601600000001,
+          "reused_original60": false
+        }
+      ]
+    },
+    "agent_gemma": {
+      "model": "google/gemma-4-26b-a4b-it",
+      "full_repeats": 3,
+      "observations": 90,
+      "unique_cases": 30,
+      "technical_pass": 90,
+      "booking_pass": 24,
+      "reminder_pass": 15,
+      "mean_seconds": 8.339766666666666,
+      "p90_pooled_seconds": 14.515300000000003,
+      "between_repeat_mean_stdev_seconds": 0.10123876618063733,
+      "known_full_llm_cost_usd": 0.04671010349999999,
+      "repeats": [
+        {
+          "repeat": 1,
+          "attempted": 30,
+          "technical_pass": 30,
+          "mean_seconds": 8.3662,
+          "p90_seconds": 16.5669,
+          "known_llm_cost_usd": 0.0164834065,
+          "reused_original60": false
+        },
+        {
+          "repeat": 2,
+          "attempted": 30,
+          "technical_pass": 30,
+          "mean_seconds": 8.425166666666666,
+          "p90_seconds": 14.5153,
+          "known_llm_cost_usd": 0.015386886999999995,
+          "reused_original60": false
+        },
+        {
+          "repeat": 3,
+          "attempted": 30,
+          "technical_pass": 30,
+          "mean_seconds": 8.227933333333333,
+          "p90_seconds": 13.9375,
+          "known_llm_cost_usd": 0.014839809999999998,
+          "reused_original60": false
+        }
+      ]
+    }
+  },
+  "gemma_full_llm_savings_percent": 54.06640687742078,
+  "gemma_to_mistral_mean_latency_ratio": 1.6980080762835519,
+  "full180_llm_cost_usd": 0.14840061000000002,
+  "known55_through61_cost_usd": {
+    "pipeline": 0.25706310225,
+    "judge": 0,
+    "all": 0.25706310225
+  },
+  "unknown_interrupted_provider_cost_usd": null,
+  "unknown_inflight_budget_reserve_usd": 0.01,
+  "embedding_calls55_through61": 69,
+  "embedding_cost_usd": null,
+  "judge_calls": 0,
+  "dataset_usage": "DEVELOPMENT_REGRESSION_NOT_HOLDOUT",
+  "production_acceptance": false,
+  "semantic_correctness": "NOT_MEASURED",
+  "reused_mistral_not_charged_again": true,
+  "paused_gemma21_excluded_from_full_accuracy": true
+}

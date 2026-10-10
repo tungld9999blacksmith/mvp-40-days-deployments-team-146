@@ -1,0 +1,142 @@
+{
+  "chunk_count": 819,
+  "documents": [
+    "battery_cuu_ho_ALL",
+    "battery_quy_dinh_su_dung_ALL",
+    "battery_sac_VF3",
+    "battery_sac_VF5",
+    "battery_sac_VF6",
+    "battery_sac_VF7",
+    "battery_sac_VF8",
+    "battery_sac_VFe34",
+    "battery_sac_tai_nha_ALL",
+    "dich_vu_bao_duong_ALL",
+    "faq_baoduong_baohanh_ALL",
+    "lich_bao_duong_ALL",
+    "pricing_bao_gia_dich_vu_ALL",
+    "pricing_phu_kien_VF5",
+    "pricing_phu_kien_VF8",
+    "pricing_thiet_bi_sac_ALL",
+    "pricing_tram_sac_ALL",
+    "quy_trinh_ung_dung_ALL",
+    "toi_uu_moc_bao_duong_ALL",
+    "warranty_maintenance_VF3",
+    "warranty_maintenance_VF5",
+    "warranty_maintenance_VF6",
+    "warranty_maintenance_VF7",
+    "warranty_maintenance_VF8",
+    "warranty_maintenance_VFMPV7",
+    "warranty_maintenance_VFe34",
+    "warranty_policy_ALL",
+    "warranty_policy_vi"
+  ],
+  "content_sha256": "18ddf91f757f2c625029229f0e9d65767815362c18810e4d62bce74a2c95fb2e",
+  "collection_info": {
+    "status": "green",
+    "optimizer_status": "ok",
+    "warnings": null,
+    "indexed_vectors_count": 0,
+    "points_count": 819,
+    "segments_count": 2,
+    "config": {
+      "params": {
+        "vectors": {
+          "size": 3072,
+          "distance": "Cosine",
+          "hnsw_config": null,
+          "quantization_config": null,
+          "on_disk": null,
+          "memory": null,
+          "datatype": null,
+          "multivector_config": null
+        },
+        "shard_number": 1,
+        "sharding_method": null,
+        "replication_factor": 1,
+        "write_consistency_factor": 1,
+        "read_fan_out_factor": null,
+        "read_fan_out_delay_ms": null,
+        "on_disk_payload": true,
+        "payload": null,
+        "sparse_vectors": null
+      },
+      "hnsw_config": {
+        "m": 16,
+        "ef_construct": 100,
+        "full_scan_threshold": 10000,
+        "max_indexing_threads": 0,
+        "on_disk": false,
+        "memory": null,
+        "payload_m": null,
+        "inline_storage": null
+      },
+      "optimizer_config": {
+        "deleted_threshold": 0.2,
+        "vacuum_min_vector_number": 1000,
+        "default_segment_number": 0,
+        "max_segment_size": null,
+        "memmap_threshold": null,
+        "indexing_threshold": 10000,
+        "flush_interval_sec": 5,
+        "max_optimization_threads": null,
+        "prevent_unoptimized": null
+      },
+      "wal_config": {
+        "wal_capacity_mb": 32,
+        "wal_segments_ahead": 0,
+        "wal_retain_closed": 1
+      },
+      "quantization_config": null,
+      "strict_mode_config": {
+        "enabled": true,
+        "max_query_limit": null,
+        "max_timeout": null,
+        "unindexed_filtering_retrieve": false,
+        "unindexed_filtering_update": false,
+        "search_max_hnsw_ef": null,
+        "search_allow_exact": null,
+        "search_max_oversampling": null,
+        "upsert_max_batchsize": null,
+        "search_max_batchsize": null,
+        "max_collection_vector_size_bytes": null,
+        "read_rate_limit": null,
+        "write_rate_limit": null,
+        "max_collection_payload_size_bytes": null,
+        "max_points_count": null,
+        "filter_max_conditions": null,
+        "condition_max_size": null,
+        "multivector_config": null,
+        "sparse_config": null,
+        "max_payload_index_count": 100,
+        "max_resident_memory_percent": null
+      },
+      "metadata": null
+    },
+    "payload_schema": {
+      "document_id": {
+        "data_type": "keyword",
+        "params": null,
+        "points": 819
+      },
+      "milestone_km": {
+        "data_type": "integer",
+        "params": null,
+        "points": 819
+      },
+      "model": {
+        "data_type": "keyword",
+        "params": null,
+        "points": 819
+      },
+      "category": {
+        "data_type": "keyword",
+        "params": null,
+        "points": 819
+      }
+    },
+    "update_queue": {
+      "length": 0,
+      "deferred_points": null
+    }
+  }
+}

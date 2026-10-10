@@ -5,6 +5,7 @@ import os
 from typing import Any
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import ToolNode
@@ -16,6 +17,8 @@ try:
 except ImportError:
     from src.config import get_settings
 
+from .evidence import collect_rag_evidence, preserve_rag_fallback
+from .guardrails import guarded_calls, tool_failure
 from .prompts import format_system_prompt
 from .state import AgentState
 from .tools import CUSTOMER_AGENT_TOOLS
@@ -24,6 +27,32 @@ from .tools import CUSTOMER_AGENT_TOOLS
 os.environ.setdefault("LANGCHAIN_TRACING_V2", "false")
 
 logger = logging.getLogger(__name__)
+
+
+def prefill_due_maintenance_args(
+    args: dict[str, Any], vehicle_ctx: dict[str, Any]
+) -> tuple[dict[str, Any], list[str]]:
+    """Bổ sung model/ODO/số tháng còn thiếu cho get_due_maintenance từ vehicle_context tin cậy.
+
+    Trả về (args đã bổ sung, danh sách field được bổ sung). Dùng chung với
+    tests/test_agents/evaluationLLM/benchmark_models.py để benchmark khớp production.
+    """
+    args = dict(args or {})
+    patched: list[str] = []
+    if not args.get("model") and vehicle_ctx.get("model"):
+        args["model"] = vehicle_ctx["model"]
+        patched.append("model")
+    if not args.get("current_odometer_km") and not args.get("current_odo"):
+        odo = vehicle_ctx.get("current_odo") or vehicle_ctx.get("current_odometer_km")
+        if odo:
+            args["current_odometer_km"] = int(odo)
+            patched.append("current_odometer_km")
+    if args.get("months_since_last_service") is None:
+        months = vehicle_ctx.get("months_since_last") or vehicle_ctx.get("months_since_last_service")
+        if months is not None:
+            args["months_since_last_service"] = int(months)
+            patched.append("months_since_last_service")
+    return args, patched
 
 
 def extract_text_from_content(content: Any) -> str:
@@ -41,37 +70,58 @@ def extract_text_from_content(content: Any) -> str:
     return str(content or "")
 
 
-def get_agent_llm() -> Any:
+def _is_upstream_error(response: Any) -> bool:
+    """An empty reply the provider ended with finish_reason="error" (not a real answer)."""
+    metadata = getattr(response, "response_metadata", None) or {}
+    return (
+        metadata.get("finish_reason") == "error"
+        and not getattr(response, "tool_calls", None)
+        and not extract_text_from_content(getattr(response, "content", "")).strip()
+    )
+
+
+def get_agent_llm(*, fallback: bool = False) -> Any:
     """Khởi tạo Chat Model hỗ trợ tool calling dựa trên cấu hình môi trường."""
     settings = get_settings()
+    from src.infrastructure.llm.routing import fallback_provider, settings_for_stage
+
+    settings = (
+        settings.model_copy(update={"llm_provider": settings.llm_fallback_provider})
+        if fallback else settings_for_stage(settings, "orchestrator")
+    )
+    # The primary must fail fast so the fallback still fits in the chat turn deadline.
+    max_retries = 0 if not fallback and fallback_provider(settings) else 1
 
     if settings.llm_provider == "openrouter":
         from langchain_openai import ChatOpenAI
 
         if not settings.openrouter_api_key.strip():
             raise ValueError("OPENROUTER_API_KEY is required when LLM_PROVIDER=openrouter")
+        endpoints = settings.openrouter_endpoints_for_stage("agent")
+        routing = {"extra_body": {"provider": {"order": list(endpoints), "allow_fallbacks": True}}} if endpoints else {}
         return ChatOpenAI(
             model=settings.openrouter_model,
             api_key=SecretStr(settings.openrouter_api_key),
             base_url=settings.openrouter_base_url,
             max_tokens=settings.openrouter_max_tokens,
             temperature=0.2,
-            timeout=settings.chat_run_timeout_seconds,
-            max_retries=1,
+            timeout=settings.llm_call_timeout_seconds,
+            max_retries=max_retries,
+            **routing,
         )
 
-    # Ưu tiên Gemini nếu có API key
-    if settings.gemini_api_key:
+    if settings.llm_provider == "gemini":
         from langchain_google_genai import ChatGoogleGenerativeAI
 
-        # Sử dụng gemini-flash-lite-latest (ổn định & quota cao)
         model_name = settings.gemini_model
-        if model_name in ("gemini-flash-latest", "gemini-1.5-flash", "gemini-2.5-flash"):
-            model_name = "gemini-flash-lite-latest"
+        if not settings.gemini_api_key.strip():
+            raise ValueError("GEMINI_API_KEY is required when LLM_PROVIDER=gemini")
 
         llm_kwargs: dict[str, Any] = {
             "model": model_name,
             "google_api_key": settings.gemini_api_key,
+            "timeout": settings.llm_call_timeout_seconds,
+            "max_retries": max_retries,
         }
         # Model dòng -lite sử dụng fixed sampling defaults từ Google, không truyền temperature để tránh cảnh báo UserWarning
         if "lite" not in model_name.lower():
@@ -79,46 +129,24 @@ def get_agent_llm() -> Any:
 
         return ChatGoogleGenerativeAI(**llm_kwargs)
 
-    # Sử dụng OpenAI nếu có API key
-    if settings.openai_api_key:
+    if settings.llm_provider == "openai" and settings.openai_api_key:
         from langchain_openai import ChatOpenAI
 
         return ChatOpenAI(
             model=settings.model_name,
             api_key=SecretStr(settings.openai_api_key),
             temperature=0.2,
+            timeout=settings.llm_call_timeout_seconds,
+            max_retries=max_retries,
         )
 
-    # Fallback cho testing / mock
-    from langchain_openai import ChatOpenAI
-
-    return ChatOpenAI(
-        model="gpt-4o-mini",
-        api_key=SecretStr("mock-api-key"),
-        temperature=0.0,
-    )
+    raise ValueError(f"Agent provider {settings.llm_provider!r} is unsupported or missing its API key")
 
 
 def get_checkpointer(use_postgres: bool = True) -> Any:
-    """Khởi tạo checkpointer cho LangGraph:
-    - AsyncPostgresSaver nếu có DATABASE_URL và use_postgres=True (production/staging)
-    - MemorySaver nếu không có DB hoặc đang chạy test offline
-    """
-    db_url = os.getenv("DATABASE_URL", "")
-    if use_postgres and db_url and not db_url.startswith("sqlite"):
-        try:
-            from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
-
-            # Chuyển postgresql:// → postgresql+psycopg:// cho psycopg3
-            conn_string = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
-            checkpointer = AsyncPostgresSaver.from_conn_string(conn_string)
-            logger.info("LangGraph checkpointer: AsyncPostgresSaver (PostgreSQL)")
-            return checkpointer
-        except Exception as e:
-            logger.warning("Không thể khởi tạo AsyncPostgresSaver (%s), dùng MemorySaver.", e)
-
-    logger.info("LangGraph checkpointer: MemorySaver (in-memory / dev mode)")
-    return MemorySaver()
+    """Return the open saver owned by API lifespan; offline graphs use memory."""
+    from .checkpoint import current_checkpointer
+    return current_checkpointer() if use_postgres else MemorySaver()
 
 
 def build_graph(
@@ -128,6 +156,8 @@ def build_graph(
     *,
     system_prompt: str | None = None,
     collect_citations: bool = True,
+    use_llm_fallback: bool = False,
+    tool_call_reviewer: Any | None = None,
 ) -> Any:
     """Xây dựng StateGraph ReAct cho Agent EV Care theo kiến trúc Single Orchestrator.
 
@@ -143,6 +173,25 @@ def build_graph(
     model = llm if llm is not None else get_agent_llm()
     bound_tools = tools if tools is not None else CUSTOMER_AGENT_TOOLS
     model_with_tools = model.bind_tools(bound_tools)
+    settings = get_settings()
+    if llm is None and tool_call_reviewer is None and settings.llm_booking_check_enabled:
+        from .tool_review import review_tool_call
+
+        tool_call_reviewer = review_tool_call
+    if (llm is None or use_llm_fallback) and settings.llm_fallback_provider:
+        from openai import APIConnectionError, InternalServerError, RateLimitError
+
+        from src.infrastructure.llm.routing import fallback_provider, settings_for_stage
+
+        if fallback_provider(settings_for_stage(settings, "orchestrator")):
+            model_with_tools = model_with_tools.with_fallbacks(
+                [get_agent_llm(fallback=True).bind_tools(bound_tools)],
+                exceptions_to_handle=(APIConnectionError, InternalServerError, RateLimitError),
+            )
+    maintenance_arg_names = next(
+        (set(tool.args) for tool in bound_tools if getattr(tool, "name", "") == "get_due_maintenance"),
+        set(),
+    )
 
     async def agent_node(state: AgentState) -> dict[str, Any]:
         """Node LLM suy luận, nhận context xe và quyết định gọi tool hoặc trả lời."""
@@ -174,6 +223,13 @@ def build_graph(
         full_messages = messages if has_system else [SystemMessage(content=system_instruction)] + messages
 
         response = await model_with_tools.ainvoke(full_messages)
+        if _is_upstream_error(response):
+            # OpenRouter ends with finish_reason="error" and no content when the provider fails
+            # mid-answer. Nothing ran in this call, so one retry is safe.
+            logger.warning("Agent LLM returned an upstream error; retrying once")
+            response = await model_with_tools.ainvoke(full_messages)
+        if _is_upstream_error(response):
+            raise RuntimeError("Agent LLM returned an upstream error twice")
 
         # --- Task #2: Pre-fill args cho get_due_maintenance từ vehicle_context ---
         # LLM đôi khi bỏ sót model/ODO khi context đã rõ; inject tự động để tránh tool fail.
@@ -181,21 +237,17 @@ def build_graph(
             patched_tool_calls = []
             changed = False
             for tc in response.tool_calls:
-                if tc.get("name") == "get_due_maintenance":
-                    args = dict(tc.get("args", {}))
-                    if not args.get("model") and vehicle_ctx.get("model"):
-                        args["model"] = vehicle_ctx["model"]
-                        changed = True
-                    if not args.get("current_odometer_km") and not args.get("current_odo"):
-                        odo = vehicle_ctx.get("current_odo") or vehicle_ctx.get("current_odometer_km")
-                        if odo:
-                            args["current_odometer_km"] = int(odo)
-                            changed = True
-                    if args.get("months_since_last_service") is None:
-                        months = vehicle_ctx.get("months_since_last") or vehicle_ctx.get("months_since_last_service")
-                        if months is not None:
-                            args["months_since_last_service"] = int(months)
-                            changed = True
+                if tc.get("name") == "get_due_maintenance" and maintenance_arg_names:
+                    args, patched = prefill_due_maintenance_args(tc.get("args", {}), vehicle_ctx)
+                    # Main's current tool has no model/ODO inputs: it reads its
+                    # verified caller and selected vehicle from the database.
+                    # Only add fields declared by a legacy tool's public schema.
+                    original_args = dict(tc.get("args", {}))
+                    args = {**original_args, **{
+                        key: args[key] for key in patched if key in maintenance_arg_names
+                    }}
+                    patched = [key for key in patched if key in maintenance_arg_names]
+                    changed = changed or bool(patched)
                     patched_tool_calls.append({**tc, "args": args})
                 else:
                     patched_tool_calls.append(tc)
@@ -207,6 +259,9 @@ def build_graph(
                     pass  # Nếu không patch được, giữ nguyên — LLM args vẫn được dùng
 
         # Nếu có init_messages từ query legacy, đưa vào messages trả về để lưu trong state
+        response = guarded_calls(response, messages, bound_tools)
+        response = preserve_rag_fallback(response, messages)
+
         out_messages = init_messages + [response] if init_messages else [response]
         result: dict[str, Any] = {"messages": out_messages}
 
@@ -216,70 +271,45 @@ def build_graph(
 
         # Nếu hoàn tất (không gọi thêm tool nào), thu thập citations từ tool messages thật
         if collect_citations and not getattr(response, "tool_calls", None):
-            import json
-
-            collected_citations: list[dict[str, Any]] = list(state.get("citations", []))
-            for m in messages:
-                name = getattr(m, "name", "")
-                content = str(getattr(m, "content", ""))
-
-                # Citation từ RAG tools: chỉ lấy khi có section "[Tài liệu tham chiếu chính hãng]:"
-                if name in ("search_ev_knowledge", "get_maintenance_schedule_rag", "get_warranty_policy_rag"):
-                    if "[Tài liệu tham chiếu chính hãng]:" in content:
-                        parts = content.split("[Tài liệu tham chiếu chính hãng]:")[-1].strip().split("\n")
-                        for line in parts:
-                            line = line.strip()
-                            if line.startswith("[") and "]" in line:
-                                title_part = line.split("]", 1)[-1].strip()
-                                sec = ""
-                                if " - Mục:" in title_part:
-                                    title_part, sec = title_part.split(" - Mục:", 1)
-                                collected_citations.append(
-                                    {
-                                        "title": title_part.strip(),
-                                        "section": sec.strip(),
-                                        "document_id": "DOC-VINFAST-OFFICIAL",
-                                    }
-                                )
-
-                # Citation từ get_due_maintenance: chỉ khi tool trả về milestone_km thật
-                elif name == "get_due_maintenance":
-                    try:
-                        raw_data = None
-                        if content.startswith("{"):
-                            try:
-                                raw_data = json.loads(content)
-                            except Exception:
-                                import ast
-
-                                raw_data = ast.literal_eval(content)
-                        if isinstance(raw_data, dict):
-                            status = raw_data.get("status", "ok")
-                            if status == "ok":
-                                data = raw_data.get("data") if isinstance(raw_data.get("data"), dict) else raw_data
-                                # Lấy milestone từ due_milestone (tên) hoặc milestone_km (số)
-                                due_milestone = data.get("due_milestone") or data.get("milestone_km")
-                                tool_model = data.get("model") or (vehicle_ctx.get("model") if vehicle_ctx else None)
-                                if due_milestone and tool_model:
-                                    collected_citations.append(
-                                        {
-                                            "title": f"Sổ tay bảo dưỡng định kỳ VinFast {tool_model}",
-                                            "section": str(due_milestone),
-                                            "document_id": f"DOC-{str(tool_model).upper()}-MAINTENANCE",
-                                        }
-                                    )
-                    except Exception:
-                        pass
-
-            # KHÔNG tạo citation giả khi collected_citations rỗng —
-            # nếu không có tool nào trả dữ liệu thật thì trả về list rỗng.
-            result["citations"] = collected_citations
-            result["confidence"] = "high" if collected_citations else "standard"
-            result["fallback_required"] = False
+            result.update(collect_rag_evidence(messages))
 
         return result
 
-    tools_node = ToolNode(bound_tools)
+    tools_node = ToolNode(bound_tools, handle_tool_errors=True)
+
+    async def tool_error_node(state: AgentState) -> dict[str, Any]:
+        from langchain_core.messages import AIMessage
+        messages = list(state.get("messages", []))
+        answer = tool_failure(messages) or "Chưa có kết quả đã xác minh cho yêu cầu này."
+        result = {"messages": [AIMessage(content=answer)], "response": answer}
+        if collect_citations:
+            result.update(collect_rag_evidence(messages))
+        return result
+
+
+    async def guarded_tools_node(state: AgentState, config: RunnableConfig) -> dict[str, Any]:
+        from langchain_core.messages import ToolMessage
+
+        from .tool_review import SENSITIVE_TOOL_NAMES
+
+        if tool_call_reviewer is None:
+            return await tools_node.ainvoke(state, config)
+        last = state["messages"][-1]
+        accepted, rejected = [], []
+        for call in last.tool_calls:
+            if call["name"] not in SENSITIVE_TOOL_NAMES or await tool_call_reviewer(state["messages"], call):
+                accepted.append(call)
+            else:
+                rejected.append(ToolMessage(
+                    content='{"status":"error","code":"TOOL_REVIEW_REJECTED","message":"Yêu cầu chưa đủ căn cứ để thực hiện. Vui lòng làm rõ lựa chọn hoặc yêu cầu thay đổi."}',
+                    tool_call_id=call["id"], name=call["name"],
+                ))
+        outputs = []
+        if accepted:
+            execution_state = {**state, "messages": [*state["messages"][:-1], last.model_copy(update={"tool_calls": accepted})]}
+            result = await tools_node.ainvoke(execution_state, config)
+            outputs = result["messages"]
+        return {"messages": outputs + rejected}
 
     def hitl_routing(state: AgentState) -> str:
         """Kiểm tra xem LLM có muốn gọi create_booking_draft không.
@@ -341,7 +371,8 @@ def build_graph(
 
     # Thêm nodes
     workflow.add_node("agent", agent_node)
-    workflow.add_node("tools", tools_node)
+    workflow.add_node("tools", guarded_tools_node)
+    workflow.add_node("tool_error", tool_error_node)
     workflow.add_node("hitl", hitl_node)
 
     # Luồng chính: START → agent → (routing) → tools/hitl/end
@@ -359,7 +390,11 @@ def build_graph(
         ),
         {"tools": "tools", "agent": "agent"},
     )
-    workflow.add_edge("tools", "agent")
+    workflow.add_conditional_edges(
+        "tools", lambda state: "tool_error" if tool_failure(list(state.get("messages", []))) else "agent",
+        {"tool_error": "tool_error", "agent": "agent"},
+    )
+    workflow.add_edge("tool_error", "__end__")
 
     # Compile với checkpointer — dùng checkpointer truyền vào, hoặc auto-detect
     cp = checkpointer if checkpointer is not None else get_checkpointer()

@@ -38,7 +38,7 @@ export default function BookingSlots() {
   const [attempt, setAttempt] = useState(0)
   const { pending, alternatives, closeAlternatives, requestSlot } = useSlotRequest()
 
-  // Workshop details when the page is opened directly (estimate / reload).
+  // Workshop details when the page is opened directly (estimate / quote / reload).
   useEffect(() => {
     if (!workshopId || workshop) return
     let cancelled = false
@@ -117,7 +117,7 @@ export default function BookingSlots() {
               <Skeleton className="h-4 w-48" />
             )}
           </div>
-          <Button variant="secondary" size="sm" onClick={() => navigate(`/booking/workshops${searchFor({ workshopId: null, timeSlot: null })}`)}>
+          <Button variant="secondary" size="sm" onClick={() => navigate(`/booking/workshops${searchFor({ workshopId: null, timeSlot: null, quoteId: null })}`)}>
             Đổi xưởng
           </Button>
         </div>
@@ -137,7 +137,7 @@ export default function BookingSlots() {
             icon={<CalendarX2 className="w-5 h-5" />}
             title="Xưởng đã kín lịch 7 ngày tới."
             description="Bạn thử chọn xưởng khác nhé."
-            action={<Button onClick={() => navigate(`/booking/workshops${searchFor({ workshopId: null, timeSlot: null })}`)}>Chọn xưởng khác</Button>}
+            action={<Button onClick={() => navigate(`/booking/workshops${searchFor({ workshopId: null, timeSlot: null, quoteId: null })}`)}>Chọn xưởng khác</Button>}
           />
         ) : !selected || selected.state === 'loading' ? (
           <div className="grid grid-cols-3 lg:grid-cols-6 gap-2" aria-busy>

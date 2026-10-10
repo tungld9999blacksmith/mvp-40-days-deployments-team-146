@@ -13,7 +13,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import and_, or_
@@ -22,25 +22,20 @@ from sqlmodel import Session, select
 
 from src.common.core.identity import OnboardingStatus
 from src.common.core.identity.vehicle_user import UserStatus, VehicleUser
-from src.common.core.maintenance import Booking, BookingStatus, Reminder
+from src.common.core.maintenance import Reminder
 from src.common.core.maintenance.reminder import ReminderChannel, ReminderLevel
 from src.common.core.notification import DeliveryStatus, ReminderDelivery
 from src.common.core.vehicle import UserVehicle, VehicleLinkStatus, VehicleVerificationStatus
 from src.modules.oem_integration.service import utc_now
-from src.modules.user_vehicle.domain import DueResult, today_vn
+from src.modules.user_vehicle.domain import DueResult
 
 from .channels import RETRYABLE_ERRORS, NotificationService
 from .domain import build_message, decide_level
+from .email_service import has_milestone_booking
+from .email_templates import build_email_message, snapshot
 from .preferences import Preferences, load_preferences
 
 logger = logging.getLogger(__name__)
-
-OPEN_BOOKING_STATUSES = (
-    BookingStatus.PENDING,
-    BookingStatus.CONFIRMED,
-    BookingStatus.CHECKED_IN,
-    BookingStatus.IN_PROGRESS,
-)
 
 
 @dataclass(frozen=True)
@@ -90,47 +85,53 @@ class MaintenanceReminderService:
             return ReminderOutcome("skipped", "REMINDERS_DISABLED")  # AF-504
 
         now = self._clock()
-        today = today_vn(now)
-        if self._has_open_booking(vehicle.id, today):
-            self._resolve_reminders(vehicle.id)  # BR-503
-            return ReminderOutcome("skipped", "HAS_BOOKING")
-
         result = self._calculate(vehicle, now)
         milestone = result.next_milestone
         if milestone is None:
             return ReminderOutcome("skipped", "STATUS_UNKNOWN")  # EF-504
 
+        if has_milestone_booking(self._db, vehicle.id, milestone.odo_milestone_km, now):
+            self._resolve_reminders(vehicle.id, reason="HAS_BOOKING")
+            return ReminderOutcome("skipped", "HAS_BOOKING")
+
         # Reminders of an older milestone are obsolete once the milestone moved on.
-        self._resolve_reminders(vehicle.id, keep_milestone=milestone.odo_milestone_km)
+        self._resolve_reminders(vehicle.id, keep_milestone=milestone.odo_milestone_km, reason="MILESTONE_CHANGED")
 
         level = decide_level(result, lead_days=prefs.lead_days, due_soon_km=self._due_soon_km)
         created = None
-        if level is not None and self._create_reminder(vehicle.id, milestone.odo_milestone_km, level, prefs, now):
+        if level is None:
+            self._resolve_reminders(vehicle.id, reason="BEFORE_WINDOW")
+        else:
+            for old in self._db.exec(
+                select(Reminder).where(
+                    Reminder.user_vehicle_id == vehicle.id,
+                    Reminder.target_odo_milestone == milestone.odo_milestone_km,
+                    Reminder.reminder_level != level,
+                    Reminder.is_resolved.is_(False),
+                )
+            ).all():
+                old.is_resolved, old.resolution_reason = True, "SUPERSEDED"
+                self._db.add(old)
+            self._db.commit()
+        if level is not None and self._create_reminder(
+            vehicle.id, milestone.odo_milestone_km, level, prefs, now, result
+        ):
             created = level
 
         sent = await self._deliver_open(vehicle, user, result)
         return ReminderOutcome("processed", created_level=created, deliveries_sent=sent)
 
     # ---------------------------------------------------------- reminders
-    def _has_open_booking(self, user_vehicle_id: UUID, today: date) -> bool:
-        return (
-            self._db.exec(
-                select(Booking.id).where(
-                    Booking.user_vehicle_id == user_vehicle_id,
-                    Booking.status.in_(OPEN_BOOKING_STATUSES),
-                    Booking.booking_date >= today,
-                )
-            ).first()
-            is not None
-        )
-
-    def _resolve_reminders(self, user_vehicle_id: UUID, *, keep_milestone: int | None = None) -> None:
+    def _resolve_reminders(
+        self, user_vehicle_id: UUID, *, keep_milestone: int | None = None, reason: str = "STATUS_CHANGED"
+    ) -> None:
         stmt = select(Reminder).where(Reminder.user_vehicle_id == user_vehicle_id, Reminder.is_resolved.is_(False))
         if keep_milestone is not None:
             stmt = stmt.where(Reminder.target_odo_milestone != keep_milestone)
         reminders = self._db.exec(stmt).all()
         for reminder in reminders:
             reminder.is_resolved = True
+            reminder.resolution_reason = reason
             self._db.add(reminder)
         if reminders:
             self._db.commit()
@@ -142,16 +143,34 @@ class MaintenanceReminderService:
         level: ReminderLevel,
         prefs: Preferences,
         now: datetime,
+        result: DueResult,
     ) -> bool:
         """BR-ENT-453: insert once per (vehicle, milestone, level). False = already there."""
         exists = self._db.exec(
-            select(Reminder.id).where(
+            select(Reminder).where(
                 Reminder.user_vehicle_id == user_vehicle_id,
                 Reminder.target_odo_milestone == milestone_km,
                 Reminder.reminder_level == level,
             )
         ).first()
         if exists is not None:
+            if exists.is_resolved and exists.resolution_reason in {
+                "HAS_BOOKING",
+                "BEFORE_WINDOW",
+                "STATUS_CHANGED",
+                "SUPERSEDED",
+            }:
+                exists.is_resolved, exists.resolution_reason = False, None
+                self._db.add(exists)
+            existing_channels = set(
+                self._db.exec(select(ReminderDelivery.channel).where(ReminderDelivery.reminder_id == exists.id)).all()
+            )
+            for channel in prefs.channels - existing_channels:
+                self._db.add(ReminderDelivery(reminder_id=exists.id, channel=channel))
+            try:
+                self._db.commit()
+            except IntegrityError:
+                self._db.rollback()
             return False
 
         reminder = Reminder(
@@ -160,6 +179,7 @@ class MaintenanceReminderService:
             reminder_level=level,
             channel=ReminderChannel.IN_APP,  # always shown in the feed; external sends: reminder_delivery
             scheduled_at=now,
+            details=snapshot(result, lead_days=prefs.lead_days, due_soon_km=self._due_soon_km),
         )
         self._db.add(reminder)
         try:
@@ -188,6 +208,10 @@ class MaintenanceReminderService:
                         ReminderDelivery.attempts < self._max_attempts,
                         ReminderDelivery.error_code.in_(sorted(RETRYABLE_ERRORS)),
                     ),
+                    and_(
+                        ReminderDelivery.channel == ReminderChannel.EMAIL,
+                        ReminderDelivery.status == DeliveryStatus.FAILED,
+                    ),
                 ),
             )
             .order_by(Reminder.scheduled_at, ReminderDelivery.channel)
@@ -195,6 +219,33 @@ class MaintenanceReminderService:
 
         sent = 0
         for delivery, reminder in rows:
+            prefs = load_preferences(self._db, user.user_id, default_lead_days=self._default_lead_days)
+            if not prefs.reminders_enabled or delivery.channel not in prefs.channels:
+                continue
+            if delivery.channel == ReminderChannel.EMAIL:
+                from src.config import get_settings
+
+                from .email_transport import address_hash
+
+                cfg = get_settings()
+                message = build_email_message(
+                    model_name=vehicle.model_name,
+                    license_plate=vehicle.license_plate,
+                    milestone_km=reminder.target_odo_milestone,
+                    level=reminder.reminder_level,
+                    details=reminder.details
+                    or snapshot(result, lead_days=prefs.lead_days, due_soon_km=self._due_soon_km),
+                    app_url=cfg.email_app_url,
+                    reminder_id=str(reminder.id),
+                    delivery_id=str(delivery.id),
+                    recipient_hash=address_hash(user.email or ""),
+                    sender=cfg.email_from,
+                )
+                outcome = await self._notifier.deliver(delivery.channel, user.user_id, message)
+                # The durable email adapter owns attempts/leases/provider results.
+                if outcome.status == DeliveryStatus.SENT and not outcome.deferred:
+                    sent += 1
+                continue
             message = build_message(
                 model_name=vehicle.model_name,
                 license_plate=vehicle.license_plate,

@@ -15,7 +15,7 @@ export interface FollowUp {
   respondBefore?: string | null
   question: string
   booking: { bookingId: string; bookingCode: string | null; bookingDate: string }
-  workshop: { name: string; hotline: string }
+  workshop: { name: string; hotline: string | null }
   response: { rating: number; comment: string | null; respondedAt: string } | null
   outcome: FollowUpOutcome | null
 }

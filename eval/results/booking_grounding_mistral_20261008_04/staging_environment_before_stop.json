@@ -1,0 +1,11 @@
+{
+  "docker_server_version": "29.5.3",
+  "owned_test_containers": [
+    "/p146_eval_booking_pg_20261008_04 | 0394d46f733206f3a581a4edcdc729212b600ba5ae701dd5a6eed391b39c9092 | pgvector/pgvector@sha256:7b822b0aac60967beb1ea5e576b8602c94c300a157d187f385ae3e0da199b90a | {\"5432/tcp\":[{\"HostIp\":\"127.0.0.1\",\"HostPort\":\"35432\"}]} | running",
+    "/p146_eval_booking_redis_20261008_04 | a8cd83f5c50c54a614841f4e31b032a0d20dd5e5b7508df10b08b46264a72101 | redis:7-alpine | {\"6379/tcp\":[{\"HostIp\":\"127.0.0.1\",\"HostPort\":\"36379\"}]} | running"
+  ],
+  "application_containers_changed": false,
+  "database_port": 35432,
+  "redis_port": 36379,
+  "postgres_image_digest": "sha256:7b822b0aac60967beb1ea5e576b8602c94c300a157d187f385ae3e0da199b90a"
+}

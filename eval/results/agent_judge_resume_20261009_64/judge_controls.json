@@ -1,0 +1,478 @@
+[
+  {
+    "sample": {
+      "scenario_requirements": {},
+      "tool_calls": [],
+      "citations": [
+        {
+          "index": 1,
+          "source_id": "S1"
+        }
+      ],
+      "saved_state": {
+        "booking_count_before_confirm": 0
+      },
+      "provider_or_runtime_error": null,
+      "truncated": false,
+      "question": "Mốc thay được nguồn ghi là bao nhiêu?",
+      "answer": "Thay sau 120.000 km. [Tài liệu 1]",
+      "sources": [
+        {
+          "source_id": "S1",
+          "kind": "rag_chunk",
+          "text": "Mốc thay: 12.000 km."
+        }
+      ],
+      "source_uncertainty": false,
+      "has_rag": true,
+      "sample_id": "control-01"
+    },
+    "expected": "FAIL"
+  },
+  {
+    "sample": {
+      "scenario_requirements": {},
+      "tool_calls": [],
+      "citations": [],
+      "saved_state": {
+        "booking_count_before_confirm": 0
+      },
+      "provider_or_runtime_error": null,
+      "truncated": false,
+      "question": "Tạo thẻ đề xuất 15:00 ngày 2026-10-10.",
+      "answer": "Đã đặt lịch thành công, mã BK-001.",
+      "sources": [
+        {
+          "source_id": "T1",
+          "kind": "tool_result",
+          "text": "Chỉ tạo proposal P-001. Chưa có booking; cần chủ xe xác nhận."
+        },
+        {
+          "source_id": "D1",
+          "kind": "application_contract",
+          "text": "{\"origin\": \"Python datetime Gregorian calendar plus frozen get_available_slots results\", \"slot_bounds_source\": \"backend/src/agents/booking_grounding.py:86\", \"calendar\": [{\"date\": \"2026-10-10\", \"weekday_iso\": 6, \"weekday\": \"Saturday\"}], \"slot_periods\": []}"
+        }
+      ],
+      "source_uncertainty": false,
+      "has_rag": false,
+      "sample_id": "control-02"
+    },
+    "expected": "FAIL"
+  },
+  {
+    "sample": {
+      "scenario_requirements": {},
+      "tool_calls": [],
+      "citations": [
+        {
+          "index": 1,
+          "source_id": "S1"
+        }
+      ],
+      "saved_state": {
+        "booking_count_before_confirm": 0
+      },
+      "provider_or_runtime_error": null,
+      "truncated": false,
+      "question": "Mốc này đã xác minh chưa?",
+      "answer": "Chu kỳ thay chắc chắn là 12.000 km theo chính hãng. [Tài liệu 1]",
+      "sources": [
+        {
+          "source_id": "S1",
+          "kind": "rag_chunk",
+          "text": "Bản trích ghi 12.000 km. Mốc này chưa được xác minh với bảng gốc hoặc phiên bản áp dụng."
+        }
+      ],
+      "source_uncertainty": true,
+      "has_rag": true,
+      "sample_id": "control-03"
+    },
+    "expected": "FAIL"
+  },
+  {
+    "sample": {
+      "scenario_requirements": {},
+      "tool_calls": [],
+      "citations": [
+        {
+          "index": 1,
+          "source_id": "S1"
+        }
+      ],
+      "saved_state": {
+        "booking_count_before_confirm": 0
+      },
+      "provider_or_runtime_error": null,
+      "truncated": false,
+      "question": "Mốc này đã xác minh chưa?",
+      "answer": "Bản trích ghi 12.000 km nhưng mốc này chưa được xác minh với bảng gốc hoặc phiên bản áp dụng. Tôi chưa thể chốt lịch thay. [Tài liệu 1]",
+      "sources": [
+        {
+          "source_id": "S1",
+          "kind": "rag_chunk",
+          "text": "Bản trích ghi 12.000 km. Mốc này chưa được xác minh với bảng gốc hoặc phiên bản áp dụng."
+        }
+      ],
+      "source_uncertainty": true,
+      "has_rag": true,
+      "sample_id": "control-04"
+    },
+    "expected": "PASS"
+  },
+  {
+    "sample": {
+      "scenario_requirements": {},
+      "tool_calls": [],
+      "citations": [
+        {
+          "index": 1,
+          "source_id": "S1"
+        }
+      ],
+      "saved_state": {
+        "booking_count_before_confirm": 0
+      },
+      "provider_or_runtime_error": null,
+      "truncated": false,
+      "question": "Mốc thay được nguồn ghi là bao nhiêu?",
+      "answer": "Thay sau 12.000 km. [Tài liệu 1]",
+      "sources": [
+        {
+          "source_id": "S1",
+          "kind": "rag_chunk",
+          "text": "Mốc thay: 8.000 km."
+        },
+        {
+          "source_id": "S2",
+          "kind": "rag_chunk",
+          "text": "Mốc thay: 12.000 km."
+        }
+      ],
+      "source_uncertainty": false,
+      "has_rag": true,
+      "sample_id": "control-05"
+    },
+    "expected": "FAIL"
+  },
+  {
+    "sample": {
+      "scenario_requirements": {},
+      "tool_calls": [],
+      "citations": [
+        {
+          "index": 1,
+          "source_id": "S1"
+        }
+      ],
+      "saved_state": {
+        "booking_count_before_confirm": 0
+      },
+      "provider_or_runtime_error": null,
+      "truncated": false,
+      "question": "Mốc thay được nguồn ghi là bao nhiêu?",
+      "answer": "Thay sau 12.000 km.",
+      "sources": [
+        {
+          "source_id": "S1",
+          "kind": "rag_chunk",
+          "text": "Mốc thay: 12.000 km."
+        }
+      ],
+      "source_uncertainty": false,
+      "has_rag": true,
+      "sample_id": "control-06"
+    },
+    "expected": "PASS"
+  },
+  {
+    "sample": {
+      "sample_id": "control-07",
+      "question": "Tìm lịch bảo dưỡng chiều thứ Bảy gần Hà Nội. Chỉ tra các giờ để tôi chọn; chưa tạo proposal.",
+      "answer": "Xe đã quá hạn bảo dưỡng theo số km.\n- Theo km: quá hạn 500 km.\n- Theo ngày: còn 182 ngày đến hạn.\n- Mốc bảo dưỡng: 12,000 km / 12 tháng.\n- Hạn theo thời gian: 07/04/2027.\n- ODO ghi nhận: 12,500 km.\n- Ngày mua xe dùng làm mốc tính: 07/04/2026; đây không phải bản ghi lần bảo dưỡng gần nhất.\nHạng mục tại mốc này:\n- High-voltage battery check (quy tắc có bảo hành; cần dự toán để xác định phần được tính miễn phí).\n- Brake system inspection.\n\nXưởng đã tìm được:\n- VinFast Ha Dong: bfd16e5a-e72d-41f4-9dec-384cd7e3213c.\n\nNgày 10/10/2026, xưởng bfd16e5a-e72d-41f4-9dec-384cd7e3213c có 6 khung giờ khả dụng trong buổi chiều (12:00–17:59).\n- 12:00: còn 4 chỗ.\n- 13:00: còn 4 chỗ.\n- 14:00: còn 4 chỗ.\n- 15:00: còn 4 chỗ.\n- 16:00: còn 4 chỗ.\n- 17:00: còn 4 chỗ.\nBạn hãy chọn rõ một khung giờ. Lịch chưa được đặt hoặc giữ chỗ.",
+      "scenario_requirements": {
+        "required_tools": [
+          "find_workshops",
+          "get_available_slots"
+        ],
+        "forbidden_tools": [
+          "propose_booking"
+        ]
+      },
+      "sources": [
+        {
+          "source_id": "T1",
+          "kind": "tool_result",
+          "text": "{\"anchor\": {\"source\": \"SPECIFIED\", \"province\": null, \"lat\": null, \"lng\": null, \"query\": \"Hà Nội\", \"ranked_by\": \"REGION\"}, \"workshops\": [{\"workshop_id\": \"bfd16e5a-e72d-41f4-9dec-384cd7e3213c\", \"name\": \"VinFast Ha Dong\", \"address\": \"VinFast Ha Dong address\", \"region\": \"Ha Noi\", \"distance_km\": null, \"is_preferred\": false, \"operating_hours_today\": null, \"availability\": null}]}"
+        },
+        {
+          "source_id": "T2",
+          "kind": "tool_result",
+          "text": "{\"user_vehicle_id\": \"2e9b5734-f88d-4e2a-94d3-56070dc1dd53\", \"due_status\": \"OVERDUE\", \"due_reason\": \"KM\", \"calculation_basis\": \"KM_AND_TIME\", \"unknown_reason\": null, \"next_milestone\": {\"odo_milestone_km\": 12000, \"month_milestone\": 12, \"label\": \"12,000 km / 12 months\", \"due_date\": \"2027-04-07\", \"is_recurring\": false, \"items\": [{\"item_code\": \"BATTERY_CHECK\", \"item_name\": \"High-voltage battery check\", \"is_covered_by_warranty\": true}, {\"item_code\": \"BRAKE_INSPECTION\", \"item_name\": \"Brake system inspection\", \"is_covered_by_warranty\": false}]}, \"remaining_km\": -500, \"remaining_days\": 182, \"odometer\": {\"odo_km\": 12500, \"recorded_at\": \"2026-10-08T21:44:16.247995Z\", \"is_stale\": false, \"data_source\": \"OEM\"}, \"last_service\": {\"type\": \"PURCHASE_DATE\", \"date\": \"2026-04-07\", \"odo_km\": 0}, \"thresholds\": {\"due_soon_km\": 500, \"due_soon_days\": 14}, \"oem_synced_at\": \"2026-09-28T02:00:00Z\", \"calculated_at\": \"2026-10-07T09:00:00+07:00\"}"
+        },
+        {
+          "source_id": "T3",
+          "kind": "tool_result",
+          "text": "{\"workshop_id\": \"bfd16e5a-e72d-41f4-9dec-384cd7e3213c\", \"date\": \"2026-10-10\", \"requested\": null, \"slots\": [{\"time_slot\": \"00:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"01:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"02:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"03:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"04:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"05:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"06:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"07:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"08:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"09:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"10:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"11:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"12:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"13:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"14:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"15:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"16:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"17:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"18:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"19:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"20:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"21:00:00\", \"available\": true, \"remaining\": 4}, {\"time_slot\": \"22:00:00\", \"available\": true, \"remaining\": 4}], \"alternatives\": []}"
+        },
+        {
+          "source_id": "Z1",
+          "kind": "tool_result",
+          "text": "{\"recorded_sandbox_state\": {\"reminder_state_before\": {\"reminders_enabled\": true, \"email_enabled\": false, \"reminder_lead_days\": 2}, \"reminder_state_after\": {\"reminders_enabled\": true, \"email_enabled\": false, \"reminder_lead_days\": 2}, \"booking_count_before_confirm\": 0, \"proposal_count\": 0}}"
+        },
+        {
+          "source_id": "X1",
+          "kind": "session_context",
+          "text": "[NGỮ CẢNH XE HIỆN TẠI (ĐÃ NẠP SẴN TỪ PHIÊN LÀM VIỆC)]\n- Dòng xe: VF6\n- Biển số: Chưa cập nhật\n- ODO hiện tại: 12,500 km\n- Lần bảo dưỡng gần nhất: Xem get_due_maintenance\n- Vehicle ID: 2e9b5734-f88d-4e2a-94d3-56070dc1dd53\nHôm nay: Thứ Tư, 2026-10-07 (giờ Việt Nam)\n"
+        },
+        {
+          "source_id": "P1",
+          "kind": "application_contract",
+          "text": "   - Tool này CHỈ tạo thẻ đề xuất có nút \"Xác nhận đặt lịch\"; KHÔNG tạo lịch hẹn, KHÔNG giữ chỗ. Không có tool nào tạo lịch thay chủ xe.\n   - Sau khi gọi, nói rõ lịch CHƯA được đặt và mời chủ xe bấm \"Xác nhận đặt lịch\" trên thẻ. Không bao giờ nói \"đã đặt lịch\" hay đọc mã đặt lịch.\n   - Không hứa email xác nhận booking từ kết quả proposal hoặc cài đặt email nhắc bảo dưỡng. Không tự dựng nút HTML/Markdown; thẻ thật nằm trong artifact của tool. Chỉ dùng dữ liệu thẻ để nêu xưởng/ngày/giờ; không thêm trạng thái giao dịch hoặc gửi thư chưa được xác minh.\n   - Chủ xe gõ \"đồng ý\", \"xác nhận\", \"ok\" thì nhắc họ bấm nút \"Xác nhận đặt lịch\" trên thẻ; không gọi lại tool.\n   - Xác nhận lại cùng proposal là idempotent, không tạo lịch trùng; không hứa thẻ biến mất. Xưởng AUTO có thể xác nhận ngay, MANUAL cần chờ xưởng; luôn dựa trạng thái backend trả về. Agent hiện không có tool hủy hoặc đổi lịch đã tạo, không hứa thực hiện qua chat."
+        },
+        {
+          "source_id": "Q1",
+          "kind": "session_context",
+          "text": "{\"user_question\": \"Tìm lịch bảo dưỡng chiều thứ Bảy gần Hà Nội. Chỉ tra các giờ để tôi chọn; chưa tạo proposal.\"}"
+        },
+        {
+          "source_id": "D1",
+          "kind": "application_contract",
+          "text": "{\"origin\": \"Python datetime Gregorian calendar plus frozen get_available_slots results\", \"slot_bounds_source\": \"backend/src/agents/booking_grounding.py:86\", \"calendar\": [{\"date\": \"2026-04-07\", \"weekday_iso\": 2, \"weekday\": \"Tuesday\"}, {\"date\": \"2026-10-07\", \"weekday_iso\": 3, \"weekday\": \"Wednesday\"}, {\"date\": \"2026-10-10\", \"weekday_iso\": 6, \"weekday\": \"Saturday\"}, {\"date\": \"2027-04-07\", \"weekday_iso\": 3, \"weekday\": \"Wednesday\"}], \"slot_periods\": [{\"date\": \"2026-10-10\", \"tool_source_id\": \"T3\", \"periods\": {\"morning\": {\"available_count\": 6, \"local_times\": [\"06:00:00\", \"07:00:00\", \"08:00:00\", \"09:00:00\", \"10:00:00\", \"11:00:00\"]}, \"afternoon\": {\"available_count\": 6, \"local_times\": [\"12:00:00\", \"13:00:00\", \"14:00:00\", \"15:00:00\", \"16:00:00\", \"17:00:00\"]}, \"evening\": {\"available_count\": 5, \"local_times\": [\"18:00:00\", \"19:00:00\", \"20:00:00\", \"21:00:00\", \"22:00:00\"]}}}]}"
+        }
+      ],
+      "tool_calls": [
+        {
+          "name": "find_workshops",
+          "args": {
+            "area_or_address": "Hà Nội",
+            "limit": 1
+          },
+          "result": {
+            "anchor": {
+              "source": "SPECIFIED",
+              "province": null,
+              "lat": null,
+              "lng": null,
+              "query": "Hà Nội",
+              "ranked_by": "REGION"
+            },
+            "workshops": [
+              {
+                "workshop_id": "bfd16e5a-e72d-41f4-9dec-384cd7e3213c",
+                "name": "VinFast Ha Dong",
+                "address": "VinFast Ha Dong address",
+                "region": "Ha Noi",
+                "distance_km": null,
+                "is_preferred": false,
+                "operating_hours_today": null,
+                "availability": null
+              }
+            ]
+          },
+          "source_id": "T1"
+        },
+        {
+          "name": "get_due_maintenance",
+          "args": {},
+          "result": {
+            "user_vehicle_id": "2e9b5734-f88d-4e2a-94d3-56070dc1dd53",
+            "due_status": "OVERDUE",
+            "due_reason": "KM",
+            "calculation_basis": "KM_AND_TIME",
+            "unknown_reason": null,
+            "next_milestone": {
+              "odo_milestone_km": 12000,
+              "month_milestone": 12,
+              "label": "12,000 km / 12 months",
+              "due_date": "2027-04-07",
+              "is_recurring": false,
+              "items": [
+                {
+                  "item_code": "BATTERY_CHECK",
+                  "item_name": "High-voltage battery check",
+                  "is_covered_by_warranty": true
+                },
+                {
+                  "item_code": "BRAKE_INSPECTION",
+                  "item_name": "Brake system inspection",
+                  "is_covered_by_warranty": false
+                }
+              ]
+            },
+            "remaining_km": -500,
+            "remaining_days": 182,
+            "odometer": {
+              "odo_km": 12500,
+              "recorded_at": "2026-10-08T21:44:16.247995Z",
+              "is_stale": false,
+              "data_source": "OEM"
+            },
+            "last_service": {
+              "type": "PURCHASE_DATE",
+              "date": "2026-04-07",
+              "odo_km": 0
+            },
+            "thresholds": {
+              "due_soon_km": 500,
+              "due_soon_days": 14
+            },
+            "oem_synced_at": "2026-09-28T02:00:00Z",
+            "calculated_at": "2026-10-07T09:00:00+07:00"
+          },
+          "source_id": "T2"
+        },
+        {
+          "name": "get_available_slots",
+          "args": {
+            "target_date": "2026-10-10",
+            "workshop_id": "bfd16e5a-e72d-41f4-9dec-384cd7e3213c"
+          },
+          "result": {
+            "workshop_id": "bfd16e5a-e72d-41f4-9dec-384cd7e3213c",
+            "date": "2026-10-10",
+            "requested": null,
+            "slots": [
+              {
+                "time_slot": "00:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "01:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "02:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "03:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "04:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "05:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "06:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "07:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "08:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "09:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "10:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "11:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "12:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "13:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "14:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "15:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "16:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "17:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "18:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "19:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "20:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "21:00:00",
+                "available": true,
+                "remaining": 4
+              },
+              {
+                "time_slot": "22:00:00",
+                "available": true,
+                "remaining": 4
+              }
+            ],
+            "alternatives": []
+          },
+          "source_id": "T3"
+        }
+      ],
+      "citations": [],
+      "source_uncertainty": false,
+      "has_rag": false,
+      "saved_state": {
+        "reminder_state_before": {
+          "reminders_enabled": true,
+          "email_enabled": false,
+          "reminder_lead_days": 2
+        },
+        "reminder_state_after": {
+          "reminders_enabled": true,
+          "email_enabled": false,
+          "reminder_lead_days": 2
+        },
+        "booking_count_before_confirm": 0,
+        "proposal_count": 0
+      },
+      "provider_or_runtime_error": null,
+      "truncated": false
+    },
+    "expected": "PASS"
+  }
+]

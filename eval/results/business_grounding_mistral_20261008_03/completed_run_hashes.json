@@ -1,0 +1,18 @@
+{
+  "eval\\results\\agent_v2_1_business_mistral_90_20261008_03\\case_results.jsonl": "bdffab33fd589e924a7cfa41e29327bb40fa30e98195e458d8e34d6ef7e8dde2",
+  "eval\\results\\agent_v2_1_business_mistral_90_20261008_03\\comparison.json": "5c95721b5d4481be117caaf9c1fa6cb51e739c08ce16a8d20d79d5d4982fb6bb",
+  "eval\\results\\agent_v2_1_business_mistral_90_20261008_03\\human_review.csv": "31b1789a5e470bd588f23810d4fe0244be140294ae1b26b12f14c4ff16fb27a2",
+  "eval\\results\\agent_v2_1_business_mistral_90_20261008_03\\manifest.json": "31efeab3fb50bf334fb15d19edd3cad89928556ee54b352fbdc99c30cb82788e",
+  "eval\\results\\agent_v2_1_business_mistral_90_20261008_03\\preservation.json": "aaf0e3edd744802f4e7d3f5ab5ec169b6799e63bebed543e38affd20492d2f79",
+  "eval\\results\\agent_v2_1_business_mistral_90_20261008_03\\report.md": "57c10709b99f5cfb0034a2886d73d37351e488771e172314da3b546b0c68f548",
+  "eval\\results\\agent_v2_1_business_mistral_90_20261008_03\\review_model_key.json": "a69114f929960bb3434f0d0e79c5efa07d7b7469e47b2c3ef90a4438dd3c6762",
+  "eval\\results\\agent_v2_1_business_mistral_90_20261008_03\\schema_snapshot.json": "dfa6356252bc863602524dc247e3f6a8c3428a3281e9533d3eaba09138b9d11c",
+  "eval\\results\\agent_v2_1_business_sessions_mistral_20261008_03\\case_results.jsonl": "0a918eacbb3f6bc2cdc18c8fac68e4155950faf0ea155bcf6e63acf5e7535a0e",
+  "eval\\results\\agent_v2_1_business_sessions_mistral_20261008_03\\comparison.json": "881df279bfa96f9bff69fa63daf71b3478ce892a5e5a46d8992e3ddbc7d3a305",
+  "eval\\results\\agent_v2_1_business_sessions_mistral_20261008_03\\human_review.csv": "1742db90178703676d478225030b6438a30126ca0b4b697f715f9fd8b4e49331",
+  "eval\\results\\agent_v2_1_business_sessions_mistral_20261008_03\\manifest.json": "95a540e153480099f4deed728ca995c417532bf01f82c4fd5e39c958e107a803",
+  "eval\\results\\agent_v2_1_business_sessions_mistral_20261008_03\\preservation.json": "aaf0e3edd744802f4e7d3f5ab5ec169b6799e63bebed543e38affd20492d2f79",
+  "eval\\results\\agent_v2_1_business_sessions_mistral_20261008_03\\report.md": "ceb9dcdbd60dcfe51c428985eae790fe3c467a6a7b47c3cc808cd047d24b1c9f",
+  "eval\\results\\agent_v2_1_business_sessions_mistral_20261008_03\\review_model_key.json": "a69114f929960bb3434f0d0e79c5efa07d7b7469e47b2c3ef90a4438dd3c6762",
+  "eval\\results\\agent_v2_1_business_sessions_mistral_20261008_03\\schema_snapshot.json": "dfa6356252bc863602524dc247e3f6a8c3428a3281e9533d3eaba09138b9d11c"
+}

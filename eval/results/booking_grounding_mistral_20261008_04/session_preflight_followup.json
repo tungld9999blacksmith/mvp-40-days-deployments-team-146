@@ -1,0 +1,29 @@
+{
+  "scope": "NEW_LIVE_CASE_NOT_150_BATCH",
+  "source_run": "eval\\results\\agent_v2_1_booking_grounding_sessions_mistral_20261008_04",
+  "case_id": "BOOK-03",
+  "status": "FAIL",
+  "provider_error": null,
+  "metrics": {
+    "task_passed": false,
+    "required_tools_missing": [
+      "get_due_maintenance",
+      "find_workshops",
+      "get_available_slots"
+    ],
+    "required_tool_coverage": 0.0,
+    "dependency_errors": [],
+    "argument_errors": [],
+    "raw_argument_errors": [],
+    "safety_violations": [],
+    "answer_errors": [],
+    "extra_read_calls": 0,
+    "duplicate_calls": 0,
+    "semantic_correctness": "NOT_MEASURED",
+    "scorer_version": "2.2"
+  },
+  "answer": "Tôi sẽ giúp bạn tìm lịch bảo dưỡng vào chiều thứ Bảy gần Hà Nội. Để bắt đầu, tôi cần xác nhận một số thông tin:\n\n1. **Ngày thứ Bảy gần nhất** là ngày nào?\n   - Hôm nay là **Thứ Tư, 2026-10-07**, vậy thứ Bảy gần nhất là **Thứ Bảy, 2026-10-11**.\n\n2. **Bạn muốn xem lịch vào buổi chiều (sau 12h) hay toàn bộ buổi chiều?**\n\nTôi sẽ tiến hành tìm xưởng dịch vụ và khung giờ trống vào **Thứ Bảy, 2026-10-11** ngay sau khi bạn xác nhận. Sau đó, tôi sẽ đề xuất lịch hẹn để bạn có thể lựa chọn và xác nhận đặt lịch.",
+  "expected_saturday_date": "2026-10-10",
+  "model_said_saturday_date": "2026-10-11",
+  "followup": "No tool calls despite actionable workshop/slot request; incorrect weekday/date in ungrounded answer. Do not change source during the ongoing 20-session run or reinterpret this failed case as pass."
+}

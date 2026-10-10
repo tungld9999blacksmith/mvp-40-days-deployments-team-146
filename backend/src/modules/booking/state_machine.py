@@ -18,8 +18,10 @@ from uuid import UUID
 from sqlalchemy import update
 from sqlmodel import Session, select
 
-from src.common.core.maintenance.booking import Booking, BookingStatus
+from src.common.core.maintenance.booking import Booking, BookingStatus, PricingFlow
 from src.common.core.maintenance.booking_status_event import BookingActorType, BookingStatusEvent
+from src.common.core.maintenance.quote import Quote
+from src.modules.booking_line.settlement import guard_start, settle_complete
 
 from .reminders import BookingReminderScheduler, reminder_config
 
@@ -100,6 +102,8 @@ class BookingStateMachine:
             raise IllegalTransition(f"{frm} -> {to}")
         if to == S.CANCELLED and not reason_code:
             raise IllegalTransition("a cancellation needs a reason code (BR-ENT-492)")
+        if booking.pricing_flow == PricingFlow.TWO_TIER:
+            values = self._two_tier_guard(booking, frm, to, values)
 
         result = self._db.execute(
             update(Booking)
@@ -112,6 +116,8 @@ class BookingStateMachine:
             raise TransitionConflict(booking.status)
         self._db.refresh(booking)
 
+        if to == S.CANCELLED:
+            self.detach_quotes(booking.id)
         event = self._event(booking.id, frm, to, actor, source, reason_code, note)
         # us-033 HOOK-BR-001 — same transaction; failures never break the change.
         if to == S.CONFIRMED:
@@ -119,6 +125,23 @@ class BookingStateMachine:
         elif to == S.CANCELLED:
             self._reminders.on_cancelled(booking.id)
         return event
+
+    def _two_tier_guard(
+        self, booking: Booking, frm: BookingStatus | None, to: BookingStatus, values: dict | None
+    ) -> dict | None:
+        """bao-gia-hai-tang D8 / D6 — legacy bookings never reach this."""
+        if (frm, to) == (S.CHECKED_IN, S.IN_PROGRESS):
+            guard_start(self._db, booking)
+        elif (frm, to) == (S.IN_PROGRESS, S.COMPLETED):
+            client = (values or {}).get("actual_cost")
+            values = {**(values or {}), "actual_cost": settle_complete(self._db, booking, client)}
+        return values
+
+    def detach_quotes(self, booking_id: UUID) -> None:
+        """us-049 HOOK-QT-02 — a cancelled booking releases its approved quote."""
+        for quote in self._db.exec(select(Quote).where(Quote.booking_id == booking_id)).all():
+            quote.booking_id = None
+            self._db.add(quote)
 
     def history(self, booking_id: UUID) -> list[BookingStatusEvent]:
         return list(

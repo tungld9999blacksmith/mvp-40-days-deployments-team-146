@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft,
   CalendarCheck2,
@@ -27,10 +27,15 @@ import { newId } from '@/shared/utils/id'
 import { track } from '@/shared/utils/track'
 import { formatVnd } from '@/features/estimate/utils'
 import ProgressTimeline from '@/features/progress/components/ProgressTimeline'
+import { getMyBookingLines } from '@/features/booking-lines/api'
+import { POLL_MS, shouldPoll } from '@/features/booking-lines/logic'
+import type { LinesView } from '@/features/booking-lines/types'
 import { cancelBooking, cancelHold, confirmAttendance, getBooking } from '../api'
 import { invalidateUpcomingBookings } from '../hooks/useUpcomingBookings'
 import BookingStatusBanner from '../components/BookingStatusBanner'
 import CancelBookingDialog from '../components/CancelBookingDialog'
+import DecisionCard from '../components/DecisionCard'
+import PriceLinesCard from '../components/PriceLinesCard'
 import HistoryTimeline from '../components/HistoryTimeline'
 import TicketQr from '../components/TicketQr'
 import type { TicketState } from './BookingConfirm'
@@ -106,6 +111,11 @@ export default function BookingTicket() {
   const actionsRef = useRef<HTMLDivElement>(null)
   const viewed = useRef(false)
   const holdLeft = useCountdown(booking?.allowedActions.includes('CANCEL_HOLD') ? booking.ownerCancelableUntil : null)
+  // Two-tier price lines (bao-gia-hai-tang): package + extras the owner decides on.
+  const [lines, setLines] = useState<LinesView | null>(null)
+  const [linesFailed, setLinesFailed] = useState(false)
+  const [liveMessage, setLiveMessage] = useState('')
+  const decisionBusy = useRef(false)
 
   const load = useCallback(
     () =>
@@ -123,11 +133,45 @@ export default function BookingTicket() {
     [bookingId, src],
   )
 
+  const loadLines = useCallback(
+    () =>
+      getMyBookingLines(bookingId)
+        .then(data => {
+          setLines(data)
+          setLinesFailed(false)
+          return data
+        })
+        .catch(() => {
+          setLinesFailed(true)
+          return null
+        }),
+    [bookingId],
+  )
+
   useEffect(() => {
     setBooking(null)
+    setLines(null)
     viewed.current = false
     void load()
-  }, [load])
+    void loadLines()
+  }, [load, loadLines])
+
+  // OV3 — while the car is at the workshop, follow the workshop's changes: every 15 s,
+  // when the tab is shown again; never while a decision sheet is open.
+  const liveStatus = booking?.status
+  useEffect(() => {
+    const refresh = () => {
+      if (!shouldPoll(liveStatus, document.visibilityState === 'visible') || decisionBusy.current) return
+      void load()
+      void loadLines()
+    }
+    const timer = shouldPoll(liveStatus, true) ? window.setInterval(refresh, POLL_MS) : undefined
+    document.addEventListener('visibilitychange', refresh)
+    return () => {
+      if (timer) window.clearInterval(timer)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [liveStatus, load, loadLines])
 
   // From the 24h reminder: bring the actions into view (us-033 §3.2).
   useEffect(() => {
@@ -256,9 +300,19 @@ export default function BookingTicket() {
     else setDialog('guide')
   }
 
+  const twoTier = lines?.pricingFlow === 'two_tier' ? lines : null
   const rebookable = current.status === 'CANCELLED' && current.cancelledBy !== 'VEHICLE_OWNER'
   const costText =
-    current.cost.label === 'ESTIMATE' && current.cost.amount !== null ? (
+    current.cost.label === 'APPROVED_QUOTE' && current.cost.amount !== null ? (
+      <span className="flex flex-col items-end">
+        <span>Theo báo giá đã duyệt: {formatVnd(current.cost.amount)}</span>
+        {current.cost.quoteId && (
+          <Link to={`/quotes/${encodeURIComponent(current.cost.quoteId)}`} className="text-xs text-emerald font-normal hover:text-emerald-bright">
+            Xem báo giá
+          </Link>
+        )}
+      </span>
+    ) : current.cost.label === 'ESTIMATE' && current.cost.amount !== null ? (
       `${current.estimateLabel}: ${formatVnd(current.cost.amount)}`
     ) : (
       <span className="text-muted">Chưa có ước tính</span>
@@ -266,6 +320,10 @@ export default function BookingTicket() {
 
   return (
     <div className="p-4 sm:p-6 xl:p-8 max-w-xl mx-auto space-y-4 pb-28 sm:pb-8">
+      {/* OV4 — always mounted, so decisions and conflicts are read even when a card unmounts. */}
+      <div aria-live="polite" className="sr-only">
+        {liveMessage}
+      </div>
       <div className="flex items-center justify-between gap-3">
         <button type="button" onClick={back} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground">
           <ArrowLeft className="w-4 h-4" /> Lịch hẹn
@@ -339,8 +397,23 @@ export default function BookingTicket() {
         </div>
       </Card>
 
+      {twoTier && (
+        <DecisionCard
+          view={twoTier}
+          onChange={setLines}
+          onReload={loadLines}
+          announce={setLiveMessage}
+          onBusyChange={busy => (decisionBusy.current = busy)}
+        />
+      )}
+
       {showProgress && <ProgressTimeline bookingId={current.bookingId} workshop={current.workshop} />}
 
+      {twoTier ? (
+        <PriceLinesCard view={twoTier} odoMilestone={current.odoMilestone} />
+      ) : lines === null && !linesFailed ? (
+        <SkeletonCard lines={3} />
+      ) : (
       <Card>
         <CardHeader
           title={current.odoMilestone ? `Hạng mục · mốc ${formatKm(current.odoMilestone)}` : 'Hạng mục'}
@@ -366,6 +439,7 @@ export default function BookingTicket() {
           <InfoRow label="Chi phí" value={costText} />
         </div>
       </Card>
+      )}
 
       {current.documentsToBring.length > 0 && ['PENDING', 'CONFIRMED'].includes(current.status) && (
         <Card>

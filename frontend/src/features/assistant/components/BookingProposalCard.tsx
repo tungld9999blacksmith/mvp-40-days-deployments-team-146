@@ -9,7 +9,7 @@ import { vehicleDisplayName } from '@/shared/domain/labels'
 import { getAvailability } from '@/features/bookings/api'
 import { SlotGrid } from '@/features/bookings/components/SlotPicker'
 import type { Slot } from '@/features/bookings/types'
-import { formatLongDay, isPastSlot, slotLabel } from '@/features/bookings/utils'
+import { dayChip, formatLongDay, isPastSlot, slotLabel } from '@/features/bookings/utils'
 import { milestoneLabel } from '@/features/estimate/utils'
 import DueStatusBadge from '@/features/vehicles/components/DueStatusBadge'
 import { formatDistance, formatMoney, proposalView } from '../quickBooking/proposalView'
@@ -21,6 +21,18 @@ const HORIZON_DAYS = 14
 
 function vnDay(date: Date): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(date)
+}
+
+/** Calendar-page tile for the proposed day: weekday strip, big date, month. */
+function DateTile({ date }: { date: string }) {
+  const [, month, day] = date.split('-')
+  return (
+    <div className="w-[68px] flex-shrink-0 rounded-2xl overflow-hidden border border-border bg-card text-center" aria-hidden>
+      <p className="bg-brand text-on-brand text-xs font-bold py-1">{dayChip(date).weekday}</p>
+      <p className="font-plate font-bold text-[32px] leading-none text-foreground pt-1.5">{day}</p>
+      <p className="text-[11px] text-muted pb-1.5">Tháng {Number(month)}</p>
+    </div>
+  )
 }
 
 function OptionLine({ option, locationLabel }: { option: ProposalOption; locationLabel: string | null }) {
@@ -64,14 +76,15 @@ export default function BookingProposalCard({ card, confirmationHref }: { card: 
   }
 
   return (
-    <div className="mt-3 rounded-xl border border-emerald/25 bg-background/40 p-3.5 space-y-3" aria-label="Đề xuất đặt lịch">
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-[13px] font-semibold text-muted flex items-center gap-1.5">
-          <CalendarClock className="w-3.5 h-3.5 text-emerald" aria-hidden /> Đề xuất đặt lịch
+    <div className="mt-4 rounded-[20px] border border-border bg-card overflow-hidden" aria-label="Đề xuất đặt lịch">
+      <div className="flex items-center justify-between gap-2 px-4 py-3 bg-emerald-dim">
+        <p className="text-sm font-bold text-emerald-bright flex items-center gap-2">
+          <CalendarClock className="w-4 h-4" aria-hidden /> Đề xuất đặt lịch
         </p>
         <Badge tone={view.badge.tone}>{view.badge.label}</Badge>
       </div>
 
+      <div className="p-4 space-y-3">
       <p className="text-xs text-muted flex items-center gap-1.5">
         <Car className="w-3.5 h-3.5" aria-hidden />
         {vehicleDisplayName(card.vehicle.modelName, card.vehicle.trim)}
@@ -99,11 +112,17 @@ export default function BookingProposalCard({ card, confirmationHref }: { card: 
       )}
       {card.reason && <p className="text-xs text-muted leading-relaxed">{card.reason}</p>}
 
-      <div className={cn('rounded-lg border border-border p-3 space-y-1', view.status !== 'PROPOSED' && view.status !== 'CONFIRMED' && 'opacity-60')}>
-        <OptionLine option={primary} locationLabel={card.locationLabel} />
-        <p className="text-sm text-foreground font-medium ml-5">
-          {formatLongDay(primary.date)} · <span className="font-mono">{primary.timeSlot}</span>
-        </p>
+      <div className={cn('rounded-2xl bg-background p-3.5 space-y-3', view.status !== 'PROPOSED' && view.status !== 'CONFIRMED' && 'opacity-60')}>
+        <div className="flex items-center gap-3.5">
+          <DateTile date={primary.date} />
+          <div className="min-w-0 space-y-0.5">
+            <p className="font-plate font-bold text-[30px] leading-none text-foreground">{slotLabel(primary.timeSlot)}</p>
+            <p className="text-[13px] font-medium text-foreground">{formatLongDay(primary.date)}</p>
+          </div>
+        </div>
+        <div className="space-y-0.5">
+          <OptionLine option={primary} locationLabel={card.locationLabel} />
+        </div>
         {primary.estimate && (
           <p className="text-xs ml-5">
             <span className="text-muted">Chi phí ước tính: </span>
@@ -150,7 +169,7 @@ export default function BookingProposalCard({ card, confirmationHref }: { card: 
           >
             {outcome?.retryable ? 'Thử lại' : 'Xác nhận đặt lịch'}
           </Button>
-          <Button size="sm" variant="secondary" disabled={disabled} onClick={() => confirmationHref ? navigate('/booking/workshops') : setChanging(true)}>
+          <Button size="sm" variant="secondary" disabled={disabled} onClick={() => confirmationHref ? navigate(`/booking/workshops?userVehicleId=${encodeURIComponent(card.vehicle.userVehicleId)}`) : setChanging(true)}>
             Đổi xưởng / thời gian
           </Button>
           {!confirmationHref && <Button
@@ -175,6 +194,7 @@ export default function BookingProposalCard({ card, confirmationHref }: { card: 
           Tạo đề xuất mới
         </Button>
       )}
+      </div>
     </div>
   )
 }

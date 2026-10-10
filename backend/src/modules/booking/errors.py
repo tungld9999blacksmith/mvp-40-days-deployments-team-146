@@ -130,6 +130,22 @@ class HoldWindowClosedError(BookingError):
         super().__init__("The hold can no longer be cancelled here; it is awaiting the workshop.")
 
 
+class QuoteExpiredError(BookingError):
+    code = "QUOTE_EXPIRED"
+
+    def __init__(self) -> None:
+        super().__init__("The attached quote is no longer valid.")
+
+
+class LegacyQuoteNotAcceptedError(BookingError):
+    """QUOTE_FLOW=two_tier: new bookings are priced by their own lines, not by an approved quote."""
+
+    code = "LEGACY_QUOTE_NOT_ACCEPTED"
+
+    def __init__(self) -> None:
+        super().__init__("Quotes are no longer attached to new bookings; the price is set when you book.")
+
+
 class ServiceUnavailableError(BookingError):
     code = "SERVICE_UNAVAILABLE"
 
@@ -222,6 +238,8 @@ ERROR_STATUS: dict[str, int] = {
     "HOLD_EXPIRED": 409,
     "HOLD_WINDOW_CLOSED": 409,
     "INVALID_CONFIRMATION_TOKEN": 409,
+    "QUOTE_EXPIRED": 409,
+    "LEGACY_QUOTE_NOT_ACCEPTED": 409,
     "IDEMPOTENCY_CONFLICT": 409,
     "BOOKING_NOT_CONFIRMED": 409,
     "APPOINTMENT_STARTED": 409,

@@ -4,7 +4,8 @@ import { ChevronRight, MapPin, MessageSquare } from 'lucide-react'
 import { track } from '@/shared/utils/track'
 import { useBookingWizard, type BookingParams } from '../context/BookingWizardContext'
 
-function entryOf(params: BookingParams): 'HOME' | 'ESTIMATE' | 'MENU' {
+function entryOf(params: BookingParams): 'HOME' | 'ESTIMATE' | 'QUOTE' | 'MENU' {
+  if (params.quoteId) return 'QUOTE'
   if (params.workshopId) return 'ESTIMATE'
   if (params.odoMilestone !== null) return 'HOME'
   return 'MENU'
@@ -40,7 +41,7 @@ function Choice({
 /** SCR-401 — choose chat or self-service booking. Skipped when a workshop is already known. */
 export default function BookingStart() {
   const navigate = useNavigate()
-  const { params, searchFor } = useBookingWizard()
+  const { params, searchFor, vehicle } = useBookingWizard()
 
   const entry = useRef(entryOf(params)).current
   useEffect(() => {
@@ -62,7 +63,7 @@ export default function BookingStart() {
         icon={<MessageSquare className="w-5 h-5" />}
         title="Đặt qua trò chuyện"
         description="Nói với Trợ lý AI thời gian và nơi bạn muốn, trợ lý sẽ gợi ý giúp."
-        onClick={() => navigate('/ai/new')}
+        onClick={() => navigate(`/ai/new?userVehicleId=${encodeURIComponent(vehicle.userVehicleId)}`)}
       />
     </div>
   )

@@ -1,0 +1,79 @@
+{
+  "basis": "Measured receipts, not list-price billing prediction",
+  "pipeline_usd_per_answer": 0.0008244478333333334,
+  "judge_usd_per_answer": 0.002813475333333333,
+  "sixty_unique_judge_cost_usd": 0.16880851999999996,
+  "known55_through64_usd": 0.45933872225,
+  "existing_shared_cap_usd": 0.75,
+  "known_cap_headroom_usd": 0.29066127775,
+  "offline_audit_new_provider_cost_usd": 0,
+  "optional_remaining120_judge_before_pilot_usd": 0.3376170399999999,
+  "fresh30_by2_by3_generation_and_judge_usd": 0.6548261699999999,
+  "fresh30_by2_by3_planning_llm_usd": [
+    0.85,
+    1.4
+  ],
+  "full_remaining_plan_scenarios": {
+    "2": {
+      "single_questions": 220,
+      "sessions": 20,
+      "turns_per_session": [
+        3,
+        6
+      ],
+      "repeats_per_config": 3,
+      "estimated_answer_count": [
+        1680,
+        2040
+      ],
+      "generation_plus_judge_before_reserve_usd": [
+        6.111710919999999,
+        7.421363259999999
+      ],
+      "planning_remaining_llm_usd": [
+        8.845224195999998,
+        15.942726519999997
+      ],
+      "reserve_assumption": "30%-100% workload variance plus $0.90-$1.10 development/pilot/staging allowance",
+      "third_config": null
+    },
+    "3": {
+      "single_questions": 220,
+      "sessions": 20,
+      "turns_per_session": [
+        3,
+        6
+      ],
+      "repeats_per_config": 3,
+      "estimated_answer_count": [
+        2520,
+        3060
+      ],
+      "generation_plus_judge_before_reserve_usd": [
+        9.167566379999998,
+        11.132044889999998
+      ],
+      "planning_remaining_llm_usd": [
+        12.817836294,
+        23.364089779999997
+      ],
+      "reserve_assumption": "30%-100% workload variance plus $0.90-$1.10 development/pilot/staging allowance",
+      "third_config": "Unpriced candidate; assumes same mean turn cost as current two, not measured"
+    }
+  },
+  "assumptions": [
+    "Keep Agent Mistral/Gemma, Rewrite and generation Mistral; no GPT-4o",
+    "Same average payload mix as 30-case run, every answer judged once",
+    "Reserve is a planning assumption, not a guaranteed upper bound",
+    "At most one development regression cycle before one locked acceptance campaign"
+  ],
+  "excluded_unknown_costs": [
+    "Embedding fees including prior69 calls",
+    "Missing403 receipt",
+    "Interrupted60 request",
+    "Additional optimization cycles",
+    "Infrastructure, Resend, top-up fees/tax, independent review/user recruitment"
+  ],
+  "new_budget_authorized": false,
+  "paid_calls_performed": 0
+}

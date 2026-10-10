@@ -6,6 +6,7 @@ import { cn } from '@/shared/ui/cn'
 import { formatLicensePlate, formatNumber } from '@/shared/utils/format'
 import { useUpcomingBookings } from '@/features/bookings/hooks/useUpcomingBookings'
 import { ASK_AI_QUESTION } from '@/features/vehicles/components/MaintenanceStatusCard'
+import { QUICK_BOOKING_ENTRY_PATH } from '@/features/assistant/quickBooking/entry'
 import { useMaintenanceStatus, useVehicles } from '@/features/vehicles/hooks/useVehicleQueries'
 import type { MaintenanceStatus, VehicleSummary } from '@/features/vehicles/types'
 import { milestoneTitle, remainingParts } from '@/features/vehicles/utils/maintenanceFormat'
@@ -102,9 +103,9 @@ function MaintenanceSlide({ vehicle, status }: { vehicle: VehicleSummary; status
           body="Xem chi phí dự kiến cho gói tiêu chuẩn, rồi chọn khung giờ trống tại xưởng gần bạn."
         />
         <div className="mt-5 flex flex-wrap gap-2.5">
-          <SlideButton to="/booking" tone={PRIMARY}>
+          <SlideButton to={QUICK_BOOKING_ENTRY_PATH} tone={PRIMARY}>
             <CalendarPlus className="w-4 h-4" aria-hidden />
-            Đặt lịch bảo dưỡng
+            Đặt lịch bảo dưỡng nhanh
           </SlideButton>
           <SlideButton to={`/estimate?odoMilestone=${milestone.odoMilestoneKm}`} tone={GHOST}>
             Xem chi phí dự kiến
@@ -126,9 +127,9 @@ function BookingSlide() {
           body="Xem khung giờ trống của các xưởng VinFast quanh bạn. Xưởng xác nhận lịch ngay trong ứng dụng."
         />
         <div className="mt-5">
-          <SlideButton to="/booking" tone={PRIMARY}>
+          <SlideButton to={QUICK_BOOKING_ENTRY_PATH} tone={PRIMARY}>
             <CalendarPlus className="w-4 h-4" aria-hidden />
-            Đặt lịch ngay
+            Đặt lịch nhanh với AI
           </SlideButton>
         </div>
       </div>

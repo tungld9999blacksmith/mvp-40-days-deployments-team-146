@@ -1,0 +1,26 @@
+{
+  "stage1": "FIXTURE_INTEGRATION_COMPLETED",
+  "stage2": "BLOCKED_UPSTREAM_MISTRAL_429_NO_NEW_ANSWERS",
+  "junit": {
+    "stage1_postgres_persistence_01.xml": {
+      "passed": 1,
+      "failed_or_skipped": 0
+    },
+    "stage1_http_email_regression_01.xml": {
+      "passed": 121,
+      "failed_or_skipped": 0
+    },
+    "stage2_budget_tests_01.xml": {
+      "passed": 8,
+      "failed_or_skipped": 0
+    }
+  },
+  "http_checks_passed": 17,
+  "browser_emulator_checks_passed": 4,
+  "real_google_oauth_proven": false,
+  "new_llm_known_receipt_usd": 0,
+  "new_llm_unknown_receipts": 1,
+  "real_email_sends": 0,
+  "production_acceptance": false,
+  "source_runtime_changed": false
+}

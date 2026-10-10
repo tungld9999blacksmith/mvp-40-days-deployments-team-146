@@ -1,0 +1,8 @@
+{
+  "eval/smoke67.py": "2b5c7f85afd39df549cd7e4ef0decc9bd6f68a65d8ded74f4d6eca74d90d9569",
+  "eval/results/agent_stage12_validation_20261009_67/stage2_selected_cases.json": "86eba699d03dca1497837394c1dec19d4a0bc9799f7b4b47639269ed496e6bbd",
+  "eval/results/agent_stage12_validation_20261009_67/stage2_cached_inputs.json": "d23d5f85cca19d52b9e9dd1dc66e85a0e904d36eab01737742522f9c46bf71ec",
+  "eval/results/agent_stage12_validation_20261009_67/stage2_rubric.json": "c7331133c41b6d084ecd39f76834a8d7d8205881ccf5faf0df097031f4c5df52",
+  "eval/results/agent_regression_resume_20261009_61/selected_cases.json": "7c085c5120a8e597616de7de47e9ee0841b4b2d09c671a576136b91dc7316326",
+  "eval/results/agent_regression_resume_20261009_61/repeat1_base/case_results.jsonl": "069679e1975a79a8c707e798e8d45bd8c15a18d3edb6ac9f0cea8cdef5a7b462"
+}

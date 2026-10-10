@@ -1,0 +1,11 @@
+{
+  "source_hashes": {
+    "backend/src/agents/booking_grounding.py": "5dc2ebf9df88912b21243355530da86bda09f37b9195da191ec56522faf8339d",
+    "backend/src/agents/guardrails.py": "9cf4ecd05d75593f2415c0727c92044b1d82adfb05a9c546d0b429d51d979b68",
+    "backend/src/agents/prompts.py": "6a9ce706e36bee39eb38a766b34c6d05f3e0c36d9747f85b996a63f8e9c3de0f",
+    "backend/src/agents/orchestrator.py": "30181384f45ece6c13db84e0ce61f95fe171a86b99249530f3219af4ea054990",
+    "backend/src/agents/business_grounding.py": "e3739e6ec1822af7c32b64e1a9d1d99d8c184ab94a7bf1ddb018a5ed58b62192",
+    "backend/tests/test_agents/test_booking_grounding.py": "56072cdc3ec7cf12e67b369e6005d636e842d1eec2756a23b00eaf283c1c84fa"
+  },
+  "scope": "current-turn single workshop/day and verified proposal card; read UUID binding only from single explicit current user choice; unsupported mixed-tool/multi-workshop comparisons unchanged"
+}

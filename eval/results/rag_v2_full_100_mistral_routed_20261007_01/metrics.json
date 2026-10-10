@@ -1,0 +1,14 @@
+{
+  "attempted": 100,
+  "errors": 0,
+  "document_hit_at_1": 0.76,
+  "document_hit_at_3": 0.97,
+  "document_hit_at_5": 0.98,
+  "document_mrr": 0.8591666666666665,
+  "evidence_chunk_recall": "NOT_MEASURED_WITHOUT_GOLDEN_CHUNK_IDS",
+  "selected": 100,
+  "complete": true,
+  "preflight_error": null,
+  "semantic_correctness": "NEEDS_HUMAN_REVIEW",
+  "production_acceptance": false
+}

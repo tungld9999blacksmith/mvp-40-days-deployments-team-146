@@ -1,0 +1,33 @@
+{
+  "scope": "BLIND_AUTOMATED_REVIEW_SAVED_60_DEVELOPMENT_ANSWERS",
+  "model": "google/gemini-3.5-flash-lite",
+  "previous": "eval\\results\\rag_evidence_preservation_full_20261008_29",
+  "samples_sha256": "7a9d01073bd2a796b08f8b15e3e489399644414a71a6eedf3b7518139ed1c5e5",
+  "rubric_sha256": "a657f01def401647a3d6ef950ecedfdcdb0aa3f8a1716e35b66d16199af0d742",
+  "env_sha256": "d0d9ac252a9ce04595c67a850cb8c7781b540d15eae27fbec069809d61d35e53",
+  "pilot_ids": [
+    "review-001",
+    "review-002",
+    "review-003",
+    "review-004",
+    "review-013",
+    "review-014",
+    "review-031",
+    "review-032",
+    "review-051",
+    "review-052"
+  ],
+  "controls": 4,
+  "selected": 60,
+  "temperature": 0,
+  "max_tokens": 2400,
+  "timeout_seconds": 60,
+  "sdk_retries": 0,
+  "delay_seconds": 3,
+  "pilot_observed_receipt_limit_usd": 0.05,
+  "full_estimated_receipt_limit_usd": 0.2,
+  "expansion_gate": "Fresh 4 controls with evidence-card protocol; bounded fallback combined UNVERIFIABLE; 10 saved answers have valid per-sample card/citation schema and receipts. Max observed per-answer receipt *60 <=0.20 USD. Unverifiable/negative judgments are preserved, not filtered out.",
+  "full_scope": "Fresh judge pass over all 60 saved answers; pilot not pooled. No original Agent/RAG rerun, no embedding/retrieval/write reviewer/real email/DB mutation",
+  "production_acceptance": false,
+  "gpt4o": "EXCLUDED"
+}
