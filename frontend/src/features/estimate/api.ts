@@ -1,5 +1,6 @@
 import { apiGet } from '@/shared/api/client'
 import type { CompareResult, CostEstimate, MaintenanceMilestones, ReadyEstimate } from './types'
+import { warrantyStatusOf } from './utils'
 import { getMaintenanceStatus, getVehicleProfile } from '@/features/vehicles/api'
 
 const vehiclePath = (userVehicleId: string) => `/user-vehicles/${encodeURIComponent(userVehicleId)}`
@@ -32,7 +33,7 @@ export async function getCostEstimate(
     milestone: { ...ready.milestone, odoMilestone: ready.milestone.odoMilestone ?? ready.milestone.odoMilestoneKm ?? 0,
       monthMilestone: ready.milestone.monthMilestone ?? 12, isNext: ready.milestone.isNext ?? true },
     workshop: { ...ready.workshop, selectedBy: legacy ? (params.workshopId ? 'REQUEST' : 'PREFERRED') : ready.workshop.selectedBy },
-    warrantyStatus: legacy ? 'UNKNOWN' : ready.warrantyStatus, coveredCount: ready.coveredCount ?? ready.items.filter(item => item.covered).length,
+    warrantyStatus: warrantyStatusOf(ready.warrantyStatus), coveredCount: ready.coveredCount ?? ready.items.filter(item => item.covered).length,
     hasReferencePrice: legacy ? false : ready.hasReferencePrice, currency: ready.currency ?? 'VND',
     items: ready.items.map(item => ({ ...item, maintenanceRuleId: item.maintenanceRuleId ?? item.itemCode, priceSource: legacy ? 'WORKSHOP_PRICE' : item.priceSource })) }
 }

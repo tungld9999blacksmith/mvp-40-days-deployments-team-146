@@ -48,7 +48,7 @@ from src.modules.booking.domain import (
 )
 from src.modules.booking.state_machine import Actor, BookingStateMachine, TransitionConflict
 from src.modules.booking_line import BookingLineError
-from src.modules.booking_line.domain import DECLINED_HISTORY_NOTE, declined_package
+from src.modules.booking_line.domain import DECLINED_HISTORY_NOTE, declined_package, reply_due_at
 from src.modules.booking_line.service import BookingLineService
 from src.modules.booking_line.settlement import lines_of
 from src.modules.follow_up.service import FollowUpScheduler
@@ -234,6 +234,20 @@ class WorkshopBoardService:
 
         wanted = {s.upper() for s in statuses} if statuses else None
         needle = q.strip().upper() if q else None
+        awaiting: dict[UUID, int] = {}
+        overdue: dict[UUID, int] = {}
+        if rows:
+            now = self._clock()
+            for line in self._db.exec(
+                select(BookingLine).where(
+                    BookingLine.booking_id.in_([b.id for b, _, _ in rows]),  # type: ignore[attr-defined]
+                    BookingLine.line_status == LineStatus.PROPOSED,
+                )
+            ).all():
+                awaiting[line.booking_id] = awaiting.get(line.booking_id, 0) + 1
+                due = reply_due_at(line)
+                if due is not None and now >= due:
+                    overdue[line.booking_id] = overdue.get(line.booking_id, 0) + 1
         items = []
         for b, u, v in rows:
             if wanted and b.status.value.upper() not in wanted:
@@ -244,7 +258,13 @@ class WorkshopBoardService:
                 and (_norm_plate(needle) not in _norm_plate(v.license_plate or "") or not _norm_plate(needle))
             ):
                 continue
-            items.append(schemas.BoardItemOut(**self._item(b, u, v)))
+            items.append(
+                schemas.BoardItemOut(
+                    **self._item(b, u, v),
+                    awaiting_owner=awaiting.get(b.id, 0),
+                    owner_reply_overdue=overdue.get(b.id, 0),
+                )
+            )
         return schemas.BoardListData(
             workshop_id=workshop.id,
             confirmation_mode=workshop.booking_confirmation_mode.value.upper(),

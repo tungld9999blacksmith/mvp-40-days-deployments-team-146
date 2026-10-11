@@ -157,7 +157,7 @@ class MockCostService:
             "modelId": v["modelId"],
             "milestone": {"odoMilestoneKm": current["odoMilestoneKm"], "monthMilestone": 12, "isNext": True},
             "workshop": {"workshopId": wid, "name": self.store.workshops[wid]["name"], "selectedBy": "SPECIFIED"},
-            "warrantyStatus": "DEMO",
+            "warrantyStatus": "ACTIVE",  # demo vehicles are under warranty (/vehicle shows it)
             "items": items,
             "coveredCount": sum(i["covered"] for i in items),
             "chargeableTotal": sum(i["price"] for i in items),

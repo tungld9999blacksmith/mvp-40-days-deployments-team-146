@@ -9,7 +9,9 @@ records each feature already keeps:
 * 24h appointment reminders the job has processed (``booking_reminder``, us-033; us-069 BR-1707),
 * satisfaction surveys waiting for an answer (``follow_up`` in ``sent``),
 * two-tier price lines (``booking_line``): one entry per line and version while it
-  waits for the owner, plus reference prices the workshop confirmed at check-in.
+  waits for the owner, plus reference prices the workshop confirmed at check-in and
+  decisions the workshop recorded by phone (unread until the car is completed, while
+  the owner can still dispute them).
 
 Only reviewed quotes, pending surveys and appointment reminders still waiting for the
 owner can be "unread"; there is no read state to store.
@@ -34,6 +36,7 @@ from src.common.core.notification import BookingReminder
 from src.common.core.notification.event_delivery import BookingReminderStatus
 from src.common.core.vehicle import UserVehicle
 from src.common.core.workshop.workshop import Workshop
+from src.modules.booking_line.domain import DECIDABLE_STATUSES, DECIDED_VIA_PHONE
 from src.modules.oem_integration.service import as_utc, utc_now
 
 from . import schemas
@@ -217,7 +220,8 @@ class NotificationFeedService:
                 Booking.pricing_flow == PricingFlow.TWO_TIER,
                 BookingLine.updated_at >= since,
                 (BookingLine.line_status == LineStatus.PROPOSED)
-                | ((BookingLine.line_status == LineStatus.CONFIRMED) & BookingLine.confirmed_at.is_not(None)),
+                | ((BookingLine.line_status == LineStatus.CONFIRMED) & BookingLine.confirmed_at.is_not(None))
+                | (BookingLine.decided_via == DECIDED_VIA_PHONE),
             )
         ).all()
         names = self._workshop_names({booking.workshop_id for _, booking in rows})
@@ -226,8 +230,13 @@ class NotificationFeedService:
                 # One entry per (line, version): an edited line shows up again, never twice.
                 id=f"booking-line:{line.id}:{line.version}",
                 kind="BOOKING_LINE",
-                occurred_at=line.confirmed_at if line.line_status == LineStatus.CONFIRMED else line.updated_at,
-                unread=line.line_status == LineStatus.PROPOSED,
+                occurred_at=(
+                    line.confirmed_at
+                    if line.line_status == LineStatus.CONFIRMED
+                    else line.decided_at or line.updated_at
+                ),
+                unread=line.line_status == LineStatus.PROPOSED
+                or (line.decided_via == DECIDED_VIA_PHONE and booking.status in DECIDABLE_STATUSES),
                 booking_line=schemas.BookingLineRefOut(
                     booking_id=booking.id,
                     booking_code=booking.booking_code,
@@ -238,6 +247,8 @@ class NotificationFeedService:
                     price=line.price,
                     is_safety_critical=line.is_safety_critical,
                     workshop_name=names.get(booking.workshop_id),
+                    decided_via=line.decided_via,
+                    phone_confirmed_by=line.phone_confirmed_by,
                 ),
             )
             for line, booking in rows

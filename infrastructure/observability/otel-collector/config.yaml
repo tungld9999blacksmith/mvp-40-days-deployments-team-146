@@ -1,0 +1,101 @@
+# =============================================================================
+# OpenTelemetry Collector — EV Care
+#
+# Receives OTLP from backend / worker and exports traces, metrics and logs to
+# Grafana Cloud. The same file runs locally (docker compose, profile
+# `observability`) and on Railway (service `otel-collector`).
+# Setup & design: docs/observability/OBSERVABILITY_SETUP.md
+#
+# Environment variables:
+#   GRAFANA_CLOUD_OTLP_ENDPOINT   required  https://otlp-gateway-prod-<region>.grafana.net/otlp
+#   GRAFANA_CLOUD_INSTANCE_ID     required  Basic auth username (OTLP instance ID)
+#   GRAFANA_CLOUD_API_TOKEN       required  Basic auth password (glc_...)
+#   OTEL_DEPLOYMENT_ENVIRONMENT   optional  default deployment.environment (dev)
+#   OTEL_DEBUG_VERBOSITY          optional  debug exporter: basic | normal | detailed (basic)
+#   OTEL_MEMORY_LIMIT_MIB         optional  memory_limiter hard limit (200)
+#   OTEL_COLLECTOR_LOG_LEVEL      optional  collector's own log level (info)
+#
+# Listens on [::] — Railway's private network is IPv6.
+# =============================================================================
+
+extensions:
+  health_check:
+    endpoint: "[::]:13133"
+  basicauth/grafana_cloud:
+    client_auth:
+      username: "${env:GRAFANA_CLOUD_INSTANCE_ID}"
+      password: "${env:GRAFANA_CLOUD_API_TOKEN}"
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "[::]:4317"
+      http:
+        endpoint: "[::]:4318"
+
+processors:
+  # First in every pipeline: refuse data before the container runs out of RAM.
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: ${env:OTEL_MEMORY_LIMIT_MIB:-200}
+    spike_limit_mib: 50
+
+  # Health checks (Railway, docker) would otherwise flood Tempo.
+  filter/health:
+    error_mode: ignore
+    traces:
+      span:
+        - 'attributes["http.route"] == "/health"'
+
+  # Never ship credentials, whatever the instrumentation captured.
+  attributes/redact:
+    actions:
+      - key: http.request.header.authorization
+        action: delete
+      - key: http.request.header.cookie
+        action: delete
+      - key: http.response.header.set-cookie
+        action: delete
+
+  # Fallback for apps that did not set OTEL_RESOURCE_ATTRIBUTES.
+  resource/defaults:
+    attributes:
+      - key: deployment.environment
+        value: "${env:OTEL_DEPLOYMENT_ENVIRONMENT:-dev}"
+        action: insert
+
+  batch:
+    send_batch_size: 1024
+    timeout: 5s
+
+exporters:
+  otlp_http/grafana_cloud:
+    endpoint: "${env:GRAFANA_CLOUD_OTLP_ENDPOINT}"
+    auth:
+      authenticator: basicauth/grafana_cloud
+
+  # Prints what the collector receives to its own log. basic = one line per
+  # batch (counts only); normal = one line per span/log/metric; detailed =
+  # every attribute (local debugging only — may print PII).
+  debug:
+    verbosity: "${env:OTEL_DEBUG_VERBOSITY:-basic}"
+
+service:
+  extensions: [health_check, basicauth/grafana_cloud]
+  telemetry:
+    logs:
+      level: "${env:OTEL_COLLECTOR_LOG_LEVEL:-info}"
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, filter/health, attributes/redact, resource/defaults, batch]
+      exporters: [otlp_http/grafana_cloud, debug]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, resource/defaults, batch]
+      exporters: [otlp_http/grafana_cloud, debug]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, attributes/redact, resource/defaults, batch]
+      exporters: [otlp_http/grafana_cloud, debug]

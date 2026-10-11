@@ -146,5 +146,8 @@ def verify_manager(
             name=center.name,
             region=center.region,
             type=center.type.value,
+            address=center.address,
+            latitude=center.latitude,
+            longitude=center.longitude,
         ),
     )

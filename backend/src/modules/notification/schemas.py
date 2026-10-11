@@ -111,17 +111,20 @@ class FollowUpRefOut(CamelModel):
 
 
 class BookingLineRefOut(CamelModel):
-    """A two-tier price line waiting for the owner, or a reference price the workshop confirmed."""
+    """A two-tier price line waiting for the owner, a reference price the workshop confirmed,
+    or a decision the workshop recorded by phone."""
 
     booking_id: UUID
     booking_code: str
     line_id: UUID
     kind: str  # PACKAGE | EXTRA
-    status: str  # PROPOSED | CONFIRMED
+    status: str  # PROPOSED | CONFIRMED | APPROVED / DECLINED (phone decision)
     item_name: str
     price: Money
     is_safety_critical: bool = False
     workshop_name: str | None = None
+    decided_via: str | None = None  # PHONE when the workshop recorded the owner's answer
+    phone_confirmed_by: str | None = None
 
 
 class NotificationOut(CamelModel):

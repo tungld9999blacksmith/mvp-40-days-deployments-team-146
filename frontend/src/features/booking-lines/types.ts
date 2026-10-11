@@ -32,6 +32,18 @@ export interface BookingLine {
   version: number
   confirmedAt: string | null
   decidedAt: string | null
+  /** APP | PHONE (the workshop recorded the owner's answer by phone) | null while undecided. */
+  decidedVia?: 'APP' | 'PHONE' | null
+  /** Who answered the phone, e.g. "Anh Trung (chủ xe)". */
+  phoneConfirmedBy?: string | null
+  /** Set when the owner disputed a phone decision (the line went back to PROPOSED). */
+  disputedAt?: string | null
+  /** A phone decision the owner can still dispute (booking not completed). */
+  canDispute?: boolean
+  /** PROPOSED lines: answer by then, or the workshop calls the owner (10 minutes after asking). */
+  replyDueAt?: string | null
+  /** The deadline passed while the car is at the workshop: the workshop should call. */
+  callOwner?: boolean
   createdAt: string
   photos: LinePhoto[]
 }

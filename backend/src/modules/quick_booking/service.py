@@ -54,6 +54,7 @@ from src.modules.booking.domain import (
     fold_text,
     now_vn,
 )
+from src.modules.booking.geo_index import active_workshops
 from src.modules.booking.location import RankedWorkshop, RankingMode, WorkshopLocationFinder
 from src.modules.booking.schemas import AlternativeOut, BookingOut
 from src.modules.booking.service import BookingService
@@ -252,7 +253,13 @@ class QuickBookingService:
         if windows is None:
             return _too_far_text(status), None, {}, None
 
-        workshops = list(self._db.exec(select(Workshop).where(Workshop.status == WorkshopStatus.ACTIVE)).all())
+        candidate_ids = None
+        if anchor.has_coordinates:
+            # Redis GEO narrows the scan to the nearest workshops (None → full table scan).
+            candidate_ids = await self._bookings.geo_index.nearest_ids(
+                self._db, anchor.latitude, anchor.longitude, limit=self._config.max_workshops
+            )
+        workshops = active_workshops(self._db, candidate_ids)
         ranked, _ = self._finder.rank(
             anchor,
             workshops,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatVnd, milestoneLabel, readNumberParam, validMilestone } from './utils'
+import { formatVnd, milestoneLabel, readNumberParam, validMilestone, warrantyStatusOf } from './utils'
 
 describe('estimate utils', () => {
   it('formats money the Vietnamese way and never rounds it', () => {
@@ -21,5 +21,12 @@ describe('estimate utils', () => {
     expect(readNumberParam('12000')).toBe(12_000)
     expect(readNumberParam('12k')).toBeNull()
     expect(readNumberParam(null)).toBeNull()
+  })
+
+  it('keeps a known warranty status and reads anything else as unknown', () => {
+    expect(warrantyStatusOf('ACTIVE')).toBe('ACTIVE')
+    expect(warrantyStatusOf('EXPIRED')).toBe('EXPIRED')
+    expect(warrantyStatusOf('DEMO')).toBe('UNKNOWN')
+    expect(warrantyStatusOf(undefined)).toBe('UNKNOWN')
   })
 })

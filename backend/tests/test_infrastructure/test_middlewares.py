@@ -170,6 +170,12 @@ def test_audit_record_success(client, output):
     assert rec["duration_ms"] >= 0
 
 
+def test_audit_masks_personal_query_values(client, output):
+    client.get("/echo?q=12%20ng%C3%B5%20165%20C%E1%BA%A7u%20Gi%E1%BA%A5y&lat=21.03&lng=105.79&limit=5&query=x")
+    [rec] = _audit(output)
+    assert rec["query"] == "q=***&lat=***&lng=***&limit=5&query=x"
+
+
 def test_audit_levels(client, output):
     client.get("/missing")
     client.get("/boom")

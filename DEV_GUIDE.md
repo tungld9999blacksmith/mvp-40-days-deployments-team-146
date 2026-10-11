@@ -45,9 +45,14 @@
 |---|---|
 | [backend/guide/api.md](backend/guide/api.md) | Cấu trúc backend & thiết kế API |
 | [backend/guide/alembic.md](backend/guide/alembic.md) | Migration CSDL với Alembic |
+| [backend/src/guide/data-access.md](backend/src/guide/data-access.md) | Repository dùng chung (`SQLModelRepository`): CRUD, filter, phân trang offset / keyset / cursor |
 | [backend/guide/redis.md](backend/guide/redis.md) | Redis toolkit |
+| [docs/specs/platform/location-search.api.md](docs/specs/platform/location-search.api.md) | API tìm vị trí (proxy Amazon Location + GrabMaps), hiển thị bản đồ MapLibre |
 | [backend/guide/qdrant.md](backend/guide/qdrant.md) | Qdrant vector store |
-| [backend/guide/agent.md](backend/guide/agent.md) | AI agent |
+| [backend/guide/agent.md](backend/guide/agent.md) | AI agent — quy ước đặt tên & tổ chức |
+| [backend/guide/ai-agent-dev-guide.md](backend/guide/ai-agent-dev-guide.md) | AI agent — hướng dẫn dev thực hành (vòng đời chat, thêm tool, guardrail, eval) |
+| [docs/specs/ai-agent/ai-eval-testing-strategy.spec.md](docs/specs/ai-agent/ai-eval-testing-strategy.spec.md) | Chiến lược kiểm thử & đánh giá AI-agent (metric, A/B, red-team, bias) |
+| [docs/specs/ai-agent/ai-operational-cost.spec.md](docs/specs/ai-agent/ai-operational-cost.spec.md) | Đặc tả chi phí vận hành AI-agent |
 | [backend/src/agents/tools/RAG/README.md](backend/src/agents/tools/RAG/README.md) | RAG engine |
 | [backend/guide/swagger.md](backend/guide/swagger.md) | Dùng Swagger UI |
 | [backend/guide/testing-swagger-onboarding.md](backend/guide/testing-swagger-onboarding.md) | Test module qua Swagger + mock hãng (Firebase Auth Emulator) |
@@ -63,6 +68,7 @@
 | [backend/mock-ev-system/seed-data/SAMPLES.md](backend/mock-ev-system/seed-data/SAMPLES.md) | Dữ liệu mẫu của dump dùng chung |
 | [backend/shared/ev-contracts/README.md](backend/shared/ev-contracts/README.md) | Contract dùng chung backend ↔ mock |
 | [tools/ev_mock_data/README.md](tools/ev_mock_data/README.md) | Sinh / import / query / dump dữ liệu mock |
+| [tools/workshop_crawl/README.md](tools/workshop_crawl/README.md) | Crawl ~1000 xưởng thật (Amazon Location hoặc Google Places) rải khắp 34 tỉnh, nạp vào mock |
 | [§2 bên dưới](#2-mock-hãng-xe-tạo-dữ-liệu-cho-gmail-của-bạn) | Tạo chủ xe + xe cho Gmail của bạn |
 | [§3 bên dưới](#3-tra-cứu-dữ-liệu-mock-theo-định-danh-find) | Tra cứu theo email / VIN / biển số / CCCD |
 
@@ -76,6 +82,8 @@
 | [tests/e2e/README.md](tests/e2e/README.md) | Kiểm thử xuyên hệ thống |
 | [docs/guide/testing/writing-tests.md](docs/guide/testing/writing-tests.md) | Cấu trúc test |
 | [docs/guide/devops/docker-cicd.md](docs/guide/devops/docker-cicd.md) | Docker & CI/CD |
+| [docs/observability/OBSERVABILITY_SETUP.md](docs/observability/OBSERVABILITY_SETUP.md) | Observability — setup OTel Collector, Grafana Cloud, LangSmith |
+| [docs/observability/OBSERVABILITY_USAGE.md](docs/observability/OBSERVABILITY_USAGE.md) | Observability — dùng Grafana (TraceQL, LogQL, PromQL, dashboard, alert) & LangSmith |
 | [tools/repo_sync/README.md](tools/repo_sync/README.md) | Đồng bộ code nhánh `develop` sang repo deploy riêng |
 
 > Thêm hướng dẫn dev mới? Thêm một dòng vào bảng phù hợp ở trên.

@@ -1,7 +1,7 @@
 import { Shield } from 'lucide-react'
 import Logo from '@/shared/ui/Logo'
 
-/** Left half of the login screens: brand, headline, feature chips. Hidden on mobile. Ink like the Home banner. */
+/** Left half of the login screens: brand, headline, feature chips. Hidden below lg (see AuthMobileBrand). Ink like the Home banner. */
 export default function AuthBrandPanel({
   headline,
   highlight,
@@ -44,6 +44,22 @@ export default function AuthBrandPanel({
         <Shield className="w-4 h-4 text-banner-accent" />
         <span>EV Care – Smart EV After-sales Platform</span>
       </div>
+    </div>
+  )
+}
+
+/** Below lg the brand panel is hidden: logo plus the same headline and promise, so phones still see what the product does. */
+export function AuthMobileBrand({ headline, highlight, subtitle, badge }: { headline: string; highlight: string; subtitle: string; badge?: string }) {
+  return (
+    <div className="lg:hidden w-full max-w-sm sm:max-w-md mb-8">
+      <div className="flex items-center gap-2.5">
+        <Logo className="h-9 text-foreground" />
+        {badge && <span className="text-xs font-semibold text-emerald">{badge}</span>}
+      </div>
+      <p className="mt-6 text-2xl font-extrabold tracking-tight text-foreground leading-tight text-balance">
+        {headline} <span className="text-emerald">{highlight}</span>
+      </p>
+      <p className="mt-2 text-sm text-muted leading-relaxed">{subtitle}</p>
     </div>
   )
 }

@@ -485,6 +485,18 @@ Agent không được:
 
 ## 13.3 Long-term Memory
 
+**Bổ sung 10/10/2026 — preference do chủ xe yêu cầu lưu rõ ràng:** cho phép
+`preferred_service_window`, `preferred_workshop_id`, `cost_display_preference` theo
+phạm vi tài khoản hoặc xe trong `agent_user_memory`, kèm consent/provenance và thời hạn.
+Không backfill hoặc suy luận preference từ lựa chọn một lần. Chủ xe được xem, sửa,
+xóa và tắt recall/write qua API/UI Ghi nhớ. Nội dung hiện tại ưu tiên hơn preference;
+memory không thay thế nguồn nghiệp vụ và không xác nhận đặt lịch. Khi xóa hội thoại
+nguồn, preference phụ thuộc nguồn đó bị xóa cascade. Xem
+[kế hoạch memory](../../plans/AGENT_MEMORY_IMPROVEMENT_PLAN.md).
+
+Message/checkpoint vẫn là memory theo hội thoại theo định nghĩa LangGraph; lưu lâu
+trong database không tự tạo cơ chế nhớ xuyên hội thoại.
+
 Agent được phép lưu:
 
 - Tin nhắn và metadata trong `message`.

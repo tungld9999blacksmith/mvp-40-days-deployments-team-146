@@ -90,3 +90,32 @@ describe('portalEntries', () => {
     expect(entries[0]).toMatchObject({ tone: 'warning', unread: true, action: { to: '/technician/quote-review?quoteId=q1' } })
   })
 })
+
+// Regression: smoke test 2026-10-10 — a decision the workshop recorded by phone never reached the feed
+describe('phone decision entry', () => {
+  it('tells the owner what was recorded and how to dispute it', () => {
+    const entry = toFeedEntry(
+      item({
+        kind: 'BOOKING_LINE',
+        unread: true,
+        bookingLine: {
+          bookingId: 'b1',
+          bookingCode: 'EVC-1',
+          lineId: 'l1',
+          kind: 'EXTRA',
+          status: 'APPROVED',
+          itemName: 'Vệ sinh khoang máy',
+          price: 100000,
+          isSafetyCritical: false,
+          workshopName: 'VinFast Thăng Long',
+          decidedVia: 'PHONE',
+          phoneConfirmedBy: 'Anh Trung',
+        },
+      }),
+    )
+    expect(entry?.title).toBe('Xưởng ghi nhận quyết định qua điện thoại')
+    expect(entry?.message).toContain('rằng bạn đồng ý làm Vệ sinh khoang máy')
+    expect(entry?.message).toContain('Tôi không đồng ý')
+    expect(entry?.action?.to).toBe('/bookings/b1')
+  })
+})

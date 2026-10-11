@@ -67,11 +67,14 @@ export interface NotificationItem {
     bookingCode: string
     lineId: string
     kind: 'PACKAGE' | 'EXTRA'
-    status: 'PROPOSED' | 'CONFIRMED'
+    /** APPROVED / DECLINED only for a decision the workshop recorded by phone. */
+    status: 'PROPOSED' | 'CONFIRMED' | 'APPROVED' | 'DECLINED'
     itemName: string
     price: number | string
     isSafetyCritical: boolean
     workshopName: string | null
+    decidedVia?: 'APP' | 'PHONE' | null
+    phoneConfirmedBy?: string | null
   } | null
 }
 

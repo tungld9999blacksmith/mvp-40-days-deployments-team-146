@@ -236,19 +236,24 @@ async def test_booking_recovers_from_database_failure_without_losing_token(
     add_hours(session, workshop)
     service = _service(session, toolkit)
     payload = await _hold_payload(service, user, vehicle, workshop, day)
-    original = session.commit
+    original, write = session.commit, service._create_booking_locked
 
     def fail_commit():
         if after_commit:
             original()
         raise RuntimeError("lost database connection")
 
-    monkeypatch.setattr(session, "commit", fail_commit)
+    def failing_write(*args, **kwargs):  # only the booking write's commit fails, not the read releases
+        with monkeypatch.context() as m:
+            m.setattr(session, "commit", fail_commit)
+            return write(*args, **kwargs)
+
+    monkeypatch.setattr(service, "_create_booking_locked", failing_write)
     with pytest.raises(RuntimeError):
         await service.create_hold(user, payload, idempotency_key="key")
     assert await toolkit.redis.exists(service._token_key(payload.confirmation_token))
     assert len(session.exec(select(BookingRequest)).all()) == int(after_commit)
-    monkeypatch.setattr(session, "commit", original)
+    monkeypatch.setattr(service, "_create_booking_locked", write)
     result = await service.create_hold(user, payload, idempotency_key="key")
     assert result.status == "CONFIRMED"
     assert len(session.exec(select(Booking)).all()) == 1
@@ -520,6 +525,79 @@ async def test_contended_reschedule_slot_returns_service_unavailable(session, to
             await service.reschedule(user, booking_id, token)
     session.expire_all()
     assert session.get(Booking, booking_id).time_slot == SLOT
+
+
+def _redis_calls_in_transaction(session, toolkit, monkeypatch) -> list[str]:
+    """Redis commands sent while ``session`` held a DB transaction open."""
+    calls: list[str] = []
+    send = toolkit.redis.execute_command
+
+    async def probe(*args, **options):
+        if session.in_transaction():
+            calls.append(str(args[0]))
+        return await send(*args, **options)
+
+    monkeypatch.setattr(toolkit.redis, "execute_command", probe)
+    return calls
+
+
+@pytest.mark.asyncio
+async def test_booking_paths_wait_on_redis_without_an_open_transaction(session, toolkit, day, monkeypatch):
+    """Lock waits (up to ~2s) and token calls must not pin a pooled connection
+    "idle in transaction" — the failure mode of the 2026-10-06 Supavisor outage."""
+    from decimal import Decimal
+
+    from src.modules.booking.dependency import require_active_vehicle_owner
+
+    owner = add_owner(session)
+    vehicle_id = add_vehicle(session, owner).id
+    workshop = add_workshop(session)
+    workshop.latitude, workshop.longitude = Decimal("21.0"), Decimal("105.8")
+    session.add(workshop)
+    session.commit()
+    workshop_id = workshop.id
+    add_hours(session, workshop)
+    service = _service(session, toolkit)
+    user = require_active_vehicle_owner({"uid": "uid-1"}, session)  # as the request's guard loads it
+    calls = _redis_calls_in_transaction(session, toolkit, monkeypatch)
+
+    availability = await service.check_availability(user, workshop_id, day, SLOT, with_alternatives=True)
+    booked = await service.create_hold(
+        user, HoldRequest(confirmation_token=availability.requested.confirmation_token, user_vehicle_id=vehicle_id)
+    )
+    move = await service.check_availability(
+        user, workshop_id, day, time(10), with_alternatives=False, reschedule_booking_id=booked.booking_id
+    )
+    await service.reschedule(user, booked.booking_id, move.requested.confirmation_token)
+    await service.find_nearby(
+        user,
+        anchor_source=None,
+        lat=21.0,
+        lng=105.8,
+        query=None,
+        province=None,
+        user_vehicle_id=vehicle_id,
+        d=day,
+        time_slot=time(11),
+        limit=3,
+    )
+
+    assert calls == []
+
+
+@pytest.mark.parametrize("module", ["src.modules.booking.dependency", "src.modules.user_vehicle.dependency"])
+def test_owner_guard_ends_its_read_transaction(session, module):
+    """Async routes await Redis right after this guard; its SELECT must not leave the transaction open."""
+    import importlib
+
+    add_owner(session)
+    guard = importlib.import_module(module).require_active_vehicle_owner
+
+    user = guard({"uid": "uid-1"}, session)
+
+    assert not session.in_transaction()
+    assert user.firebase_uid == "uid-1"  # still loaded: reading it does not reopen a transaction
+    assert not session.in_transaction()
 
 
 @pytest.mark.asyncio

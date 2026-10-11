@@ -19,6 +19,13 @@ from sqlmodel import Session, create_engine
 # Importing the core package registers every table (FK targets included).
 import src.common.core  # noqa: F401
 from src.common.core.conversation.conversation import Conversation
+from src.common.core.conversation.memory import (
+    AgentMemorySetting,
+    AgentMemorySource,
+    AgentUserMemory,
+    ConversationSummary,
+    MemoryCleanup,
+)
 from src.common.core.conversation.message import ChatMessage
 from src.common.core.identity.vehicle_user import OnboardingStatus, UserStatus, VehicleUser
 from src.common.core.identity.workshop_owner import WorkshopOwner
@@ -63,6 +70,7 @@ from src.modules.vehicle_owner_onboarding.domain import (
 )
 
 TABLES = [
+    AgentMemorySetting.__table__, AgentMemorySource.__table__, AgentUserMemory.__table__, ConversationSummary.__table__, MemoryCleanup.__table__,
     EmailOutbox.__table__, EmailSuppression.__table__, EmailVehicleGate.__table__, EmailWebhookEvent.__table__,
     VehicleUser.__table__,
     WorkshopOwner.__table__,
@@ -199,12 +207,12 @@ def add_vehicle(
 
 def add_rules(session: Session, model_id: str = MODEL_ID) -> None:
     """VF6 milestones: 12,000 km / 12 months and 24,000 km / 24 months."""
-    rows = [
-        (12_000, 12, "BRAKE_INSPECTION", "Brake system inspection", False),
-        (12_000, 12, "BATTERY_CHECK", "High-voltage battery check", True),
-        (24_000, 24, "BRAKE_FLUID", "Replace brake fluid", False),
+    rows = [  # (km, months, code, name, covered, safety-critical)
+        (12_000, 12, "BRAKE_INSPECTION", "Brake system inspection", False, True),
+        (12_000, 12, "BATTERY_CHECK", "High-voltage battery check", True, False),
+        (24_000, 24, "BRAKE_FLUID", "Replace brake fluid", False, True),
     ]
-    for km, months, code, name, covered in rows:
+    for km, months, code, name, covered, safety in rows:
         session.add(
             MaintenanceRule(
                 model_id=model_id,
@@ -213,6 +221,7 @@ def add_rules(session: Session, model_id: str = MODEL_ID) -> None:
                 item_code=code,
                 item_name=name,
                 is_covered_by_warranty=covered,
+                is_safety_critical=safety,
                 estimated_cost=100_000,
                 estimated_duration_minutes=30,
             )

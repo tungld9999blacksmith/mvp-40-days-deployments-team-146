@@ -84,3 +84,4 @@ tools/repo_sync/.state.json
 infrastructure/backend/railway/.railway.env
 .vercel
 .env*
+infrastructure\backend\railway\.railway.env

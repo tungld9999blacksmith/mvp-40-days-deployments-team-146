@@ -131,8 +131,8 @@ Báo giá không còn là thứ chủ xe tạo và gửi riêng. Mỗi booking t
 ## Open Questions
 
 1. Mentor có chấp nhận HITL nằm ở **duyệt phát sinh và duyệt khi tăng giá tại xưởng** thay cho duyệt báo giá trước khi đặt lịch không? (Bước 0)
-2. Chủ xe không phản hồi phát sinh bao lâu thì xưởng nên gọi nhắc? Có cần hiển thị SLA không?
-3. Danh sách hạng mục an toàn chính xác lấy từ đâu (tài liệu hãng hay quyết định của team)?
+2. Chủ xe không phản hồi phát sinh bao lâu thì xưởng nên gọi nhắc? Có cần hiển thị SLA không? **Đã chốt 11/10/2026:** 10 phút (`OWNER_REPLY_SLA`) tính từ lần hỏi gần nhất (`booking_line.asked_at`: đề xuất, sửa gửi lại, tăng giá gói, chủ xe không đồng ý ghi nhận qua điện thoại; migration `c3e7a1d5f9b2`). Hiện cho cả hai phía: chủ xe thấy "Trả lời trước HH:MM. Sau đó xưởng sẽ gọi cho bạn." trên thẻ quyết định và trong thông báo; xưởng thấy giờ cần gọi trên dòng, quá hạn thì "Quá 10 phút chưa trả lời, gọi chủ xe" kèm số điện thoại, và nhãn "Cần gọi" ở Dashboard. Không bao giờ tự duyệt khi hết giờ.
+3. Danh sách hạng mục an toàn chính xác lấy từ đâu (tài liệu hãng hay quyết định của team)? **Đã chốt 11/10/2026:** lấy theo `data/knowledge/raw/lich_bao_duong_ALL.md`, nhóm phanh, lốp/bánh xe, lái, đèn/còi/gạt nước, dây an toàn (không gồm treo, pin cao áp, ADAS). Lưu ở `maintenance_rule.is_safety_critical` (migration `b9d4f2a6c8e1`), ghi bằng `seed_maintenance_rules.py --safety-only`; dòng gói và phát sinh từ danh mục lấy cờ của rule, phát sinh tự nhập dùng ô "hạng mục an toàn" của xưởng.
 
 ## Success Criteria
 

@@ -56,6 +56,10 @@ class BoardItemOut(CamelModel):
     attendance_confirmed_at: datetime | None = None
     confirm_deadline: datetime | None = None
     allowed_actions: list[str]
+    # two_tier: price lines waiting for the owner's decision (PROPOSED). Filled by the list only.
+    awaiting_owner: int = 0
+    # Of those, lines past the reply deadline (OWNER_REPLY_SLA): the workshop should call the owner.
+    owner_reply_overdue: int = 0
 
 
 class BoardListData(CamelModel):

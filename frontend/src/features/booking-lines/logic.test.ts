@@ -1,18 +1,24 @@
 import { describe, expect, it } from 'vitest'
 import {
   approveAriaLabel,
+  awaitingOwnerItems,
   blockedReason,
   confirmButtonLabel,
   conflictNotice,
   decisionView,
   lineFromConflict,
+  ownerReplyNotice,
   parsePrice,
+  phoneDisputable,
+  phoneNameError,
   photoTileState,
   reasonError,
   reasonRequired,
+  replyState,
   shouldPoll,
   validatePhoto,
   workshopLinesView,
+  workshopReplyText,
   type PhotoDraft,
 } from './logic'
 import type { BookingLine, LinesView } from './types'
@@ -155,5 +161,72 @@ describe('shouldPoll (OV3)', () => {
     expect(shouldPoll('IN_PROGRESS', true)).toBe(true)
     expect(shouldPoll('IN_PROGRESS', false)).toBe(false)
     expect(shouldPoll('COMPLETED', true)).toBe(false)
+  })
+})
+
+// Design review 2026-10-10 D1 = A: the dashboard shows extras waiting for the owner, not legacy quotes
+describe('awaitingOwnerItems', () => {
+  it('keeps live bookings with lines waiting for the owner', () => {
+    const items = [
+      { id: 'a', status: 'IN_PROGRESS', awaitingOwner: 2 },
+      { id: 'b', status: 'IN_PROGRESS', awaitingOwner: 0 },
+      { id: 'c', status: 'CHECKED_IN' },
+      { id: 'd', status: 'CANCELLED', awaitingOwner: 1 },
+    ]
+    expect(awaitingOwnerItems(items).map(item => item.id)).toEqual(['a'])
+  })
+})
+
+// TODOS P2 — decisions the workshop records by phone
+describe('phone decisions', () => {
+  it('lists only phone decisions the owner can still dispute', () => {
+    const view = {
+      lines: [
+        line({ lineId: 'p', status: 'APPROVED', decidedVia: 'PHONE', canDispute: true }),
+        line({ lineId: 'a', status: 'APPROVED', decidedVia: 'APP', canDispute: false }),
+        line({ lineId: 'done', status: 'DECLINED', decidedVia: 'PHONE', canDispute: false }),
+      ],
+    } as LinesView
+    expect(phoneDisputable(view).map(item => item.lineId)).toEqual(['p'])
+    expect(phoneDisputable(null)).toEqual([])
+  })
+
+  it('needs the name of who answered', () => {
+    expect(phoneNameError(' ')).toBe('Ghi tên người xác nhận qua điện thoại.')
+    expect(phoneNameError('Anh Trung')).toBeNull()
+    expect(phoneNameError('x'.repeat(101))).toBe('Tối đa 100 ký tự.')
+  })
+})
+
+describe('owner reply SLA (the workshop calls after 10 minutes)', () => {
+  const due = '2026-10-09T02:10:00Z' // 09:10 VN
+  const before = Date.parse('2026-10-09T02:09:30Z')
+  const after = Date.parse('2026-10-09T02:10:00Z')
+
+  it('waits until the deadline, then asks the workshop to call', () => {
+    const waiting = line({ replyDueAt: due })
+    expect(replyState(waiting, before)).toEqual({ kind: 'waiting', dueAt: due })
+    expect(workshopReplyText(replyState(waiting, before))).toBe('Gọi chủ xe lúc 09:10 nếu chưa trả lời')
+    expect(replyState(waiting, after)).toEqual({ kind: 'call' })
+    expect(workshopReplyText(replyState(waiting, after))).toBe('Quá 10 phút chưa trả lời, gọi chủ xe')
+  })
+
+  it('trusts the server when it already says to call', () => {
+    expect(replyState(line({ replyDueAt: due, callOwner: true }), before)).toEqual({ kind: 'call' })
+  })
+
+  it('has nothing to say once the owner answered or without a deadline', () => {
+    expect(replyState(line({ status: 'APPROVED', replyDueAt: due }), after)).toEqual({ kind: 'none' })
+    expect(replyState(line({ replyDueAt: null }), after)).toEqual({ kind: 'none' })
+    expect(workshopReplyText({ kind: 'none' })).toBeNull()
+  })
+
+  it('tells the owner the earliest deadline, or that the workshop will call', () => {
+    const later = line({ lineId: 'l2', replyDueAt: '2026-10-09T02:25:00Z' })
+    expect(ownerReplyNotice([later, line({ replyDueAt: due })], before)).toBe('Trả lời trước 09:10. Sau đó xưởng sẽ gọi cho bạn.')
+    expect(ownerReplyNotice([later, line({ replyDueAt: due })], after)).toBe(
+      'Xưởng sẽ gọi cho bạn để hỏi ý kiến về các hạng mục chưa trả lời.',
+    )
+    expect(ownerReplyNotice([line({ status: 'APPROVED', replyDueAt: due })], before)).toBeNull()
   })
 })

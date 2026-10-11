@@ -1,20 +1,20 @@
 # Deploy Backend lên Railway từ máy local (`railway-deploy`)
 
-Script deploy `backend`, `worker`, `mock-ev-system` lên Railway (mặc định environment `staging`) **từ máy local**, chạy đúng các bước của job `deploy-backend` + `smoke-test` trong [CI/CD](../../.github/workflows/ci-cd.yml), có thêm bước **kiểm tra biến môi trường** trước khi deploy.
+Script deploy `backend`, `worker`, `mock-ev-system`, `otel-collector` lên Railway (mặc định environment `staging`) **từ máy local**, chạy đúng các bước của job `deploy-backend` + `smoke-test` trong [CI/CD](../../.github/workflows/ci-cd.yml), có thêm bước **kiểm tra biến môi trường** trước khi deploy.
 
 Dùng khi:
 
 - deploy thử lần đầu trước khi giao cho CI ([Bước 9](RAILWAY_BACKEND_DEPLOYMENT.MD#bước-9--deploy-thử-từ-local));
 - cần đẩy nhanh một bản sửa lên staging mà không chờ merge vào nhánh `staging`;
-- đẩy / kiểm tra biến môi trường của `backend` và `worker`;
+- đẩy / kiểm tra biến môi trường của `backend`, `worker` và `otel-collector`;
 - kiểm tra staging đang khoẻ hay không (`smoke`).
 
 > Cách deploy **chuẩn** vẫn là merge vào nhánh `staging` để CI chạy test → deploy. Deploy từ local **bỏ qua** lint + pytest, nên tự chạy test trước ([Bước 1](RAILWAY_BACKEND_DEPLOYMENT.MD#bước-1--chạy-test-ở-local)).
 
 | File | Dùng trên |
 |---|---|
-| [scripts/railway-deploy.ps1](../../scripts/railway-deploy.ps1) | Windows (PowerShell 5.1+) |
-| [scripts/railway-deploy.sh](../../scripts/railway-deploy.sh) | macOS / Linux / Git Bash |
+| [tools/railway-deploy.ps1](../../tools/railway-deploy.ps1) | Windows (PowerShell 5.1+) |
+| [tools/railway-deploy.sh](../../tools/railway-deploy.sh) | macOS / Linux / Git Bash |
 
 Hai bản có cùng chức năng, chỉ khác cách truyền tham số (xem [mục 4](#4-tham-chiếu-lệnh)).
 
@@ -39,7 +39,7 @@ Hai bản có cùng chức năng, chỉ khác cách truyền tham số (xem [m�
 - **Railway CLI ≥ 5.x**: `npm i -g @railway/cli`, kiểm tra bằng `railway --version`.
 - **Python** (bản `.sh` dùng để đọc JSON từ Railway CLI; bản `.ps1` không cần).
 - Đã được mời vào project Railway và có quyền với environment `staging`.
-- Project Railway đã dựng theo [Bước 2 → Bước 5b](RAILWAY_BACKEND_DEPLOYMENT.MD#bước-2--tạo-project-và-environment-trên-railway): có các service `backend`, `worker`, `mock-ev-system`, `Redis` (đúng tên, phân biệt hoa thường).
+- Project Railway đã dựng theo [Bước 2 → Bước 5b](RAILWAY_BACKEND_DEPLOYMENT.MD#bước-2--tạo-project-và-environment-trên-railway): có các service `backend`, `worker`, `mock-ev-system`, `otel-collector` ([Bước 5c](RAILWAY_BACKEND_DEPLOYMENT.MD#bước-5c--tạo-service-otel-collector-observability)), `Redis` (đúng tên, phân biệt hoa thường).
 - File `infrastructure/backend/railway/.railway.env` (chỉ cần cho lệnh `vars`, xem [Bước 6.1](RAILWAY_BACKEND_DEPLOYMENT.MD#61-chuẩn-bị-file-railwayenv)).
 
 > PowerShell chặn chạy script thì mở quyền cho phiên hiện tại:
@@ -69,7 +69,7 @@ railway link --project <PROJECT_ID> --environment staging
 ### 2.2. Kiểm tra cấu hình
 
 ```powershell
-./scripts/railway-deploy.ps1 check
+./tools/railway-deploy.ps1 check
 ```
 
 Kết quả đúng:
@@ -89,17 +89,18 @@ Nếu có `[ERROR]` → sang 2.3.
    - `QDRANT_URL`, `QDRANT_API_KEY`
    - `FIREBASE_CREDENTIAL_JSON` (1 dòng, bọc trong `'...'`)
    - không còn giá trị `localhost`
+   - `GRAFANA_CLOUD_*` cho `otel-collector` (xem [OBSERVABILITY_SETUP.md](../observability/OBSERVABILITY_SETUP.md#bước-4--biến-môi-trường))
 2. Đẩy lên:
 
    ```powershell
-   ./scripts/railway-deploy.ps1 vars
-   ./scripts/railway-deploy.ps1 check     # phải hết [ERROR]
+   ./tools/railway-deploy.ps1 vars
+   ./tools/railway-deploy.ps1 check     # phải hết [ERROR]
    ```
 
 3. Deploy để áp dụng biến mới (`vars` **không** tự redeploy):
 
    ```powershell
-   ./scripts/railway-deploy.ps1 deploy
+   ./tools/railway-deploy.ps1 deploy
    ```
 
 ---
@@ -112,23 +113,26 @@ $env:APP_ENV = "test"; $env:OPENAI_API_KEY = "test-key"
 pytest backend/tests -v
 
 # 2. Deploy backend + worker, tự smoke test sau khi xong
-./scripts/railway-deploy.ps1 deploy
+./tools/railway-deploy.ps1 deploy
 
-# 3. (khi có sửa mock-ev-system) deploy cả mock
-./scripts/railway-deploy.ps1 deploy all
+# 3. (khi có sửa mock-ev-system hoặc otel-collector) deploy tất cả
+./tools/railway-deploy.ps1 deploy all
+
+# 4. (chỉ sửa config collector) deploy riêng collector
+./tools/railway-deploy.ps1 deploy collector
 ```
 
 Bash:
 
 ```bash
-./scripts/railway-deploy.sh deploy
-./scripts/railway-deploy.sh deploy all
+./tools/railway-deploy.sh deploy
+./tools/railway-deploy.sh deploy all
 ```
 
 Chỉ muốn xem staging có khoẻ không:
 
 ```powershell
-./scripts/railway-deploy.ps1 smoke
+./tools/railway-deploy.ps1 smoke
 ```
 
 ---
@@ -138,7 +142,7 @@ Chỉ muốn xem staging có khoẻ không:
 | Lệnh | Việc làm | Thay đổi Railway? |
 |---|---|---|
 | `check` | Kiểm tra CLI, đăng nhập, link project và biến môi trường của từng service | Không |
-| `vars` | Đẩy `.railway.env` + biến tham chiếu Redis lên `backend` và `worker` | Có — ghi biến, **không** redeploy |
+| `vars` | Đẩy `.railway.env` + biến tham chiếu Redis lên `backend` và `worker`; `GRAFANA_CLOUD_*` lên `otel-collector` | Có — ghi biến, **không** redeploy |
 | `deploy [target]` | `check` → `railway up` → `smoke` | Có — build và deploy |
 | `smoke` | `GET /health` + `GET /api/v1/health/dependencies` | Không |
 | `status` | Trạng thái project + 3 deployment gần nhất của mỗi service | Không |
@@ -152,7 +156,8 @@ Chỉ muốn xem staging có khoẻ không:
 | `backend` | `backend` | |
 | `worker` | `worker` | Không chạy smoke (worker không có HTTP) |
 | `mock` | `mock-ev-system` | Upload `backend/` làm gốc (`--path-as-root`) |
-| `all` | `mock-ev-system` → `backend` → `worker` | Giống hệt CI |
+| `collector` | `otel-collector` | Upload `infrastructure/observability/otel-collector/` làm gốc (`--path-as-root`) |
+| `all` | `otel-collector` → `mock-ev-system` → `backend` → `worker` | Giống hệt CI |
 
 ### Tham số
 
@@ -166,15 +171,15 @@ Chỉ muốn xem staging có khoẻ không:
 Ví dụ:
 
 ```powershell
-./scripts/railway-deploy.ps1 deploy backend -SkipCheck
-./scripts/railway-deploy.ps1 logs -Service worker
-./scripts/railway-deploy.ps1 smoke -Url https://backend-staging-xxx.up.railway.app
+./tools/railway-deploy.ps1 deploy backend -SkipCheck
+./tools/railway-deploy.ps1 logs -Service worker
+./tools/railway-deploy.ps1 smoke -Url https://backend-staging-xxx.up.railway.app
 ```
 
 ```bash
-SKIP_CHECK=1 ./scripts/railway-deploy.sh deploy backend
-./scripts/railway-deploy.sh logs worker
-BACKEND_URL=https://backend-staging-xxx.up.railway.app ./scripts/railway-deploy.sh smoke
+SKIP_CHECK=1 ./tools/railway-deploy.sh deploy backend
+./tools/railway-deploy.sh logs worker
+BACKEND_URL=https://backend-staging-xxx.up.railway.app ./tools/railway-deploy.sh smoke
 ```
 
 ---
@@ -195,6 +200,10 @@ BACKEND_URL=https://backend-staging-xxx.up.railway.app ./scripts/railway-deploy.
 | Có `QDRANT_URL` | backend, worker | WARN | Qdrant lưu local trong container |
 | Có `FIREBASE_CREDENTIAL_JSON` | backend, worker | WARN | Lỗi `Firebase credential not found` |
 | Biến khác còn chứa `localhost` | backend, worker | WARN | |
+| Có `GRAFANA_CLOUD_OTLP_ENDPOINT`, `GRAFANA_CLOUD_INSTANCE_ID`, `GRAFANA_CLOUD_API_TOKEN` | otel-collector | ERROR | Collector không export được |
+| `GRAFANA_CLOUD_OTLP_ENDPOINT` bắt đầu bằng `https://` | otel-collector | ERROR | Gửi sai địa chỉ |
+| Không có public domain | otel-collector | WARN | Ai cũng gửi được dữ liệu vào collector |
+| Không có biến `GRAFANA_CLOUD_*` | backend, worker | WARN | Token Grafana lộ sang service không cần |
 
 Có `[ERROR]` → script thoát mã `1`, `deploy` dừng lại trước khi upload.
 
@@ -208,6 +217,7 @@ Có `[ERROR]` → script thoát mã `1`, `deploy` dừng lại trước khi uplo
    |---|---|
    | `REDIS_URL`, `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`, `REDIS_BROKER_URL`, `REDIS_BACKEND_URL` | Thay bằng biến tham chiếu tới service `Redis` (private network) |
    | `OEM_API_BASE_URL` | Đặt riêng mức service, trỏ vào mock ([Bước 5b](RAILWAY_BACKEND_DEPLOYMENT.MD#bước-5b--tạo-service-mock-ev-system-mock-oem)) |
+   | `GRAFANA_CLOUD_OTLP_ENDPOINT`, `GRAFANA_CLOUD_INSTANCE_ID`, `GRAFANA_CLOUD_API_TOKEN` | Chỉ đặt cho `otel-collector` (bước 6) |
    | Biến có giá trị rỗng | Để app dùng giá trị mặc định |
 
 4. Đặt cho **cả `backend` và `worker`** (biến mức service), thêm:
@@ -219,6 +229,7 @@ Có `[ERROR]` → script thoát mã `1`, `deploy` dừng lại trước khi uplo
    ```
 
 5. Xoá `REDIS_URL` trên service nếu còn — `config.py` ưu tiên `REDIS_URL` hơn `REDIS_HOST`.
+6. Đặt cho **`otel-collector`**: 3 biến `GRAFANA_CLOUD_*` từ file + `OTEL_DEPLOYMENT_ENVIRONMENT=<environment>`.
 
 Ghi chú:
 
@@ -233,6 +244,7 @@ Ghi chú:
 2. Với từng service theo thứ tự của target: `railway up --ci --service <svc> --environment <env> --message "local deploy <commit>"`.
    - `--ci`: stream log build rồi thoát; build lỗi → script dừng, **các service sau không deploy**.
    - `mock-ev-system`: `railway up ./backend --path-as-root ...` (build context là `backend/`).
+   - `otel-collector`: `railway up ./infrastructure/observability/otel-collector --path-as-root ...` (build context là thư mục collector).
    - `--message` ghi short hash commit hiện tại, xem được trên dashboard Railway.
 3. Nếu target có `backend` → chạy `smoke`.
 
@@ -270,7 +282,9 @@ Ghi chú:
 | `database UP ... dialect=sqlite` | Thiếu `DATABASE_URL` / `DATABASE_PASSWORD` | Điền `DATABASE_*` trong `.railway.env` → `vars` → `deploy` |
 | `APP_ENV must be 'production'` | `APP_ENV` trống hoặc là `staging`/`development` | Đặt `APP_ENV=production` trong `.railway.env` → `vars` |
 | Log build có `Railpack could not determine how to build the app` | Thiếu `RAILWAY_DOCKERFILE_PATH` | Xem [Bước 6.4](RAILWAY_BACKEND_DEPLOYMENT.MD#bước-6--biến-môi-trường-trên-railway) |
-| `/health did not return 200` | Container crash khi khởi động | `./scripts/railway-deploy.ps1 logs` để xem lỗi |
+| `/health did not return 200` | Container crash khi khởi động | `./tools/railway-deploy.ps1 logs` để xem lỗi |
+| `Cannot read variables of service 'otel-collector'` | Chưa tạo service collector | Làm [Bước 5c](RAILWAY_BACKEND_DEPLOYMENT.MD#bước-5c--tạo-service-otel-collector-observability) |
+| Log `otel-collector` có `Exporting failed ... 401/403` | Sai credential Grafana Cloud | Sửa `GRAFANA_CLOUD_*` trong `.railway.env` → `vars` → `deploy collector` |
 | `Backend has no public domain` | Chưa Generate Domain cho `backend` | Settings → Networking → Generate Domain, hoặc truyền `-Url` / `BACKEND_URL` |
 | PowerShell báo `Missing closing '}'` / ký tự lạ | File script bị lưu kèm ký tự non-ASCII không có BOM | Giữ file `.ps1` chỉ chứa ASCII |
 

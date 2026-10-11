@@ -58,7 +58,7 @@ def _enum_values(enum_cls: type[Enum]) -> list[str]:
 
 
 class Workshop(SQLModel, table=True):
-    __tablename__ = "workshop"
+    __tablename__ = "workshop" # pyright: ignore[reportAssignmentType]
     __table_args__ = (
         CheckConstraint("total_technicians > 0", name="ck_workshop_total_technicians"),
         CheckConstraint(
@@ -140,7 +140,7 @@ class Workshop(SQLModel, table=True):
 class WorkshopOperatingHour(SQLModel, table=True):
     """One row per ISO weekday (1 = Monday … 7 = Sunday), one time range/day."""
 
-    __tablename__ = "workshop_operating_hour"
+    __tablename__ = "workshop_operating_hour" # pyright: ignore[reportAssignmentType]
     __table_args__ = (
         UniqueConstraint("workshop_id", "day_of_week", name="ux_workshop_operating_hour_day"),
         CheckConstraint("day_of_week BETWEEN 1 AND 7", name="ck_operating_hour_day"),

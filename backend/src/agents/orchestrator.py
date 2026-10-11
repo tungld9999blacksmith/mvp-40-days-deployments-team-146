@@ -15,6 +15,7 @@ from sqlmodel import Session
 from starlette.concurrency import run_in_threadpool
 
 from .context import AgentCtx
+from .conversation_guards import apply_output_guard, inspect_input
 from .graph import extract_text_from_content
 from .state import AgentState
 
@@ -137,6 +138,27 @@ def _fetch_vehicle_context_sync(
     return {}
 
 
+def _guarded_message_data(
+    content: str,
+    citations: list[dict[str, Any]],
+    base: dict[str, Any],
+) -> dict[str, Any]:
+    """Apply the output guard to the final answer before it is stored/emitted.
+
+    PII is always redacted (safety). The no-source-no-claim and cost-label flags
+    are logged for observability; enforcement as a hard gate lives in the eval
+    CI (see docs/specs/ai-agent/ai-eval-testing-strategy.spec.md #11).
+    """
+    safe_text, report = apply_output_guard(content, citations=citations)
+    if report.pii_redacted:
+        logger.warning("Output guard redacted PII in answer: %s", report.pii_redacted)
+    if report.missing_citation:
+        logger.warning("Output guard: technical claim without citation.")
+    if report.unlabelled_cost:
+        logger.warning("Output guard: cost figure without estimate label.")
+    return {**base, "content": safe_text, "citations": citations}
+
+
 def _run_config(ctx: AgentCtx) -> RunnableConfig:
     """Config của một lượt chạy graph.
 
@@ -179,6 +201,8 @@ class AgentOrchestrator:
         history_messages: list[BaseMessage] | None = None,
         source_message_id: str | UUID | None = None,
         operation_key: str | None = None,
+        memory_summary: dict[str, Any] | None = None,
+        memory_preferences: list[dict[str, Any]] | None = None,
     ) -> AsyncIterator[dict[str, Any]]:
         """Thực thi một lượt hội thoại của Agent EV Care theo luồng ReAct.
 
@@ -202,6 +226,17 @@ class AgentOrchestrator:
             operation_key=operation_key,
         )
         run_config = _run_config(agent_ctx)
+        # Private configurable keys are not serialized into checkpoint metadata.
+        # Never retain a cached preference after revoke/toggle/source deletion.
+        run_config["configurable"]["__memory_preferences"] = memory_preferences or []
+
+        # Input guard: log injection attempts / pasted PII for observability.
+        if message:
+            input_report = inspect_input(message)
+            if input_report.has_injection:
+                logger.warning("Input guard: possible prompt-injection in user turn.")
+            if input_report.has_pii:
+                logger.info("Input guard: user message contains PII %s", input_report.pii_found)
 
         # 2. Chuẩn bị State ban đầu
         messages: list[BaseMessage] = list(history_messages or [])
@@ -221,6 +256,7 @@ class AgentOrchestrator:
             "messages": messages,
             "vehicle_context": resolved_context,
             "citations": [],
+            "memory_summary": memory_summary or {},
         }
 
         accumulated_text = ""
@@ -229,6 +265,8 @@ class AgentOrchestrator:
         from .booking_policy import guarded_booking_turn
 
         defer_business_tokens = guarded_booking_turn(messages)
+        from .memory_guard import memory_change_request, memory_topic_request
+        defer_business_tokens = defer_business_tokens or memory_change_request(message) or memory_topic_request(message)
 
         try:
             # 3. Chạy vòng lặp ReAct qua astream_events với config chứa ctx
@@ -238,7 +276,7 @@ class AgentOrchestrator:
                 # A. Sự kiện Bắt đầu gọi Tool
                 if event_type == "on_tool_start":
                     tool_name = event.get("name", "")
-                    if tool_name in {"get_due_maintenance", "estimate_service_cost", "find_workshops", "get_available_slots", "propose_booking", "search_ev_knowledge", "get_maintenance_schedule_rag", "get_warranty_policy_rag"}:
+                    if tool_name in {"get_due_maintenance", "estimate_service_cost", "find_workshops", "get_available_slots", "propose_booking", "search_ev_knowledge", "get_maintenance_schedule_rag", "get_warranty_policy_rag", "remember_preference", "forget_preference"}:
                         # Model tokens have not yet passed the terminal fact guard.
                         if not defer_business_tokens:
                             accumulated_text = ""  # A pre-tool introduction is not a verified answer.
@@ -349,6 +387,25 @@ class AgentOrchestrator:
                 logger.warning("Checkpoint unavailable after assistant persistence")
             logger.warning("Checkpoint reset after assistant persistence mismatch")
 
+    async def compact_committed_history(self, conversation_id, summary_result):
+        """Update only a completed thread after durable summary commit; no tool replay."""
+        config = {"configurable": {"thread_id": str(conversation_id)}}
+        snapshot = await _checkpoint_call(self._graph.aget_state(config))
+        if snapshot.next or snapshot.interrupts:
+            return
+        from .memory_context import turns
+
+        messages = snapshot.values.get("messages", [])
+        covered = set(summary_result["source_ids"])
+        remove = []
+        for group in turns(messages):
+            users = [m for m in group if isinstance(m, HumanMessage)]
+            if users and all(m.id in covered for m in users):
+                remove.extend(RemoveMessage(id=m.id) for m in group if m.id)
+        if remove:
+            await _checkpoint_call(self._graph.aupdate_state(config,
+                {"messages": remove, "memory_summary": summary_result["summary"]}, as_node="agent"))
+
     async def confirm_booking_turn(
         self,
         conversation_id: str | UUID,
@@ -423,16 +480,18 @@ class AgentOrchestrator:
 
         yield {
             "type": "completed",
-            "message_data": {
-                "conversation_id": str(conversation_id),
-                "user_id": str(user_id),
-                "vehicle_id": str(vehicle_id) if vehicle_id else None,
-                "role": "assistant",
-                "content": accumulated_text,
-                "citations": citations,
-                "hitl_resolved": True,
-                "confirmed": confirmed,
-            },
+            "message_data": _guarded_message_data(
+                accumulated_text,
+                citations,
+                {
+                    "conversation_id": str(conversation_id),
+                    "user_id": str(user_id),
+                    "vehicle_id": str(vehicle_id) if vehicle_id else None,
+                    "role": "assistant",
+                    "hitl_resolved": True,
+                    "confirmed": confirmed,
+                },
+            ),
         }
 
 

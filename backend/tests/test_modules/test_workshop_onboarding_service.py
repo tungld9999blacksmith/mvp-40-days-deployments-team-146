@@ -7,6 +7,7 @@ gateway and a recording retry scheduler.
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
+from decimal import Decimal
 
 import pytest
 from ev_contracts import ManagerVerifyFailureReason
@@ -34,6 +35,7 @@ from tests._workshop_onboarding import (
     make_session,
     profile_body,
     verification_body,
+    verified_response,
 )
 
 
@@ -253,6 +255,36 @@ async def test_submit_verified_creates_workshop_and_activates_owner(session):
     registration = session.exec(select(WorkshopRegistration)).one()
     assert registration.workshop_id == workshop.id
     assert registration.external_center_id == "SC-01"
+
+
+@pytest.mark.asyncio
+async def test_submit_without_coordinates_uses_oem_location(session):
+    result = verified_response()
+    result.service_center.latitude = 21.0285123
+    result.service_center.longitude = 105.8048456
+    service = make_service(session, StubServiceCenterGateway(result=result))
+    owner = _signed_in_with_profile(service)
+
+    await _submit(service, owner, latitude=None, longitude=None)
+
+    workshop = session.exec(select(Workshop)).one()
+    assert workshop.latitude == Decimal("21.028512")
+    assert workshop.longitude == Decimal("105.804846")
+
+
+@pytest.mark.asyncio
+async def test_submit_coordinates_from_owner_win_over_oem(session):
+    result = verified_response()
+    result.service_center.latitude = 10.0
+    result.service_center.longitude = 106.0
+    service = make_service(session, StubServiceCenterGateway(result=result))
+    owner = _signed_in_with_profile(service)
+
+    await _submit(service, owner)
+
+    workshop = session.exec(select(Workshop)).one()
+    assert float(workshop.latitude) == pytest.approx(21.017)
+    assert float(workshop.longitude) == pytest.approx(105.781)
 
 
 @pytest.mark.asyncio

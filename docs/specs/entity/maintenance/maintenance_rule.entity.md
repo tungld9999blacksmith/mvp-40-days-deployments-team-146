@@ -92,6 +92,7 @@ VF6, mốc 12.000 km / 12 tháng, "Kiểm tra hệ thống phanh", không thuộ
 | `item_code` | `varchar(50)` | Yes | No | - | Uppercase, `^[A-Z0-9_]{2,50}$` | Mã hạng mục chuẩn (VD: `BRAKE_INSPECTION`) — **mới v1.2** (Q-402) |
 | `item_name` | `varchar(200)` | Yes | No | - | | Tên hạng mục (Thay lọc gió, kiểm tra pin, ...) |
 | `is_covered_by_warranty` | `boolean` | Yes | No | `false` | | Thuộc diện bảo hành miễn phí hay không |
+| `is_safety_critical` | `boolean` | Yes | No | `false` | | Hạng mục an toàn (phanh, lốp/bánh xe, lái, đèn/còi/gạt nước, dây an toàn theo `data/knowledge/raw/lich_bao_duong_ALL.md`); chủ xe từ chối dòng này phải xác nhận thêm. Ghi bởi `scripts/seed_maintenance_rules.py` |
 | `estimated_cost` | `numeric(12,2)` | Yes | No | - | `>= 0` | Chi phí ước tính (VNĐ) |
 | `estimated_duration_minutes` | `integer` | Yes | No | - | `> 0` | Thời gian kỹ thuật viên thực hiện (Phút) |
 | `created_at` | `timestamptz` | Yes | No | `now()` | | |

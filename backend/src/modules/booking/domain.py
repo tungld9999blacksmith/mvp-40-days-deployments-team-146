@@ -36,6 +36,8 @@ class BookingConfig:
     reschedule_min_lead_minutes: int = 60  # us-053 BR-1206
     reschedule_max_count: int = 2  # us-053 BR-1207
     pricing_flow: str = "legacy"  # QUOTE_FLOW — flow of new bookings (bao-gia-hai-tang D7)
+    geo_cache_ttl_seconds: int = 600  # Redis GEO index of workshop coordinates
+    geo_candidates: int = 20  # nearest workshops fetched from the GEO index before ranking
 
 
 class AnchorSource(StrEnum):

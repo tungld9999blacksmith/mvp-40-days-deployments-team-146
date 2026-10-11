@@ -6,7 +6,7 @@ from datetime import datetime
 from enum import StrEnum
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic.alias_generators import to_camel
 
 from src.common.money import Money
@@ -47,6 +47,17 @@ class LineOut(CamelModel):
     version: int
     confirmed_at: datetime | None = None
     decided_at: datetime | None = None
+    # APP | PHONE (the workshop recorded the owner's answer by phone) | None while undecided.
+    decided_via: str | None = None
+    phone_confirmed_by: str | None = None
+    # Set when the owner disputed a phone decision; the line went back to PROPOSED.
+    disputed_at: datetime | None = None
+    # A phone decision the owner can still dispute (booking not completed yet).
+    can_dispute: bool = False
+    # PROPOSED lines: the owner is asked to answer by then; after it the workshop calls them.
+    reply_due_at: datetime | None = None
+    # The deadline has passed while the car is still at the workshop: call the owner.
+    call_owner: bool = False
     created_at: datetime
     photos: list[LinePhotoOut] = []
 
@@ -128,6 +139,29 @@ class DecideRequest(CamelModel):
     seen_version: int = Field(ge=1)
     # Declining a safety item needs this second confirmation.
     confirm_safety: bool = False
+
+
+class PhoneDecisionRequest(CamelModel):
+    """The owner answered by phone; the workshop records it (the owner can dispute it until COMPLETE)."""
+
+    decision: Decision
+    seen_version: int = Field(ge=1)
+    # Who answered the phone, e.g. "Anh Trung (chủ xe)".
+    confirmed_by_name: str = Field(max_length=100)
+    confirm_safety: bool = False
+
+    @field_validator("confirmed_by_name")
+    @classmethod
+    def _name(cls, value: str) -> str:
+        value = " ".join(value.split())
+        if len(value) < 2:
+            raise ValueError("Enter who confirmed by phone.")
+        return value
+
+
+class DisputeRequest(CamelModel):
+    # The version the owner saw on the ticket.
+    seen_version: int = Field(ge=1)
 
 
 class PhotoUploadRequest(CamelModel):

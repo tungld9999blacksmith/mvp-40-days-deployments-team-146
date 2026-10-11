@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Deploy backend / worker / mock-ev-system to Railway (staging) from a local
+    Deploy backend / worker / mock-ev-system / otel-collector to Railway (staging) from a local
     machine - the same steps as the `deploy-backend` + `smoke-test` CI jobs.
 
 .DESCRIPTION
@@ -11,7 +11,8 @@
 .PARAMETER Action
     check  : verify CLI/login/link and the required variables of each service
     vars   : push infrastructure/backend/railway/.railway.env + Redis reference
-             variables to `backend` and `worker` (no redeploy)
+             variables to `backend` and `worker`, GRAFANA_CLOUD_* to
+             `otel-collector` (no redeploy)
     deploy : check -> railway up (Target) -> smoke
     smoke  : GET /health + /api/v1/health/dependencies on the backend domain
     status : project status + recent deployments
@@ -19,7 +20,7 @@
 
 .PARAMETER Target
     For `deploy`: app (default: backend + worker), backend, worker, mock,
-    all (mock -> backend -> worker, like CI).
+    collector, all (collector -> mock -> backend -> worker, like CI).
 
 .PARAMETER Environment
     Railway environment (default: staging).
@@ -31,12 +32,13 @@
     `deploy` without the variable check.
 
 .EXAMPLE
-    ./scripts/railway-deploy.ps1 check
-    ./scripts/railway-deploy.ps1 vars
-    ./scripts/railway-deploy.ps1 deploy
-    ./scripts/railway-deploy.ps1 deploy all
-    ./scripts/railway-deploy.ps1 smoke
-    ./scripts/railway-deploy.ps1 logs -Service worker
+    ./tools/railway-deploy.ps1 check
+    ./tools/railway-deploy.ps1 vars
+    ./tools/railway-deploy.ps1 deploy
+    ./tools/railway-deploy.ps1 deploy all
+    ./tools/railway-deploy.ps1 deploy collector
+    ./tools/railway-deploy.ps1 smoke
+    ./tools/railway-deploy.ps1 logs -Service worker
 #>
 [CmdletBinding()]
 param(
@@ -44,11 +46,11 @@ param(
     [ValidateSet("check", "vars", "deploy", "smoke", "status", "logs")]
     [string]$Action = "check",
     [Parameter(Position = 1)]
-    [ValidateSet("app", "backend", "worker", "mock", "all")]
+    [ValidateSet("app", "backend", "worker", "mock", "collector", "all")]
     [string]$Target = "app",
     [string]$Environment = "staging",
     [string]$Url,
-    [ValidateSet("backend", "worker", "mock-ev-system", "Redis")]
+    [ValidateSet("backend", "worker", "mock-ev-system", "otel-collector", "Redis")]
     [string]$Service = "backend",
     [switch]$SkipCheck
 )
@@ -61,6 +63,9 @@ Set-Location $RepoRoot
 $BackendService = "backend"
 $WorkerService = "worker"
 $MockService = "mock-ev-system"
+$CollectorService = "otel-collector"
+# Build context of the collector image (Dockerfile + config.yaml).
+$CollectorDir = "infrastructure/observability/otel-collector"
 $RedisService = "Redis"
 $EnvFile = "infrastructure/backend/railway/.railway.env"
 
@@ -68,6 +73,8 @@ $EnvFile = "infrastructure/backend/railway/.railway.env"
 # set per service to the mock (step 5b) - never copied from .railway.env.
 $SkipKeys = @("REDIS_URL", "REDIS_HOST", "REDIS_PORT", "REDIS_PASSWORD",
     "REDIS_BROKER_URL", "REDIS_BACKEND_URL", "OEM_API_BASE_URL")
+# Grafana Cloud credentials belong to the collector only - never to backend/worker.
+$CollectorKeys = @("GRAFANA_CLOUD_OTLP_ENDPOINT", "GRAFANA_CLOUD_INSTANCE_ID", "GRAFANA_CLOUD_API_TOKEN")
 $RedisRefs = [ordered]@{
     "REDIS_HOST"     = "`${{$RedisService.REDISHOST}}"
     "REDIS_PORT"     = "`${{$RedisService.REDISPORT}}"
@@ -154,6 +161,16 @@ function Test-ServiceVariables([string]$Name, [hashtable]$Vars, [string[]]$Requi
         if (-not $Vars[$key]) { Write-Err "${Name}: missing $key"; $errors++ }
     }
     if ($Name -eq $MockService) { return $errors }
+    if ($Name -eq $CollectorService) {
+        if ($Vars["RAILWAY_PUBLIC_DOMAIN"]) { Write-Warn "${Name}: has a public domain - the collector should be private (remove it in Settings -> Networking)" }
+        if ($Vars["GRAFANA_CLOUD_OTLP_ENDPOINT"] -notmatch "^https://") {
+            Write-Err "${Name}: GRAFANA_CLOUD_OTLP_ENDPOINT must be the https:// Grafana Cloud OTLP gateway"
+            $errors++
+        }
+        return $errors
+    }
+    $leaked = @($Vars.Keys | Where-Object { $_ -like "GRAFANA_CLOUD_*" } | Sort-Object)
+    if ($leaked.Count) { Write-Warn "${Name}: Grafana Cloud credentials on an app service (collector only): $($leaked -join ', ')" }
 
     $redis = if ($Vars["REDIS_URL"]) { $Vars["REDIS_URL"] } else { $Vars["REDIS_HOST"] }
     if (-not $redis -or $redis -match "localhost|127\.0\.0\.1") {
@@ -183,8 +200,9 @@ function Invoke-Check {
     $errors += Test-ServiceVariables $BackendService (Get-ServiceVariables $BackendService) @("RAILWAY_DOCKERFILE_PATH", "PORT")
     $errors += Test-ServiceVariables $WorkerService (Get-ServiceVariables $WorkerService) @("RAILWAY_DOCKERFILE_PATH")
     $errors += Test-ServiceVariables $MockService (Get-ServiceVariables $MockService) @("RAILWAY_DOCKERFILE_PATH", "PORT")
+    $errors += Test-ServiceVariables $CollectorService (Get-ServiceVariables $CollectorService) $CollectorKeys
     if ($errors) {
-        Write-Err "$errors problem(s). Fix them (./scripts/railway-deploy.ps1 vars) or pass -SkipCheck."
+        Write-Err "$errors problem(s). Fix them (./tools/railway-deploy.ps1 vars) or pass -SkipCheck."
         exit 1
     }
     Write-Ok "Variables look good."
@@ -252,7 +270,7 @@ switch ($Action) {
         }
         $toSet = [ordered]@{}
         foreach ($key in $envVars.Keys) {
-            if ($SkipKeys -contains $key -or -not $envVars[$key]) { continue }
+            if ($SkipKeys -contains $key -or $CollectorKeys -contains $key -or -not $envVars[$key]) { continue }
             if ($envVars[$key] -match "localhost") { Write-Warn "$key contains 'localhost' - check it" }
             $toSet[$key] = $envVars[$key]
         }
@@ -267,7 +285,15 @@ switch ($Action) {
             }
             Write-Ok "'$svc' done."
         }
-        Write-Ok "Variables pushed. Deploy to apply: ./scripts/railway-deploy.ps1 deploy"
+
+        Write-Info "Setting variables on '$CollectorService' ($Environment, no redeploy)..."
+        foreach ($key in $CollectorKeys) {
+            if ($envVars[$key]) { Set-ServiceVariable $CollectorService $key $envVars[$key] }
+            else { Write-Warn "$key is empty in $EnvFile - the collector cannot export" }
+        }
+        Set-ServiceVariable $CollectorService "OTEL_DEPLOYMENT_ENVIRONMENT" $Environment
+        Write-Ok "'$CollectorService' done."
+        Write-Ok "Variables pushed. Deploy to apply: ./tools/railway-deploy.ps1 deploy"
     }
     "deploy" {
         if ($SkipCheck) { Test-Prerequisites } else { Invoke-Check }
@@ -276,7 +302,9 @@ switch ($Action) {
             "backend" { @($BackendService) }
             "worker"  { @($WorkerService) }
             "mock"    { @($MockService) }
-            "all"     { @($MockService, $BackendService, $WorkerService) }
+            "collector" { @($CollectorService) }
+            # Collector first: backend/worker export to it from their first request.
+            "all"     { @($CollectorService, $MockService, $BackendService, $WorkerService) }
         }
         $commit = (git rev-parse --short HEAD 2>$null)
         foreach ($svc in $steps) {
@@ -284,6 +312,9 @@ switch ($Action) {
             if ($svc -eq $MockService) {
                 # Mock is built with backend/ as root (uv workspace).
                 Invoke-Railway up ./backend --path-as-root --ci --service $svc --environment $Environment --message "local deploy $commit"
+            } elseif ($svc -eq $CollectorService) {
+                # Collector is built from its own directory (Dockerfile + config.yaml).
+                Invoke-Railway up "./$CollectorDir" --path-as-root --ci --service $svc --environment $Environment --message "local deploy $commit"
             } else {
                 Invoke-Railway up --ci --service $svc --environment $Environment --message "local deploy $commit"
             }
@@ -298,7 +329,7 @@ switch ($Action) {
     "status" {
         Test-Prerequisites
         Invoke-Railway status
-        foreach ($svc in @($BackendService, $WorkerService, $MockService)) {
+        foreach ($svc in @($BackendService, $WorkerService, $MockService, $CollectorService)) {
             Write-Host ""
             Write-Info $svc
             Invoke-Railway deployment list --service $svc --environment $Environment --limit 3

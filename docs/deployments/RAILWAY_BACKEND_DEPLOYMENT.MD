@@ -12,6 +12,7 @@ Hướng dẫn step-by-step để dựng CI/CD cho backend: **unit test → depl
 6. [Bước 4 — Tạo service `backend`](#bước-4--tạo-service-backend)
 7. [Bước 5 — Tạo service `worker`](#bước-5--tạo-service-worker)
    - [Bước 5b — Tạo service `mock-ev-system` (mock OEM)](#bước-5b--tạo-service-mock-ev-system-mock-oem)
+   - [Bước 5c — Tạo service `otel-collector` (observability)](#bước-5c--tạo-service-otel-collector-observability)
 8. [Bước 6 — Biến môi trường trên Railway](#bước-6--biến-môi-trường-trên-railway)
 9. [Bước 7 — Lấy Railway token](#bước-7--lấy-railway-token)
 10. [Bước 8 — Cấu hình GitHub Environment `staging`](#bước-8--cấu-hình-github-environment-staging)
@@ -36,7 +37,8 @@ PR / merge vào develop ──► backend-test (ruff + pytest)
 PR vào staging         ──► backend-test
 merge vào staging      ──► backend-test ──► deploy-backend ──► smoke-test
                                             (railway up      (GET /health)
-                                             backend+worker)
+                                             collector, mock,
+                                             backend, worker)
 ```
 
 | Sự kiện | `backend-test` | `deploy-backend` + `smoke-test` |
@@ -47,7 +49,7 @@ merge vào staging      ──► backend-test ──► deploy-backend ──�
 | Merge (push) vào `staging` | ✅ | ✅ |
 | Run workflow thủ công trên `staging` | ✅ | ✅ |
 
-- Workflow **chỉ chạy** khi commit có thay đổi trong `backend/**`, `dockerfiles/**` hoặc `.github/workflows/ci-cd.yml`.
+- Workflow **chỉ chạy** khi commit có thay đổi trong `backend/**`, `dockerfiles/**`, `infrastructure/observability/**` hoặc `.github/workflows/ci-cd.yml`.
 - Test fail thì **không deploy**.
 - Runner: **chỉ dùng GitHub-hosted `ubuntu-latest`** cho cả chạy thử, test, check và deploy (miễn phí: repo public không giới hạn, repo private 2.000 phút/tháng). Không cài, không đăng ký self-hosted runner. Xem [Lưu ý khi dùng GitHub-hosted runner](#lưu-ý-khi-dùng-github-hosted-runner).
 
@@ -60,6 +62,8 @@ Railway project
     ├── worker          (Celery worker + beat, cùng Dockerfile, không có domain)
     ├── mock-ev-system  (mock hệ thống hãng xe / OEM, port 8100,
     │                    private network mock-ev-system.railway.internal)
+    ├── otel-collector  (OpenTelemetry Collector -> Grafana Cloud, OTLP 4318/4317,
+    │                    private network otel-collector.railway.internal, không domain)
     └── Redis           (Railway database, private network redis.railway.internal)
 
 Database Postgres: Supabase (bên ngoài Railway)
@@ -74,7 +78,8 @@ Database Postgres: Supabase (bên ngoài Railway)
 | [`.github/workflows/ci-cd.yml`](../../.github/workflows/ci-cd.yml) | Workflow CI/CD |
 | [`dockerfiles/Dockerfile.railway`](../../dockerfiles/Dockerfile.railway) | Image deploy lên Railway, dùng chung cho `backend` và `worker` (không cache mount, nghe trên `$PORT`) |
 | [`backend/mock-ev-system/Dockerfile.railway`](../../backend/mock-ev-system/Dockerfile.railway) | Image deploy `mock-ev-system` lên Railway (build context là `backend/`) |
-| [`scripts/railway-deploy.ps1`](../../scripts/railway-deploy.ps1) / [`.sh`](../../scripts/railway-deploy.sh) | Deploy từ local: kiểm tra biến, đẩy `.railway.env`, `railway up`, smoke test — xem [RAILWAY_LOCAL_DEPLOY.md](RAILWAY_LOCAL_DEPLOY.md) |
+| [`infrastructure/observability/otel-collector/`](../../infrastructure/observability/otel-collector/) | `Dockerfile` + `config.yaml` của `otel-collector` (build context là chính thư mục này) — xem [OBSERVABILITY_SETUP.md](../observability/OBSERVABILITY_SETUP.md) |
+| [`tools/railway-deploy.ps1`](../../tools/railway-deploy.ps1) / [`.sh`](../../tools/railway-deploy.sh) | Deploy từ local: kiểm tra biến, đẩy `.railway.env`, `railway up`, smoke test — xem [RAILWAY_LOCAL_DEPLOYMENT.MD](RAILWAY_LOCAL_DEPLOYMENT.MD) |
 | [`scripts/build-backend-railway.ps1`](../../scripts/build-backend-railway.ps1) / [`.sh`](../../scripts/build-backend-railway.sh) | Build / chạy / smoke test 2 image Railway ở local |
 | [`dockerfiles/Dockerfile`](../../dockerfiles/Dockerfile) | Image cho docker compose ở local (có cache mount của uv) |
 | [`backend/src/config.py`](../../backend/src/config.py) | Đọc cấu hình: **biến môi trường > file `.env` > giá trị mặc định** |
@@ -182,6 +187,37 @@ Mock giả lập hệ thống hãng xe (OEM). `backend` và `worker` gọi nó q
    Mock nghe trên `::` (IPv4 + IPv6) nên gọi được qua private network.
 
 > Log mock có `Webhook ... not delivered: HTTP 404` khi `backend` chưa có deploy nào — bình thường, hết khi backend chạy.
+
+---
+
+## Bước 5c — Tạo service `otel-collector` (observability)
+
+OpenTelemetry Collector nhận traces / metrics / logs của `backend`, `worker` qua private network rồi đẩy lên Grafana Cloud. Thiết kế và cách dùng: [OBSERVABILITY_SETUP.md](../observability/OBSERVABILITY_SETUP.md).
+
+1. Tạo service (thư mục gốc repo, đã `railway link` vào `staging`):
+
+   ```bash
+   railway add --service otel-collector
+   ```
+
+   Hoặc trên dashboard: **+ Create** → **Empty Service** → đổi tên `otel-collector`.
+2. **Không** Generate Domain — collector chỉ nhận dữ liệu trong private network. Không cần `PORT`, `RAILWAY_DOCKERFILE_PATH` (Dockerfile nằm ở gốc build context).
+3. Đặt biến (chỉ trên service này, **không** đặt cho `backend` / `worker`):
+
+   ```bash
+   ./tools/railway-deploy.sh vars        # hoặc ./tools/railway-deploy.ps1 vars
+   ```
+
+   `vars` lấy `GRAFANA_CLOUD_OTLP_ENDPOINT`, `GRAFANA_CLOUD_INSTANCE_ID`, `GRAFANA_CLOUD_API_TOKEN` từ `.railway.env` và đặt thêm `OTEL_DEPLOYMENT_ENVIRONMENT=staging`. Tuỳ chọn (đặt tay): `OTEL_DEBUG_VERBOSITY` (`basic` mặc định), `OTEL_MEMORY_LIMIT_MIB` (`200`), `OTEL_COLLECTOR_LOG_LEVEL` (`info`).
+4. Deploy lần đầu — upload thư mục collector làm gốc:
+
+   ```bash
+   ./tools/railway-deploy.sh deploy collector
+   # tương đương: railway up ./infrastructure/observability/otel-collector --path-as-root --service otel-collector
+   ```
+
+5. Kiểm tra log service có dòng `Everything is ready. Begin running and processing data.` và không có `Exporting failed`.
+6. `backend` / `worker` gửi tới `http://otel-collector.railway.internal:4318` (biến `OTEL_*` thêm khi instrument app — xem tài liệu observability).
 
 ---
 
@@ -301,6 +337,7 @@ GitHub repo → **Settings** → **Environments** → **New environment** → `s
 | Variable | `RAILWAY_BACKEND_SERVICE` | `backend` |
 | Variable | `RAILWAY_WORKER_SERVICE` | `worker` |
 | Variable | `RAILWAY_MOCK_SERVICE` | `mock-ev-system` |
+| Variable | `RAILWAY_COLLECTOR_SERVICE` | `otel-collector` (tuỳ chọn — trống thì workflow dùng `otel-collector`) |
 | Variable | `BACKEND_STAGING_URL` | Domain ở Bước 4, vd `https://backend-staging-xxx.up.railway.app` (**không** có `/` cuối) |
 
 Tên service phải khớp chính xác (phân biệt hoa thường) với tên trên Railway.
@@ -311,7 +348,7 @@ Tên service phải khớp chính xác (phân biệt hoa thường) với tên t
 
 Deploy tay 1 lần để chắc Railway build được trước khi giao cho CI. Chạy ở **thư mục gốc repo**:
 
-> Có script làm sẵn các bước dưới (kèm kiểm tra biến môi trường): `./scripts/railway-deploy.ps1 check` rồi `./scripts/railway-deploy.ps1 deploy all`. Xem [RAILWAY_LOCAL_DEPLOY.md](RAILWAY_LOCAL_DEPLOY.md).
+> Có script làm sẵn các bước dưới (kèm kiểm tra biến môi trường): `./tools/railway-deploy.ps1 check` rồi `./tools/railway-deploy.ps1 deploy all`. Xem [RAILWAY_LOCAL_DEPLOYMENT.MD](RAILWAY_LOCAL_DEPLOYMENT.MD).
 
 ```bash
 railway login
@@ -321,6 +358,7 @@ railway variables --service worker  | grep RAILWAY_DOCKERFILE_PATH
 railway up --service backend
 railway up --service worker
 railway up ./backend --path-as-root --service mock-ev-system   # chỉ khi mock-ev-system có thay đổi
+railway up ./infrastructure/observability/otel-collector --path-as-root --service otel-collector   # chỉ khi collector có thay đổi
 curl https://<domain-backend>/health
 ```
 
@@ -475,9 +513,9 @@ feature/*  ──push──► (không chạy)
                │
             merge/push    : lint + test
                │
-               └──PR──► staging   : lint + test + build-check
+               └──PR──► staging   : lint + test + collector-check + build-check
                           │
-                       merge/push : lint + test + build-check
+                       merge/push : lint + test + collector-check + build-check
                                      └─► deploy-backend ─► smoke-test
 ```
 
@@ -488,8 +526,9 @@ feature/*  ──push──► (không chạy)
 |---|---|---|
 | `lint` | `ruff check` + `ruff format --check` | Dừng, không deploy |
 | `backend-test` | `pytest` | Dừng, không deploy |
-| `build-check` | Build 2 image `dockerfiles/Dockerfile.railway` + `backend/mock-ev-system/Dockerfile.railway` (chỉ khi đích là `staging`) | Dừng, không deploy |
-| `deploy-backend` | `railway up` mock-ev-system → backend → worker | Không smoke test |
+| `collector-check` | Build image collector + `validate` config với credential giả (chạy song song với `lint`) | Dừng, không deploy |
+| `build-check` | Build 2 image `dockerfiles/Dockerfile.railway` + `backend/mock-ev-system/Dockerfile.railway` (chỉ khi đích là `staging`, chờ `backend-test` và `collector-check`) | Dừng, không deploy |
+| `deploy-backend` | `railway up` otel-collector → mock-ev-system → backend → worker | Không smoke test |
 | `smoke-test` | `GET /health` | Workflow đỏ → kiểm tra log Railway |
 
 ### 14.2. Workflow mẫu đầy đủ
@@ -499,6 +538,8 @@ feature/*  ──push──► (không chạy)
 ```yaml
 name: Backend CI/CD
 
+# Xem docs/deployments/RAILWAY_BACKEND_DEPLOYMENT.MD (Bước 12-14)
+
 on:
   # Push lên develop -> test/check; push (merge) vào staging -> test/check + deploy
   push:
@@ -506,6 +547,7 @@ on:
     paths:
       - 'backend/**'
       - 'dockerfiles/**'
+      - 'infrastructure/observability/**'
       - '.github/workflows/ci-cd.yml'
   # PR vào develop/staging (từ bất kỳ nhánh nào) -> test/check, chặn merge nếu fail
   pull_request:
@@ -513,6 +555,7 @@ on:
     paths:
       - 'backend/**'
       - 'dockerfiles/**'
+      - 'infrastructure/observability/**'
       - '.github/workflows/ci-cd.yml'
   workflow_dispatch:
 
@@ -535,6 +578,19 @@ jobs:
       - run: ruff check ./backend/src/ ./backend/tests/
       - run: ruff format --check ./backend/src/ ./backend/tests/
 
+  # OTel Collector: the config must load with the pinned image (dummy credentials).
+  collector-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t p146-otel-collector:ci infrastructure/observability/otel-collector
+      - run: >
+          docker run --rm
+          -e GRAFANA_CLOUD_OTLP_ENDPOINT=https://otlp.example.invalid/otlp
+          -e GRAFANA_CLOUD_INSTANCE_ID=0
+          -e GRAFANA_CLOUD_API_TOKEN=ci
+          p146-otel-collector:ci validate --config /etc/otelcol-contrib/config.yaml
+
   backend-test:
     needs: lint
     runs-on: ubuntu-latest
@@ -556,7 +612,7 @@ jobs:
 
   # Chỉ khi đích là staging: đảm bảo image build được trước khi deploy
   build-check:
-    needs: backend-test
+    needs: [backend-test, collector-check]
     if: (github.base_ref || github.ref_name) == 'staging'
     runs-on: ubuntu-latest
     steps:
@@ -571,11 +627,16 @@ jobs:
     runs-on: ubuntu-latest
     environment: staging
     env:
+      # Account token (Account Settings -> Tokens) -> CLI đọc từ RAILWAY_API_TOKEN
       RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - run: npm install -g @railway/cli
+      # Account token không gắn sẵn project, nên phải link project trước
       - run: railway link --project "${{ vars.RAILWAY_PROJECT_ID }}" --environment staging
+      # Collector trước: backend/worker gửi OTLP tới otel-collector.railway.internal
+      # Build context là thư mục collector (Dockerfile + config.yaml)
+      - run: railway up ./infrastructure/observability/otel-collector --path-as-root --ci --service "${{ vars.RAILWAY_COLLECTOR_SERVICE || 'otel-collector' }}" --environment staging
       # Mock OEM deploy trước: backend/worker gọi nó qua mock-ev-system.railway.internal
       - run: railway up ./backend --path-as-root --ci --service "${{ vars.RAILWAY_MOCK_SERVICE }}" --environment staging
       - run: railway up --ci --service "${{ vars.RAILWAY_BACKEND_SERVICE }}" --environment staging
@@ -601,8 +662,8 @@ Cập nhật ruleset ở [Bước 11](#bước-11--branch-protection):
 
 | Nhánh | Required status checks |
 |---|---|
-| `develop` | `lint`, `backend-test` |
-| `staging` | `lint`, `backend-test`, `build-check` |
+| `develop` | `lint`, `backend-test`, `collector-check` |
+| `staging` | `lint`, `backend-test`, `collector-check`, `build-check` |
 
 Kết hợp với Bước 12 (environment chỉ cho nhánh `staging`), luồng cuối cùng là: **không merge được nếu check fail → không deploy được nếu không phải nhánh `staging` → chỉ deploy khi mọi check trên code đã merge đều xanh**.
 
@@ -671,6 +732,9 @@ Kết hợp với Bước 12 (environment chỉ cho nhánh `staging`), luồng c
 | Không thấy nút *Run workflow* | File `ci-cd.yml` chưa có trên nhánh mặc định `main` — chạy thử bằng cách push lên `develop` |
 | `Branch "xxx" is not allowed to deploy to staging` | Đúng thiết kế (Bước 12) — chỉ nhánh `staging` được deploy |
 | Job deploy dừng ở *Waiting* | Environment `staging` bật **Required reviewers** — cần người duyệt bấm Approve |
+| `otel-collector` build lỗi không tìm thấy `config.yaml` / Dockerfile | Thiếu `./infrastructure/observability/otel-collector --path-as-root` khi `railway up` |
+| `otel-collector` log `Exporting failed ... 401` | Sai `GRAFANA_CLOUD_INSTANCE_ID` / `GRAFANA_CLOUD_API_TOKEN` — xem [OBSERVABILITY_SETUP.md](../observability/OBSERVABILITY_SETUP.md#xử-lý-sự-cố) |
+| `collector-check` fail ở bước `validate` | Config collector sai cú pháp / dùng component không có trong image — chạy `validate` ở local (xem tài liệu observability) |
 | `smoke-test` fail | Sai `BACKEND_STAGING_URL` (thừa `/` cuối, sai domain) hoặc app khởi động lỗi — xem log service `backend` |
 
 ---

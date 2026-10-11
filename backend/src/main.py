@@ -16,6 +16,7 @@ from .infrastructure.fastapi.middlewares import (
 )
 from .infrastructure.logging import configure_logging
 from .infrastructure.redis import get_redis_toolkit
+from .modules.agent_memory.route import router as agent_memory_router
 from .modules.auth.errors import AuthError
 from .modules.auth.errors import status_for as auth_status_for
 from .modules.auth.route import oauth_router as auth_oauth_router
@@ -39,6 +40,10 @@ from .modules.follow_up import FollowUpError
 from .modules.follow_up import status_for as follow_up_status_for
 from .modules.follow_up.route import router as follow_up_router
 from .modules.health.route import router as health_router
+from .modules.location import LocationError
+from .modules.location import status_for as location_status_for
+from .modules.location.dependency import close_place_search_provider
+from .modules.location.route import router as location_router
 from .modules.notification.errors import NotificationError
 from .modules.notification.errors import status_for as notification_status_for
 from .modules.notification.route import feed_router as notification_feed_router
@@ -116,6 +121,7 @@ async def lifespan(app: FastAPI):
             yield
     finally:
         print("Shutting down...")
+        await close_place_search_provider()
         await redis_toolkit.close()
 
 
@@ -125,6 +131,8 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+app.include_router(agent_memory_router, prefix="/api/v1")
 
 settings = get_settings()
 # Route application (logging.getLogger(__name__)), uvicorn and structlog loggers
@@ -190,6 +198,7 @@ app.include_router(booking_line_router, prefix="/api/v1")
 app.include_router(booking_line_workshop_router, prefix="/api/v1")
 app.include_router(workshop_pricing_router, prefix="/api/v1")
 app.include_router(follow_up_router, prefix="/api/v1")
+app.include_router(location_router, prefix="/api/v1")
 
 
 def _error_body(code: str, message: str, trace_id: str | None, details=None) -> dict:
@@ -358,6 +367,16 @@ async def oem_webhook_error_handler(request: Request, exc: OemWebhookError) -> J
     )
 
 
+@app.exception_handler(LocationError)
+async def location_error_handler(request: Request, exc: LocationError) -> JSONResponse:
+    """Location search errors (docs/specs/platform/location-search.api.md §6)."""
+    response = _domain_error_response(request, exc, location_status_for)
+    retry_after = getattr(exc, "retry_after_seconds", None)
+    if retry_after is not None:
+        response.headers["Retry-After"] = str(retry_after)
+    return response
+
+
 @app.exception_handler(AuthError)
 async def auth_error_handler(request: Request, exc: AuthError) -> JSONResponse:
     """Translate auth (logout) domain errors into the shared error envelope."""
@@ -379,6 +398,8 @@ _ONBOARDING_PREFIXES = (
     "/api/v1/quotes",
     "/api/v1/follow-ups",
 )
+# Routes whose request-validation failures use the envelope with status 422 (INVALID_REQUEST).
+_ENVELOPE_422_PREFIXES = ("/api/v1/locations",)
 
 
 @app.exception_handler(RequestValidationError)
@@ -388,14 +409,15 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
     Other routes keep FastAPI's default 422 behavior so their existing
     contracts are unaffected.
     """
-    if not request.url.path.startswith(_ONBOARDING_PREFIXES):
+    enveloped_422 = request.url.path.startswith(_ENVELOPE_422_PREFIXES)
+    if not enveloped_422 and not request.url.path.startswith(_ONBOARDING_PREFIXES):
         return JSONResponse(status_code=422, content={"detail": jsonable_encoder(exc.errors())})
     trace_id = request.headers.get("X-Request-ID")
     first = exc.errors()[0] if exc.errors() else {}
     loc = first.get("loc", [])
     field = ".".join(str(p) for p in loc if p not in ("body", "query", "path"))
     return JSONResponse(
-        status_code=400,
+        status_code=422 if enveloped_422 else 400,
         content=_error_body(
             "INVALID_REQUEST",
             first.get("msg", "Invalid request."),

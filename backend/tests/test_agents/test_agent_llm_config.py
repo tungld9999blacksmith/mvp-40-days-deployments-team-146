@@ -89,8 +89,8 @@ def test_graph_builds_when_fallback_key_is_missing(monkeypatch):
 
     monkeypatch.setattr(graph, "get_settings", lambda: _fallback_settings(gemini_api_key=""))
     assert graph.build_graph(tools=[], checkpointer=MemorySaver()) is not None
-    # Without a usable fallback the primary keeps its own retry.
-    assert graph.get_agent_llm().max_retries == 1
+    # OpenRouter retries switch endpoints instead of repeating the same route.
+    assert graph.get_agent_llm().max_retries == 0
 
 
 def test_primary_leaves_turn_budget_for_fallback(monkeypatch):

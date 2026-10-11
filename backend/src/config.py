@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     app_port: int = Field(default=8000, ge=1, le=65535)
     app_host: str = "0.0.0.0"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
-    # structlog renderer: JSON lines (default) or human-readable console output.
-    log_json: bool = True
+    # structlog renderer: human-readable colored console output (default) or JSON lines.
+    log_json: bool = False
     # Mask / drop secrets and PII (emails, phones, tokens, API keys) in every log output.
     log_redact_pii: bool = True
     # File exports, comma-separated subset of "log,json,csv" ("" = stdout only).
@@ -65,6 +65,7 @@ class Settings(BaseSettings):
     openrouter_agent_endpoint_order: str = ""
     openrouter_rewrite_endpoint_order: str = ""
     openrouter_rag_endpoint_order: str = ""
+    openrouter_write_endpoint_order: str = ""
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
     openrouter_max_tokens: int = Field(default=1024, ge=1)
     anthropic_api_key: str = ""
@@ -155,6 +156,20 @@ class Settings(BaseSettings):
     firebase_auth_emulator_host: str = ""
     demo_now: str = ""
     agent_checkpoint_mode: Literal["auto", "memory", "postgres"] = "auto"
+    agent_memory_context_mode: Literal["off", "shadow", "on"] = "off"
+    agent_memory_input_token_budget: int = Field(default=12000, ge=1000)
+    agent_memory_summary_trigger_ratio: float = Field(default=0.75, gt=0, lt=1)
+    agent_memory_summary_max_tokens: int = Field(default=1000, ge=100)
+    agent_memory_recent_turns: int = Field(default=6, ge=1)
+    agent_memory_recall_max_tokens: int = Field(default=500, ge=100)
+    agent_memory_context_window: int = Field(default=32768, ge=2000)
+    agent_memory_output_reserve: int = Field(default=2048, ge=128)
+    agent_memory_read_enabled: bool = False
+    agent_memory_write_enabled: bool = False
+    # Empty preserves global flag behavior; a nonempty list limits P2 to a canary.
+    agent_memory_canary_user_ids: list[int] = Field(default_factory=list)
+    agent_memory_preference_retention_days: int = Field(default=180, ge=1)
+    agent_memory_retention_enabled: bool = False
 
     # SMS channel (us-021 BR-506) through eSMS.vn: offered to owners only once
     # ESMS_API_KEY, ESMS_SECRET_KEY and ESMS_BRANDNAME are filled in.
@@ -170,6 +185,18 @@ class Settings(BaseSettings):
     slot_minutes: int = Field(default=60, ge=1)  # PQ-03
     hold_minutes: int = Field(default=10, ge=1)  # PQ-02 — owner cancel window
     booking_nearby_limit: int = Field(default=5, ge=1, le=10)  # Q-402
+    workshop_geo_cache_ttl_seconds: int = Field(default=600, ge=10)  # Redis GEO index TTL
+    workshop_geo_candidates: int = Field(default=20, ge=1, le=200)  # GEO candidates before ranking
+
+    # Location search (docs/specs/platform/location-search.api.md §11) — Amazon Location
+    # Places v2. GrabMaps data only in ap-southeast-1 / ap-southeast-5.
+    location_provider: Literal["aws", "fake"] = "fake"
+    aws_location_region: str = "ap-southeast-1"
+    aws_location_places_api_key: str = ""
+    location_timeout_seconds: float = Field(default=3.0, gt=0, le=30)
+    location_suggest_rate_per_minute: int = Field(default=30, ge=1)
+    location_detail_rate_per_minute: int = Field(default=20, ge=1)
+    location_reverse_radius_meters: int = Field(default=500, ge=1, le=100_000)
     booking_search_horizon_days: int = Field(default=7, ge=1)  # Q-403
     booking_ws_confirm_deadline_hours: int = Field(default=12, ge=1)  # Q-404 (BR-015)
     booking_confirmation_token_ttl_seconds: int = Field(default=600, ge=30)  # card token

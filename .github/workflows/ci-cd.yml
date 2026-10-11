@@ -9,6 +9,7 @@ on:
     paths:
       - 'backend/**'
       - 'dockerfiles/**'
+      - 'infrastructure/observability/**'
       - '.github/workflows/ci-cd.yml'
   # PR vào develop/staging (từ bất kỳ nhánh nào) -> test/check, chặn merge nếu fail
   pull_request:
@@ -16,6 +17,7 @@ on:
     paths:
       - 'backend/**'
       - 'dockerfiles/**'
+      - 'infrastructure/observability/**'
       - '.github/workflows/ci-cd.yml'
   workflow_dispatch:
 
@@ -38,6 +40,19 @@ jobs:
       - run: ruff check ./backend/src/ ./backend/tests/
       - run: ruff format --check ./backend/src/ ./backend/tests/
 
+  # OTel Collector: the config must load with the pinned image (dummy credentials).
+  collector-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t p146-otel-collector:ci infrastructure/observability/otel-collector
+      - run: >
+          docker run --rm
+          -e GRAFANA_CLOUD_OTLP_ENDPOINT=https://otlp.example.invalid/otlp
+          -e GRAFANA_CLOUD_INSTANCE_ID=0
+          -e GRAFANA_CLOUD_API_TOKEN=ci
+          p146-otel-collector:ci validate --config /etc/otelcol-contrib/config.yaml
+
   backend-test:
     needs: lint
     runs-on: ubuntu-latest
@@ -59,7 +74,7 @@ jobs:
 
   # Chỉ khi đích là staging: đảm bảo image build được trước khi deploy
   build-check:
-    needs: backend-test
+    needs: [backend-test, collector-check]
     if: (github.base_ref || github.ref_name) == 'staging'
     runs-on: ubuntu-latest
     steps:
@@ -81,6 +96,9 @@ jobs:
       - run: npm install -g @railway/cli
       # Account token không gắn sẵn project, nên phải link project trước
       - run: railway link --project "${{ vars.RAILWAY_PROJECT_ID }}" --environment staging
+      # Collector trước: backend/worker gửi OTLP tới otel-collector.railway.internal
+      # Build context là thư mục collector (Dockerfile + config.yaml)
+      - run: railway up ./infrastructure/observability/otel-collector --path-as-root --ci --service "${{ vars.RAILWAY_COLLECTOR_SERVICE || 'otel-collector' }}" --environment staging
       # Mock OEM deploy trước: backend/worker gọi nó qua mock-ev-system.railway.internal
       - run: railway up ./backend --path-as-root --ci --service "${{ vars.RAILWAY_MOCK_SERVICE }}" --environment staging
       - run: railway up --ci --service "${{ vars.RAILWAY_BACKEND_SERVICE }}" --environment staging

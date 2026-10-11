@@ -122,3 +122,16 @@ def test_one_row_per_service_and_one_price_for_all_its_codes(world):
     assert item.current_price == 300_000 and len(item.prices) == 2
     with pytest.raises(errors.InvalidRequestError):
         pricing.set_prices(workshop, s.PriceSetRequest(model_id=MODEL_ID, item_codes=["NOPE"], price=1))
+
+
+# Regression: design review 2026-10-10 FINDING-001 — the model picker showed "MDL-01…MDL-07"
+def test_model_names_come_from_verified_vehicles(world):
+    from tests._user_vehicle import add_owner, add_vehicle
+
+    session, workshop, pricing = world
+    add_rules(session, "MDL-07")
+    assert pricing.price_list(workshop, MODEL_ID).model_names == {}  # no vehicle yet: the UI shows the code
+    add_vehicle(session, add_owner(session))  # MDL-03, VF6 Plus
+    out = pricing.price_list(workshop, MODEL_ID)
+    assert out.models == [MODEL_ID, "MDL-07"]
+    assert out.model_names == {MODEL_ID: "VF6 Plus"}

@@ -136,6 +136,9 @@ class ServiceCenterInfo(BaseModel):
     name: str
     region: str
     type: str
+    address: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
 
 
 class ManagerVerifyResponse(BaseModel):

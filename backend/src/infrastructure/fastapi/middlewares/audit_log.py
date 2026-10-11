@@ -6,7 +6,8 @@ method, path, query, status code, duration, client IP, user agent, the caller's
 exception type if the request crashed. ``correlation_id`` / ``trace_id`` are
 merged in from ``structlog.contextvars`` (bound by ``CorrelationIdMiddleware``).
 
-Request / response bodies are never logged (PII, tokens, uploads).
+Request / response bodies are never logged (PII, tokens, uploads); the values of
+``REDACTED_QUERY_PARAMS`` (search text, coordinates) are masked in ``query``.
 
 Pure ASGI (not ``BaseHTTPMiddleware``) so streaming / SSE responses are not
 buffered; the duration of a streamed response covers the whole stream.
@@ -35,6 +36,20 @@ DEFAULT_EXCLUDED_PATHS: tuple[str, ...] = (
 )
 
 _USER_AGENT_MAX = 512
+
+# Query parameters whose values are personal data (typed addresses, precise positions):
+# logged as "***" so the audit trail keeps the shape of the request but not the value.
+REDACTED_QUERY_PARAMS: frozenset[str] = frozenset({"q", "lat", "lng"})
+
+
+def _redact_query(raw: bytes) -> str | None:
+    if not raw:
+        return None
+    parts = []
+    for pair in raw.decode("latin-1").split("&"):
+        name, sep, _ = pair.partition("=")
+        parts.append(f"{name}=***" if sep and name in REDACTED_QUERY_PARAMS else pair)
+    return "&".join(parts)
 
 
 class AuditLogMiddleware:
@@ -103,7 +118,7 @@ class AuditLogMiddleware:
         fields: dict[str, Any] = {
             "http_method": scope["method"],
             "http_path": scope["path"],
-            "query": scope.get("query_string", b"").decode("latin-1") or None,
+            "query": _redact_query(scope.get("query_string", b"")),
             "status_code": status_code,
             "duration_ms": round(duration_ms, 2),
             "client_ip": self._client_ip(scope, headers),

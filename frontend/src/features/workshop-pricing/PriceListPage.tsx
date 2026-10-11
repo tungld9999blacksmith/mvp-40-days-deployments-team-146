@@ -11,9 +11,9 @@ import { EmptyState, ErrorState } from '@/shared/ui/States'
 import { useToast } from '@/shared/ui/Toast'
 import { formatDate } from '@/shared/utils/format'
 import { track } from '@/shared/utils/track'
-import { formatVnd } from '@/features/estimate/utils'
 import { parsePrice } from '@/features/booking-lines/logic'
 import { copyReferencePrices, getPriceList, setServicePrice, type PriceItem, type PriceList } from './api'
+import { priceText, referenceText } from './logic'
 
 const ERROR_TEXT: Record<string, string> = {
   PRICE_PERIOD_OVERLAP: 'Hạng mục này đã có giá trong cùng khoảng thời gian.',
@@ -23,13 +23,6 @@ const ERROR_TEXT: Record<string, string> = {
 function validity(item: PriceItem): string | null {
   const row = item.prices.find(p => p.price === item.currentPrice && p.validTo)
   return row?.validTo ? `Hiệu lực đến ${formatDate(row.validTo)}` : null
-}
-
-/** "350.000 ₫" or "200.000–350.000 ₫" when the milestones differ. */
-function referenceText(item: PriceItem): string {
-  return item.referencePriceMin === item.referencePrice
-    ? formatVnd(item.referencePrice)
-    : `${formatVnd(item.referencePriceMin).replace(' ₫', '')}–${formatVnd(item.referencePrice)}`
 }
 
 /** Same service at several milestones (QA ISSUE-003): one row, one price for all its codes. */
@@ -126,7 +119,7 @@ export default function PriceListPage() {
                 <SelectInput label="Dòng xe" value={list.modelId} onChange={event => void load(event.target.value)}>
                   {list.models.map(model => (
                     <option key={model} value={model}>
-                      {model}
+                      {list.modelNames?.[model] ?? model}
                     </option>
                   ))}
                 </SelectInput>
@@ -136,8 +129,8 @@ export default function PriceListPage() {
               </Badge>
             </div>
             <div className="flex flex-wrap items-end gap-3 pt-3 border-t border-border">
-              <div className="w-36">
-                <TextInput label="Giá tham khảo ±" inputMode="numeric" value={percent} onChange={event => setPercent(event.target.value.replace(/[^\d-]/g, ''))} aside={<span className="text-xs text-muted">%</span>} />
+              <div className="w-60">
+                <TextInput label="Chênh so với giá tham khảo (%)" inputMode="numeric" value={percent} onChange={event => setPercent(event.target.value.replace(/[^\d-]/g, ''))} />
               </div>
               <Button variant="secondary" icon={<Copy className="w-4 h-4" />} loading={copying} onClick={() => void copy()}>
                 Sao chép cho hạng mục chưa có giá
@@ -147,7 +140,7 @@ export default function PriceListPage() {
 
           <Card className="p-0 overflow-hidden">
             <div className="px-5 pt-4">
-              <CardHeader title={`Hạng mục · ${list.modelId}`} />
+              <CardHeader title={`Hạng mục · ${list.modelNames?.[list.modelId] ?? list.modelId}`} />
             </div>
             <ul className="divide-y divide-border">
               {list.items.map(item => (
@@ -155,7 +148,7 @@ export default function PriceListPage() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-foreground">{item.itemName}</p>
                     <p className="text-xs text-muted">
-                      {milestonesText(item) && `${milestonesText(item)} · `}Tham khảo <span className="font-mono">{referenceText(item)}</span>
+                      {milestonesText(item) && `${milestonesText(item)} · `}Tham khảo <span className={item.referencePrice > 0 ? 'font-mono' : undefined}>{referenceText(item)}</span>
                       {validity(item) && ` · ${validity(item)}`}
                     </p>
                   </div>
@@ -172,7 +165,7 @@ export default function PriceListPage() {
                   ) : (
                     <div className="flex items-center gap-3 sm:justify-end">
                       {item.currentPrice !== null ? (
-                        <span className="font-mono text-sm text-foreground">{formatVnd(item.currentPrice)}</span>
+                        <span className={`text-sm text-foreground ${item.currentPrice > 0 ? 'font-mono' : ''}`}>{priceText(item.currentPrice)}</span>
                       ) : item.pricedCodes > 0 ? (
                         <span className="text-xs text-warning">
                           {item.mixedPrices ? 'Giá khác nhau giữa các mốc' : `Có giá ${item.pricedCodes}/${item.itemCodes.length} mốc`}

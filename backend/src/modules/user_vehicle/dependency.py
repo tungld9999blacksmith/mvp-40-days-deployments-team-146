@@ -12,7 +12,7 @@ from src.common.core.identity.vehicle_user import OnboardingStatus, UserStatus, 
 from src.common.core.identity.workshop_owner import WorkshopOwner
 from src.common.core.vehicle import UserVehicle
 from src.config import get_settings
-from src.infrastructure.supabase.db import get_session
+from src.infrastructure.supabase.db import end_read_transaction, get_session
 from src.modules.oauth.dependency import verify_firebase_token
 from src.modules.oem_integration.dependency import get_sync_scheduler
 from src.modules.oem_integration.ports import SyncScheduler
@@ -55,6 +55,7 @@ def require_active_vehicle_owner(
         raise errors.AccountLockedError(suspended=user.status == UserStatus.SUSPENDED)
     if user.onboarding_status != OnboardingStatus.ACTIVE:
         raise errors.OnboardingRequiredError()
+    end_read_transaction(session)  # async routes await Redis next
     return user
 
 

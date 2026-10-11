@@ -35,6 +35,7 @@ import { invalidateUpcomingBookings } from '../hooks/useUpcomingBookings'
 import BookingStatusBanner from '../components/BookingStatusBanner'
 import CancelBookingDialog from '../components/CancelBookingDialog'
 import DecisionCard from '../components/DecisionCard'
+import PhoneDecisionsCard from '../components/PhoneDecisionsCard'
 import PriceLinesCard from '../components/PriceLinesCard'
 import HistoryTimeline from '../components/HistoryTimeline'
 import TicketQr from '../components/TicketQr'
@@ -45,6 +46,7 @@ import { bookingErrorMessage, formatLongDay, secondsLeft, slotLabel } from '../u
 const BLOCKED_REASON: Record<string, string> = {
   TOO_CLOSE_TO_APPOINTMENT: 'Đã quá hạn đổi lịch (trước giờ hẹn 60 phút). Vui lòng liên hệ xưởng.',
   MAX_RESCHEDULES_REACHED: 'Bạn đã đổi lịch tối đa 2 lần cho lịch hẹn này.',
+  NOT_CONFIRMED: 'Bạn có thể đổi hoặc huỷ lịch sau khi xưởng xác nhận.',
 }
 
 const CURRENT_STATUS_TOAST: Record<string, string> = {
@@ -211,6 +213,11 @@ export default function BookingTicket() {
   const can = (action: string) => current.allowedActions.includes(action as never)
   const showProgress = ['CHECKED_IN', 'IN_PROGRESS', 'COMPLETED'].includes(current.status)
   const status = BOOKING_STATUS[current.status]
+  // While the hold can still be cancelled, "huỷ sau khi xưởng xác nhận" would contradict the hold notice.
+  const blockedHint =
+    !can('RESCHEDULE') && !(current.rescheduleBlockedReason === 'NOT_CONFIRMED' && holdLeft > 0)
+      ? BLOCKED_REASON[current.rescheduleBlockedReason ?? '']
+      : undefined
 
   async function attend() {
     if (confirming) return
@@ -406,6 +413,7 @@ export default function BookingTicket() {
           onBusyChange={busy => (decisionBusy.current = busy)}
         />
       )}
+      {twoTier && <PhoneDecisionsCard view={twoTier} onChange={setLines} onReload={loadLines} announce={setLiveMessage} />}
 
       {showProgress && <ProgressTimeline bookingId={current.bookingId} workshop={current.workshop} />}
 
@@ -464,7 +472,7 @@ export default function BookingTicket() {
         />
       )}
 
-      {(can('CONFIRM_ATTENDANCE') || can('RESCHEDULE') || can('CANCEL') || current.rescheduleBlockedReason) && (
+      {(can('CONFIRM_ATTENDANCE') || can('RESCHEDULE') || can('CANCEL') || blockedHint) && (
         <div
           ref={actionsRef}
           className="fixed sm:static bottom-0 inset-x-0 lg:left-60 z-20 sm:z-auto bg-surface/95 sm:bg-transparent backdrop-blur sm:backdrop-blur-none border-t border-border sm:border-0 px-4 py-3 sm:p-0 space-y-2"
@@ -486,9 +494,7 @@ export default function BookingTicket() {
               </Button>
             )}
           </div>
-          {!can('RESCHEDULE') && current.rescheduleBlockedReason && BLOCKED_REASON[current.rescheduleBlockedReason] && (
-            <p className="text-xs text-muted">{BLOCKED_REASON[current.rescheduleBlockedReason]}</p>
-          )}
+          {blockedHint && <p className="text-xs text-muted">{blockedHint}</p>}
         </div>
       )}
 

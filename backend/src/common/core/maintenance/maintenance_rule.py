@@ -59,6 +59,9 @@ class MaintenanceRule(SQLModel, table=True):
     is_covered_by_warranty: bool = Field(
         default=False, sa_column=Column(Boolean, nullable=False, server_default="false")
     )
+    # Set by scripts/seed_maintenance_rules.py from the maintenance schedule document;
+    # declining a safety-critical booking line needs the owner's extra confirmation.
+    is_safety_critical: bool = Field(default=False, sa_column=Column(Boolean, nullable=False, server_default="false"))
     estimated_cost: Decimal = Field(sa_column=Column(Numeric(12, 2), nullable=False))
     estimated_duration_minutes: int = Field(sa_column=Column(Integer, nullable=False))
 

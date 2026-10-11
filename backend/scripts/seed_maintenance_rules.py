@@ -16,6 +16,10 @@ lists the bookings, quotes and reminders that point at a milestone being dropped
 are kept as history and are not changed. Deleting a rule sets ``quote_item.maintenance_rule_id``
 to NULL (quotes keep their name/price snapshot) and cascades to ``maintenance_rule_source``.
 
+``is_safety_critical`` comes from the item name (``SAFETY_PHRASES``, taken from the
+maintenance schedule document). ``--safety-only`` sets just that column on the rules
+already in the database, leaving prices and milestones alone.
+
 Run from backend/ (reads the root .env):
     python scripts/seed_maintenance_rules.py                 # dry run: print the plan
     python scripts/seed_maintenance_rules.py --apply         # write to the database
@@ -23,6 +27,8 @@ Run from backend/ (reads the root .env):
     python scripts/seed_maintenance_rules.py --source other-dump.json --duration 45
     python scripts/seed_maintenance_rules.py --replace       # dry run + inventory of what gets dropped
     python scripts/seed_maintenance_rules.py --replace --apply
+    python scripts/seed_maintenance_rules.py --safety-only   # dry run: rules whose flag changes
+    python scripts/seed_maintenance_rules.py --safety-only --apply
 """
 
 from __future__ import annotations
@@ -31,6 +37,7 @@ import argparse
 import json
 import re
 import sys
+import unicodedata
 from collections import Counter
 from decimal import Decimal
 from pathlib import Path
@@ -40,6 +47,49 @@ BACKEND_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_SOURCE = BACKEND_DIR / "mock-ev-system" / "seed-data" / "ev-mock-dump.json"
 DEFAULT_DURATION_MINUTES = 30
 ITEM_CODE_RE = re.compile(r"^[A-Z0-9_]{2,50}$")  # ck_maintenance_rule_item_code_format
+
+# Safety-critical items (open question 3 of docs/designs/bao-gia-hai-tang.md, decided
+# 2026-10-11): the groups of data/knowledge/raw/lich_bao_duong_ALL.md the team counts as
+# safety. The document names the items but never labels them "safety", apart from the
+# brake pads it says to check "để đảm bảo an toàn". Suspension, the high-voltage battery
+# and ADAS are not in the list. Phrases match whole words with diacritics kept, so
+# "lại" (again) is not "lái" (steering) and "lớp" (layer) is not "lốp" (tyre).
+SAFETY_PHRASES: tuple[str, ...] = (
+    # Phanh: "Tay phanh", "Dầu phanh", "Má và đĩa phanh trước", "Đường phanh & đường nối"
+    "phanh",
+    # Lốp, bánh xe: "Tình trạng lốp & áp suất lốp", "Đảo lốp", "Góc đặt bánh xe", "Vành xe trước"
+    "lốp",
+    "bánh xe",
+    "vành xe",
+    # Lái: "Vô lăng & các đăng lái", "Thước lái và khớp nối cầu", "Dầu trợ lực lái"
+    "vô lăng",
+    "đăng lái",
+    "thước lái",
+    "trợ lực lái",
+    "hệ thống lái",
+    "tay lái",
+    # Đèn, còi, gạt nước: "Đèn, còi, gạt nước kính chắn gió và nước rửa kính" ("gạt mưa" is the same part)
+    "đèn",
+    "còi",
+    "gạt nước",
+    "gạt mưa",
+    # "Dây an toàn, khóa cài & bộ neo"
+    "dây an toàn",
+)
+
+
+_NON_WORD_RE = re.compile(r"[^\w]+")
+
+
+def _words(text: str) -> str:
+    """Lower-case NFC words separated by single spaces, padded: `` thay má phanh ``."""
+    words = _NON_WORD_RE.sub(" ", unicodedata.normalize("NFC", text).lower()).split()
+    return f" {' '.join(words)} "
+
+
+def is_safety_item(item_name: str) -> bool:
+    words = _words(item_name)
+    return any(_words(phrase) in words for phrase in SAFETY_PHRASES)
 
 
 def load_dump(path: Path) -> dict[str, list[dict[str, Any]]]:
@@ -101,6 +151,7 @@ def build_rules(
                     "item_code": item_code(item["item_id"]),
                     "item_name": item["item_name"],
                     "is_covered_by_warranty": bool(item.get("is_covered_by_warranty", False)),
+                    "is_safety_critical": is_safety_item(item["item_name"]),
                     "estimated_cost": Decimal(str(item.get("reference_price") or 0)),
                     "estimated_duration_minutes": duration_minutes,
                 }
@@ -246,6 +297,7 @@ def _upsert(session: Any, rows: list[dict[str, Any]]) -> tuple[int, int]:
             "month_milestone": stmt.excluded.month_milestone,
             "item_name": stmt.excluded.item_name,
             "is_covered_by_warranty": stmt.excluded.is_covered_by_warranty,
+            "is_safety_critical": stmt.excluded.is_safety_critical,
             "estimated_cost": stmt.excluded.estimated_cost,
             "estimated_duration_minutes": stmt.excluded.estimated_duration_minutes,
             "updated_at": func.now(),
@@ -254,6 +306,50 @@ def _upsert(session: Any, rows: list[dict[str, Any]]) -> tuple[int, int]:
     session.exec(stmt)
     updated = len(keys & existing)
     return len(keys) - updated, updated
+
+
+SafetyChange = tuple[Any, str, str, bool]  # (rule id, item_code, item_name, new is_safety_critical)
+
+
+def safety_changes(session: Any, models: set[str] | None = None) -> list[SafetyChange]:
+    """Rules whose ``is_safety_critical`` differs from ``is_safety_item(item_name)``."""
+    from sqlmodel import select
+
+    from src.common.core.maintenance.maintenance_rule import MaintenanceRule
+
+    stmt = select(MaintenanceRule)
+    if models:
+        stmt = stmt.where(MaintenanceRule.model_id.in_(models))
+    return [
+        (rule.id, rule.item_code, rule.item_name, is_safety_item(rule.item_name))
+        for rule in session.exec(stmt).all()
+        if rule.is_safety_critical != is_safety_item(rule.item_name)
+    ]
+
+
+def apply_safety_flags(session: Any, changes: list[SafetyChange]) -> int:
+    """Write the flags of ``changes`` and commit; return the number of rules changed."""
+    from sqlalchemy import func, update
+
+    from src.common.core.maintenance.maintenance_rule import MaintenanceRule
+
+    for flag in (True, False):
+        ids = [rule_id for rule_id, _, _, new in changes if new is flag]
+        if ids:
+            session.exec(
+                update(MaintenanceRule)
+                .where(MaintenanceRule.id.in_(ids))
+                .values(is_safety_critical=flag, updated_at=func.now())
+            )
+    session.commit()
+    return len(changes)
+
+
+def _print_safety(changes: list[SafetyChange]) -> None:
+    per_item = Counter((code, name, new) for _, code, name, new in changes)
+    print(f"Safety flags: {len(changes)} rules to change")
+    for (code, name, new), count in sorted(per_item.items()):
+        print(f"  {code} {name!r}: -> {'safety' if new else 'not safety'} ({count} rules)")
 
 
 def _print_plan(rows: list[dict[str, Any]], warnings: list[str]) -> None:
@@ -313,6 +409,11 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Delete rules of the selected models that the source no longer has (one transaction)",
     )
+    parser.add_argument(
+        "--safety-only",
+        action="store_true",
+        help="Only set is_safety_critical of the rules already in the database (no source, no other column)",
+    )
     parser.add_argument("--apply", action="store_true", help="Write to the database (default: dry run)")
     args = parser.parse_args(argv)
 
@@ -322,6 +423,18 @@ def main(argv: list[str] | None = None) -> int:
         sys.stderr.reconfigure(encoding="utf-8")
     if args.duration <= 0:
         parser.error("--duration must be > 0")
+    if args.safety_only and args.replace:
+        parser.error("--safety-only cannot be combined with --replace")
+
+    if args.safety_only:
+        with _session() as session:
+            changes = safety_changes(session, set(args.models or []))
+            _print_safety(changes)
+            if not args.apply:
+                print("Dry run — add --apply to write.")
+                return 0
+            print(f"Applied: {apply_safety_flags(session, changes)} rules changed.")
+        return 0
 
     rows, warnings = build_rules(load_dump(args.source), models=args.models, duration_minutes=args.duration)
     print(f"Source: {args.source}")

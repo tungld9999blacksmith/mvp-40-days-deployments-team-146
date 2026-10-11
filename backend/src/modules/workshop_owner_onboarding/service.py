@@ -72,6 +72,11 @@ def _now() -> datetime:
     return datetime.now(UTC)
 
 
+def _to_decimal(value: float | None) -> Decimal | None:
+    """OEM coordinates arrive as floats; the workshop columns are Numeric(9, 6)."""
+    return None if value is None else Decimal(str(round(value, 6)))
+
+
 def _aware(value: datetime | None) -> datetime | None:
     """SQLite returns naive datetimes; treat them as UTC."""
     if value is not None and value.tzinfo is None:
@@ -487,8 +492,13 @@ class WorkshopOnboardingService:
         workshop.total_technicians = registration.total_technicians
         workshop.emergency_slots_reserved = registration.emergency_slots_reserved
         workshop.hotline = registration.hotline
-        workshop.latitude = registration.latitude
-        workshop.longitude = registration.longitude
+        # Coordinates the owner left blank fall back to the OEM's (real Places data).
+        if registration.latitude is not None and registration.longitude is not None:
+            workshop.latitude = registration.latitude
+            workshop.longitude = registration.longitude
+        else:
+            workshop.latitude = _to_decimal(center.latitude)
+            workshop.longitude = _to_decimal(center.longitude)
         workshop.owner_id = owner.id
         workshop.status = WorkshopStatus.ACTIVE
         workshop.onboarded_at = _now()

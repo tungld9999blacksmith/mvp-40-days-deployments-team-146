@@ -95,9 +95,18 @@ export function toFeedEntry(item: NotificationItem): FeedEntry | null {
     }
   }
   if (item.kind === 'BOOKING_LINE' && item.bookingLine) {
-    const { bookingId, bookingCode, kind, status, itemName, price, workshopName } = item.bookingLine
+    const { bookingId, bookingCode, kind, status, itemName, price, workshopName, decidedVia, phoneConfirmedBy } = item.bookingLine
     const amount = money(price)
     const ticket = `/bookings/${encodeURIComponent(bookingId)}`
+    if (decidedVia === 'PHONE' && (status === 'APPROVED' || status === 'DECLINED')) {
+      return {
+        ...base,
+        tone: item.unread ? 'warning' : 'info',
+        title: 'Xưởng ghi nhận quyết định qua điện thoại',
+        message: `${workshopName ?? 'Xưởng'} ghi nhận (${phoneConfirmedBy ?? 'qua điện thoại'}) rằng bạn ${status === 'APPROVED' ? 'đồng ý làm' : 'không làm'} ${itemName}${amount ? ` · ${amount}` : ''} (${bookingCode}).${item.unread ? ' Nếu không đúng, bấm "Tôi không đồng ý" trên phiếu trước khi xe hoàn tất.' : ''}`,
+        action: { label: 'Mở phiếu', to: ticket },
+      }
+    }
     if (status === 'PROPOSED') {
       return {
         ...base,

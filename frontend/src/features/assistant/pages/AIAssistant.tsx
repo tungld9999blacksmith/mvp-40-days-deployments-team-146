@@ -26,6 +26,7 @@ import { consumeQuickBookingIntent } from '../quickBooking/entry'
 import { QuickBookingProvider, type QuickBookingActions } from '../quickBooking/QuickBookingContext'
 import { useProposalActions } from '../quickBooking/useProposalActions'
 import { getChatTransport } from '../transport/ChatTransport'
+import { MemoryDrawer } from '../components/MemoryDrawer'
 import type { CitationDto } from '../types'
 
 /** Icon and one-line hint per SUGGESTED_QUESTIONS entry, same order. */
@@ -60,6 +61,7 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
   const messageSeqParam = searchParams.get('messageSeq')
   const [text, setText] = useState('')
   const [historyOpen, setHistoryOpen] = useState(false)
+  const [memoryOpen, setMemoryOpen] = useState(false)
   const [contextOpen, setContextOpen] = useState(false)
   const [citation, setCitation] = useState<CitationDto | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
@@ -252,6 +254,7 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
           <Button variant="ghost" size="sm" onClick={() => setHistoryOpen(true)} icon={<History className="w-4 h-4" />} aria-label="Lịch sử">
             <span className="hidden sm:inline">Lịch sử</span>
           </Button>
+          {chat.transportKind === 'http' && <Button variant="ghost" size="sm" onClick={() => setMemoryOpen(true)} aria-label="Thông tin đã ghi nhớ">Ghi nhớ</Button>}
           <button
             type="button"
             onClick={() => navigate(`/ai/new${vehicleQuery}`)}
@@ -363,6 +366,7 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
       </Drawer>
 
       <CitationDrawer citation={citation} onClose={() => setCitation(null)} />
+      <MemoryDrawer open={memoryOpen} onClose={() => setMemoryOpen(false)} userVehicleId={vehicle.userVehicleId} />
 
       <ConversationHistoryDrawer
         open={historyOpen}

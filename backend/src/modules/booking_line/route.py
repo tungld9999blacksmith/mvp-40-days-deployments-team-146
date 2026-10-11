@@ -1,8 +1,9 @@
 """Two-tier booking pricing — HTTP endpoints (docs/designs/bao-gia-hai-tang.md).
 
-Vehicle owner: read the lines of a booking and decide on PROPOSED lines (the only
-way a line is approved or declined). Workshop owner: confirm reference prices
-after check-in, propose / edit / withdraw extras, sign photo uploads.
+Vehicle owner: read the lines of a booking, decide on PROPOSED lines, dispute a
+decision the workshop recorded by phone. Workshop owner: confirm reference prices
+after check-in, propose / edit / withdraw extras, record the owner's answer given
+by phone, sign photo uploads.
 """
 
 from __future__ import annotations
@@ -61,6 +62,17 @@ def decide_booking_line(
     return schemas.LinesEnvelope(data=lines.decide(user, booking_id, line_id, payload))
 
 
+@router.post(
+    "/bookings/{bookingId}/lines/{lineId}/dispute",
+    response_model=schemas.LinesEnvelope,
+    summary='"Tôi không đồng ý": undo a decision the workshop recorded by phone (before COMPLETE)',
+)
+def dispute_booking_line(
+    payload: schemas.DisputeRequest, user: Owner, lines: Lines, booking_id: BookingIdPath, line_id: LineIdPath
+) -> schemas.LinesEnvelope:
+    return schemas.LinesEnvelope(data=lines.dispute(user, booking_id, line_id, payload))
+
+
 # ── workshop owner ──────────────────────────────────────────────────────────
 @workshop_router.get(
     "/bookings/{bookingId}/lines",
@@ -108,6 +120,20 @@ async def edit_booking_line(
 ) -> schemas.LinesEnvelope:
     scope.require_active()
     return schemas.LinesEnvelope(data=await lines.edit_line(scope.owner, scope.workshop, booking_id, line_id, payload))
+
+
+@workshop_router.post(
+    "/bookings/{bookingId}/lines/{lineId}/phone-decision",
+    response_model=schemas.LinesEnvelope,
+    summary="Record the owner's answer given by phone (the owner is told and can dispute it)",
+)
+async def record_phone_decision(
+    payload: schemas.PhoneDecisionRequest, scope: Scope, lines: Lines, booking_id: BookingIdPath, line_id: LineIdPath
+) -> schemas.LinesEnvelope:
+    scope.require_active()
+    return schemas.LinesEnvelope(
+        data=await lines.record_phone_decision(scope.owner, scope.workshop, booking_id, line_id, payload)
+    )
 
 
 @workshop_router.post(

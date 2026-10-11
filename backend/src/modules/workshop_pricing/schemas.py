@@ -48,6 +48,8 @@ class PriceListOut(CamelModel):
     items: list[PriceItemOut]
     priced_count: int
     models: list[str]
+    # "VF8 Plus" per model id when a verified vehicle names it; missing ids show their code.
+    model_names: dict[str, str] = Field(default_factory=dict)
 
 
 class PriceListEnvelope(CamelModel):

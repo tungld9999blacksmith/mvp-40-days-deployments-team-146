@@ -4,6 +4,8 @@ Mỗi nhóm entity có một class Service, nhận Session qua constructor.
 Router chỉ gọi service — không truy vấn DB trực tiếp.
 """
 
+import re
+import unicodedata
 from datetime import date
 from decimal import Decimal
 from uuid import uuid4
@@ -12,6 +14,7 @@ from sqlalchemy import String
 from sqlmodel import Session, select
 
 from .models import (
+    CenterType,
     MaintenanceItem,
     MaintenanceSchedule,
     Owner,
@@ -24,7 +27,6 @@ from .models import (
     WarrantyClaim,
     WarrantyPolicy,
 )
-
 
 # ── Vehicle & Owner ──────────────────────────────────────────────────
 
@@ -217,6 +219,15 @@ class MaintenanceService:
 # ── Lookup ───────────────────────────────────────────────────────────
 
 
+def fold_text(value: str | None) -> str:
+    """Accent-, case- and punctuation-insensitive form: "TP. Hồ Chí Minh" → "tp ho chi minh"."""
+    if not value:
+        return ""
+    text = unicodedata.normalize("NFD", value.replace("đ", "d").replace("Đ", "D"))
+    text = "".join(ch for ch in text if not unicodedata.combining(ch)).casefold()
+    return " ".join(re.sub(r"[^0-9a-z]+", " ", text).split())
+
+
 class LookupService:
     def __init__(self, session: Session) -> None:
         self.session = session
@@ -227,8 +238,33 @@ class LookupService:
     def get_model(self, model_id: str) -> VehicleModel | None:
         return self.session.get(VehicleModel, model_id)
 
-    def list_service_centers(self) -> list[ServiceCenter]:
-        return list(self.session.exec(select(ServiceCenter)).all())
+    def search_service_centers(
+        self,
+        *,
+        q: str | None = None,
+        region: str | None = None,
+        center_type: CenterType | None = None,
+        page: int = 1,
+        page_size: int = 20,
+    ) -> tuple[int, list[ServiceCenter]]:
+        """Filter (accent/case-insensitive), sort by region then name, and return (total, page items).
+
+        ``q`` matches the name or address; ``region`` matches the province name.
+        Filtering runs in Python: the mock holds at most a few thousand centers.
+        """
+        stmt = select(ServiceCenter)
+        if center_type is not None:
+            stmt = stmt.where(ServiceCenter.type == center_type)
+        centers = list(self.session.exec(stmt).all())
+        if region:
+            needle = fold_text(region)
+            centers = [c for c in centers if fold_text(c.region) == needle]
+        if q:
+            needle = fold_text(q)
+            centers = [c for c in centers if needle in fold_text(f"{c.name} {c.address or ''}")]
+        centers.sort(key=lambda c: (fold_text(c.region), fold_text(c.name), c.center_id))
+        start = (page - 1) * page_size
+        return len(centers), centers[start : start + page_size]
 
     def get_service_center(self, center_id: str) -> ServiceCenter | None:
         return self.session.get(ServiceCenter, center_id)

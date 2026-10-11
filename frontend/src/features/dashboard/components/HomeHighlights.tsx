@@ -18,7 +18,7 @@ export default function HomeHighlights() {
   if (!next && results === 0) return null
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 mb-6">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 mb-6">
       {next && (
         <Link
           to={`/bookings/${encodeURIComponent(next.bookingId)}?src=APP`}

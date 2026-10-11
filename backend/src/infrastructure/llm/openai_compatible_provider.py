@@ -27,6 +27,7 @@ from .base import (
     LLMResponse,
     LLMUsage,
 )
+from .openrouter_routing import next_endpoint_kwargs
 
 
 class OpenAICompatibleProvider(LLMProvider):
@@ -40,7 +41,8 @@ class OpenAICompatibleProvider(LLMProvider):
         default_max_tokens: int | None = None,
         default_endpoint_order: list[str] | None = None,
     ) -> None:
-        self._client = openai.AsyncOpenAI(api_key=api_key, base_url=base_url)
+        client_options = {"max_retries": 0} if provider_name == "openrouter" else {}
+        self._client = openai.AsyncOpenAI(api_key=api_key, base_url=base_url, **client_options)
         self._model = model
         self._provider_name = provider_name
         self._default_max_tokens = default_max_tokens
@@ -66,7 +68,7 @@ class OpenAICompatibleProvider(LLMProvider):
         kwargs = self._build_kwargs(messages, config)
 
         try:
-            response = await self._client.chat.completions.create(**kwargs)
+            response = await self._create_with_endpoint_fallback(kwargs)
         except openai.AuthenticationError as exc:
             raise LLMAuthError(str(exc)) from exc
         except openai.RateLimitError as exc:
@@ -101,13 +103,27 @@ class OpenAICompatibleProvider(LLMProvider):
         config = config or GenerationConfig()
         kwargs = self._build_kwargs(messages, config)
         kwargs["stream"] = True
+        emitted = False
 
         try:
-            stream = await self._client.chat.completions.create(**kwargs)
-            async for chunk in stream:
-                delta = chunk.choices[0].delta.content if chunk.choices else None
-                if delta:
-                    yield delta
+            while True:
+                stream = None
+                try:
+                    stream = await self._client.chat.completions.create(**kwargs)
+                    async for chunk in stream:
+                        delta = chunk.choices[0].delta.content if chunk.choices else None
+                        if delta:
+                            emitted = True
+                            yield delta
+                    break
+                except openai.RateLimitError:
+                    retry = None if emitted or self._provider_name != "openrouter" else next_endpoint_kwargs(kwargs)
+                    if retry is None:
+                        raise
+                    kwargs = retry
+                finally:
+                    if stream is not None:
+                        await stream.close()
         except openai.AuthenticationError as exc:
             raise LLMAuthError(str(exc)) from exc
         except openai.RateLimitError as exc:
@@ -118,6 +134,16 @@ class OpenAICompatibleProvider(LLMProvider):
             raise LLMInvalidRequestError(str(exc)) from exc
         except openai.APIConnectionError as exc:
             raise LLMProviderUnavailableError(str(exc)) from exc
+
+    async def _create_with_endpoint_fallback(self, kwargs):
+        while True:
+            try:
+                return await self._client.chat.completions.create(**kwargs)
+            except openai.RateLimitError:
+                retry = next_endpoint_kwargs(kwargs) if self._provider_name == "openrouter" else None
+                if retry is None:
+                    raise
+                kwargs = retry
 
     def _build_kwargs(
         self,
@@ -139,10 +165,10 @@ class OpenAICompatibleProvider(LLMProvider):
         if config.stop_sequences:
             kwargs["stop"] = config.stop_sequences
         kwargs.update(config.extra)
-        if self._default_endpoint_order:
+        if self._provider_name == "openrouter" or self._default_endpoint_order:
             body = kwargs.get("extra_body", {})
             # Explicit request routing overrides preferences; preserve features
             # such as require_parameters from the generation schema request.
-            routing = {"order": self._default_endpoint_order, "allow_fallbacks": True, **body.get("provider", {})}
+            routing = {"allow_fallbacks": True, **({"order": self._default_endpoint_order} if self._default_endpoint_order else {}), **body.get("provider", {})}
             kwargs["extra_body"] = {**body, "provider": routing}
         return kwargs

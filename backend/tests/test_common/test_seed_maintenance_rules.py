@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import unicodedata
 from decimal import Decimal
 from pathlib import Path
 
@@ -145,3 +146,98 @@ def test_replace_is_a_no_op_once_applied():
 
     assert seed.stale_keys(existing, rows, {"MDL-01"}) == set()
     assert seed.dropped_milestones(existing, rows, {"MDL-01"}) == {}
+
+
+# ── safety-critical items (data/knowledge/raw/lich_bao_duong_ALL.md) ──────────
+@pytest.mark.parametrize(
+    "name",
+    [
+        "Kiểm tra hệ thống phanh",
+        "Thay má phanh trước",
+        "Kiểm tra lốp & áp suất",
+        "Cân bằng & đảo lốp",
+        "Thay lốp (bộ 4)",
+        "Góc đặt bánh xe",
+        "Vô lăng & các đăng lái",
+        "Dầu trợ lực lái",
+        "Đèn, còi, gạt nước kính chắn gió và nước rửa kính",
+        "Dây an toàn, khóa cài & bộ neo",
+        "KIỂM TRA PHANH",
+    ],
+)
+def test_safety_items_from_the_schedule_document(name):
+    assert seed.is_safety_item(name)
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        # The diacritic-folding keyword list took "lại" for "lái" and "lớp" for "lốp".
+        "Kiểm tra lại hệ thống điều hoà",
+        "Phủ lớp ceramic",
+        "Lái thử sau sửa chữa",
+        "Thay dầu đến hạn",
+        # Groups the team left out of the safety list.
+        "Kiểm tra hệ thống treo",
+        "Kiểm tra pin cao áp & hệ thống BMS",
+        "Cân chỉnh hệ thống ADAS",
+        "Thay lọc gió điều hòa",
+    ],
+)
+def test_items_outside_the_safety_groups(name):
+    assert not seed.is_safety_item(name)
+
+
+def test_decomposed_unicode_names_still_match():
+    assert seed.is_safety_item(unicodedata.normalize("NFD", "Thay lốp (bộ 4)"))
+
+
+def test_rules_carry_the_safety_flag():
+    rows, _ = seed.build_rules(_dump(), models=["MDL-01"])
+
+    assert [(r["item_name"], r["is_safety_critical"]) for r in rows] == [
+        ("Kiểm tra phanh", True),
+        ("Kiểm tra lốp", True),
+        ("Thay lọc gió", False),
+    ]
+
+
+def test_safety_only_changes_just_the_flags_that_differ():
+    from sqlmodel import select
+
+    from src.common.core.maintenance.maintenance_rule import MaintenanceRule
+    from tests._maintenance import make_session
+
+    for session in make_session():
+        for model_id, code, name, flag in [
+            ("MDL-01", "MI_001", "Kiểm tra hệ thống phanh", False),
+            ("MDL-01", "MI_002", "Kiểm tra lại hệ thống điều hoà", True),
+            ("MDL-01", "MI_003", "Thay lọc gió điều hòa", False),
+            ("MDL-02", "MI_001", "Kiểm tra hệ thống phanh", False),
+        ]:
+            session.add(
+                MaintenanceRule(
+                    model_id=model_id,
+                    odo_milestone=15000,
+                    month_milestone=12,
+                    item_code=code,
+                    item_name=name,
+                    is_safety_critical=flag,
+                    estimated_cost=Decimal(100000),
+                    estimated_duration_minutes=30,
+                )
+            )
+        session.commit()
+
+        changes = seed.safety_changes(session, {"MDL-01"})
+        assert sorted((code, new) for _, code, _, new in changes) == [("MI_001", True), ("MI_002", False)]
+        assert seed.apply_safety_flags(session, changes) == 2
+
+        flags = {(r.model_id, r.item_code): r.is_safety_critical for r in session.exec(select(MaintenanceRule))}
+        assert flags == {
+            ("MDL-01", "MI_001"): True,
+            ("MDL-01", "MI_002"): False,
+            ("MDL-01", "MI_003"): False,
+            ("MDL-02", "MI_001"): False,  # not selected
+        }
+        assert seed.safety_changes(session, {"MDL-01"}) == []

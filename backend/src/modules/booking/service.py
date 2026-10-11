@@ -39,6 +39,7 @@ from src.common.core.workshop import (
 )
 from src.infrastructure.redis.errors import LockAcquireError
 from src.infrastructure.redis.toolkit import RedisToolkit
+from src.infrastructure.supabase.db import run_then_release
 from src.modules.booking_line.service import BookingLineService
 from src.modules.vehicle_owner_onboarding.domain import UserLocation
 
@@ -55,6 +56,7 @@ from .domain import (
     reschedule_block,
     slot_starts,
 )
+from .geo_index import WorkshopGeoIndex, active_workshops
 from .location import WorkshopLocationFinder
 from .reminders import BookingReminderScheduler, reminder_config
 from .state_machine import Actor, BookingStateMachine, TransitionConflict
@@ -90,6 +92,17 @@ class BookingService:
         self._keys = toolkit.keys
         self._finder = finder
         self._config = config
+        self.geo_index = WorkshopGeoIndex(
+            toolkit, ttl_seconds=config.geo_cache_ttl_seconds, candidates=config.geo_candidates
+        )
+
+    async def _read_in_threadpool(self, callback, *args, **kwargs):
+        """Run DB reads in a worker and end their transaction before the next Redis await.
+
+        A lock wait (up to ~2s) or token call must not pin a pooled connection
+        "idle in transaction" (the 2026-10-06 Supavisor outage).
+        """
+        return await run_in_threadpool(run_then_release, self._session, callback, *args, **kwargs)
 
     async def _write_in_threadpool(self, callback, *args, **kwargs):
         """Keep transaction locks until a blocking write has actually finished.
@@ -98,7 +111,7 @@ class BookingService:
         Finish that operation before unwinding its locks/session; a committed
         request can then be recovered through its durable retry receipt.
         """
-        write = asyncio.create_task(run_in_threadpool(callback, *args, **kwargs))
+        write = asyncio.create_task(run_in_threadpool(run_then_release, self._session, callback, *args, **kwargs))
         if not await wait_through_cancellation(write):
             return write.result()
         if (exc := write.exception()) is not None:
@@ -260,14 +273,19 @@ class BookingService:
         time_slot: time | None,
         limit: int | None,
     ) -> schemas.NearbyData:
-        data, has_vehicle = await run_in_threadpool(
+        anchor = await self._read_in_threadpool(self._resolve_anchor, user, anchor_source, lat, lng, query, province)
+        limit = limit or self._config.nearby_limit
+        candidate_ids = None
+        if anchor.has_coordinates:
+            # Redis GEO narrows the scan to the nearest workshops (None → full table scan).
+            candidate_ids = await self.geo_index.nearest_ids(
+                self._session, anchor.latitude, anchor.longitude, limit=limit
+            )
+        data, has_vehicle = await self._read_in_threadpool(
             self._find_nearby_sync,
             user,
-            anchor_source=anchor_source,
-            lat=lat,
-            lng=lng,
-            query=query,
-            province=province,
+            anchor=anchor,
+            candidate_ids=candidate_ids,
             user_vehicle_id=user_vehicle_id,
             d=d,
             time_slot=time_slot,
@@ -285,27 +303,23 @@ class BookingService:
         self,
         user: VehicleUser,
         *,
-        anchor_source,
-        lat,
-        lng,
-        query,
-        province,
+        anchor: LocationAnchor,
+        candidate_ids: list[UUID] | None,
         user_vehicle_id,
         d,
         time_slot,
-        limit,
+        limit: int,
     ) -> tuple[schemas.NearbyData, bool]:
-        anchor = self._resolve_anchor(user, anchor_source, lat, lng, query, province)
         vehicle = (
             self.get_owned_active_vehicle(user, user_vehicle_id) if user_vehicle_id else self._default_vehicle(user)
         )
 
-        workshops = self._session.exec(select(Workshop).where(Workshop.status == WorkshopStatus.ACTIVE)).all()
+        workshops = active_workshops(self._session, candidate_ids, user.preferred_workshop_id)
         ranked, ranked_by = self._finder.rank(
             anchor,
-            list(workshops),
+            workshops,
             preferred_workshop_id=user.preferred_workshop_id,
-            limit=limit or self._config.nearby_limit,
+            limit=limit,
         )
         if not ranked:
             raise errors.WorkshopNotFoundError()
@@ -407,7 +421,7 @@ class BookingService:
         with_alternatives: bool,
         reschedule_booking_id: UUID | None = None,
     ) -> schemas.AvailabilityData:
-        data, moving = await run_in_threadpool(
+        data, moving = await self._read_in_threadpool(
             self._availability_sync,
             user,
             workshop_id,
@@ -607,7 +621,7 @@ class BookingService:
                 ttl=self._config.lock_ttl_seconds,
                 wait_timeout=2.0,
             ):
-                replay = await run_in_threadpool(self._replay_booking_request, receipt)
+                replay = await self._read_in_threadpool(self._replay_booking_request, receipt)
                 if replay is not None:
                     return replay
                 workshop_id, d, t = await self._read_token(user, payload.confirmation_token)
@@ -672,8 +686,12 @@ class BookingService:
         booking to the message the owner confirmed (AC-F4-06). ``quote_id`` attaches an
         approved quote of the same vehicle and workshop (us-049 BR-1108).
         """
-        vehicle, workshop = await run_in_threadpool(self._validated_slot, user, user_vehicle_id, workshop_id, d, t)
-        quote = await run_in_threadpool(self._validate_quote, quote_id, vehicle, workshop_id) if quote_id else None
+        vehicle, workshop = await self._read_in_threadpool(
+            self._validated_slot, user, user_vehicle_id, workshop_id, d, t
+        )
+        quote = (
+            await self._read_in_threadpool(self._validate_quote, quote_id, vehicle, workshop_id) if quote_id else None
+        )
         return await self._create_for_vehicle(
             user,
             vehicle,
@@ -741,7 +759,7 @@ class BookingService:
         slot_lock = f"booking:{workshop.id}:{d.isoformat()}:{t.isoformat()}"
         try:
             async with self._locks.transaction(vehicle_lock, ttl=self._config.lock_ttl_seconds, wait_timeout=2.0):
-                await run_in_threadpool(self._ensure_no_open_booking, vehicle)
+                await self._read_in_threadpool(self._ensure_no_open_booking, vehicle)
                 try:
                     async with self._locks.transaction(slot_lock, ttl=self._config.lock_ttl_seconds, wait_timeout=2.0):
                         return await self._write_in_threadpool(
@@ -758,7 +776,9 @@ class BookingService:
                             receipt=receipt,
                         )
                 except LockAcquireError as exc:
-                    raise errors.SlotFullError(await run_in_threadpool(self._alternatives, workshop, d, t)) from exc
+                    raise errors.SlotFullError(
+                        await self._read_in_threadpool(self._alternatives, workshop, d, t)
+                    ) from exc
         except LockAcquireError as exc:  # another booking for this vehicle is in flight
             raise errors.OpenBookingExistsError() from exc
 
@@ -932,11 +952,11 @@ class BookingService:
 
     async def reschedule(self, user: VehicleUser, booking_id: UUID, token: str, *, source: str = "APP") -> Booking:
         """API-BT-04 — move a confirmed booking atomically; same id and code (BR-1205)."""
-        booking = await run_in_threadpool(self._owned_booking, user, booking_id)
+        booking = await self._read_in_threadpool(self._owned_booking, user, booking_id)
         slot = await self._consume_reschedule_token(user, booking_id, token)
-        workshop = await run_in_threadpool(self._get_active_workshop, slot["workshop_id"])
+        workshop = await self._read_in_threadpool(self._get_active_workshop, slot["workshop_id"])
         new_d, new_t = slot["date"], slot["time_slot"]
-        if not await run_in_threadpool(self._slot_in_hours, workshop.id, new_d, new_t):
+        if not await self._read_in_threadpool(self._slot_in_hours, workshop.id, new_d, new_t):
             raise errors.SlotOutOfHoursError()
 
         # Lock both slots in a stable order so two crossing moves cannot deadlock.

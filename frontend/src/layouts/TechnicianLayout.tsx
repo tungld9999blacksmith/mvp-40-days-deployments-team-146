@@ -1,14 +1,17 @@
 import { Bell, CalendarDays, FileText, Gauge, LayoutDashboard, QrCode, Settings2, Tags, Users } from 'lucide-react'
 import { useWorkshopAuth } from '@/features/workshop-auth/context/WorkshopAuthContext'
+import { legacyQuotesAllowed, usePricingFlow } from '@/features/booking-lines/flow'
 import AppLayout, { type NavItem } from './AppLayout'
 
 /** Workshop Portal shell (guarded by RequireActiveWorkshopOwner). */
 export default function TechnicianLayout() {
   const { displayName, owner, workshop, logout } = useWorkshopAuth()
+  // two_tier creates no quotes; old ones stay reachable from their booking (design review D1 = A).
+  const quotesInNav = legacyQuotesAllowed(usePricingFlow())
   const nav: NavItem[] = [
     { to: '/technician', label: 'Dashboard', icon: LayoutDashboard, end: true },
     { to: '/technician/board', label: 'Lịch hẹn', icon: CalendarDays },
-    { to: '/technician/quotes', label: 'Báo giá', icon: FileText },
+    ...(quotesInNav ? [{ to: '/technician/quotes', label: 'Báo giá', icon: FileText }] : []),
     { to: '/technician/check-in', label: 'Check-in', icon: QrCode },
     { to: '/technician/capacity', label: 'Sức chứa', icon: Gauge },
     { to: '/technician/price-list', label: 'Bảng giá', icon: Tags },

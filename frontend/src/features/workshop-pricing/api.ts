@@ -28,6 +28,8 @@ export interface PriceList {
   items: PriceItem[]
   pricedCount: number
   models: string[]
+  /** "VF8 Plus" per model id when known; other ids show their code. */
+  modelNames?: Record<string, string>
 }
 
 const BASE = '/workshop-owner/price-list'

@@ -4,7 +4,7 @@ import logging
 import os
 from typing import Any
 
-from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
@@ -93,20 +93,20 @@ def get_agent_llm(*, fallback: bool = False) -> Any:
     max_retries = 0 if not fallback and fallback_provider(settings) else 1
 
     if settings.llm_provider == "openrouter":
-        from langchain_openai import ChatOpenAI
+        from src.infrastructure.llm.openrouter_chat import OpenRouterChatOpenAI
 
         if not settings.openrouter_api_key.strip():
             raise ValueError("OPENROUTER_API_KEY is required when LLM_PROVIDER=openrouter")
         endpoints = settings.openrouter_endpoints_for_stage("agent")
-        routing = {"extra_body": {"provider": {"order": list(endpoints), "allow_fallbacks": True}}} if endpoints else {}
-        return ChatOpenAI(
+        routing = {"extra_body": {"provider": {"allow_fallbacks": True, **({"order": list(endpoints)} if endpoints else {})}}}
+        return OpenRouterChatOpenAI(
             model=settings.openrouter_model,
             api_key=SecretStr(settings.openrouter_api_key),
             base_url=settings.openrouter_base_url,
             max_tokens=settings.openrouter_max_tokens,
             temperature=0.2,
             timeout=settings.llm_call_timeout_seconds,
-            max_retries=max_retries,
+            max_retries=0,
             **routing,
         )
 
@@ -158,6 +158,7 @@ def build_graph(
     collect_citations: bool = True,
     use_llm_fallback: bool = False,
     tool_call_reviewer: Any | None = None,
+    memory_settings: Any | None = None,
 ) -> Any:
     """Xây dựng StateGraph ReAct cho Agent EV Care theo kiến trúc Single Orchestrator.
 
@@ -174,6 +175,7 @@ def build_graph(
     bound_tools = tools if tools is not None else CUSTOMER_AGENT_TOOLS
     model_with_tools = model.bind_tools(bound_tools)
     settings = get_settings()
+    memory_config = memory_settings if memory_settings is not None else settings
     if llm is None and tool_call_reviewer is None and settings.llm_booking_check_enabled:
         from .tool_review import review_tool_call
 
@@ -193,7 +195,7 @@ def build_graph(
         set(),
     )
 
-    async def agent_node(state: AgentState) -> dict[str, Any]:
+    async def agent_node(state: AgentState, config: RunnableConfig) -> dict[str, Any]:
         """Node LLM suy luận, nhận context xe và quyết định gọi tool hoặc trả lời."""
         messages: list[BaseMessage] = list(state.get("messages", []))
 
@@ -221,6 +223,31 @@ def build_graph(
         # Đảm bảo SystemMessage ở đầu luồng hội thoại
         has_system = any(isinstance(m, SystemMessage) for m in messages)
         full_messages = messages if has_system else [SystemMessage(content=system_instruction)] + messages
+
+        # Per-turn recall is deliberately excluded from checkpoint state and metadata.
+        preferences = config.get("configurable", {}).get("__memory_preferences", [])
+        if any(getattr(tool, "name", "") == "remember_preference" for tool in bound_tools):
+            from .memory_guard import current_preference_choice, verified_preference_recall
+
+            # Pure preference reads/one-time repetitions need no model or business
+            # tools. Resolve before the model can invent a key or choose a tool.
+            direct = verified_preference_recall(AIMessage(content=""), messages, preferences)
+            direct = current_preference_choice(direct, messages)
+            if direct.content:
+                return {"messages": init_messages + [direct], "response": direct.content, "citations": []}
+        if memory_config.agent_memory_context_mode != "off" or state.get("memory_summary") or preferences:
+            from .memory_context import build_memory_context
+
+            try:
+                bounded = build_memory_context(messages, system_instruction, memory_config,
+                    summary=state.get("memory_summary"), preferences=preferences, tools=bound_tools)
+            except ValueError:
+                if memory_config.agent_memory_context_mode != "shadow" or state.get("memory_summary") or preferences:
+                    raise
+                logger.info("agent_memory_shadow_context_over_budget")
+                bounded = None
+            if memory_config.agent_memory_context_mode != "shadow" or state.get("memory_summary") or preferences:
+                full_messages = bounded.messages
 
         response = await model_with_tools.ainvoke(full_messages)
         if _is_upstream_error(response):
@@ -261,6 +288,10 @@ def build_graph(
         # Nếu có init_messages từ query legacy, đưa vào messages trả về để lưu trong state
         response = guarded_calls(response, messages, bound_tools)
         response = preserve_rag_fallback(response, messages)
+        from .memory_guard import verified_memory_response, verified_preference_recall
+        response = verified_memory_response(response, messages)
+        if any(getattr(tool, "name", "") == "remember_preference" for tool in bound_tools):
+            response = verified_preference_recall(response, messages, preferences)
 
         out_messages = init_messages + [response] if init_messages else [response]
         result: dict[str, Any] = {"messages": out_messages}

@@ -1,4 +1,5 @@
 import { formatNumber } from '@/shared/utils/format'
+import type { WarrantyStatus } from './types'
 
 /** 1300000 → "1.300.000 ₫" — never summed on the client (FE §4.3). */
 export function formatVnd(value: number): string {
@@ -17,4 +18,9 @@ export function validMilestone(value: number | null, options: number[]): number 
 
 export function readNumberParam(value: string | null): number | null {
   return value && /^\d+$/.test(value) ? Number(value) : null
+}
+
+/** Unknown values (e.g. the demo backend's legacy payload) read as "no warranty data". */
+export function warrantyStatusOf(value: string | null | undefined): WarrantyStatus {
+  return value === 'ACTIVE' || value === 'EXPIRED' ? value : 'UNKNOWN'
 }

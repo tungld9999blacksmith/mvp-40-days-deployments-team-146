@@ -8,6 +8,7 @@ from .booking_tools import (
 )
 from .cost_tools import estimate_service_cost
 from .maintenance_tools import get_due_maintenance
+from .memory_tools import build_memory_tools
 from .quote_tools import create_draft_quote, get_quote_status
 from .RAG import (
     get_maintenance_schedule_rag,
@@ -29,6 +30,7 @@ CUSTOMER_AGENT_TOOLS = [
     get_reminder_settings,
     update_reminder_settings,
     get_reminder_context,
+    *build_memory_tools(),
     search_ev_knowledge,
 ]
 

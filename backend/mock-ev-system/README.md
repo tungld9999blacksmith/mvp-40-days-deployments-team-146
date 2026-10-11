@@ -80,9 +80,27 @@ Retry 3 lần (1 s, 4 s) khi lỗi mạng / 5xx; không retry 4xx.
 |--------|------|--------|
 | GET | `/models` | Danh sách mẫu xe |
 | GET | `/models/{model_id}` | Chi tiết mẫu xe |
-| GET | `/service-centers` | Danh sách đại lý / xưởng dịch vụ |
+| GET | `/service-centers` | Danh sách đại lý / xưởng dịch vụ, **phân trang + lọc** (xem dưới) |
 | GET | `/service-centers/{center_id}` | Chi tiết xưởng |
 | GET | `/health` | Health check |
+
+`GET /service-centers` — query: `page` (≥1, mặc định 1), `page_size` (1–100, mặc định 20),
+`q` (tìm trong tên / địa chỉ), `region` (tỉnh/thành), `type` (`dealer` | `service_only`).
+`q` và `region` không phân biệt dấu, hoa thường (`ha noi` khớp `Hà Nội`). Kết quả sắp theo tỉnh rồi tên.
+Response không bao giờ có thông tin quản lý (`manager_email`, `manager_national_id`):
+
+```json
+{
+  "items": [
+    {"center_id": "SC-01", "name": "VinFast Thăng Long", "region": "Hà Nội", "type": "dealer",
+     "address": null, "latitude": null, "longitude": null}
+  ],
+  "total": 1, "page": 1, "page_size": 20, "total_pages": 1
+}
+```
+
+`address`, `latitude`, `longitude` có giá trị khi dữ liệu được nạp từ
+[tools/workshop_crawl](../../tools/workshop_crawl/README.md) (xưởng thật từ Google Places).
 
 ### ✅ Verification
 

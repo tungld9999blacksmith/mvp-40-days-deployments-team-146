@@ -57,7 +57,11 @@ export default function VehicleHero({ profile, status }: { profile: VehicleProfi
     { label: 'Pin', value: figure(profile.batteryCapacityKwh), unit: 'kWh' },
     { label: 'Công suất', value: figure(profile.motorPowerKw), unit: 'kW' },
   ]
-  const caption = [profile.color, profile.productionYear].filter(Boolean).join(' · ')
+  // The photo is the model's stock image, so its colour can differ from this car's (FINDING-011).
+  const hasPhoto = vehiclePhotoSrc(profile.modelName, profile.modelId) !== null
+  const caption = [hasPhoto && 'Ảnh minh hoạ', profile.color && `Màu xe: ${profile.color}`, profile.productionYear]
+    .filter(Boolean)
+    .join(' · ')
 
   return (
     <section aria-label="Thông tin xe" className="grid lg:grid-cols-2 rounded-2xl border border-banner-border bg-banner text-banner-foreground overflow-hidden">

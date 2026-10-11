@@ -131,7 +131,9 @@ def configure_logging(
     console = logging.StreamHandler(stream or sys.stdout)
     console.setFormatter(
         _formatter(
-            structlog.processors.JSONRenderer(ensure_ascii=False) if json_logs else structlog.dev.ConsoleRenderer(),
+            structlog.processors.JSONRenderer(ensure_ascii=False)
+            if json_logs
+            else structlog.dev.ConsoleRenderer(colors=True),
             shared=shared,
             structured_exc=json_logs,
             redactor=redactor,

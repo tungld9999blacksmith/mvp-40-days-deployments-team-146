@@ -20,6 +20,7 @@ class AgentState(TypedDict, total=False):
     vehicle_context: dict[str, Any]
     draft_booking: dict[str, Any] | None
     citations: list[dict[str, Any]]
+    memory_summary: dict[str, Any]
 
     # Trường tương thích ngược
     query: str

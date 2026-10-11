@@ -16,6 +16,7 @@ celery = Celery(
         "src.infrastructure.celery.tasks.embedding_tasks",
         "src.infrastructure.celery.tasks.booking_tasks",
         "src.infrastructure.celery.tasks.crm_tasks",
+        "src.infrastructure.celery.tasks.memory_tasks",
     ],
 )
 
@@ -26,6 +27,8 @@ celery.conf.update(
     timezone="Asia/Ho_Chi_Minh",
     enable_utc=True,
     beat_schedule={
+        "agent-memory-cleanup": {"task": "agent_memory.cleanup", "schedule": 60.0},
+        "agent-memory-retention": {"task": "agent_memory.retention", "schedule": crontab(hour=3, minute=45)},
         # FEAT-AUTH-003: re-enqueue workshop verifications whose retry was lost.
         "workshop-reconcile-verifications": {
             "task": "workshop.reconcile_verifications",

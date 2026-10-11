@@ -18,6 +18,11 @@ export async function decideLine(
   return (await apiRequest<LinesView>(`/bookings/${id(bookingId)}/lines/${id(lineId)}/decision`, { method: 'POST', body, timeoutMs: 15_000 })).data
 }
 
+/** "Tôi không đồng ý": a decision the workshop recorded by phone goes back to the owner. */
+export async function disputeLine(bookingId: string, lineId: string, seenVersion: number): Promise<LinesView> {
+  return (await apiRequest<LinesView>(`/bookings/${id(bookingId)}/lines/${id(lineId)}/dispute`, { method: 'POST', body: { seenVersion }, timeoutMs: 15_000 })).data
+}
+
 // ── workshop owner ──────────────────────────────────────────────────────────
 export function getWorkshopBookingLines(bookingId: string): Promise<LinesView> {
   return apiGet<LinesView>(`${WS}/bookings/${id(bookingId)}/lines`, { timeoutMs: 10_000 })
@@ -41,6 +46,15 @@ export async function editLine(
   body: { expectedVersion: number; price: number; reason?: string },
 ): Promise<LinesView> {
   return (await apiRequest<LinesView>(`${WS}/bookings/${id(bookingId)}/lines/${id(lineId)}`, { method: 'PATCH', body, timeoutMs: 15_000 })).data
+}
+
+/** The owner answered by phone; they are told at once and can dispute it until COMPLETE. */
+export async function recordPhoneDecision(
+  bookingId: string,
+  lineId: string,
+  body: { decision: Decision; seenVersion: number; confirmedByName: string; confirmSafety?: boolean },
+): Promise<LinesView> {
+  return (await apiRequest<LinesView>(`${WS}/bookings/${id(bookingId)}/lines/${id(lineId)}/phone-decision`, { method: 'POST', body, timeoutMs: 15_000 })).data
 }
 
 export async function withdrawLine(bookingId: string, lineId: string, expectedVersion: number): Promise<LinesView> {

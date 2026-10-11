@@ -7,12 +7,18 @@ import { useOnlineStatus } from '@/shared/hooks/useOnlineStatus'
 import { useAuth } from '../context/AuthContext'
 import { resolveOnboardingRoute } from '../navigation'
 import { blockingLoginContent, inlineLoginMessage, SESSION_NOTICE_TEXT } from '../messages'
-import AuthBrandPanel from '../components/AuthBrandPanel'
+import AuthBrandPanel, { AuthMobileBrand } from '../components/AuthBrandPanel'
 import GoogleSignInButton from '../components/GoogleSignInButton'
 import LoginErrorPanel from '../components/LoginErrorPanel'
 import SplashScreen from '../components/SplashScreen'
 import { getPortal } from '../portal'
-import Logo from '@/shared/ui/Logo'
+
+const BRAND = {
+  headline: 'Chăm sóc xe',
+  highlight: 'thông minh hơn',
+  subtitle: 'Theo dõi bảo dưỡng, đặt lịch và nhận hỗ trợ từ AI Agent — mọi lúc, mọi nơi.',
+}
+const CHIPS = ['AI 24/7', 'Lịch bảo dưỡng', 'Đặt lịch online', 'Theo dõi xe']
 
 /** SCR-001 / SCR-101 — owner login (Google only). */
 export default function Login() {
@@ -49,17 +55,10 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex bg-background">
-      <AuthBrandPanel
-        headline="Chăm sóc xe"
-        highlight="thông minh hơn"
-        subtitle="Theo dõi bảo dưỡng, đặt lịch và nhận hỗ trợ từ AI Agent — mọi lúc, mọi nơi."
-        chips={['AI 24/7', 'Lịch bảo dưỡng', 'Đặt lịch online', 'Theo dõi xe']}
-      />
+      <AuthBrandPanel {...BRAND} chips={CHIPS} />
 
       <main className="flex-1 flex flex-col justify-center items-center px-4 sm:px-8 py-12 bg-app-backdrop">
-        <div className="lg:hidden flex items-center gap-2.5 mb-10">
-          <Logo className="h-9 text-foreground" />
-        </div>
+        <AuthMobileBrand {...BRAND} />
 
         <div className="w-full max-w-sm animate-pop-in sm:max-w-md sm:bg-card/70 sm:backdrop-blur-xl sm:border sm:border-border sm:rounded-3xl sm:p-8 sm:elevation-md">
           <h2 className="text-2xl font-bold tracking-tight text-foreground">Đăng nhập</h2>

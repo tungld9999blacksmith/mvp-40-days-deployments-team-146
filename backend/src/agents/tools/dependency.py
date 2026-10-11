@@ -27,6 +27,7 @@ from .booking_line_tools import build_booking_line_tools
 from .booking_tools import build_booking_tools
 from .cost_tools import build_cost_tools
 from .maintenance_tools import build_maintenance_tools
+from .memory_tools import build_memory_tools
 from .quote_tools import build_quote_tools
 from .RAG.query.rag_tool import _get_rag_pipeline, build_rag_tools
 from .reminder_tools import build_reminder_tools
@@ -72,6 +73,7 @@ def build_customer_agent_tools(services: AgentToolServices, *, quote_flow: str |
         *quote_tools,
         *build_booking_line_tools(services),
         *build_reminder_tools(services),
+        *build_memory_tools(services),
         build_rag_tools(services.rag_pipeline)[0],
     ]
 

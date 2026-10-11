@@ -72,6 +72,7 @@ def init_db(reset: bool = False) -> None:
         logger.info("Mock database kept from %s (POST /admin/reset to reload)", DB_PATH)
     else:
         _load_startup_data(mock_tables)
+    _add_missing_columns(mock_tables)
 
     # Owners + vehicles for the Gmail accounts in MOCK_DEV_OWNER_EMAILS.
     with Session(engine) as session:
@@ -84,6 +85,26 @@ def _has_data(tables: list) -> bool:
     """True when the file-backed DB already has the mock tables (data from a previous run)."""
     existing = set(inspect(engine).get_table_names())
     return any(table.name in existing for table in tables)
+
+
+def _add_missing_columns(tables: list) -> None:
+    """Add nullable columns introduced after a dump / DB file was made (create_all never alters).
+
+    Only nullable columns can be added this way; a new NOT NULL column still needs a fresh dump.
+    """
+    inspector = inspect(engine)
+    existing_tables = set(inspector.get_table_names())
+    with engine.begin() as conn:
+        for table in tables:
+            if table.name not in existing_tables:
+                continue
+            present = {col["name"] for col in inspector.get_columns(table.name)}
+            for column in table.columns:
+                if column.name in present or not column.nullable:
+                    continue
+                col_type = column.type.compile(dialect=engine.dialect)
+                conn.exec_driver_sql(f'ALTER TABLE "{table.name}" ADD COLUMN "{column.name}" {col_type}')
+                logger.info("Mock database: added column %s.%s", table.name, column.name)
 
 
 def _load_startup_data(mock_tables: list) -> None:

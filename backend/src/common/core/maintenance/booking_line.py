@@ -65,6 +65,11 @@ class BookingLine(SQLModel, table=True):
             "kind = 'PACKAGE' OR line_status IN ('PROPOSED', 'APPROVED', 'DECLINED', 'WITHDRAWN')",
             name="ck_booking_line_extra_status",
         ),
+        CheckConstraint("decided_via IS NULL OR decided_via IN ('APP', 'PHONE')", name="ck_booking_line_decided_via"),
+        CheckConstraint(
+            "decided_via IS NULL OR decided_via <> 'PHONE' OR phone_confirmed_by IS NOT NULL",
+            name="ck_booking_line_phone_confirmer",
+        ),
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -100,6 +105,18 @@ class BookingLine(SQLModel, table=True):
         default=None, sa_column=Column(Integer, ForeignKey("vehicle_user.user_id", ondelete="SET NULL"), nullable=True)
     )
     decided_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
+    # APP: the owner decided on the ticket. PHONE: the workshop recorded the owner's answer
+    # by phone (``phone_confirmed_by`` names who answered, ``recorded_by`` who typed it); the
+    # owner can still dispute it until COMPLETE, which sends the line back to PROPOSED.
+    decided_via: str | None = Field(default=None, sa_column=Column(String(10), nullable=True))
+    phone_confirmed_by: str | None = Field(default=None, sa_column=Column(String(100), nullable=True))
+    recorded_by: UUID | None = Field(
+        default=None, sa_column=Column(ForeignKey("workshop_owner.id", ondelete="SET NULL"), nullable=True)
+    )
+    disputed_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
+    # When the owner was last asked to decide (proposed, edited, price raised, disputed);
+    # the workshop calls the owner once OWNER_REPLY_SLA has passed without an answer.
+    asked_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
     version: int = Field(default=1, sa_column=Column(Integer, nullable=False, server_default="1"))
 
     created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))

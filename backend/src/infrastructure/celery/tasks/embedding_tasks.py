@@ -33,7 +33,9 @@ RETRY_DELAYS_SECONDS = (10, 60, 300)
     max_retries=len(RETRY_DELAYS_SECONDS),
 )
 def index_message_task(self, message_id: str) -> str:
-    from src.common.core.conversation import ChatMessageRepository, MessageRole
+    from sqlmodel import select
+
+    from src.common.core.conversation import ChatMessageRepository, Conversation, MessageRole
     from src.config import get_settings
     from src.infrastructure.supabase.db import get_session
     from src.infrastructure.vectorstore import (
@@ -52,6 +54,12 @@ def index_message_task(self, message_id: str) -> str:
         if message is None:
             logger.warning("index_message: message %s not found", message_id)
             return "missing"
+        # Serialize indexing with deletion (including account/vehicle cascades).
+        conversation = session.exec(select(Conversation).where(Conversation.id == message.conversation_id)
+                                    .with_for_update()).first()
+        if conversation is None:
+            return "missing"
+        session.refresh(message)
         if message.role == MessageRole.TOOL:
             return "skipped"
         if message.embedded:

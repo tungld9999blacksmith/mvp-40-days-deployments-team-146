@@ -20,6 +20,10 @@ export interface BoardItem {
   attendanceConfirmedAt: string | null
   confirmDeadline: string | null
   allowedActions: BoardAction[]
+  /** two_tier: price lines waiting for the owner's decision (board list only). */
+  awaitingOwner?: number
+  /** Of those, lines past the 10-minute reply deadline: call the owner. */
+  ownerReplyOverdue?: number
 }
 
 export interface BoardData {

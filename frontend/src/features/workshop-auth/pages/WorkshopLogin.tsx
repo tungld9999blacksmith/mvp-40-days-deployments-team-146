@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Notice } from '@/shared/ui/States'
 import { isAuthConfigured } from '@/shared/config/env'
 import { useOnlineStatus } from '@/shared/hooks/useOnlineStatus'
-import AuthBrandPanel from '@/features/auth/components/AuthBrandPanel'
+import AuthBrandPanel, { AuthMobileBrand } from '@/features/auth/components/AuthBrandPanel'
 import GoogleSignInButton from '@/features/auth/components/GoogleSignInButton'
 import LoginErrorPanel from '@/features/auth/components/LoginErrorPanel'
 import SplashScreen from '@/features/auth/components/SplashScreen'
@@ -12,7 +12,13 @@ import { blockingLoginContent, inlineLoginMessage, SESSION_NOTICE_TEXT } from '@
 import { getPortal } from '@/features/auth/portal'
 import { useWorkshopAuth } from '../context/WorkshopAuthContext'
 import { resolveWorkshopRoute } from '../navigation'
-import Logo from '@/shared/ui/Logo'
+
+const BRAND = {
+  headline: 'Quản lý xưởng dịch vụ',
+  highlight: 'gọn gàng hơn',
+  subtitle: 'Nhận lịch hẹn từ chủ xe, duyệt báo giá và theo dõi công suất xưởng trên một cổng duy nhất.',
+}
+const CHIPS = ['Lịch hẹn', 'Báo giá', 'Công suất xưởng', 'Chính hãng']
 
 const WORKSHOP_BLOCKING = {
   ACCOUNT_SUSPENDED: {
@@ -50,19 +56,10 @@ export default function WorkshopLogin() {
 
   return (
     <div className="min-h-screen flex bg-background">
-      <AuthBrandPanel
-        badge="Workshop Portal"
-        headline="Quản lý xưởng dịch vụ"
-        highlight="gọn gàng hơn"
-        subtitle="Nhận lịch hẹn từ chủ xe, duyệt báo giá và theo dõi công suất xưởng trên một cổng duy nhất."
-        chips={['Lịch hẹn', 'Báo giá', 'Công suất xưởng', 'Chính hãng']}
-      />
+      <AuthBrandPanel {...BRAND} badge="Workshop Portal" chips={CHIPS} />
 
       <main className="flex-1 flex flex-col justify-center items-center px-4 sm:px-8 py-12 bg-app-backdrop">
-        <div className="lg:hidden flex items-center gap-2.5 mb-10">
-          <Logo className="h-9 text-foreground" />
-          <span className="text-xs font-semibold text-emerald">Workshop</span>
-        </div>
+        <AuthMobileBrand {...BRAND} badge="Workshop" />
 
         <div className="w-full max-w-sm animate-pop-in sm:max-w-md sm:bg-card/70 sm:backdrop-blur-xl sm:border sm:border-border sm:rounded-3xl sm:p-8 sm:elevation-md">
           <h2 className="text-2xl font-bold tracking-tight text-foreground">Đăng nhập cổng xưởng dịch vụ</h2>

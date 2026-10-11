@@ -51,7 +51,7 @@ function FeedCard({ entry }: { entry: FeedEntry }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-foreground">{entry.title}</h3>
+              <h2 className="text-sm font-semibold text-foreground">{entry.title}</h2>
               {entry.unread && <span className="w-2 h-2 rounded-full bg-emerald flex-shrink-0" aria-label="Mới" />}
             </div>
             {entry.at && <span className="text-xs text-muted flex-shrink-0">{formatRelativeDay(entry.at)}</span>}

@@ -141,6 +141,7 @@ export default function BoardBookingDetail({
           readOnly={readOnly}
           refreshKey={linesKey}
           onChanged={onLinesChanged}
+          customerPhone={detail.customer.phone}
         />
       )}
 
@@ -167,7 +168,8 @@ export default function BoardBookingDetail({
         <CardHeader title="Lịch hẹn" icon={<FileText className="w-4 h-4 text-muted" />} />
         <InfoRow label="Thời gian" value={`${slotLabel(detail.timeSlot)} · ${formatLongDay(detail.bookingDate)}`} />
         {detail.milestoneLabel && <InfoRow label="Hạng mục" value={detail.milestoneLabel} />}
-        <InfoRow label="Chi phí ước tính" value={detail.estimatedCost !== null ? formatVnd(detail.estimatedCost) : '—'} />
+        {/* two_tier: the price is locked and the "Giá & phát sinh" card above carries the total. */}
+        {!twoTier && <InfoRow label="Chi phí ước tính" value={detail.estimatedCost !== null ? formatVnd(detail.estimatedCost) : '—'} />}
         {detail.actualCost !== null && <InfoRow label="Chi phí thực tế" value={formatVnd(detail.actualCost)} />}
         {detail.quote && (
           <InfoRow

@@ -12,6 +12,9 @@ Line state machine::
                        ├─► DECLINED   (safety item → one more confirmation)
                        └─► WITHDRAWN  (workshop, only while PROPOSED)
 
+    PROPOSED ─► APPROVED / DECLINED by phone (workshop records it, decided_via=PHONE)
+             ◄─ "Tôi không đồng ý" (owner, until COMPLETE): back to PROPOSED
+
 Booking guards (BookingStateMachine): START needs no ``PENDING_CONFIRM`` line (D8);
 COMPLETE needs no ``PENDING_CONFIRM`` / ``PROPOSED`` line and sets
 ``actual_cost`` = Σ CONFIRMED + APPROVED (D6).
@@ -19,10 +22,11 @@ COMPLETE needs no ``PENDING_CONFIRM`` / ``PROPOSED`` line and sets
 
 from __future__ import annotations
 
-import unicodedata
 from collections.abc import Iterable
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
+from src.common.core.maintenance.booking import BookingStatus
 from src.common.core.maintenance.booking_line import BookingLine, LineKind, LineStatus
 from src.common.core.maintenance.service_progress import ServiceStage
 
@@ -40,24 +44,28 @@ EXTRA_STAGES: frozenset[ServiceStage] = frozenset(
 BILLABLE: frozenset[LineStatus] = frozenset({LineStatus.CONFIRMED, LineStatus.APPROVED})
 UNSETTLED: frozenset[LineStatus] = frozenset({LineStatus.PENDING_CONFIRM, LineStatus.PROPOSED})
 
+# The owner decides (or disputes a phone decision) only while the car is at the workshop.
+DECIDABLE_STATUSES = (BookingStatus.CHECKED_IN, BookingStatus.IN_PROGRESS)
+DECIDED_VIA_APP = "APP"
+DECIDED_VIA_PHONE = "PHONE"
+
+# Open question 2 of the design (decided 2026-10-11): a line waiting for the owner gets
+# an answer within 10 minutes, or the workshop calls. Both sides see the deadline.
+OWNER_REPLY_SLA = timedelta(minutes=10)
+
 PACKAGE_NO_RULE_NOTICE = "Giá gói do xưởng báo khi nhận xe"
 REFERENCE_NOTICE = "Giá tham khảo, xưởng xác nhận khi nhận xe"
 DECLINED_HISTORY_NOTE = "Chủ xe từ chối hạng mục"
 
-# Open question 3 of the design: until the manufacturer list exists, an item is
-# safety-critical when its name mentions brakes, tyres, steering or lights.
-_SAFETY_WORDS = ("phanh", "lop", "vo xe", "lai", "vo lang", "den", "brake", "tire", "tyre", "steering", "light")
 
-
-def _fold(text: str) -> str:
-    """Lower-case and strip Vietnamese diacritics (``Đèn`` → ``den``)."""
-    text = text.lower().replace("đ", "d")
-    return "".join(c for c in unicodedata.normalize("NFD", text) if unicodedata.category(c) != "Mn")
-
-
-def is_safety_item(item_name: str) -> bool:
-    words = f" {' '.join(_fold(item_name).split())} "
-    return any(f" {w} " in words for w in _SAFETY_WORDS)
+def reply_due_at(line: BookingLine) -> datetime | None:
+    """When the workshop should call the owner about a line still waiting for them."""
+    asked = line.asked_at
+    if line.line_status != LineStatus.PROPOSED or asked is None:
+        return None
+    if asked.tzinfo is None:  # SQLite drops tzinfo
+        asked = asked.replace(tzinfo=UTC)
+    return asked + OWNER_REPLY_SLA
 
 
 def reason_valid(reason: str | None) -> bool:

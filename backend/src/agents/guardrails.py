@@ -128,6 +128,10 @@ def guarded_calls(response: Any, messages: list[Any], tools: list[Any]) -> Any:
 
     user_turns = [i for i, message in enumerate(messages) if isinstance(message, HumanMessage)]
     last_user = str(messages[user_turns[-1]].content).strip().casefold() if user_turns else ""
+    from .memory_guard import guard_memory_calls
+
+    response = guard_memory_calls(response, str(messages[user_turns[-1]].content).strip() if user_turns else "")
+    calls = list(getattr(response, "tool_calls", None) or [])
     current_turn = messages[user_turns[-1] + 1:] if user_turns else messages
     history = messages[:user_turns[-1]] if user_turns else []
     refusal_query = unicodedata.normalize("NFD", last_user).replace("đ", "d")

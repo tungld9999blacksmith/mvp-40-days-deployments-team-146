@@ -19,6 +19,7 @@ from sqlalchemy import func
 from sqlmodel import Session, select
 
 from src.common.core.maintenance.maintenance_rule import MaintenanceRule
+from src.common.core.vehicle import UserVehicle
 from src.common.core.workshop import Workshop
 from src.common.core.workshop.service_price import ServicePrice
 from src.modules.user_vehicle.domain import today_vn
@@ -52,6 +53,24 @@ class WorkshopPricingService:
     # ── reads ───────────────────────────────────────────────────────────
     def models(self) -> list[str]:
         return list(self._db.exec(select(MaintenanceRule.model_id).distinct().order_by(MaintenanceRule.model_id)).all())
+
+    def model_names(self) -> dict[str, str]:
+        """Display name per model id ("VF8 Plus") from the manufacturer snapshot of verified vehicles.
+
+        The schedule only knows opaque codes (MDL-01). A model no owner has linked yet has no
+        name here and the UI falls back to its code.
+        """
+        model_id = func.coalesce(UserVehicle.external_model_id, UserVehicle.declared_model_id)
+        rows = self._db.exec(
+            select(model_id, UserVehicle.model_name, UserVehicle.trim)
+            .where(UserVehicle.model_name.is_not(None))  # type: ignore[union-attr]
+            .distinct()
+            .order_by(model_id)
+        ).all()
+        names: dict[str, str] = {}
+        for code, name, trim in rows:
+            names.setdefault(code, " ".join(part for part in (name, trim) if part))
+        return names
 
     def _catalog(self, model_id: str) -> dict[str, tuple[str, Decimal]]:
         """item_code → (name, reference price) of the model's schedule."""
@@ -110,11 +129,14 @@ class WorkshopPricingService:
                     prices=[self._row_out(r) for r in rows],
                 )
             )
+        models = self.models()
+        names = self.model_names()
         return schemas.PriceListOut(
             model_id=model_id,
             items=items,
             priced_count=sum(1 for i in items if i.current_price is not None),
-            models=self.models(),
+            models=models,
+            model_names={m: names[m] for m in models if m in names},
         )
 
     @staticmethod

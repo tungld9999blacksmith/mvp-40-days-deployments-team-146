@@ -23,7 +23,7 @@ from src.common.core.workshop.service_price import ServicePrice
 from src.infrastructure.storage import StorageNotFoundError, StoredObject
 from src.modules.booking_line import errors
 from src.modules.booking_line import schemas as s
-from src.modules.booking_line.domain import billable_total, is_safety_item
+from src.modules.booking_line.domain import billable_total
 from src.modules.booking_line.photos import LinePhotos, pending_prefix, sniff_image_type
 from src.modules.booking_line.service import BookingLineService
 from src.modules.workshop_board import schemas as board_schemas
@@ -111,15 +111,6 @@ def _extra(price=500_000, reason="Má phanh trước còn 2mm, cần thay", **kw
 
 
 # ── domain ──────────────────────────────────────────────────────────────────
-def test_safety_items_by_name():
-    assert is_safety_item("Thay má phanh trước")
-    assert is_safety_item("Kiểm tra lốp xe")
-    assert is_safety_item("Đèn pha bên trái")
-    assert is_safety_item("Hệ thống lái")
-    assert not is_safety_item("Thay lọc gió điều hòa")
-    assert not is_safety_item("Kiểm tra pin cao áp")
-
-
 def test_sniff_image_type():
     assert sniff_image_type(b"\xff\xd8\xff\xe0rest") == "image/jpeg"
     assert sniff_image_type(b"\x89PNG\r\n\x1a\nrest") == "image/png"
@@ -136,7 +127,7 @@ def test_snapshot_prices_package_lines(world):
     brake = lines["BRAKE_INSPECTION"]
     assert brake.line_status == LineStatus.CONFIRMED and brake.unit_price == 300_000
     assert brake.price_source == "WORKSHOP_PRICE" and brake.service_price_id is not None
-    assert brake.is_safety_critical  # "Brake ..."
+    assert brake.is_safety_critical  # flag of the BRAKE_INSPECTION rule
     battery = lines["BATTERY_CHECK"]
     assert battery.is_covered_by_warranty and battery.unit_price == 0 and battery.line_status == LineStatus.CONFIRMED
     cabin = lines["CABIN_FILTER"]
@@ -150,6 +141,30 @@ def test_snapshot_prices_package_lines(world):
     session.commit()
     view = _svc(session).view(booking)
     assert next(x for x in view.lines if x.item_code == "BRAKE_INSPECTION").unit_price == 300_000
+
+
+@pytest.mark.asyncio
+async def test_safety_flag_comes_from_the_rule_not_the_name(world):
+    session, user, vehicle, owner, workshop = world
+    rules = {r.item_code: r for r in session.exec(select(MaintenanceRule))}
+    rules["BRAKE_INSPECTION"].is_safety_critical = False
+    rules["CABIN_FILTER"].is_safety_critical = True
+    rules["BRAKE_FLUID"].is_safety_critical = False
+    session.add_all(rules.values())
+    session.commit()
+
+    booking = _booking(session, user, vehicle, workshop, status=BookingStatus.IN_PROGRESS)
+    lines = _lines(session, booking)
+    assert not lines["BRAKE_INSPECTION"].is_safety_critical
+    assert lines["CABIN_FILTER"].is_safety_critical
+
+    view = await _svc(session).propose_extra(
+        owner,
+        workshop,
+        booking.id,
+        s.ProposeExtraRequest(item_code="BRAKE_FLUID", price=400_000, reason="Dầu phanh đã ngả màu"),
+    )
+    assert not view.lines[-1].is_safety_critical
 
 
 def test_no_rule_books_without_package_lines(world):
@@ -635,3 +650,218 @@ async def test_confirmed_reference_price_is_labelled_as_confirmed(world):
         owner, workshop, booking.id, cabin.id, s.ConfirmPackageRequest(expected_version=1, price=200_000)
     )
     assert next(x for x in view.lines if x.item_code == "CABIN_FILTER").price_label == "Xưởng đã xác nhận"
+
+
+# Design review 2026-10-10 D1 = A: the workshop dashboard counts extras waiting for the owner
+@pytest.mark.asyncio
+async def test_board_counts_lines_awaiting_the_owner(world):
+    session, user, vehicle, owner, workshop = world
+    booking = _booking(session, user, vehicle, workshop, status=BookingStatus.IN_PROGRESS)
+    board = _board(session)
+    assert board.list_bookings(workshop, from_=TODAY, to=TODAY, statuses=None, q=None).items[0].awaiting_owner == 0
+    svc = _svc(session)
+    first = (await svc.propose_extra(owner, workshop, booking.id, _extra())).lines[-1]
+    await svc.propose_extra(owner, workshop, booking.id, _extra(price=90_000, item_name="Vệ sinh khoang máy"))
+    assert board.list_bookings(workshop, from_=TODAY, to=TODAY, statuses=None, q=None).items[0].awaiting_owner == 2
+    svc.decide(user, booking.id, first.line_id, s.DecideRequest(decision="APPROVE", seen_version=1))
+    assert board.list_bookings(workshop, from_=TODAY, to=TODAY, statuses=None, q=None).items[0].awaiting_owner == 1
+
+
+# ── decisions recorded by phone (TODOS P2, concern R2-2) ───────────────────
+def _phone(decision="APPROVE", seen=1, name="Anh Trung (chủ xe)", **kw) -> s.PhoneDecisionRequest:
+    return s.PhoneDecisionRequest(decision=decision, seen_version=seen, confirmed_by_name=name, **kw)
+
+
+@pytest.mark.asyncio
+async def test_workshop_records_a_phone_answer_and_the_owner_is_told(world):
+    session, user, vehicle, owner, workshop = world
+    booking = _booking(session, user, vehicle, workshop, status=BookingStatus.IN_PROGRESS)
+    notifier = FakeNotifier()
+    svc = _svc(session, notifier)
+    proposed = await svc.propose_extra(owner, workshop, booking.id, _extra())
+    extra = proposed.lines[-1]
+    notifier.sent.clear()
+
+    view = await svc.record_phone_decision(owner, workshop, booking.id, extra.line_id, _phone())
+    line = view.lines[-1]
+    assert line.status == "APPROVED" and line.decided_via == "PHONE" and line.version == 2
+    assert line.phone_confirmed_by == "Anh Trung (chủ xe)" and line.can_dispute
+    assert view.current_total == proposed.current_total + 500_000  # charged like an app approval
+    row = _lines(session, booking)["Thay má phanh trước"]
+    assert row.recorded_by == owner.id and row.decided_by is None
+    assert (
+        len(notifier.sent) == 1
+        and "qua điện thoại" in notifier.sent[0][1]
+        and "Tôi không đồng ý" in notifier.sent[0][1]
+    )
+
+    # The owner's own decision is APP and cannot be disputed.
+    other = (
+        await svc.propose_extra(owner, workshop, booking.id, _extra(price=90_000, item_name="Vệ sinh khoang máy"))
+    ).lines[-1]
+    decided = svc.decide(user, booking.id, other.line_id, s.DecideRequest(decision="APPROVE", seen_version=1)).lines[-1]
+    assert decided.decided_via == "APP" and not decided.can_dispute
+    with pytest.raises(errors.InvalidRequestError):
+        svc.dispute(user, booking.id, other.line_id, s.DisputeRequest(seen_version=2))
+
+
+@pytest.mark.asyncio
+async def test_phone_decision_guards(world):
+    session, user, vehicle, owner, workshop = world
+    booking = _booking(session, user, vehicle, workshop, status=BookingStatus.IN_PROGRESS)
+    svc = _svc(session)
+    extra = (await svc.propose_extra(owner, workshop, booking.id, _extra(is_safety_critical=True))).lines[-1]
+    with pytest.raises(ValueError):
+        _phone(name=" ")
+    with pytest.raises(errors.SafetyConfirmationRequiredError):
+        await svc.record_phone_decision(owner, workshop, booking.id, extra.line_id, _phone("DECLINE"))
+    with pytest.raises(errors.LineChangedError):
+        await svc.record_phone_decision(owner, workshop, booking.id, extra.line_id, _phone(seen=7))
+    view = await svc.record_phone_decision(
+        owner, workshop, booking.id, extra.line_id, _phone("DECLINE", confirm_safety=True)
+    )
+    assert view.lines[-1].status == "DECLINED"
+    # Already settled: a second recording (or the owner on the app) loses.
+    with pytest.raises(errors.LineChangedError):
+        await svc.record_phone_decision(owner, workshop, booking.id, extra.line_id, _phone(seen=1))
+    other_ws = add_workshop(session, name="Other", owner=add_workshop_owner(session, uid="ws-2"))
+    with pytest.raises(errors.BookingNotFoundError):
+        await svc.record_phone_decision(owner, other_ws, booking.id, extra.line_id, _phone(seen=2))
+
+
+@pytest.mark.asyncio
+async def test_owner_disputes_a_phone_decision_before_complete(world):
+    session, user, vehicle, owner, workshop = world
+    booking = _booking(session, user, vehicle, workshop, status=BookingStatus.IN_PROGRESS)
+    svc, board = _svc(session), _board(session)
+    extra = (await svc.propose_extra(owner, workshop, booking.id, _extra())).lines[-1]
+    recorded = (await svc.record_phone_decision(owner, workshop, booking.id, extra.line_id, _phone())).lines[-1]
+    approved_total = svc.view(booking).current_total
+
+    with pytest.raises(errors.LineChangedError):  # the owner decides on what they saw
+        svc.dispute(user, booking.id, extra.line_id, s.DisputeRequest(seen_version=1))
+    view = svc.dispute(user, booking.id, extra.line_id, s.DisputeRequest(seen_version=recorded.version))
+    line = view.lines[-1]
+    assert line.status == "PROPOSED" and line.decided_via is None and line.phone_confirmed_by is None
+    assert line.disputed_at is not None and line.version == recorded.version + 1
+    assert view.current_total == approved_total - 500_000  # not charged until the owner decides again
+    assert board.detail(workshop, booking.id).blocked_actions[0].reason_code == "BOOKING_LINES_UNSETTLED"
+
+    # The owner then decides on the app like any proposed line.
+    decided = svc.decide(
+        user, booking.id, extra.line_id, s.DecideRequest(decision="DECLINE", seen_version=line.version)
+    )
+    assert decided.lines[-1].status == "DECLINED" and decided.lines[-1].decided_via == "APP"
+
+
+@pytest.mark.asyncio
+async def test_no_dispute_once_the_booking_is_complete(world):
+    session, user, vehicle, owner, workshop = world
+    booking = _booking(session, user, vehicle, workshop, status=BookingStatus.IN_PROGRESS)
+    cabin = _lines(session, booking)["CABIN_FILTER"]
+    cabin.line_status = LineStatus.CONFIRMED  # confirmed at check-in
+    session.add(cabin)
+    session.commit()
+    svc, board = _svc(session), _board(session)
+    extra = (await svc.propose_extra(owner, workshop, booking.id, _extra())).lines[-1]
+    recorded = (await svc.record_phone_decision(owner, workshop, booking.id, extra.line_id, _phone())).lines[-1]
+    await board.transition(owner, workshop, booking.id, _move("COMPLETE", "IN_PROGRESS"))
+    assert not svc.view(booking).lines[-1].can_dispute
+    with pytest.raises(errors.BookingStatusInvalidError):
+        svc.dispute(user, booking.id, extra.line_id, s.DisputeRequest(seen_version=recorded.version))
+
+
+# Regression: smoke test 2026-10-10 — a decision the workshop recorded by phone never reached the feed
+@pytest.mark.asyncio
+async def test_feed_shows_a_phone_decision_until_complete(world):
+    from src.modules.notification.feed_service import NotificationFeedService
+
+    session, user, vehicle, owner, workshop = world
+    booking = _booking(session, user, vehicle, workshop, status=BookingStatus.IN_PROGRESS)
+    svc = _svc(session)
+    line = (await svc.propose_extra(owner, workshop, booking.id, _extra())).lines[-1]
+    await svc.record_phone_decision(owner, workshop, booking.id, line.line_id, _phone())
+    feed = NotificationFeedService(session, clock=lambda: datetime.now(UTC))
+    [entry] = [i for i in feed.list_for_user(user).items if i.kind == "BOOKING_LINE"]
+    assert entry.id == f"booking-line:{line.line_id}:2" and entry.unread
+    assert entry.booking_line.status == "APPROVED" and entry.booking_line.decided_via == "PHONE"
+    assert entry.booking_line.phone_confirmed_by == "Anh Trung (chủ xe)"
+
+    # Disputed: the line is PROPOSED again (version 3) and the phone entry is gone.
+    svc.dispute(user, booking.id, line.line_id, s.DisputeRequest(seen_version=2))
+    assert [i.id for i in feed.list_for_user(user).items if i.kind == "BOOKING_LINE"] == [
+        f"booking-line:{line.line_id}:3"
+    ]
+
+
+# ── owner reply SLA (open question 2: the workshop calls after 10 minutes) ──
+def _at(minutes: float):
+    return lambda: NOW + timedelta(minutes=minutes)
+
+
+@pytest.mark.asyncio
+async def test_workshop_calls_the_owner_ten_minutes_after_asking(world):
+    session, user, vehicle, owner, workshop = world
+    booking = _booking(session, user, vehicle, workshop, status=BookingStatus.IN_PROGRESS)
+    notifier = FakeNotifier()
+    extra = (await _svc(session, notifier).propose_extra(owner, workshop, booking.id, _extra())).lines[-1]
+    assert extra.reply_due_at == NOW + timedelta(minutes=10) and not extra.call_owner
+    assert "Chưa có trả lời sau 10 phút, xưởng sẽ gọi cho bạn." in notifier.sent[-1][1]
+
+    def at(minutes):
+        return BookingLineService(session, clock=_at(minutes)).view(booking).lines[-1]
+
+    assert not at(9.9).call_owner
+    assert at(10).call_owner
+    board = WorkshopBoardService(session, clock=_at(10)).list_bookings(
+        workshop, from_=TODAY, to=TODAY, statuses=None, q=None
+    )
+    item = next(i for i in board.items if i.booking_id == booking.id)
+    assert (item.awaiting_owner, item.owner_reply_overdue) == (1, 1)
+
+    # Resending the line restarts the clock.
+    edited = (
+        await BookingLineService(session, clock=_at(12)).edit_line(
+            owner,
+            workshop,
+            booking.id,
+            extra.line_id,
+            s.EditLineRequest(expected_version=1, price=450_000, reason=extra.reason),
+        )
+    ).lines[-1]
+    assert edited.reply_due_at == NOW + timedelta(minutes=22) and not edited.call_owner
+
+    # Once the owner answers there is nothing to call about.
+    decided = BookingLineService(session, clock=_at(30)).decide(
+        user, booking.id, extra.line_id, s.DecideRequest(decision="APPROVE", seen_version=edited.version)
+    )
+    assert decided.lines[-1].reply_due_at is None and not decided.lines[-1].call_owner
+
+
+@pytest.mark.asyncio
+async def test_a_raised_package_price_and_a_dispute_also_start_the_clock(world):
+    session, user, vehicle, owner, workshop = world
+    booking = _booking(session, user, vehicle, workshop)
+    cabin = _lines(session, booking)["CABIN_FILTER"]
+    raised = await _svc(session).confirm_package(
+        owner,
+        workshop,
+        booking.id,
+        cabin.id,
+        s.ConfirmPackageRequest(expected_version=1, price=300_000, reason="Lọc gió loại cao cấp hơn"),
+    )
+    line = next(x for x in raised.lines if x.item_code == "CABIN_FILTER")
+    assert line.status == "PROPOSED" and line.reply_due_at == NOW + timedelta(minutes=10)
+
+    booking.status = BookingStatus.IN_PROGRESS
+    session.add(booking)
+    session.commit()
+    svc = BookingLineService(session, clock=_at(20))
+    recorded = (
+        await svc.record_phone_decision(owner, workshop, booking.id, line.line_id, _phone(seen=line.version))
+    ).lines
+    recorded_line = next(x for x in recorded if x.line_id == line.line_id)
+    assert recorded_line.reply_due_at is None
+    disputed = svc.dispute(user, booking.id, line.line_id, s.DisputeRequest(seen_version=recorded_line.version))
+    again = next(x for x in disputed.lines if x.line_id == line.line_id)
+    assert again.reply_due_at == NOW + timedelta(minutes=30)

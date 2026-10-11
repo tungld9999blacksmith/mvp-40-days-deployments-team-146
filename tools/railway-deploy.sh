@@ -1,20 +1,22 @@
 #!/usr/bin/env bash
 # =============================================================================
-# railway-deploy.sh - deploy backend / worker / mock-ev-system to Railway
+# railway-deploy.sh - deploy backend / worker / mock-ev-system / otel-collector to Railway
 # (staging) from a local machine - the same steps as the `deploy-backend` +
 # `smoke-test` CI jobs. See docs/deployments/RAILWAY_BACKEND_DEPLOYMENT.MD
 # (step 9). Requires Railway CLI >= 5.x, python, a prior `railway login` (or
 # RAILWAY_API_TOKEN) and the repo root linked (`railway link`).
 #
 # Usage:
-#   ./scripts/railway-deploy.sh check            # CLI/login/link + required variables
-#   ./scripts/railway-deploy.sh vars             # push .railway.env + Redis refs to backend/worker (no redeploy)
-#   ./scripts/railway-deploy.sh deploy [target]  # check -> railway up -> smoke
+#   ./tools/railway-deploy.sh check            # CLI/login/link + required variables
+#   ./tools/railway-deploy.sh vars             # push .railway.env + Redis refs to backend/worker,
+#                                                #   GRAFANA_CLOUD_* to otel-collector (no redeploy)
+#   ./tools/railway-deploy.sh deploy [target]  # check -> railway up -> smoke
 #                                                #   target: app (default: backend+worker),
-#                                                #   backend, worker, mock, all (mock->backend->worker)
-#   ./scripts/railway-deploy.sh smoke            # GET /health + /api/v1/health/dependencies
-#   ./scripts/railway-deploy.sh status
-#   ./scripts/railway-deploy.sh logs [service]   # default: backend
+#                                                #   backend, worker, mock, collector,
+#                                                #   all (collector->mock->backend->worker)
+#   ./tools/railway-deploy.sh smoke            # GET /health + /api/v1/health/dependencies
+#   ./tools/railway-deploy.sh status
+#   ./tools/railway-deploy.sh logs [service]   # default: backend
 #
 # Env: RAILWAY_ENV (default staging), BACKEND_URL (default: backend public
 # domain), SKIP_CHECK=1 (deploy without the variable check).
@@ -28,12 +30,17 @@ ENVIRONMENT="${RAILWAY_ENV:-staging}"
 BACKEND_SERVICE="backend"
 WORKER_SERVICE="worker"
 MOCK_SERVICE="mock-ev-system"
+COLLECTOR_SERVICE="otel-collector"
+# Build context of the collector image (Dockerfile + config.yaml).
+COLLECTOR_DIR="infrastructure/observability/otel-collector"
 REDIS_SERVICE="Redis"
 ENV_FILE="infrastructure/backend/railway/.railway.env"
 
 # Redis comes from reference variables (private network), OEM_API_BASE_URL is
 # set per service to the mock (step 5b) - never copied from .railway.env.
 SKIP_KEYS=" REDIS_URL REDIS_HOST REDIS_PORT REDIS_PASSWORD REDIS_BROKER_URL REDIS_BACKEND_URL OEM_API_BASE_URL "
+# Grafana Cloud credentials belong to the collector only - never to backend/worker.
+COLLECTOR_KEYS=" GRAFANA_CLOUD_OTLP_ENDPOINT GRAFANA_CLOUD_INSTANCE_ID GRAFANA_CLOUD_API_TOKEN "
 
 info() { printf '\033[36m[INFO]\033[0m  %s\n' "$*"; }
 ok()   { printf '\033[32m[OK]\033[0m    %s\n' "$*"; }
@@ -66,7 +73,7 @@ check_service() {
   local name="$1"; shift
   service_vars "$name" | "$PYTHON" -c '
 import json, re, sys
-name, is_mock, required = sys.argv[1], sys.argv[2] == "1", sys.argv[3:]
+name, kind, required = sys.argv[1], sys.argv[2], sys.argv[3:]
 v = json.load(sys.stdin)
 errors = 0
 def e(msg):
@@ -78,7 +85,15 @@ def w(msg):
 for key in required:
     if not v.get(key):
         e(f"missing {key}")
-if not is_mock:
+if kind == "collector":
+    if v.get("RAILWAY_PUBLIC_DOMAIN"):
+        w("has a public domain - the collector should be private (remove it in Settings -> Networking)")
+    if not str(v.get("GRAFANA_CLOUD_OTLP_ENDPOINT", "")).startswith("https://"):
+        e("GRAFANA_CLOUD_OTLP_ENDPOINT must be the https:// Grafana Cloud OTLP gateway")
+if kind == "app":
+    leaked = sorted(k for k in v if k.startswith("GRAFANA_CLOUD_"))
+    if leaked:
+        w("Grafana Cloud credentials on an app service (collector only): " + ", ".join(leaked))
     redis = v.get("REDIS_URL") or v.get("REDIS_HOST") or ""
     if not redis or re.search(r"localhost|127\.0\.0\.1", redis):
         e("Redis points to localhost (set REDIS_HOST/PORT/PASSWORD - run vars)")
@@ -94,7 +109,16 @@ if not is_mock:
     if local:
         w("still localhost in: " + ", ".join(sorted(local)))
 print(errors)
-' "$name" "$([[ "$name" == "$MOCK_SERVICE" ]] && echo 1 || echo 0)" "$@"
+' "$name" "$(service_kind "$name")" "$@"
+}
+
+# app (backend/worker) | mock | collector - selects the checks above.
+service_kind() {
+  case "$1" in
+    "$MOCK_SERVICE") echo mock ;;
+    "$COLLECTOR_SERVICE") echo collector ;;
+    *) echo app ;;
+  esac
 }
 
 run_check() {
@@ -103,7 +127,7 @@ run_check() {
   local total=0 out line
   for spec in "$BACKEND_SERVICE RAILWAY_DOCKERFILE_PATH PORT" \
               "$WORKER_SERVICE RAILWAY_DOCKERFILE_PATH" \
-              "$MOCK_SERVICE RAILWAY_DOCKERFILE_PATH PORT"; do
+              "$MOCK_SERVICE RAILWAY_DOCKERFILE_PATH PORT"               "$COLLECTOR_SERVICE GRAFANA_CLOUD_OTLP_ENDPOINT GRAFANA_CLOUD_INSTANCE_ID GRAFANA_CLOUD_API_TOKEN"; do
     # shellcheck disable=SC2086
     out="$(check_service $spec)"
     while IFS= read -r line; do
@@ -115,7 +139,7 @@ run_check() {
     done <<< "$out"
   done
   if (( total > 0 )); then
-    err "$total problem(s). Fix them (./scripts/railway-deploy.sh vars) or set SKIP_CHECK=1."
+    err "$total problem(s). Fix them (./tools/railway-deploy.sh vars) or set SKIP_CHECK=1."
     exit 1
   fi
   ok "Variables look good."
@@ -185,7 +209,7 @@ PY
     info "Setting variables on '$svc' ($ENVIRONMENT, no redeploy)..."
     count=0
     while IFS=$'\t' read -r key value; do
-      [[ -z "$value" || "$SKIP_KEYS" == *" $key "* ]] && continue
+      [[ -z "$value" || "$SKIP_KEYS" == *" $key "* || "$COLLECTOR_KEYS" == *" $key "* ]] && continue
       [[ "$value" == *localhost* && "$svc" == "$BACKEND_SERVICE" ]] && warn "$key contains 'localhost' - check it"
       # Value via stdin: secrets stay off the command line, JSON quotes survive.
       printf '%s' "$value" | railway variable set "$key" --stdin --service "$svc" \
@@ -203,7 +227,17 @@ PY
     fi
     ok "'$svc' done ($((count + 3)) variables)."
   done
-  ok "Variables pushed. Deploy to apply: ./scripts/railway-deploy.sh deploy"
+
+  info "Setting variables on '$COLLECTOR_SERVICE' ($ENVIRONMENT, no redeploy)..."
+  count=0
+  while IFS=$'	' read -r key value; do
+    [[ -z "$value" || "$COLLECTOR_KEYS" != *" $key "* ]] && continue
+    printf '%s' "$value" | railway variable set "$key" --stdin --service "$COLLECTOR_SERVICE"       --environment "$ENVIRONMENT" --skip-deploys >/dev/null       || { err "Failed to set $key on '$COLLECTOR_SERVICE'."; exit 1; }
+    count=$((count + 1))
+  done <<< "$parsed"
+  railway variable set --service "$COLLECTOR_SERVICE" --environment "$ENVIRONMENT" --skip-deploys     "OTEL_DEPLOYMENT_ENVIRONMENT=$ENVIRONMENT" >/dev/null
+  ok "'$COLLECTOR_SERVICE' done ($((count + 1)) variables)."
+  ok "Variables pushed. Deploy to apply: ./tools/railway-deploy.sh deploy"
 }
 
 run_deploy() {
@@ -214,8 +248,10 @@ run_deploy() {
     backend) steps=("$BACKEND_SERVICE") ;;
     worker)  steps=("$WORKER_SERVICE") ;;
     mock)    steps=("$MOCK_SERVICE") ;;
-    all)     steps=("$MOCK_SERVICE" "$BACKEND_SERVICE" "$WORKER_SERVICE") ;;
-    *) err "Unknown target: $target (app | backend | worker | mock | all)"; exit 1 ;;
+    collector) steps=("$COLLECTOR_SERVICE") ;;
+    # Collector first: backend/worker export to it from their first request.
+    all)     steps=("$COLLECTOR_SERVICE" "$MOCK_SERVICE" "$BACKEND_SERVICE" "$WORKER_SERVICE") ;;
+    *) err "Unknown target: $target (app | backend | worker | mock | collector | all)"; exit 1 ;;
   esac
   commit="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
   for svc in "${steps[@]}"; do
@@ -223,6 +259,9 @@ run_deploy() {
     if [[ "$svc" == "$MOCK_SERVICE" ]]; then
       # Mock is built with backend/ as root (uv workspace).
       railway up ./backend --path-as-root --ci --service "$svc" --environment "$ENVIRONMENT" --message "local deploy $commit"
+    elif [[ "$svc" == "$COLLECTOR_SERVICE" ]]; then
+      # Collector is built from its own directory (Dockerfile + config.yaml).
+      railway up "./$COLLECTOR_DIR" --path-as-root --ci --service "$svc" --environment "$ENVIRONMENT" --message "local deploy $commit"
     else
       railway up --ci --service "$svc" --environment "$ENVIRONMENT" --message "local deploy $commit"
     fi
@@ -240,7 +279,7 @@ case "$ACTION" in
   status)
     prerequisites
     railway status
-    for svc in "$BACKEND_SERVICE" "$WORKER_SERVICE" "$MOCK_SERVICE"; do
+    for svc in "$BACKEND_SERVICE" "$WORKER_SERVICE" "$MOCK_SERVICE" "$COLLECTOR_SERVICE"; do
       echo; info "$svc"
       railway deployment list --service "$svc" --environment "$ENVIRONMENT" --limit 3
     done

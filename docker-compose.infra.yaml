@@ -10,6 +10,8 @@
 # Gồm:
 #   - mock-ev-system  → http://localhost:8100
 #   - redis           → localhost:6379
+#   - otel-collector  → localhost:4318 (OTLP HTTP), 4317 (gRPC) — chỉ khi
+#                       bật --profile observability (cần GRAFANA_CLOUD_* trong .env)
 #
 # Chạy:      docker compose -f docker-compose.infra.yaml up -d
 # Dừng:      docker compose -f docker-compose.infra.yaml down
@@ -87,6 +89,37 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - p146_infra_net
+
+
+  # --------------------------------------------------------------------------
+  # otel-collector — OpenTelemetry Collector -> Grafana Cloud (profile: observability)
+  # Only starts with --profile observability; needs GRAFANA_CLOUD_* in .env.
+  # Same image/config as Railway: infrastructure/observability/otel-collector/
+  # Docs: docs/observability/OBSERVABILITY_SETUP.md
+  # --------------------------------------------------------------------------
+  otel-collector:
+    profiles: ["observability"]
+    build:
+      context: ./infrastructure/observability/otel-collector
+    image: p146-otel-collector:dev
+    container_name: p146_otel_collector
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      - "13133:13133" # health check
+    environment:
+      GRAFANA_CLOUD_OTLP_ENDPOINT: "${GRAFANA_CLOUD_OTLP_ENDPOINT:-}"
+      GRAFANA_CLOUD_INSTANCE_ID: "${GRAFANA_CLOUD_INSTANCE_ID:-}"
+      GRAFANA_CLOUD_API_TOKEN: "${GRAFANA_CLOUD_API_TOKEN:-}"
+      OTEL_DEPLOYMENT_ENVIRONMENT: "dev"
+      # basic | normal | detailed (detailed prints every attribute, may include PII)
+      OTEL_DEBUG_VERBOSITY: "${OTEL_DEBUG_VERBOSITY:-basic}"
+    # The image has no shell/curl: check health from the host with
+    #   curl http://localhost:13133
+    mem_limit: 256m
+    restart: unless-stopped
     networks:
       - p146_infra_net
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, ImageIcon, ShieldAlert } from 'lucide-react'
+import { Check, Clock, ImageIcon, ShieldAlert } from 'lucide-react'
 import { isApiError } from '@/shared/api/client'
 import Badge from '@/shared/ui/Badge'
 import Button from '@/shared/ui/Button'
@@ -16,6 +16,7 @@ import {
   declineAriaLabel,
   decisionView,
   lineFromConflict,
+  ownerReplyNotice,
   totalAfterApprove,
   type DecisionResult,
 } from '@/features/booking-lines/logic'
@@ -157,6 +158,7 @@ export default function DecisionCard({
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const summaryTitle = useRef<HTMLHeadingElement>(null)
   const shown = decisionView(view, decided)
+  const replyNotice = ownerReplyNotice(view.lines)
 
   useEffect(() => {
     onBusyChange?.(sheet !== null || submitting !== null)
@@ -227,6 +229,12 @@ export default function DecisionCard({
             <Badge tone="warning">{shown.packageChanges.length + shown.extras.length} hạng mục</Badge>
           </div>
           <p className="text-sm text-muted mt-1">Xưởng chỉ làm các hạng mục bạn đồng ý. Hạng mục bạn không chọn sẽ không tính tiền.</p>
+          {replyNotice && (
+            <p className="flex items-center gap-1.5 text-sm text-warning mt-2">
+              <Clock className="w-4 h-4 shrink-0" aria-hidden />
+              {replyNotice}
+            </p>
+          )}
           {shown.packageChanges.length > 0 && (
             <section aria-label="Giá gói thay đổi" className="mt-4">
               <p className="text-[13px] font-semibold text-muted">Giá gói thay đổi</p>

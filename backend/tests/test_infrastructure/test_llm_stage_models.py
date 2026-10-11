@@ -1,4 +1,5 @@
 """Role configuration must reach real composition roots without external calls."""
+import os
 from types import SimpleNamespace
 
 import pytest
@@ -11,7 +12,11 @@ from src.infrastructure.llm import dependency
 
 
 @pytest.fixture(autouse=True)
-def clean_stage_cache():
+def clean_stage_cache(monkeypatch):
+    # RAG imports load the local .env into os.environ; isolate configuration tests.
+    for name in list(os.environ):
+        if name.startswith(("LLM_", "OPENROUTER_", "GEMINI_", "GOOGLE_")) or name == "MODEL_NAME":
+            monkeypatch.delenv(name)
     dependency._cached_provider.cache_clear()
     dependency._cached_stage_provider.cache_clear()
     yield

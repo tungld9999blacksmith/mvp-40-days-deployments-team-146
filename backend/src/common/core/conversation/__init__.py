@@ -6,9 +6,15 @@ read via the repositories here.
 """
 
 from .conversation import Conversation, ConversationRepository
+from .memory import AgentMemorySetting, AgentMemorySource, AgentUserMemory, ConversationSummary, MemoryCleanup
 from .message import ChatMessage, ChatMessageRepository, MessageRole
 
 __all__ = [
+    "AgentMemorySetting",
+    "AgentMemorySource",
+    "AgentUserMemory",
+    "ConversationSummary",
+    "MemoryCleanup",
     "ChatMessage",
     "ChatMessageRepository",
     "Conversation",

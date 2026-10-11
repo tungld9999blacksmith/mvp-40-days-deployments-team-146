@@ -13,7 +13,7 @@ from src.common.core.identity.workshop_owner import WorkshopOwner
 from src.config import get_settings
 from src.infrastructure.redis.dependency import get_redis_toolkit
 from src.infrastructure.redis.toolkit import RedisToolkit
-from src.infrastructure.supabase.db import get_session
+from src.infrastructure.supabase.db import end_read_transaction, get_session
 from src.modules.oauth.dependency import verify_firebase_token
 
 from . import errors
@@ -36,6 +36,8 @@ def get_booking_config() -> BookingConfig:
         reschedule_min_lead_minutes=s.reschedule_min_lead_minutes,
         reschedule_max_count=s.reschedule_max_count,
         pricing_flow=s.quote_flow,
+        geo_cache_ttl_seconds=s.workshop_geo_cache_ttl_seconds,
+        geo_candidates=s.workshop_geo_candidates,
     )
 
 
@@ -84,4 +86,5 @@ def require_active_vehicle_owner(
         raise errors.ForbiddenError("The account is not allowed to use this feature.")
     if user.onboarding_status != OnboardingStatus.ACTIVE:
         raise errors.OnboardingRequiredError()
+    end_read_transaction(session)  # async routes await Redis next
     return user

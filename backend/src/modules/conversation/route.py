@@ -181,12 +181,12 @@ def semantic_search(
 
 # ── API-CONV-005 — delete ────────────────────────────────────────────────
 @router.delete("/{conversationId}", status_code=204)
-def delete_conversation(
+async def delete_conversation(
     conversation_id: Annotated[UUID, Path(alias="conversationId")],
     service: Annotated[ChatService, Depends(get_chat_service)],
     user_id: Annotated[int, Depends(get_current_user_id)],
 ) -> Response:
-    service.delete_conversation(user_id, conversation_id)
+    await service.delete_conversation(user_id, conversation_id)
     return Response(status_code=204)
 
 

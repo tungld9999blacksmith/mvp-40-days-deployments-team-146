@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 import anyio
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+from langchain_core.messages import BaseMessage
 from sqlalchemy import func, select
 from sqlmodel import Session, col
 from starlette.concurrency import run_in_threadpool
@@ -245,28 +245,14 @@ class ChatService:
         return [(found[UUID(r.id)], r.score) for r in results if UUID(r.id) in found]
 
     # -- deletion ---------------------------------------------------------
-    def delete_conversation(self, user_id: int, conversation_id: UUID) -> None:
-        conversation = self.get_owned_conversation(user_id, conversation_id)
-        vector_ids: list[str] = []
-        with Session(self._engine) as session:
-            if self._settings.conversation_semantic_index_enabled:
-                stmt = select(col(ChatMessage.id)).where(
-                    col(ChatMessage.conversation_id) == conversation_id,
-                    col(ChatMessage.embedded).is_(True),
-                )
-                vector_ids = [str(mid) for mid in session.execute(stmt).scalars().all()]
-            # cascade deletes chat_message; booking/quote.source_message_id -> NULL.
-            row = session.get(Conversation, conversation.id)
-            if row is not None:
-                session.delete(row)
-                session.commit()
-        # Best-effort side cleanups (never block the delete).
-        if vector_ids:
-            try:
-                self._get_vectors().delete(CONVERSATION_MESSAGES, vector_ids)
-            except Exception:  # noqa: BLE001
-                logger.exception("Failed to delete vectors for conversation %s", conversation_id)
-        # TODO(AI-001): delete LangGraph checkpointer thread once integrated.
+    async def delete_conversation(self, user_id: int, conversation_id: UUID) -> None:
+        from src.agents.checkpoint import current_checkpointer
+        from src.modules.agent_memory.lifecycle import ConversationMemoryLifecycleService
+
+        service = ConversationMemoryLifecycleService(
+            self._engine, self._settings, self.run_lock, current_checkpointer(), self._get_vectors
+        )
+        await service.delete(user_id, conversation_id)
 
     # -- streaming a turn -------------------------------------------------
     async def stream_turn(
@@ -507,6 +493,9 @@ class ChatService:
         history_messages = await run_in_threadpool(
             self._build_history_messages, conversation_id, exclude_seq=user_result.message.seq
         )
+        memory_inputs = {}
+        if isinstance(self._settings, Settings):
+            memory_inputs = await run_in_threadpool(self._memory_inputs, user_id, vehicle.id, conversation_id)
 
         try:
             async with aclosing(
@@ -519,6 +508,7 @@ class ChatService:
                     history_messages=history_messages,
                     source_message_id=user_result.message.id,
                     operation_key=str(client_message_id),
+                    **memory_inputs,
                 )
             ) as events:
                 async for event in events:
@@ -566,6 +556,18 @@ class ChatService:
         record = getattr(orchestrator, "record_committed_answer", None)
         if callable(record):
             await record(conversation_id, assistant.message.id, assistant.message.content)
+        if self._settings.agent_memory_context_mode in ("on", "shadow"):
+            from src.modules.agent_memory.summary import SummaryService
+
+            try:
+                summary = await run_in_threadpool(SummaryService(self._engine, self._settings).update, conversation_id)
+                if summary and self._settings.agent_memory_context_mode == "on":
+                    await orchestrator.compact_committed_history(conversation_id, summary)
+                    await run_in_threadpool(SummaryService(self._engine, self._settings).mark_compacted,
+                                            conversation_id, summary["version"])
+            except Exception as exc:
+                # Committed answers must remain successful if summarizing fails.
+                logger.warning("agent_memory_summary_failed conversation_id=%s error_type=%s", conversation_id, type(exc).__name__)
         if assistant.created:
             await self._messages.publish(conversation_id, assistant.message)
         yield SseFrame(
@@ -657,24 +659,21 @@ class ChatService:
 
     def _build_history_messages(self, conversation_id: UUID, exclude_seq: int | None = None) -> list[BaseMessage]:
         """Chuyển đổi lịch sử chat thành định dạng BaseMessage cho LangGraph Agent."""
+        from src.modules.agent_memory.summary import SummaryService
+
+        if self._settings.agent_memory_context_mode == "on":
+            SummaryService(self._engine, self._settings).update(conversation_id)
+        return SummaryService(self._engine, self._settings).history(conversation_id, exclude_seq)[0]
+
+    def _memory_inputs(self, user_id, vehicle_id, conversation_id):
+        from src.common.core.conversation.memory import ConversationSummary
+        from src.modules.agent_memory.preferences import PreferenceService
+
         with Session(self._engine) as session:
-            history = ChatMessageRepository(session).search(
-                filters=[
-                    eq("conversation_id", conversation_id),
-                    in_("role", [MessageRole.USER, MessageRole.ASSISTANT]),
-                ],
-                order_by=("-seq",),
-                limit=_HISTORY_TURNS,
-            )
-        msgs: list[BaseMessage] = []
-        for msg in reversed(history):
-            if exclude_seq is not None and msg.seq is not None and msg.seq >= exclude_seq:
-                continue
-            if msg.role == MessageRole.USER:
-                msgs.append(HumanMessage(content=msg.content, id=str(msg.id)))
-            elif msg.role == MessageRole.ASSISTANT:
-                msgs.append(AIMessage(content=msg.content, id=str(msg.id)))
-        return msgs
+            summary = session.get(ConversationSummary, conversation_id)
+            preferences = PreferenceService(session, self._settings).recall(user_id, vehicle_id)
+            use_summary = summary and (summary.compacted or self._settings.agent_memory_context_mode == "on")
+            return {"memory_summary": dict(summary.summary_json) if use_summary else {}, "memory_preferences": preferences}
 
     # -- rate limit -------------------------------------------------------
     async def _check_rate_limit(self, user_id: int) -> None:

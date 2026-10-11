@@ -56,6 +56,9 @@ def test_verify_manager_success_returns_the_center(mock_client):
         "name": "VinFast Thăng Long",
         "region": "Hà Nội",
         "type": "dealer",
+        "address": None,
+        "latitude": None,
+        "longitude": None,
     }
 
 
@@ -87,6 +90,6 @@ def test_verify_manager_failures(mock_client, override, expected):
 def test_service_center_listing_does_not_leak_manager_identity(mock_client):
     resp = mock_client.get("/service-centers")
     assert resp.status_code == 200
-    for center in resp.json():
+    for center in resp.json()["items"]:
         assert "manager_email" not in center
         assert "manager_national_id" not in center

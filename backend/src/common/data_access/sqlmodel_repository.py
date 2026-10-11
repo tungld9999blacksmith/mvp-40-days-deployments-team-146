@@ -242,7 +242,7 @@ class SQLModelRepository(Repository[ModelT, IdT], Generic[ModelT, IdT]):
         def make(anchor_row: ModelT | None, direction: Direction) -> str:
             # An empty page (rows removed since the cursor was issued) anchors
             # on the incoming cursor position so the client can turn back.
-            values = self._key_of(anchor_row, sort) if anchor_row is not None else decoded.values
+            values = self._key_of(anchor_row, sort) if anchor_row is not None else decoded.values  # pyright: ignore[reportOptionalMemberAccess]
             return encode_cursor(Cursor(values=values, direction=direction, sort_key=fingerprint))
 
         next_cursor = make(rows[-1] if rows else None, "next") if has_next else None

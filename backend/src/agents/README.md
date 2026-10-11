@@ -11,7 +11,8 @@ Hệ thống AI Agent của EV Care được xây dựng dựa trên triết lý
 * **Deterministic kết hợp Generative**: Các tác vụ tính toán hạn bảo dưỡng, tra cứu xưởng, dự toán chi phí và giữ chỗ được giao cho các **Service & Rule Engine nghiệp vụ** của backend. LLM chịu trách nhiệm phân tích ý định, điều phối gọi tool theo thứ tự hợp lý và sinh câu trả lời tự nhiên, có trích dẫn.
 * **Phạm vi giai đoạn hiện tại (Agent Core)**: 
   * Tập trung vào vòng lặp thực thi **ReAct (Reasoning + Acting)** hoàn chỉnh thông qua LangGraph.
-  * Tạm hoãn cơ chế Human-In-The-Loop (HITL) phức tạp và xử lý lỗi đa tầng sang phiên bản tiếp theo để ưu tiên hoàn thành luồng nghiệp vụ chạy được ngay (runnable & testable).
+  * HITL do backend kiểm chứng bằng nút trên giao diện (thẻ đề xuất đặt lịch, thẻ báo giá nháp), không dựa vào câu chữ của LLM.
+  * **Guardrail tất định quanh LLM** (cập nhật 2026-10-10): kiểm schema tham số, ép bước đọc bắt buộc, dựng câu trả lời số liệu từ kết quả tool, che PII đầu ra (mục 3.1). Kiến trúc tổng thể: [docs/architecture.md](../../../docs/architecture.md) mục 5.2.
 
 ---
 
@@ -24,9 +25,19 @@ backend/src/agents/
 ├── README.md                      # Tài liệu kiến trúc và luồng hoạt động (file này)
 ├── state.py                       # Schema AgentState (messages, context xe, draft booking...)
 ├── prompts.py                     # System Prompts định hướng nghiệp vụ xe điện EV Care
-├── graph.py                       # LangGraph StateGraph (vòng lặp: agent ⇆ tools ➔ respond)
-├── orchestrator.py                # Entrypoint điều phối (run_agent_turn stream SSE)
+├── graph.py                       # LangGraph StateGraph (agent ⇆ tools, tool_error, nhánh hitl legacy); chọn LLM theo stage + fallback
+├── orchestrator.py                # Entrypoint điều phối (run_agent_turn stream SSE, input/output guard, checkpoint)
 ├── dependency.py                  # Composition root: graph + AgentOrchestrator dùng chung
+├── checkpoint.py                  # AsyncPostgresSaver mở trong lifespan API (AGENT_CHECKPOINT_MODE)
+├── guardrails.py                  # guarded_calls: chặn/bổ sung lời gọi tool trước khi chạy; tool_failure
+├── contracts.py                   # Kiểm arguments theo schema công khai của tool
+├── booking_policy.py              # Luật theo ý định: bước đọc bắt buộc, ngày/giờ, câu hỏi tiếp nối
+├── booking_grounding.py           # Dựng câu trả lời xưởng/slot/đề xuất từ kết quả tool
+├── business_grounding.py          # Dựng câu trả lời hạn bảo dưỡng / dự toán từ kết quả tool
+├── evidence.py                    # Gom trích dẫn RAG của câu hỏi hiện tại
+├── reminder_intent.py             # Nhận diện lệnh đổi cài đặt nhắc rõ ràng (không phải NLU tổng quát)
+├── tool_review.py                 # (Tùy chọn) LLM duyệt tool nhạy cảm, LLM_BOOKING_CHECK_ENABLED
+├── conversation_guards/           # input_guard (injection, PII), output_guard (che PII, cờ trích dẫn / nhãn ước tính)
 └── tools/                         # Bộ công cụ nghiệp vụ kết nối với Service Layer backend
     ├── __init__.py                # Registry tập hợp và xuất danh sách tools cho Agent
     ├── dependency.py              # AgentToolServices + factory tạo tools được inject
@@ -34,9 +45,12 @@ backend/src/agents/
     ├── maintenance_tools.py       # Tình trạng bảo dưỡng của xe (UserVehicleService, TOOL-VEH-001)
     ├── cost_tools.py              # Ước tính chi phí một mốc tại một xưởng (CostEstimationService, TOOL-301)
     ├── booking_tools.py           # find_workshops, get_available_slots (Đọc) & propose_booking (chỉ tạo đề xuất, us-061)
+    ├── booking_line_tools.py      # get_booking_lines (Đọc dòng giá hai tầng)
+    ├── quote_tools.py             # create_draft_quote, get_quote_status (chỉ khi QUOTE_FLOW=legacy)
+    ├── reminder_tools.py          # get/update_reminder_settings, get_reminder_context
     └── RAG/                       # [Có sẵn] Engine RAG chuyên sâu trên Qdrant Cloud
         ├── ingestion/             # Luồng nạp sổ bảo dưỡng, chunking, embedding lên Qdrant
-        └── query/                 # Luồng Hybrid Search (Dense+BM25), Reranker, và rag_tool.py
+        └── query/                 # Hybrid Search (Dense+BM25), Reranker, cổng bằng chứng (*_gate.py), rag_tool.py
 ```
 
 ---
@@ -56,6 +70,24 @@ backend/src/agents/
 | `find_workshops` | **Đọc** | `area_or_address` (tùy chọn), `limit` | `workshops`: `workshop_id`, tên, địa chỉ, khu vực, `distance_km` | `modules/booking` (`find_nearby`, API-BK-01) | Gợi ý xưởng đang hoạt động; bỏ trống khu vực thì tìm quanh vị trí hồ sơ / xưởng ưu tiên. |
 | `get_available_slots` | **Đọc** | `workshop_id`, `target_date` (YYYY-MM-DD) | `slots`: `time_slot`, `available`, `remaining` | `modules/booking` (`check_availability`, API-BK-02) | Khung giờ theo giờ mở cửa, trừ chỗ đã đặt và slot bị khóa. |
 | `propose_booking` | **Đề xuất** | `workshop_id`, `booking_date`, `time_slot` (HH:MM), `odo_milestone` | `status: PROPOSED`, `proposal_id`; card `BOOKING_PROPOSAL` trong `artifact` (LLM không thấy); lỗi `SLOT_FULL` kèm `alternatives` | `modules/quick_booking` (`propose_from_agent`) | Tạo đề xuất (không booking, không giữ chỗ). Booking chỉ tạo qua nút Xác nhận (API-QB-02). |
+| `get_booking_lines` | **Đọc** | `booking_id` (tùy chọn) | Dòng giá/phát sinh với trạng thái tiếng Việt; thẻ chat cho booking two_tier | `modules/booking_line` | Chủ xe hỏi về giá/phát sinh của lịch hẹn. Không tool nào ghi `line_status`; tên/lý do của xưởng bọc như dữ liệu không tin cậy. |
+| `create_draft_quote` | **Ghi nháp** | `workshop_id`, `odo_milestone` | Báo giá nháp + thẻ báo giá | `modules/quote` (TOOL-501) | Chỉ khi `QUOTE_FLOW=legacy`. Không gửi xưởng: chủ xe tự bấm "Gửi xưởng duyệt". |
+| `get_quote_status` | **Đọc** | `quote_id` (tùy chọn) | Trạng thái báo giá | `modules/quote` | Chỉ khi `QUOTE_FLOW=legacy`. |
+| `get_reminder_settings`, `get_reminder_context` | **Đọc** | — / `reminder_id` | Cài đặt nhắc, ngữ cảnh một lời nhắc | `modules/notification` | Trả lời câu hỏi về nhắc lịch. |
+| `update_reminder_settings` | **Ghi** | `reminders_enabled`, `email_enabled`, `reminder_lead_days` (đều tùy chọn) | Cài đặt sau khi đổi | `modules/notification` | Chỉ đổi đúng trường chủ xe yêu cầu rõ (`reminder_intent`); thuộc nhóm tool nhạy cảm của tool review. |
+
+### 3.1 Các lớp kiểm soát quanh LLM
+
+| Lớp | File | Việc làm |
+| :--- | :--- | :--- |
+| Input guard | `conversation_guards/input_guard.py` | Phát hiện prompt injection, PII trong tin người dùng; chỉ ghi log. |
+| Guarded calls | `guardrails.py`, `contracts.py`, `booking_policy.py`, `reminder_intent.py` | Kiểm arguments theo schema; ép lượt đọc trước khi đề xuất; chỉ gắn `workshop_id` khi người dùng nêu đích danh; chặn khẳng định "đã đặt"/"đã đổi" không có kết quả tool. |
+| Grounding | `business_grounding.py`, `booking_grounding.py`, `evidence.py` | Dựng câu trả lời số liệu từ kết quả tool của lượt hiện tại, không gọi LLM thêm. |
+| Tool review | `tool_review.py` | (Tùy chọn) LLM stage `booking` duyệt `propose_booking`, `update_reminder_settings`; từ chối → `TOOL_REVIEW_REJECTED`. |
+| Tool error | `graph.py` (`tool_error`) | Tool lỗi → câu trả lời cố định, kết thúc lượt. |
+| Output guard | `conversation_guards/output_guard.py` | Luôn che PII; cờ thiếu trích dẫn / số tiền thiếu nhãn ước tính (ghi log). |
+
+Orchestrator không stream token nháp ở lượt có tool nghiệp vụ: câu trả lời chỉ phát sau khi qua các lớp trên. Sơ đồ và kịch bản ở mục 4–5 dưới đây mô tả vòng ReAct gốc, chưa vẽ các lớp này.
 
 ---
 

@@ -118,6 +118,7 @@ Xem §6 về việc dọn các ngoại lệ này.
 | Tiến độ `service_progress` (us-057) | `BOOKING_NOT_IN_PROGRESS` 409 · `PROGRESS_CHANGED` 409 · `INVALID_STAGE_TRANSITION` 422 · `NOTE_REQUIRED` 422 |
 | Hỏi thăm `follow_up` (us-041) | `FOLLOW_UP_NOT_FOUND` 404 · `FOLLOW_UP_NOT_OPEN` 409 · `FOLLOW_UP_ALREADY_RESPONDED` 409 · `FOLLOW_UP_CLOSED` 409 |
 | Nhắc bảo dưỡng `notification` (us-021, us-069) | `REMINDER_NOT_FOUND` 404 · `INVALID_LEAD_DAYS` 422 · `CHANNEL_NOT_AVAILABLE` 422 |
+| Tìm vị trí `location` ([location-search.api.md](location-search.api.md)) | `INVALID_REQUEST` 422 · `FORBIDDEN` 403 · `ACCOUNT_LOCKED` 403 · `LOCATION_NOT_FOUND` 404 · `LOCATION_OUT_OF_COVERAGE` 422 · `RATE_LIMIT_EXCEEDED` 429 (+`Retry-After`) · `LOCATION_PROVIDER_UNAVAILABLE` 503 |
 | Webhook hãng `oem_integration` (us-017) | `WEBHOOK_SIGNATURE_INVALID` 401 · `WEBHOOK_TIMESTAMP_EXPIRED` 401 · `UNSUPPORTED_EVENT_TYPE` 422 · `WEBHOOK_PROCESSING` 503 |
 
 ## 2.3 Lỗi trong luồng chat (SSE)
@@ -222,6 +223,7 @@ Gửi lại cùng `clientMessageId` thì backend phát lại câu trả lời đ
 
 - [architecture-deep-dive.md §4](../../architecture-deep-dive.md#4-độ-tin-cậy-và-xử-lý-lỗi): quy ước chung, hành vi khi phụ thuộc sự cố, chống trùng.
 - [conversation-messaging.api.md](conversation-messaging.api.md): lỗi của API hội thoại và WebSocket.
+- [location-search.api.md](location-search.api.md): lỗi của API tìm vị trí (Amazon Location / GrabMaps).
 - Spec API theo feature: mục "Error Handling" / "Errors" trong `docs/specs/sprint-*/api/*.api.md`.
 - Spec FF theo feature: mục "Exception Flow" và "Business Error & Edge Cases" trong `docs/specs/sprint-*/feature-functional/*.ff.md`.
 

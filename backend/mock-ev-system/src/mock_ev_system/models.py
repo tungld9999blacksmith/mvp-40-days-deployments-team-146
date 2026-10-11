@@ -92,6 +92,11 @@ class ServiceCenter(SQLModel, table=True):
     # trên EV Care. Một email quản lý chỉ gắn với đúng một xưởng.
     manager_email: str = Field(index=True, unique=True)
     manager_national_id: str
+    # Location (optional) — filled from Google Places by tools/workshop_crawl.
+    address: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    place_id: Optional[str] = None
 
     service_histories: list["ServiceHistory"] = Relationship(back_populates="service_center")
 

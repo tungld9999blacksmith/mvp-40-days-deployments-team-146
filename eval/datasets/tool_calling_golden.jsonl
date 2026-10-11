@@ -1,0 +1,18 @@
+{"id": "TC01", "query": "Xe tôi tới hạn bảo dưỡng chưa?", "vehicle_context": {"model": "VF8", "odo": 15200}, "expected_tool": "get_due_maintenance", "expected_args": {}}
+{"id": "TC02", "query": "Mốc bảo dưỡng tiếp theo của xe là khi nào?", "vehicle_context": {"model": "VF5", "odo": 9800}, "expected_tool": "get_due_maintenance", "expected_args": {}}
+{"id": "TC03", "query": "Bảo dưỡng mốc 15.000 km hết khoảng bao nhiêu tiền?", "vehicle_context": {"model": "VF8", "odo": 15000}, "expected_tool": "estimate_service_cost", "expected_args": {"odo_milestone": 15000}}
+{"id": "TC04", "query": "Chi phí bảo dưỡng ở xưởng Thanh Xuân là bao nhiêu?", "vehicle_context": {"model": "VF6", "odo": 12000}, "expected_tool": "estimate_service_cost", "expected_args": {}}
+{"id": "TC05", "query": "Gần Cầu Giấy có xưởng VinFast nào không?", "vehicle_context": {"model": "VF8", "odo": 15200}, "expected_tool": "find_workshops", "expected_args": {"area_or_address": "Cầu Giấy"}}
+{"id": "TC06", "query": "Tìm giúp tôi xưởng dịch vụ gần nhất", "vehicle_context": {"model": "VF3", "odo": 5000}, "expected_tool": "find_workshops", "expected_args": {}}
+{"id": "TC07", "query": "Thứ Bảy này xưởng còn khung giờ nào trống không?", "vehicle_context": {"model": "VF8", "odo": 15200, "preferred_workshop_id": "WS-001"}, "expected_tool": "get_available_slots", "expected_args": {"target_date": "2026-10-10"}}
+{"id": "TC08", "query": "Đặt giúp tôi lịch 14:00 thứ Bảy ở xưởng Thanh Xuân", "vehicle_context": {"model": "VF8", "odo": 15200}, "expected_tool": "propose_booking", "expected_args": {"time_slot": "14:00"}}
+{"id": "TC09", "query": "Pin xe VF8 bảo hành bao nhiêu năm?", "vehicle_context": {"model": "VF8", "odo": 15200}, "expected_tool": "search_ev_knowledge", "expected_args": {"model": "VF8"}}
+{"id": "TC10", "query": "Sạc tại nhà cho VF5 cần thiết bị gì?", "vehicle_context": {"model": "VF5", "odo": 9800}, "expected_tool": "search_ev_knowledge", "expected_args": {"model": "VF5"}}
+{"id": "TC11", "query": "Chính sách bảo hành khung gầm thế nào?", "vehicle_context": {"model": "VF6", "odo": 12000}, "expected_tool": "search_ev_knowledge", "expected_args": {}}
+{"id": "TC12", "query": "Cảm ơn bạn nhé!", "vehicle_context": {"model": "VF8", "odo": 15200}, "expected_tool": null, "expected_args": {}}
+{"id": "TC13", "query": "Chào buổi sáng", "vehicle_context": {"model": "VF5", "odo": 9800}, "expected_tool": null, "expected_args": {}}
+{"id": "TC14", "query": "Mốc 30.000 km xe VF9 gồm những gì và giá bao nhiêu?", "vehicle_context": {"model": "VF9", "odo": 29800}, "expected_tool": "get_due_maintenance", "expected_args": {}}
+{"id": "TC15", "query": "Tôi muốn đổi lịch hẹn sang chiều mai", "vehicle_context": {"model": "VF8", "odo": 15200}, "expected_tool": "get_available_slots", "expected_args": {}}
+{"id": "TC16", "query": "Đi 20.000 km rồi, cần kiểm tra phanh không?", "vehicle_context": {"model": "VF7", "odo": 20100}, "expected_tool": "get_due_maintenance", "expected_args": {}}
+{"id": "TC17", "query": "Xưởng ở Hải Phòng mở cửa chủ nhật không?", "vehicle_context": {"model": "VF6", "odo": 12000}, "expected_tool": "find_workshops", "expected_args": {"area_or_address": "Hải Phòng"}}
+{"id": "TC18", "query": "Giá thay má phanh cho VF3 khoảng bao nhiêu?", "vehicle_context": {"model": "VF3", "odo": 18000}, "expected_tool": "estimate_service_cost", "expected_args": {}}

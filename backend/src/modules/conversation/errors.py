@@ -96,6 +96,8 @@ class SemanticSearchDisabled(ConversationError):
 
 
 ERROR_STATUS: dict[str, int] = {
+    "MEMORY_DISABLED": 409,
+    "MEMORY_CONFLICT": 409,
     "INVALID_REQUEST": 400,
     "UNAUTHORIZED": 401,
     "FORBIDDEN": 403,

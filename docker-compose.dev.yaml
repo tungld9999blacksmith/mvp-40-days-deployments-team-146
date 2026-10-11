@@ -5,6 +5,8 @@
 #   1. backend         — FastAPI core API (src.main:app)          → cổng 8000
 #   2. mock-ev-system  — FastAPI giả lập hệ thống hãng xe điện     → cổng 8100
 #   3. redis           — Redis 7 (alpine, bản nhẹ) cache/pub-sub   → cổng 6379
+#   4. otel-collector  — OTel Collector → Grafana Cloud (tùy chọn,  → cổng 4317/4318
+#                        chỉ chạy với --profile observability)
 #
 # Backend gọi mock-ev-system / redis qua DNS nội bộ; Qdrant Cloud đọc từ .env.
 #
@@ -108,6 +110,37 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    networks:
+      - p146_net
+
+
+  # --------------------------------------------------------------------------
+  # otel-collector — OpenTelemetry Collector -> Grafana Cloud (profile: observability)
+  # Only starts with --profile observability; needs GRAFANA_CLOUD_* in .env.
+  # Same image/config as Railway: infrastructure/observability/otel-collector/
+  # Docs: docs/observability/OBSERVABILITY_SETUP.md
+  # --------------------------------------------------------------------------
+  otel-collector:
+    profiles: ["observability"]
+    build:
+      context: ./infrastructure/observability/otel-collector
+    image: p146-otel-collector:dev
+    container_name: p146_otel_collector
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      - "13133:13133" # health check
+    environment:
+      GRAFANA_CLOUD_OTLP_ENDPOINT: "${GRAFANA_CLOUD_OTLP_ENDPOINT:-}"
+      GRAFANA_CLOUD_INSTANCE_ID: "${GRAFANA_CLOUD_INSTANCE_ID:-}"
+      GRAFANA_CLOUD_API_TOKEN: "${GRAFANA_CLOUD_API_TOKEN:-}"
+      OTEL_DEPLOYMENT_ENVIRONMENT: "dev"
+      # basic | normal | detailed (detailed prints every attribute, may include PII)
+      OTEL_DEBUG_VERBOSITY: "${OTEL_DEBUG_VERBOSITY:-basic}"
+    # The image has no shell/curl: check health from the host with
+    #   curl http://localhost:13133
+    mem_limit: 256m
+    restart: unless-stopped
     networks:
       - p146_net
 

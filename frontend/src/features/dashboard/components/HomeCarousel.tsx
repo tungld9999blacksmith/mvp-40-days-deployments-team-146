@@ -44,7 +44,7 @@ function SlideTag({ icon, children }: { icon: ReactNode; children: ReactNode }) 
   )
 }
 
-function SlideText({ title, body }: { title: string; body: string }) {
+function SlideText({ title, body }: { title: ReactNode; body: string }) {
   return (
     <>
       <h2 className="text-xl sm:text-[1.7rem] font-extrabold leading-tight tracking-tight text-balance">{title}</h2>
@@ -99,7 +99,13 @@ function MaintenanceSlide({ vehicle, status }: { vehicle: VehicleSummary; status
       <div className="min-w-0">
         <SlideTag icon={<Wrench className="w-3.5 h-3.5" aria-hidden />}>{tag}</SlideTag>
         <SlideText
-          title={remaining ? `${milestoneTitle(milestone)}: ${remaining.charAt(0).toLowerCase()}${remaining.slice(1)}` : milestoneTitle(milestone)}
+          title={
+            <>
+              {milestoneTitle(milestone)}
+              {/* From sm the readouts beside it show these figures (FINDING-010). */}
+              {remaining && <span className="sm:hidden">: {remaining.charAt(0).toLowerCase()}{remaining.slice(1)}</span>}
+            </>
+          }
           body="Xem chi phí dự kiến cho gói tiêu chuẩn, rồi chọn khung giờ trống tại xưởng gần bạn."
         />
         <div className="mt-5 flex flex-wrap gap-2.5">
