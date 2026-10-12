@@ -8,6 +8,7 @@ import { TextArea } from '@/shared/ui/Field'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
 import { EmptyState, ErrorState } from '@/shared/ui/States'
 import { useToast } from '@/shared/ui/Toast'
+import { page } from '@/shared/ui/page'
 import { formatDate } from '@/shared/utils/format'
 import { track } from '@/shared/utils/track'
 import { getFollowUp, respondFollowUp } from '../api'
@@ -132,7 +133,7 @@ export default function FollowUp() {
 
   if (error && !data) {
     return (
-      <div className="p-4 sm:p-6 max-w-xl mx-auto">
+      <div className={page('ticket')}>
         <Card>
           {isApiError(error, 'FOLLOW_UP_NOT_FOUND') ? (
             <EmptyState title="Không tìm thấy khảo sát" action={<Button onClick={() => navigate('/dashboard')}>Về trang chủ</Button>} />
@@ -145,7 +146,7 @@ export default function FollowUp() {
   }
   if (!data) {
     return (
-      <div className="p-4 sm:p-6 max-w-xl mx-auto space-y-4" aria-busy>
+      <div className={`${page('ticket')} space-y-4`} aria-busy>
         <SkeletonCard lines={2} />
         <SkeletonCard lines={3} />
       </div>
@@ -157,7 +158,7 @@ export default function FollowUp() {
   const lowRating = rating !== null && rating <= 2
 
   return (
-    <div className="p-4 sm:p-6 max-w-xl mx-auto space-y-4 pb-28 sm:pb-6">
+    <div className={`${page('ticket')} space-y-4 pb-28 sm:pb-8`}>
       <button type="button" onClick={back} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground">
         <ArrowLeft className="w-4 h-4" /> Quay lại
       </button>

@@ -414,14 +414,22 @@ LIMIT 1;
 
 ## 2. Authentication
 
+Hệ thống hỗ trợ 2 cơ chế xác thực (xem chi tiết tại [`SPEC-SEC-OEM-M2M-001`](../../mock-system/m2m_authentication_spec.md)):
+1. **Asymmetric Private-Key JWT (Khuyến nghị, chuẩn M2M):**
+   - Header `Authorization: Bearer <m2m_jwt_token>` được OEM ký bằng `MOCK_PRIVATE_KEY` (Ed25519/RS256, `typ=JWT`, `iss=mock-ev-system`, `aud=ev-care-backend`, hạn 180s), EV Care verify bằng `OEM_PUBLIC_KEY` với leeway 60s.
+   - Claim `body_sha256` (hex SHA-256 của raw body) bắt buộc và phải khớp body nhận được, để token không dùng lại được với body khác.
+2. **HMAC-SHA256 (Tương thích ngược):**
+   - Header `X-OEM-Signature`: `sha256=` + hex(HMAC-SHA256(`OEM_WEBHOOK_SECRET`, `{timestamp}.{raw_body}`)).
+
 | Header | Required | Description |
 | --- | ---: | --- |
+| `Authorization` | Optional (Khuyến nghị) | `Bearer <jwt>` ký bất đối xứng bởi OEM |
 | `X-OEM-Event-Id` | Yes | ID duy nhất của sự kiện (idempotency) |
 | `X-OEM-Timestamp` | Yes | Unix seconds lúc gửi; lệch ≤ 300 giây so với server |
-| `X-OEM-Signature` | Yes | `sha256=` + hex(HMAC-SHA256(`OEM_WEBHOOK_SECRET`, `{timestamp}.{raw_body}`)) |
+| `X-OEM-Signature` | Optional (khi dùng HMAC) | Chữ ký HMAC-SHA256 |
 
-- So sánh chữ ký bằng constant-time compare.
-- Secret qua biến môi trường; hỗ trợ 2 secret song song khi xoay vòng `[Đề xuất]`.
+- So sánh chữ ký HMAC bằng constant-time compare; JWT verify qua public key của OEM.
+- Cấu hình qua `OEM_AUTH_MODE` (`jwt`, `hmac`, hoặc `both`).
 
 ## 3. Request Body
 

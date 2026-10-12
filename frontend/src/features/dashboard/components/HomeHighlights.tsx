@@ -3,17 +3,19 @@ import { CalendarCheck2, ChevronRight, FileCheck2 } from 'lucide-react'
 import Badge from '@/shared/ui/Badge'
 import { BOOKING_STATUS } from '@/shared/domain/bookingLabels'
 import { useUpcomingBookings } from '@/features/bookings/hooks/useUpcomingBookings'
-import { formatLongDay, slotLabel } from '@/features/bookings/utils'
+import { bookingsOfVehicle, formatLongDay, slotLabel } from '@/features/bookings/utils'
 import { useUnseenQuotes } from '@/features/quotes/hooks'
+import { useCurrentVehicle } from '@/features/vehicles/currentVehicle/CurrentVehicleContext'
 
 /**
- * Home shortcuts: next appointment (us-033 Q "Lịch hẹn sắp tới" → SCR-701) and the
+ * Home shortcuts: the selected vehicle's next appointment (us-033 Q "Lịch hẹn sắp tới" → SCR-701) and the
  * "Báo giá có kết quả" badge (us-049 BR-1109). Renders nothing while there is nothing to show.
  */
 export default function HomeHighlights() {
+  const vehicleId = useCurrentVehicle().current?.userVehicleId ?? null
   const upcoming = useUpcomingBookings()
   const quotes = useUnseenQuotes()
-  const next = upcoming.data?.items[0] ?? null
+  const next = bookingsOfVehicle(upcoming.data?.items ?? [], vehicleId)[0] ?? null
   const results = quotes.data?.items.length ?? 0
   if (!next && results === 0) return null
 

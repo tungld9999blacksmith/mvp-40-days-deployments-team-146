@@ -26,6 +26,7 @@ from . import _services
 from .booking_line_tools import build_booking_line_tools
 from .booking_tools import build_booking_tools
 from .cost_tools import build_cost_tools
+from .maintenance_package_tools import build_maintenance_package_tools
 from .maintenance_tools import build_maintenance_tools
 from .memory_tools import build_memory_tools
 from .quote_tools import build_quote_tools
@@ -68,6 +69,7 @@ def build_customer_agent_tools(services: AgentToolServices, *, quote_flow: str |
     quote_tools = [t for t in build_quote_tools(services) if flow == "legacy" or t.name != "create_draft_quote"]
     return [
         *build_maintenance_tools(services),
+        *build_maintenance_package_tools(services),
         *build_cost_tools(services),
         *build_booking_tools(services),
         *quote_tools,

@@ -13,6 +13,8 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
+from src.modules.vehicle_usage.schemas import MaintenanceForecast
+
 
 class CamelModel(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, protected_namespaces=())
@@ -54,6 +56,7 @@ class ThresholdsOut(CamelModel):
 
 
 class MaintenanceStatusOut(CamelModel):
+    maintenance_forecast: MaintenanceForecast | None = None
     user_vehicle_id: UUID
     due_status: str
     due_reason: str | None = None

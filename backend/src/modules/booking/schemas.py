@@ -102,6 +102,7 @@ class AvailabilityEnvelope(CamelModel):
 class HoldRequest(CamelModel):
     confirmation_token: str = Field(..., min_length=1)
     user_vehicle_id: UUID
+    source_reminder_id: UUID | None = None
     quote_id: UUID | None = None  # us-049 BR-1108 — approved quote of the same workshop
     milestone_ref: str | None = Field(default=None, max_length=64)
     note: str | None = Field(default=None, max_length=500)
@@ -122,6 +123,7 @@ class BookingOut(CamelModel):
     estimated_cost: Decimal | None = None
     estimate_label: str = "Chi phí ước tính"
     quote_id: UUID | None = None
+    maintenance_package_code: str | None = None
 
 
 class BookingEnvelope(CamelModel):
@@ -203,6 +205,7 @@ class TicketOut(CamelModel):
     reschedule_mode: str
     reschedule_blocked_reason: str | None = None
     odo_milestone: int | None = None
+    maintenance_package_code: str | None = None
     items: list[TicketItemOut] = []
     cost: TicketCostOut
     documents_to_bring: list[str] = []
@@ -224,6 +227,7 @@ class MyBookingItemOut(CamelModel):
     booking_date: date
     time_slot: time
     workshop: TicketWorkshopOut
+    vehicle: TicketVehicleOut
     cost: TicketCostOut
     allowed_actions: list[str]
 

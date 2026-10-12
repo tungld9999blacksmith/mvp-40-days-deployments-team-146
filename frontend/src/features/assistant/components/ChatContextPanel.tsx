@@ -1,4 +1,4 @@
-import { BatteryCharging, CalendarClock, CircleDot, ShieldCheck, Wrench, type LucideIcon } from 'lucide-react'
+import { BatteryCharging, CalendarClock, CircleDot, PackageCheck, Wrench, type LucideIcon } from 'lucide-react'
 import PlateTile from '@/shared/ui/PlateTile'
 import Spinner from '@/shared/ui/Spinner'
 import { vehicleDisplayName } from '@/shared/domain/labels'
@@ -11,12 +11,12 @@ import { QUICK_BOOKING_LABEL } from '../quickBooking/proposalView'
 
 export const SUGGESTED_QUESTIONS = [
   'Mốc bảo dưỡng tới của xe tôi cần làm gì?',
-  'Hạng mục nào được bảo hành miễn phí?',
+  'Gợi ý gói bảo dưỡng tối ưu cho xe của tôi',
   'Chính sách bảo hành pin thế nào?',
   'Bao lâu cần kiểm tra lốp?',
 ]
 
-const QUESTION_ICONS: LucideIcon[] = [Wrench, ShieldCheck, BatteryCharging, CircleDot]
+const QUESTION_ICONS: LucideIcon[] = [Wrench, PackageCheck, BatteryCharging, CircleDot]
 
 function Readout({ value, label }: { value: string; label: string }) {
   return (

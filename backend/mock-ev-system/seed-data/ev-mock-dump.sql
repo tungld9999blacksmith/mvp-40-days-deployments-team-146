@@ -79,6 +79,31 @@ INSERT INTO "maintenance_schedule" VALUES('MS-032','MDL-07',30000,24,'Bảo dư�
 INSERT INTO "maintenance_schedule" VALUES('MS-033','MDL-07',45000,36,'Bảo dưỡng lớn 45.000km / 36 tháng');
 INSERT INTO "maintenance_schedule" VALUES('MS-034','MDL-07',60000,48,'Bảo dưỡng lớn 60.000km / 48 tháng');
 INSERT INTO "maintenance_schedule" VALUES('MS-035','MDL-07',75000,60,'Bảo dưỡng toàn diện 75.000km / 60 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-036','MDL-08',15000,12,'Bảo dưỡng định kỳ 15.000km / 12 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-037','MDL-08',30000,24,'Bảo dưỡng định kỳ 30.000km / 24 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-038','MDL-08',45000,36,'Bảo dưỡng lớn 45.000km / 36 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-039','MDL-08',60000,48,'Bảo dưỡng lớn 60.000km / 48 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-040','MDL-08',75000,60,'Bảo dưỡng toàn diện 75.000km / 60 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-041','MDL-09',15000,12,'Bảo dưỡng định kỳ 15.000km / 12 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-042','MDL-09',30000,24,'Bảo dưỡng định kỳ 30.000km / 24 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-043','MDL-09',45000,36,'Bảo dưỡng lớn 45.000km / 36 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-044','MDL-09',60000,48,'Bảo dưỡng lớn 60.000km / 48 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-045','MDL-09',75000,60,'Bảo dưỡng toàn diện 75.000km / 60 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-046','MDL-10',15000,12,'Bảo dưỡng định kỳ 15.000km / 12 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-047','MDL-10',30000,24,'Bảo dưỡng định kỳ 30.000km / 24 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-048','MDL-10',45000,36,'Bảo dưỡng lớn 45.000km / 36 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-049','MDL-10',60000,48,'Bảo dưỡng lớn 60.000km / 48 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-050','MDL-10',75000,60,'Bảo dưỡng toàn diện 75.000km / 60 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-051','MDL-11',15000,12,'Bảo dưỡng định kỳ 15.000km / 12 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-052','MDL-11',30000,24,'Bảo dưỡng định kỳ 30.000km / 24 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-053','MDL-11',45000,36,'Bảo dưỡng lớn 45.000km / 36 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-054','MDL-11',60000,48,'Bảo dưỡng lớn 60.000km / 48 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-055','MDL-11',75000,60,'Bảo dưỡng toàn diện 75.000km / 60 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-056','MDL-12',15000,12,'Bảo dưỡng định kỳ 15.000km / 12 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-057','MDL-12',30000,24,'Bảo dưỡng định kỳ 30.000km / 24 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-058','MDL-12',45000,36,'Bảo dưỡng lớn 45.000km / 36 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-059','MDL-12',60000,48,'Bảo dưỡng lớn 60.000km / 48 tháng');
+INSERT INTO "maintenance_schedule" VALUES('MS-060','MDL-12',75000,60,'Bảo dưỡng toàn diện 75.000km / 60 tháng');
 CREATE TABLE owner (
 	owner_id VARCHAR NOT NULL, 
 	full_name VARCHAR NOT NULL, 
@@ -304,6 +329,11 @@ INSERT INTO "vehicle_model" VALUES('MDL-04','VF7','Eco',75.3,174.0,2023);
 INSERT INTO "vehicle_model" VALUES('MDL-05','VF8','Eco',87.7,300.0,2023);
 INSERT INTO "vehicle_model" VALUES('MDL-06','VF8','Plus',87.7,300.0,2023);
 INSERT INTO "vehicle_model" VALUES('MDL-07','VF9','Plus',123.0,300.0,2023);
+INSERT INTO "vehicle_model" VALUES('MDL-08','VF Wild','Plus',100.0,300.0,2026);
+INSERT INTO "vehicle_model" VALUES('MDL-09','VF3','Eco',18.64,30.0,2024);
+INSERT INTO "vehicle_model" VALUES('MDL-10','VF2','Eco',25.0,40.0,2026);
+INSERT INTO "vehicle_model" VALUES('MDL-11','VF7','Plus',75.3,260.0,2024);
+INSERT INTO "vehicle_model" VALUES('MDL-12','VF9','Eco',123.0,300.0,2023);
 CREATE TABLE vehicle_usage (
 	vehicle_id VARCHAR NOT NULL, 
 	current_km INTEGER NOT NULL, 
@@ -524,6 +554,26 @@ INSERT INTO "warranty_policy" VALUES('WP-025','MDL-07','battery',96,160000,'Pin 
 INSERT INTO "warranty_policy" VALUES('WP-026','MDL-07','motor',60,120000,'Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.');
 INSERT INTO "warranty_policy" VALUES('WP-027','MDL-07','chassis',36,100000,'Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.');
 INSERT INTO "warranty_policy" VALUES('WP-028','MDL-07','electronics',36,100000,'Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.');
+INSERT INTO "warranty_policy" VALUES('WP-029','MDL-08','battery',96,160000,'Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.');
+INSERT INTO "warranty_policy" VALUES('WP-030','MDL-08','motor',60,120000,'Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.');
+INSERT INTO "warranty_policy" VALUES('WP-031','MDL-08','chassis',36,100000,'Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.');
+INSERT INTO "warranty_policy" VALUES('WP-032','MDL-08','electronics',36,100000,'Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.');
+INSERT INTO "warranty_policy" VALUES('WP-033','MDL-09','battery',96,160000,'Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.');
+INSERT INTO "warranty_policy" VALUES('WP-034','MDL-09','motor',60,120000,'Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.');
+INSERT INTO "warranty_policy" VALUES('WP-035','MDL-09','chassis',36,100000,'Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.');
+INSERT INTO "warranty_policy" VALUES('WP-036','MDL-09','electronics',36,100000,'Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.');
+INSERT INTO "warranty_policy" VALUES('WP-037','MDL-10','battery',96,160000,'Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.');
+INSERT INTO "warranty_policy" VALUES('WP-038','MDL-10','motor',60,120000,'Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.');
+INSERT INTO "warranty_policy" VALUES('WP-039','MDL-10','chassis',36,100000,'Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.');
+INSERT INTO "warranty_policy" VALUES('WP-040','MDL-10','electronics',36,100000,'Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.');
+INSERT INTO "warranty_policy" VALUES('WP-041','MDL-11','battery',96,160000,'Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.');
+INSERT INTO "warranty_policy" VALUES('WP-042','MDL-11','motor',60,120000,'Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.');
+INSERT INTO "warranty_policy" VALUES('WP-043','MDL-11','chassis',36,100000,'Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.');
+INSERT INTO "warranty_policy" VALUES('WP-044','MDL-11','electronics',36,100000,'Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.');
+INSERT INTO "warranty_policy" VALUES('WP-045','MDL-12','battery',96,160000,'Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.');
+INSERT INTO "warranty_policy" VALUES('WP-046','MDL-12','motor',60,120000,'Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.');
+INSERT INTO "warranty_policy" VALUES('WP-047','MDL-12','chassis',36,100000,'Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.');
+INSERT INTO "warranty_policy" VALUES('WP-048','MDL-12','electronics',36,100000,'Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.');
 CREATE UNIQUE INDEX ix_service_center_manager_email ON service_center (manager_email);
 CREATE UNIQUE INDEX ix_vehicle_license_plate ON vehicle (license_plate);
 CREATE UNIQUE INDEX ix_vehicle_vin ON vehicle (vin);

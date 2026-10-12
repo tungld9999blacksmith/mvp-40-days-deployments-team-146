@@ -8,6 +8,7 @@ The reads call ``BookingService``, the same service as the booking endpoints
 
 from __future__ import annotations
 
+import hmac
 from datetime import date, time
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
@@ -16,6 +17,7 @@ from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import BaseTool, tool
 
 from src.modules.booking import errors as booking_errors
+from src.modules.maintenance_package import MaintenancePackageService
 from src.modules.quick_booking import errors as quick_errors
 
 from . import _services
@@ -140,6 +142,8 @@ def build_booking_tools(services: AgentToolServices | None = None) -> list[BaseT
         booking_date: str,
         time_slot: str,
         odo_milestone: int | None = None,
+        maintenance_package_code: str | None = None,
+        maintenance_package_token: str | None = None,
     ) -> tuple[dict[str, Any], dict | None]:
         """Tạo ĐỀ XUẤT đặt lịch cho xe đang chọn: hiện thẻ có nút "Xác nhận đặt lịch" (us-061 TOOL-QB-01).
 
@@ -152,6 +156,10 @@ def build_booking_tools(services: AgentToolServices | None = None) -> list[BaseT
             booking_date: Ngày hẹn, dạng YYYY-MM-DD.
             time_slot: Giờ bắt đầu khung giờ, dạng HH:MM, phải là một slot available của get_available_slots.
             odo_milestone: Mốc km bảo dưỡng (next_milestone.odo_milestone_km), nếu đã biết.
+            maintenance_package_code: ESSENTIAL, BALANCED hoặc COMPREHENSIVE lấy nguyên
+                từ recommend_maintenance_packages sau khi chủ xe chọn gói.
+            maintenance_package_token: recommendation_token lấy cùng kết quả gói. Backend
+                dùng token này để phát hiện ODO, lịch sử hoặc giá đã đổi trước khi tạo proposal.
 
         Returns:
             status PROPOSED, proposal_id, summary, next_step. Lỗi SLOT_FULL kèm alternatives;
@@ -162,6 +170,45 @@ def build_booking_tools(services: AgentToolServices | None = None) -> list[BaseT
                 who = _services.caller(session, config)
                 if who.conversation_id is None:
                     raise _services.MissingCallerError()
+                selected_package = None
+                if maintenance_package_code is not None:
+                    if not maintenance_package_token:
+                        raise quick_errors.QuickBookingError(
+                            "Maintenance package must be selected from a current recommendation.",
+                            code="PACKAGE_TOKEN_REQUIRED",
+                        )
+                    code = maintenance_package_code.upper()
+                    vehicle_service = provider.user_vehicle_service(session)
+                    vehicle = vehicle_service.get_owned_active_vehicle(who.user, who.user_vehicle_id)
+                    recommendation = MaintenancePackageService(
+                        session,
+                        vehicle_service,
+                        provider.cost_estimation_service(session),
+                    ).recommend(who.user, vehicle, workshop_id=_parse_workshop(workshop_id))
+                    current_token = recommendation.get("recommendation_token")
+                    if not isinstance(current_token, str) or not hmac.compare_digest(
+                        maintenance_package_token, current_token
+                    ):
+                        raise quick_errors.QuickBookingError(
+                            "Vehicle or pricing data changed. Review the refreshed maintenance packages before booking.",
+                            code="MAINTENANCE_PACKAGE_CHANGED",
+                            details={
+                                "recommendationToken": current_token,
+                                "packages": recommendation.get("packages", []),
+                            },
+                        )
+                    selected_package = next(
+                        (package for package in recommendation.get("packages", []) if package["package_code"] == code),
+                        None,
+                    )
+                    if selected_package is None:
+                        raise quick_errors.QuickBookingError(
+                            "Maintenance package is invalid or no longer available.",
+                            code="INVALID_MAINTENANCE_PACKAGE",
+                        )
+                    # The optimizer/backend owns the milestone. Never trust a
+                    # milestone repeated (or invented) by the LLM for a package.
+                    odo_milestone = recommendation["milestone"]["odo_milestone_km"]
                 proposal, card = await provider.quick_booking_service(session).propose_from_agent(
                     who.user.user_id,
                     who.user_vehicle_id,
@@ -170,6 +217,7 @@ def build_booking_tools(services: AgentToolServices | None = None) -> list[BaseT
                     _parse_date(booking_date),
                     _parse_time(time_slot),
                     odo_milestone,
+                    selected_package,
                 )
             except booking_errors.SlotFullError as exc:
                 return _slot_full(exc), None
@@ -177,12 +225,20 @@ def build_booking_tools(services: AgentToolServices | None = None) -> list[BaseT
                 return _services.tool_error(exc), None
             primary = card["primary"]
             summary = f"Đề xuất {primary['workshopName']} lúc {primary['timeSlot']} ngày {primary['date']}."
-            return {
+            result: dict[str, Any] = {
                 "status": "PROPOSED",
                 "proposal_id": str(proposal.id),
                 "summary": summary,
                 "next_step": _NEXT_STEP,
-            }, card
+            }
+            if selected_package is not None:
+                result["maintenance_package"] = {
+                    "package_code": selected_package["package_code"],
+                    "name": selected_package["name"],
+                    "item_codes": selected_package["item_codes"],
+                    "estimated_total": selected_package["estimated_total"],
+                }
+            return result, card
 
     return [find_workshops, get_available_slots, propose_booking]
 

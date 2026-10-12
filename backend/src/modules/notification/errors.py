@@ -38,6 +38,7 @@ class ChannelNotAvailableError(NotificationError):
 
 
 ERROR_STATUS: dict[str, int] = {
+    "DEMO_READ_ONLY": 403,
     "REMINDER_NOT_FOUND": 404,
     "INVALID_REQUEST": 400,
     "INVALID_LEAD_DAYS": 422,

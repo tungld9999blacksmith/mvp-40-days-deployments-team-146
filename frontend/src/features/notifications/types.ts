@@ -11,6 +11,15 @@ export interface ChannelSetting {
 }
 
 export interface NotificationSettings {
+  sendScheduleAvailable?: boolean
+  preferredSendTime?: string | null
+  quietHours?: { start: string; end: string } | null
+  timezone?: string
+  personalizedRemindersEnabled?: boolean
+  personalizationAvailable?: boolean
+  personalizationMode?: 'off' | 'shadow' | 'on'
+  personalizationPolicyVersion?: string
+  personalizationConsentAt?: string | null
   remindersEnabled: boolean
   reminderLeadDays: number
   defaultReminderLeadDays: number
@@ -26,6 +35,11 @@ export interface NotificationSettings {
 }
 
 export interface NotificationSettingsUpdate {
+  preferredSendTime?: string | null
+  quietHours?: { start: string; end: string } | null
+  timezone?: string
+  personalizedRemindersEnabled?: boolean
+  personalizationPolicyVersion?: string
   remindersEnabled?: boolean
   reminderLeadDays?: number
   channels?: { channel: NotificationChannel; enabled: boolean }[]
@@ -33,6 +47,13 @@ export interface NotificationSettingsUpdate {
 
 /** Editable part of the settings kept by the form. */
 export interface SettingsForm {
+  preferredSendTimeEnabled: boolean
+  preferredSendTime: string
+  quietHoursEnabled: boolean
+  quietHoursStart: string
+  quietHoursEnd: string
+  timezone: string
+  personalizedRemindersEnabled: boolean
   remindersEnabled: boolean
   reminderLeadDays: string
   channels: Record<string, boolean>
@@ -92,6 +113,11 @@ export interface ReminderContext {
   resolutionReason: string | null
   snapshotAvailable?: boolean
   details: {
+    trip?: { id: string; departureDate: string; returnDate: string | null; distanceKm: number; projectedTripEndKm: number | null }
+    tripDeleted?: boolean
+    personalization?: import('@/features/vehicles/types').MaintenanceForecast
+    personalizationDeleted?: boolean
+    triggerReasons?: string[]
     reason: 'KM' | 'TIME' | 'BOTH'
     dueDate: string
     monthMilestone: number | null
@@ -104,7 +130,7 @@ export interface ReminderContext {
   }
   currentStatus: import('@/features/vehicles/types').MaintenanceStatus
   hasCurrentBooking?: boolean
-  deliveries: { id: string; channel?: string; status: string; deliveryState: string | null; attempts: number; errorCode: string | null; sentAt: string | null; mode?: string | null }[]
+  deliveries: { id: string; channel?: string; status: string; deliveryState: string | null; attempts: number; errorCode: string | null; sentAt: string | null; nextEligibleSendAt?: string | null; mode?: string | null }[]
 }
 
 export interface DemoEmail {

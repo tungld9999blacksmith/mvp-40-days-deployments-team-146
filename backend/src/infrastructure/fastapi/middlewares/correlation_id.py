@@ -2,8 +2,10 @@
 
 - Correlation id: incoming ``X-Request-ID`` (falls back to ``X-Correlation-ID``),
   generated when missing or malformed; echoed back as ``X-Request-ID``.
-- Trace id: taken from a W3C ``traceparent`` header when present (so ids line up
-  with an upstream tracer), otherwise equal to the correlation id.
+- Trace id: the active OpenTelemetry span's when telemetry is on (the OTel
+  middleware wraps this one, so the request span already exists); otherwise a
+  W3C ``traceparent`` header when present (so ids line up with an upstream
+  tracer), otherwise equal to the correlation id.
 - Both, plus the HTTP method and path, are bound with
   ``structlog.contextvars.bound_contextvars`` for the whole request, so every log
   line emitted while handling it carries them. Also stored on
@@ -21,6 +23,8 @@ import uuid
 import structlog
 from starlette.datastructures import MutableHeaders
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
+
+from src.infrastructure.observability.context import current_trace_ids
 
 REQUEST_ID_HEADER = "X-Request-ID"
 _REQUEST_ID_HEADERS = ("x-request-id", "x-correlation-id")
@@ -83,9 +87,13 @@ class CorrelationIdMiddleware:
         correlation_id = _extract_request_id(headers) or uuid.uuid4().hex
         context: dict[str, str] = {"correlation_id": correlation_id}
         traceparent = _extract_traceparent(headers)
+        otel_ids = current_trace_ids()
         if traceparent:
             context["trace_id"], context["parent_span_id"] = traceparent
-        else:
+        if otel_ids:
+            # Same trace as the incoming traceparent (OTel propagates it), or a new one.
+            context["trace_id"] = otel_ids[0]
+        elif not traceparent:
             context["trace_id"] = correlation_id
 
         state = scope.setdefault("state", {})

@@ -78,6 +78,7 @@ export interface AvailabilityData {
 }
 
 export interface HoldRequest {
+  sourceReminderId?: string
   proposalId?: string
   quoteId?: string
   confirmationToken: string
@@ -145,7 +146,7 @@ export interface BookingDetail {
   timeSlot: string
   appointmentAt: string
   workshop: { workshopId: string; name: string; address: string | null; phone: string | null }
-  vehicle: { userVehicleId: string | null; modelName: string; plateMasked: string }
+  vehicle: BookingVehicle
   estimatedCost: number | null
   estimateLabel: string
   qrUrl: string | null
@@ -171,6 +172,12 @@ export interface BookingDetail {
   followUp: { followUpId: string; canRespond: boolean } | null
 }
 
+export interface BookingVehicle {
+  userVehicleId: string | null
+  modelName: string
+  plateMasked: string
+}
+
 /** API-BT-01 row. */
 export interface MyBookingItem {
   bookingId: string
@@ -180,6 +187,8 @@ export interface MyBookingItem {
   bookingDate: string
   timeSlot: string
   workshop: { workshopId: string; name: string }
+  /** Absent from backends before FINDING-009. */
+  vehicle?: BookingVehicle
   cost: { amount: number | null; label: 'APPROVED_QUOTE' | 'ESTIMATE' | 'NONE' }
   allowedActions: BookingAction[]
 }

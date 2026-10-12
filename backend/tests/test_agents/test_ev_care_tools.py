@@ -10,7 +10,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 from datetime import time, timedelta
 from unittest.mock import AsyncMock, Mock
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 import pytest_asyncio
@@ -26,11 +26,14 @@ from src.agents.tools import (
     find_workshops,
     get_available_slots,
     get_due_maintenance,
+    get_service_history,
     propose_booking,
+    recommend_maintenance_packages,
 )
 from src.agents.tools.dependency import AgentToolServices, build_customer_agent_tools
 from src.common.core.conversation import Conversation
 from src.common.core.maintenance.booking import Booking
+from src.common.core.maintenance.booking_line import BookingLine, LineKind
 from src.common.core.maintenance.booking_proposal import BookingProposal
 from src.common.core.workshop import BookingConfirmationMode
 from src.common.core.workshop.service_price import ServicePrice
@@ -38,6 +41,7 @@ from src.infrastructure.redis import RedisToolkit
 from src.modules.booking.dependency import get_booking_config, get_booking_service
 from src.modules.booking.domain import now_vn
 from src.modules.booking.location import get_location_finder
+from src.modules.quick_booking import errors as quick_booking_errors
 from src.modules.quick_booking.dependency import build_quick_booking_service
 from tests._maintenance import add_booking, add_hours, add_workshop, make_session
 from tests._user_vehicle import MODEL_ID, add_odometer, add_owner, add_rules, add_vehicle, mark_synced
@@ -155,6 +159,38 @@ def test_tools_refuse_without_chat_context(session):
     assert result["error_code"] == "CHAT_CONTEXT_MISSING"
 
 
+def test_due_tool_exposes_forecast_only_with_versioned_consent(session, monkeypatch):
+    from datetime import UTC, datetime
+
+    from src import config as app_config
+    from src.common.core.notification import UserNotificationSetting
+    from src.config import Settings
+    from src.modules.vehicle_usage.service import PERSONALIZATION_POLICY_VERSION
+
+    cfg = Settings(_env_file=None, app_env="test", oem_sync_mode="oem", personalized_reminders_mode="on")
+    monkeypatch.setattr(app_config, "get_settings", lambda: cfg)
+    user = add_owner(session)
+    vehicle = add_vehicle(session, user)
+    add_rules(session)
+    now = datetime.now(UTC)
+    for day in range(28, -1, -1):
+        add_odometer(session, vehicle, 10800 - 200 * day, now - timedelta(days=day))
+    mark_synced(session, vehicle, now)
+    assert get_due_maintenance.invoke({}, config=_run(user, vehicle))["maintenance_forecast"]["status"] == "DISABLED"
+    session.add(
+        UserNotificationSetting(
+            user_id=user.user_id,
+            personalized_reminders_enabled=True,
+            personalization_policy_version=PERSONALIZATION_POLICY_VERSION,
+            personalization_consent_at=now,
+        )
+    )
+    session.commit()
+    result = get_due_maintenance.invoke({}, config=_run(user, vehicle))
+    assert result["maintenance_forecast"]["avg_km_per_day"] == 200
+    assert result["odometer"]["odo_km"] == 10800
+
+
 def test_tools_never_reveal_another_owners_vehicle(session):
     owner = add_owner(session)
     vehicle = add_vehicle(session, owner)
@@ -196,6 +232,60 @@ def test_estimate_unknown_milestone_lists_valid_ones(session):
 
     assert result["error_code"] == "MILESTONE_NOT_FOUND"
     assert result["details"]["validMilestones"] == [12_000, 24_000]
+
+
+# ── optimal maintenance packages ───────────────────────────────────────
+def test_package_optimizer_uses_verified_schedule_and_prices(session):
+    user = add_owner(session)
+    vehicle = add_vehicle(session, user)
+    add_rules(session)
+    add_odometer(session, vehicle, 11_500)
+    mark_synced(session, vehicle)
+    workshop = add_workshop(session)
+    _price(session, workshop, "BRAKE_INSPECTION", 350_000)
+
+    result = recommend_maintenance_packages.invoke(
+        {"workshop_id": str(workshop.id), "priority": "BALANCED"},
+        config=_run(user, vehicle),
+    )
+
+    assert result["status"] == "READY"
+    assert result["source"] == "BACKEND_OPTIMIZER"
+    assert [package["package_code"] for package in result["packages"]] == [
+        "ESSENTIAL", "BALANCED", "COMPREHENSIVE"
+    ]
+    comprehensive = result["packages"][2]
+    assert set(comprehensive["item_codes"]) == {"BRAKE_INSPECTION", "BATTERY_CHECK"}
+    brake = next(item for item in comprehensive["items"] if item["item_code"] == "BRAKE_INSPECTION")
+    assert brake["price"] == "350000.00"
+    assert brake["price_source"] == "WORKSHOP_PRICE"
+
+
+def test_package_optimizer_never_drops_required_item_to_fit_budget(session):
+    user = add_owner(session)
+    vehicle = add_vehicle(session, user)
+    add_rules(session)
+    add_odometer(session, vehicle, 11_500)
+    mark_synced(session, vehicle)
+    workshop = add_workshop(session)
+
+    result = recommend_maintenance_packages.invoke(
+        {"workshop_id": str(workshop.id), "budget_vnd": 50_000},
+        config=_run(user, vehicle),
+    )
+
+    essential = result["packages"][0]
+    assert "BRAKE_INSPECTION" in essential["item_codes"]
+    assert essential["constraint_status"] == "EXCEEDS_REQUIRED_MINIMUM"
+
+
+def test_service_history_is_read_only_and_scoped_to_session_vehicle(session):
+    user = add_owner(session)
+    vehicle = add_vehicle(session, user)
+
+    result = get_service_history.invoke({"limit": 5}, config=_run(user, vehicle))
+
+    assert result == {"status": "READY", "records": [], "record_count": 0}
 
 
 # ── find_workshops / get_available_slots ────────────────────────────────
@@ -254,7 +344,9 @@ def _chat(session, user, vehicle) -> Conversation:
     return conversation
 
 
-async def _propose(user, vehicle, conversation, workshop, day, slot="09:00"):
+async def _propose(
+    user, vehicle, conversation, workshop, day, slot="09:00", package_code=None, package_token=None
+):
     """Invoke as a tool call so the ToolMessage carries the card artifact."""
     config = _run(user, vehicle)
     config["configurable"]["conversation_id"] = str(conversation.id)
@@ -268,6 +360,8 @@ async def _propose(user, vehicle, conversation, workshop, day, slot="09:00"):
                 "booking_date": day.isoformat(),
                 "time_slot": slot,
                 "odo_milestone": 12_000,
+                "maintenance_package_code": package_code,
+                "maintenance_package_token": package_token,
             },
         },
         config=config,
@@ -295,6 +389,138 @@ async def test_propose_booking_makes_a_proposal_never_a_booking(session, day):
     [proposal] = session.exec(select(BookingProposal)).all()
     assert card["proposalId"] == str(proposal.id)
     assert (proposal.source, proposal.status.value) == ("CHAT_AGENT", "proposed")
+    assert session.exec(select(Booking)).all() == []
+
+
+@pytest.mark.asyncio
+async def test_proposal_persists_backend_validated_package_selection(session, day):
+    user = add_owner(session)
+    vehicle = add_vehicle(session, user)
+    add_rules(session)
+    add_odometer(session, vehicle, 11_500)
+    mark_synced(session, vehicle)
+    workshop = add_workshop(session)
+    add_hours(session, workshop)
+    conversation = _chat(session, user, vehicle)
+
+    recommendation = recommend_maintenance_packages.invoke(
+        {"workshop_id": str(workshop.id)}, config=_run(user, vehicle)
+    )
+    message = await _propose(
+        user,
+        vehicle,
+        conversation,
+        workshop,
+        day,
+        package_code="BALANCED",
+        package_token=recommendation["recommendation_token"],
+    )
+
+    selected = message.artifact["primary"]["maintenancePackage"]
+    assert selected["packageCode"] == "BALANCED"
+    assert message.artifact["alternatives"]
+    assert all(
+        option["maintenancePackage"]["itemCodes"] == selected["itemCodes"]
+        for option in message.artifact["alternatives"]
+    )
+    [proposal] = session.exec(select(BookingProposal)).all()
+    assert proposal.options["primary"]["maintenancePackage"] == selected
+    assert session.exec(select(Booking)).all() == []
+
+
+@pytest.mark.asyncio
+async def test_confirmed_package_persists_exact_scope_in_booking_lines(session, toolkit, day):
+    user = add_owner(session)
+    vehicle = add_vehicle(session, user)
+    add_rules(session)
+    add_odometer(session, vehicle, 11_500)
+    mark_synced(session, vehicle)
+    workshop = add_workshop(session, mode=BookingConfirmationMode.AUTO)
+    add_hours(session, workshop)
+    conversation = _chat(session, user, vehicle)
+
+    recommendation = recommend_maintenance_packages.invoke(
+        {"workshop_id": str(workshop.id)}, config=_run(user, vehicle)
+    )
+    balanced = next(package for package in recommendation["packages"] if package["package_code"] == "BALANCED")
+    message = await _propose(
+        user,
+        vehicle,
+        conversation,
+        workshop,
+        day,
+        package_code="BALANCED",
+        package_token=recommendation["recommendation_token"],
+    )
+
+    result = await build_quick_booking_service(session, toolkit).confirm(
+        user.user_id, conversation.id, UUID(message.artifact["proposalId"])
+    )
+
+    booking = session.get(Booking, result.booking.bookingId)
+    lines = session.exec(
+        select(BookingLine).where(BookingLine.booking_id == booking.id, BookingLine.kind == LineKind.PACKAGE)
+    ).all()
+    assert booking.maintenance_package_code == result.booking.maintenancePackageCode == "BALANCED"
+    assert {line.item_code for line in lines} == set(balanced["item_codes"])
+    assert booking.estimated_cost == sum((line.unit_price for line in lines), start=0)
+
+
+@pytest.mark.asyncio
+async def test_proposal_rejects_a_stale_package_token_without_creating_proposal(session, day):
+    user = add_owner(session)
+    vehicle = add_vehicle(session, user)
+    add_rules(session)
+    add_odometer(session, vehicle, 11_500)
+    mark_synced(session, vehicle)
+    workshop = add_workshop(session)
+    add_hours(session, workshop)
+    conversation = _chat(session, user, vehicle)
+
+    message = await _propose(
+        user,
+        vehicle,
+        conversation,
+        workshop,
+        day,
+        package_code="BALANCED",
+        package_token="0" * 64,
+    )
+
+    assert '"error_code": "MAINTENANCE_PACKAGE_CHANGED"' in message.content
+    assert session.exec(select(BookingProposal)).all() == []
+
+
+@pytest.mark.asyncio
+async def test_confirm_requires_review_when_package_price_changed(session, toolkit, day):
+    user = add_owner(session)
+    vehicle = add_vehicle(session, user)
+    add_rules(session)
+    add_odometer(session, vehicle, 11_500)
+    mark_synced(session, vehicle)
+    workshop = add_workshop(session)
+    add_hours(session, workshop)
+    conversation = _chat(session, user, vehicle)
+    recommendation = recommend_maintenance_packages.invoke(
+        {"workshop_id": str(workshop.id)}, config=_run(user, vehicle)
+    )
+    message = await _propose(
+        user,
+        vehicle,
+        conversation,
+        workshop,
+        day,
+        package_code="BALANCED",
+        package_token=recommendation["recommendation_token"],
+    )
+    _price(session, workshop, "BRAKE_INSPECTION", 999_000)
+
+    with pytest.raises(quick_booking_errors.QuickBookingError) as exc:
+        await build_quick_booking_service(session, toolkit).confirm(
+            user.user_id, conversation.id, UUID(message.artifact["proposalId"])
+        )
+
+    assert exc.value.code == "MAINTENANCE_PACKAGE_CHANGED"
     assert session.exec(select(Booking)).all() == []
 
 

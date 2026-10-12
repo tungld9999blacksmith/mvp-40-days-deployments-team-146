@@ -1,0 +1,44 @@
+{
+  "customer_chat": {
+    "hub_commit": "effbb0eb0054da7f3641032e2b96fb93eae6dfc53b31214437921b37535ad123",
+    "pushed_sha256": "a3e5ef46427748064f1cd7717fec094500bd851e8f977533a0c36fc5ab525ad1",
+    "sha256": "a3e5ef46427748064f1cd7717fec094500bd851e8f977533a0c36fc5ab525ad1",
+    "version": 1
+  },
+  "ev_care_base": {
+    "hub_commit": "8c72f04ad3308bfd98a85380b85e31c522e56f04038134334c0deda5176696d1",
+    "pushed_sha256": "8aeb0d00fad4ae40a6786c4b99916049bf2b8f2e0a55f28431a21c1ceba41387",
+    "sha256": "dc19c3ef215cd606f78b4bd4f9eb15ebdf04a2d9c27ce4461e6cad931d06ba09",
+    "version": 3
+  },
+  "follow_up_classifier": {
+    "hub_commit": "efdb4122bdf028a0476d06b143eef5838e829b90742e16a86f3e2fde9bfd48ad",
+    "pushed_sha256": "342a39c6f489bfaed2cd5b9c8d27cf3187b714ae80352ce6b8b35352800542d3",
+    "sha256": "342a39c6f489bfaed2cd5b9c8d27cf3187b714ae80352ce6b8b35352800542d3",
+    "version": 1
+  },
+  "injection_note": {
+    "hub_commit": "0021076c980e8dc3a05f24cad0d78f2d3bef7a77d9e461e814eb56236c88ea6d",
+    "pushed_sha256": "8e38dc055d644fabfd94e3654446248fcf35bbf8ad32cb20592c4c8de590ed65",
+    "sha256": "8e38dc055d644fabfd94e3654446248fcf35bbf8ad32cb20592c4c8de590ed65",
+    "version": 1
+  },
+  "rag_generator": {
+    "hub_commit": "415c0d6f77c0074f42d6e109e4750264fc94ce5dbcc2db1f33394d7d206859e6",
+    "pushed_sha256": "12a25909af1a6862ea46e635b212cd4c8c781d727837315f5cafde0e77a31c79",
+    "sha256": "12a25909af1a6862ea46e635b212cd4c8c781d727837315f5cafde0e77a31c79",
+    "version": 1
+  },
+  "rag_rewriter": {
+    "hub_commit": "3db233c964d517f082a7cae44737ec5d1bf99cf439acb731bd37e3005f16688d",
+    "pushed_sha256": "f66ca25193c5724964721fddde5fd6ca984e35b0ab8366e0f6629abf8fc714a4",
+    "sha256": "f66ca25193c5724964721fddde5fd6ca984e35b0ab8366e0f6629abf8fc714a4",
+    "version": 1
+  },
+  "tool_review": {
+    "hub_commit": "96e390d905a99de97f24ea2b43ee6a26947ff1aea2e89825f74e3ad52aadae01",
+    "pushed_sha256": "8839be75fa8cb9e1d324fa6a6bc4295d0e7bb03d202e3a6b84eb26e21e2e3023",
+    "sha256": "8839be75fa8cb9e1d324fa6a6bc4295d0e7bb03d202e3a6b84eb26e21e2e3023",
+    "version": 1
+  }
+}

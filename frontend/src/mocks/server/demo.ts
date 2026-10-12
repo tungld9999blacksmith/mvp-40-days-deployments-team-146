@@ -75,6 +75,31 @@ export function skipOwnerOnboarding() {
   save()
 }
 
+/** Extra vehicles of the multi-vehicle owner: one overdue, one far from its next service. */
+export const EXTRA_DEMO_VEHICLES = [
+  { userVehicleId: 'demo-owner-vehicle-2', vin: 'RLLV8ECO230004567', licensePlate: '30H-456.78', modelId: 'VF8', productionYear: 2023 },
+  { userVehicleId: 'demo-owner-vehicle-3', vin: 'RLLV5PLUS25000890', licensePlate: '29A-890.12', modelId: 'VF5', productionYear: 2025 },
+] as const
+
+/** "Owner with three vehicles": the returning owner plus two more vehicles, to show the vehicle picker. */
+export function seedMultiVehicleOwner() {
+  skipOwnerOnboarding()
+  const [overdue, fresh] = EXTRA_DEMO_VEHICLES
+  createOwnerVehicle({
+    ...overdue,
+    // Manufacturer service at 12,000 km 13 months ago ⇒ 24,000 km passed and the year is up.
+    odoKm: 24_800,
+    deliveredDaysAgo: 800,
+    firstDueInDays: -30,
+    oemRecords: [
+      { recordId: uuid(), serviceDate: dayOffset(-395), odoKm: 12_100, isPeriodic: true, itemsDone: 'Bảo dưỡng định kỳ mốc 12.000 km', centerName: 'VinFast Thăng Long' },
+      { recordId: uuid(), serviceDate: dayOffset(-800), odoKm: 4, isPeriodic: false, itemsDone: 'Kiểm tra trước giao xe (PDI)', centerName: 'VinFast Thăng Long' },
+    ],
+  })
+  createOwnerVehicle({ ...fresh, odoKm: 2_300, deliveredDaysAgo: 75, firstDueInDays: 290 })
+  save()
+}
+
 function dayOffset(days: number): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date(Date.now() + days * 86_400_000))
 }

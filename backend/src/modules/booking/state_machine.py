@@ -121,6 +121,12 @@ class BookingStateMachine:
         event = self._event(booking.id, frm, to, actor, source, reason_code, note)
         # us-033 HOOK-BR-001 — same transaction; failures never break the change.
         if to == S.CONFIRMED:
+            from src.modules.notification.booking_attribution import confirm_booking_origin
+
+            confirm_booking_origin(self._db, booking, event.created_at)
+            from src.modules.notification.scheduled_delivery import cancel_for_booking
+
+            cancel_for_booking(self._db, booking, event.created_at)
             self._reminders.on_confirmed(booking, confirmed_at=event.created_at)
         elif to == S.CANCELLED:
             self._reminders.on_cancelled(booking.id)

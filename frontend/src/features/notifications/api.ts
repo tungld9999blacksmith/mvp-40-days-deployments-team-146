@@ -4,6 +4,10 @@ import type { DemoEmail, NotificationFeed, NotificationSettings, NotificationSet
 export const NOTIFICATION_SETTINGS_KEY = 'notification-settings'
 export const NOTIFICATION_FEED_KEY = 'notifications'
 
+export async function deletePersonalizationData(): Promise<NotificationSettings> {
+  return (await apiRequest<NotificationSettings>('/notification-settings/personalization-data', { method: 'DELETE', timeoutMs: 10_000 })).data
+}
+
 /** API-NOTI-001 — returns defaults when the owner never saved anything (AC-509). */
 export function getNotificationSettings(): Promise<NotificationSettings> {
   return apiGet<NotificationSettings>('/notification-settings', { timeoutMs: 10_000 })

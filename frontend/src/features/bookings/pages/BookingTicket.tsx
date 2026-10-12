@@ -14,14 +14,14 @@ import {
   Star,
 } from 'lucide-react'
 import { isApiError, type ApiError } from '@/shared/api/client'
-import Badge from '@/shared/ui/Badge'
 import Button from '@/shared/ui/Button'
 import { Card, CardHeader, InfoRow } from '@/shared/ui/Card'
 import Dialog from '@/shared/ui/Dialog'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
 import { EmptyState, ErrorState, Notice } from '@/shared/ui/States'
 import { useToast } from '@/shared/ui/Toast'
-import { BOOKING_STATUS, bookingStatusLabel } from '@/shared/domain/bookingLabels'
+import { page } from '@/shared/ui/page'
+import { bookingStatusLabel } from '@/shared/domain/bookingLabels'
 import { formatCountdown, formatKm, formatTimeDayMonth } from '@/shared/utils/format'
 import { newId } from '@/shared/utils/id'
 import { track } from '@/shared/utils/track'
@@ -41,7 +41,7 @@ import HistoryTimeline from '../components/HistoryTimeline'
 import TicketQr from '../components/TicketQr'
 import type { TicketState } from './BookingConfirm'
 import type { BookingDetail, BookingSource } from '../types'
-import { bookingErrorMessage, formatLongDay, secondsLeft, slotLabel } from '../utils'
+import { bookingErrorMessage, formatLongDay, mapsUrl, secondsLeft, slotLabel } from '../utils'
 
 const BLOCKED_REASON: Record<string, string> = {
   TOO_CLOSE_TO_APPOINTMENT: 'Đã quá hạn đổi lịch (trước giờ hẹn 60 phút). Vui lòng liên hệ xưởng.',
@@ -68,16 +68,12 @@ function useCountdown(until: string | null): number {
   return left
 }
 
-function mapsUrl(name: string, address: string | null): string {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([name, address].filter(Boolean).join(', '))}`
-}
-
 /** Shown when the ticket API is unreachable but the confirm screen handed the hold over (mock API off). */
 function HandedOver({ state }: { state: TicketState }) {
   const navigate = useNavigate()
   const { booking } = state
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-xl mx-auto space-y-4">
+    <div className={`${page('ticket')} space-y-4`}>
       <Notice tone="info" title="Đã giữ chỗ">
         Chi tiết lịch hẹn sẽ xem được khi backend mở API lịch hẹn (us-053).
       </Notice>
@@ -186,7 +182,7 @@ export default function BookingTicket() {
     if (error) {
       if (handed && (error.status === 404 || error.status === 405) && !isApiError(error, 'BOOKING_NOT_FOUND')) return <HandedOver state={handed} />
       return (
-        <div className="p-4 sm:p-6 xl:p-8 max-w-xl mx-auto">
+        <div className={page('ticket')}>
           <Card>
             {isApiError(error, 'BOOKING_NOT_FOUND') ? (
               <EmptyState
@@ -202,7 +198,7 @@ export default function BookingTicket() {
       )
     }
     return (
-      <div className="p-4 sm:p-6 xl:p-8 max-w-xl mx-auto space-y-4" aria-busy>
+      <div className={`${page('ticket')} space-y-4`} aria-busy>
         <SkeletonCard lines={2} />
         <SkeletonCard lines={6} />
       </div>
@@ -212,7 +208,6 @@ export default function BookingTicket() {
   const current = booking
   const can = (action: string) => current.allowedActions.includes(action as never)
   const showProgress = ['CHECKED_IN', 'IN_PROGRESS', 'COMPLETED'].includes(current.status)
-  const status = BOOKING_STATUS[current.status]
   // While the hold can still be cancelled, "huỷ sau khi xưởng xác nhận" would contradict the hold notice.
   const blockedHint =
     !can('RESCHEDULE') && !(current.rescheduleBlockedReason === 'NOT_CONFIRMED' && holdLeft > 0)
@@ -326,17 +321,15 @@ export default function BookingTicket() {
     )
 
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-xl mx-auto space-y-4 pb-28 sm:pb-8">
+    <div className={`${page('ticket')} space-y-4 pb-28 sm:pb-8`}>
       {/* OV4 — always mounted, so decisions and conflicts are read even when a card unmounts. */}
       <div aria-live="polite" className="sr-only">
         {liveMessage}
       </div>
-      <div className="flex items-center justify-between gap-3">
-        <button type="button" onClick={back} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground">
-          <ArrowLeft className="w-4 h-4" /> Lịch hẹn
-        </button>
-        {status && <Badge tone={status.tone}>{status.label}</Badge>}
-      </div>
+      {/* The status banner below names the status (FINDING-018: no second badge here). */}
+      <button type="button" onClick={back} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground">
+        <ArrowLeft className="w-4 h-4" /> Lịch hẹn
+      </button>
 
       <BookingStatusBanner
         booking={current}

@@ -21,6 +21,7 @@ from sqlmodel import Session, select
 
 from src.common.core.identity.vehicle_user import UserStatus
 from src.common.core.identity.workshop_owner import WorkshopOwner
+from src.modules.demo_account.identity import DEMO_UID
 from src.modules.workshop_owner_onboarding.domain import compute_expires_at, compute_next_step
 
 from . import errors, schemas
@@ -88,8 +89,10 @@ class WorkshopAuthService:
                 owner.last_logout_at = _now()
                 self._db.add(owner)
                 self._add_event(owner.id, AuthEventType.LOGOUT, AuthEventResult.SUCCESS, context)
-            # Commit only once the revoke task is durably accepted.
-            self._revoker.enqueue_revoke(uid=uid, owner_id=owner.id if owner else None, trace_id=context.trace_id)
+            # Commit only once the revoke task is durably accepted. Never revoke the shared
+            # demo account (modules/demo_account): it would sign out every visitor.
+            if uid != DEMO_UID:
+                self._revoker.enqueue_revoke(uid=uid, owner_id=owner.id if owner else None, trace_id=context.trace_id)
             self._db.commit()
         except RevokeEnqueueError as exc:
             self._db.rollback()

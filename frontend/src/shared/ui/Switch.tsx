@@ -24,7 +24,7 @@ export default function Switch({ checked, onChange, label, disabled, describedBy
       onClick={() => onChange(!checked)}
       className={cn(
         'relative inline-flex flex-shrink-0 items-center rounded-full border transition-colors duration-150',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald/50 disabled:opacity-50 disabled:cursor-not-allowed',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
         track,
         checked ? 'bg-emerald border-emerald' : 'bg-card border-border',
       )}

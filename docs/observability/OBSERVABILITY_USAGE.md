@@ -4,6 +4,8 @@ Cách dùng hằng ngày: tìm trace của một request, đọc log, xem metric
 
 Setup tài khoản, biến môi trường, collector: xem [OBSERVABILITY_SETUP.md](OBSERVABILITY_SETUP.md).
 
+Hướng dẫn từng bước trên giao diện Grafana (Drilldown, Explore, chọn visualization, dựng dashboard): [GRAFANA_GUIDE.md](GRAFANA_GUIDE.md). Setup alert gửi Discord: [GRAFANA_ALERTING.md](GRAFANA_ALERTING.md).
+
 > Truy vấn mẫu bên dưới dựa trên thiết kế ở tài liệu setup (tên service, semantic conventions của OTel). Khi có dữ liệu thật, mở **Label browser** / **Metrics browser** trong Explore để kiểm tra lại tên label và metric, rồi sửa tài liệu nếu khác.
 
 ## Mục lục
@@ -45,7 +47,8 @@ Lọc theo môi trường: mọi tín hiệu có `deployment.environment` = `dev
 | Hệ thống có khoẻ không? Lỗi tăng? Chậm đi? | Metrics | Grafana → Dashboard / Explore (Prometheus) |
 | Request này chậm ở bước nào (DB, Redis, OEM, LLM)? | Traces | Grafana → Explore (Tempo) |
 | Lỗi cụ thể là gì, stacktrace ra sao? | Logs | Grafana → Explore (Loki) |
-| Agent trả lời sai / gọi nhầm tool / tốn nhiều token? | LLM traces | LangSmith |
+| Agent trả lời sai / gọi nhầm tool / tốn nhiều token / chi phí / tỉ lệ lỗi? | LLM traces + Monitor | LangSmith |
+| Lượt chat chậm ở bước nào (LLM, tool, RAG, DB)? Tool nào hay lỗi? Guardrail chặn bao nhiêu? | Trace mỏng + metric agent | Grafana (Tempo / Prometheus) |
 | Task Celery có chạy không, mất bao lâu? | Traces + metrics | Tempo (`ev-care-worker`) |
 
 ## 3. Traces — Grafana Tempo
@@ -73,6 +76,18 @@ Lọc theo môi trường: mọi tín hiệu có `deployment.environment` = `dev
 
 // Celery tasks
 { resource.service.name = "ev-care-worker" }
+
+// Agent turns that failed / fell back
+{ name = "agent.turn" && span.agent.outcome =~ "error|fallback" }
+
+// Slow agent turns, and which tool they used
+{ name = "agent.turn" && duration > 10s } >> { name =~ "execute_tool.*" }
+
+// Tool calls that returned an error
+{ span.gen_ai.tool.name != nil && span.tool.status = "error" }
+
+// RAG queries with no documents
+{ name = "rag.query" && span.rag.outcome = "empty" }
 ```
 
 Đọc một trace:
@@ -126,6 +141,26 @@ histogram_quantile(0.95,
   sum by (le, http_route) (rate(http_server_request_duration_seconds_bucket{job="ev-care-backend"}[5m])))
 ```
 
+Metric của AI agent (token, chi phí, độ trễ LLM và tỉ lệ lỗi agent chỉ có ở LangSmith):
+
+```promql
+# Tool error ratio per tool
+sum by (gen_ai_tool_name) (rate(evcare_agent_tool_calls_total{tool_status=~"error|exception"}[15m]))
+/
+sum by (gen_ai_tool_name) (rate(evcare_agent_tool_calls_total[15m]))
+
+# Guardrail flags / rewrites per hour
+sum by (guard_stage, guard_reason) (increase(evcare_agent_guardrail_decisions_total{guard_decision!="pass"}[1h]))
+
+# Share of RAG queries that found nothing
+sum(rate(evcare_rag_queries_total{rag_outcome="empty"}[1h])) / sum(rate(evcare_rag_queries_total[1h]))
+
+# p95 retrieve / rerank latency
+histogram_quantile(0.95, sum by (le, rag_stage) (rate(evcare_rag_stage_duration_seconds_bucket[15m])))
+```
+
+Kiểm tra tên thật trong **Metrics browser** (Prometheus thêm hậu tố `_total`, `_seconds`; dấu `.` thành `_`).
+
 Ba chỉ số nên nhìn đầu tiên (**RED**): **R**ate (số request), **E**rrors (tỉ lệ lỗi), **D**uration (p95/p99 latency).
 
 ## 6. Nhảy giữa trace ↔ log ↔ metric
@@ -135,18 +170,20 @@ Ba chỉ số nên nhìn đầu tiên (**RED**): **R**ate (số request), **E**r
 | Log | Trace | Mở dòng log → nút **Tempo** cạnh `trace_id` |
 | Trace | Log | Trong trace view → nút **Logs for this span** |
 | Metric | Trace | Panel có *exemplar* (chấm nhỏ trên biểu đồ) → click → trace mẫu |
-| Trace (OTel) | LangSmith | Span agent có attribute LangSmith run id → mở run trong LangSmith |
-| LangSmith | Trace (OTel) | Metadata của run có `otel_trace_id` → dán vào Tempo |
+| Trace (OTel) | LangSmith | Span `agent.turn` (và mọi span agent) có `langsmith.run_id`, `langsmith.trace_id` → LangSmith search theo ID; hoặc filter **Metadata** `otel_trace_id = <trace_id>` |
+| LangSmith | Trace (OTel) | Metadata của run có `otel_trace_id` → Tempo `{ trace:id = "<otel_trace_id>" }` |
 
-Liên kết trace ↔ log và OTel ↔ LangSmith chỉ hoạt động khi phần instrument (bước 7 tài liệu setup) đã xong.
+Các liên kết trên cần app chạy với `OTEL_ENABLED=true` (bước 7 tài liệu setup). Log có `trace_id` / `span_id` ở mọi dòng phát ra trong request hoặc task Celery.
 
 ## 7. LangSmith — trace của AI agent
 
-**Tracing Projects** → chọn `evcare-dev` (local) hoặc `evcare-staging` (Railway).
+**Tracing Projects** → chọn `evcare-dev` (local) hoặc `evcare-staging` (Railway). Run của Celery worker (summary, follow-up...) nằm ở `evcare-dev-jobs` / `evcare-staging-jobs`.
 
 | Việc | Cách |
 |---|---|
-| Xem một lượt chat | Click run → cây bước: orchestrator → LLM call → tool call → RAG |
+| Xem một lượt chat | Mỗi lượt = **một trace** root `agent.turn` → `agent.guard.input`, LangGraph (model, `agent.guard.tool_calls`, tool → `rag.query` → `rag.retrieve` / `rag.rerank`) |
+| Xem cả cuộc hội thoại | Tab **Threads** (metadata `thread_id` = conversation id) |
+| Lọc theo kết quả lượt chat | Filter **Metadata** `outcome` = `answered` / `fallback` / `error` / `cancelled` |
 | Tìm lượt chat lỗi | Filter **Status = Error** |
 | Tìm lượt chậm / tốn token | Sort theo **Latency** / **Tokens** |
 | Lọc theo metadata | Filter **Metadata** (vd `otel_trace_id`, `thread_id`) |
@@ -159,9 +196,12 @@ Quy ước:
 
 - Script, benchmark, eval chạy tay → `LANGCHAIN_PROJECT` riêng (vd `evcare-eval`, `setup-test`), không ghi vào `evcare-dev` / `evcare-staging`.
 - Free tier 5k trace/tháng: chạy eval lớn thì kiểm tra **Settings → Usage** trước.
-- Không gửi PII thô: prompt chứa tên, SĐT, biển số cần được che.
+- PII: staging bật `LANGCHAIN_REDACT_PII` (email / SĐT bị che trước khi gửi); tên, biển số vẫn còn — không chia sẻ trace ra ngoài team.
+- Chi phí = token × bảng giá model; model OpenRouter chưa có giá → thêm ở **Settings → Model pricing**.
 
 ## 8. Dashboard
+
+> Từng bước dựng dashboard và chọn visualization cho từng metric: [GRAFANA_GUIDE.md §6–7](GRAFANA_GUIDE.md#6-chọn-visualization-cho-từng-metric).
 
 Tạo: **Dashboards → New → Import** (dùng dashboard có sẵn) hoặc **New dashboard → Add visualization**.
 
@@ -171,7 +211,8 @@ Dashboard đề xuất cho dự án:
 |---|---|
 | **EV Care — API overview** | RPS, tỉ lệ 5xx, p95 latency theo route, top route chậm, log lỗi gần nhất |
 | **EV Care — Worker** | Số task Celery, thời gian chạy, task lỗi |
-| **EV Care — AI agent** | Token LLM theo model, latency LLM, số lần guardrail chặn, lỗi tool |
+| **EV Care — AI agent** (Grafana) | Lượt chat theo `agent.outcome` (TraceQL metrics), lỗi tool theo tool, guardrail flag / modify, RAG rỗng, p95 retrieve / rerank |
+| **LangSmith Monitor** (không phải Grafana) | Token, chi phí, latency LLM, tỉ lệ lỗi agent |
 
 Mẹo:
 
@@ -181,6 +222,8 @@ Mẹo:
 
 ## 9. Alert
 
+> Từng bước setup (webhook Discord, contact point, mẫu tin nhắn, Query / Expression A-B-C, policy, kiểm tra): [GRAFANA_ALERTING.md](GRAFANA_ALERTING.md).
+
 **Alerting → Alert rules → New alert rule.** Đề xuất ban đầu:
 
 | Alert | Điều kiện (gợi ý) | Mức |
@@ -189,7 +232,10 @@ Mẹo:
 | API chậm | p95 latency > 3s trong 10 phút | Warning |
 | Mất telemetry | Không có metric từ `ev-care-backend` trong 10 phút (backend hoặc collector chết) | Critical |
 | Worker lỗi | Task Celery lỗi > 3 trong 10 phút | Warning |
-| LLM lỗi | Tỉ lệ run lỗi (LangSmith Rules / metric nghiệp vụ) tăng | Warning |
+| Tool agent lỗi | Tỉ lệ `evcare_agent_tool_calls_total{tool_status=~"error|exception"}` > 20% trong 15 phút | Warning |
+| Guardrail bất thường | `guard_reason="injection"` > 5 trong 1 giờ | Warning |
+| RAG không tìm thấy tài liệu | Tỉ lệ `rag_outcome="empty"` > 30% trong 1 giờ | Warning |
+| Agent lỗi / LLM chậm | Theo dõi trên LangSmith *Monitor* (tỉ lệ lỗi, latency là metric LangSmith-only); muốn alert Discord → Tempo TraceQL metrics trên `{ name = "agent.turn" && span.agent.outcome = "error" }` | Warning |
 
 Kênh nhận: **Alerting → Contact points** → Discord webhook (kênh thông báo mặc định của dự án) hoặc email.
 
@@ -199,8 +245,8 @@ Kênh nhận: **Alerting → Contact points** → Discord webhook (kênh thông 
 
 1. Dashboard *API overview* → p95 route chat có tăng không, từ lúc nào (trùng lần deploy?).
 2. Tempo: `{ span.http.route = "/api/v1/chat/messages" && duration > 5s }` → mở một trace.
-3. Span dài nhất là gì? DB → xem câu SQL; LLM → sang LangSmith qua run id; OEM → mock/OEM chậm.
-4. LangSmith: run đó gọi bao nhiêu LLM call, bao nhiêu token, tool nào lặp lại.
+3. Span dài nhất là gì? DB → xem câu SQL; `chat <model>` / `POST openrouter.ai` → LLM chậm; `execute_tool …` → tool; `rag.retrieve` → Qdrant; OEM → mock/OEM chậm.
+4. Span `agent.turn` → copy `langsmith.trace_id` → LangSmith: bao nhiêu LLM call, bao nhiêu token, prompt dài bất thường, tool nào lặp lại.
 
 **"User báo lỗi 500"**
 
@@ -216,7 +262,8 @@ Kênh nhận: **Alerting → Contact points** → Discord webhook (kênh thông 
 
 ## 11. Quy tắc khi thêm telemetry mới
 
-- **Span thủ công**: chỉ ở ranh giới có ý nghĩa (bước agent, gọi hệ thống ngoài). Tên span ngắn, cố định (`agent.orchestrate`), không chứa ID.
+- **Span thủ công**: chỉ ở ranh giới có ý nghĩa (bước agent, gọi hệ thống ngoài). Tên span ngắn, cố định (`agent.turn`, `rag.query`), không chứa ID.
+- **Bước agent mới**: dùng `step()` ([tracing.py](../../backend/src/infrastructure/observability/tracing.py)) — một lời gọi tạo cả span Grafana (chỉ `attributes`) lẫn run LangSmith (`inputs` / `outputs`). Nội dung người dùng **chỉ** đặt vào `inputs` / `outputs`, không bao giờ vào `attributes`. Tool mới không cần làm gì: `instrument_tools` bọc sẵn.
 - **Metric**: label cardinality thấp. **Cấm** `user_id`, `vehicle_id`, `email`, URL thô, message. Cần theo dõi theo user → dùng trace/log.
 - **Attribute / log**: không ghi token, mật khẩu, PII thô. Cần định danh → dùng ID nội bộ hoặc hash.
 - **Đặt tên** theo [semantic conventions](https://opentelemetry.io/docs/specs/semconv/http/http-metrics/) và [Prometheus naming](https://prometheus.io/docs/practices/naming/).

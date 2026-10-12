@@ -58,6 +58,9 @@ COPY --from=builder --chown=app:app /app/.venv /app/.venv
 
 # Preserve the "src" package layout (main.py is loaded as `src.main`).
 COPY --chown=app:app backend/src ./src
+# Railway Pre-deploy Command: `alembic upgrade head`.
+COPY --chown=app:app backend/alembic.ini ./alembic.ini
+COPY --chown=app:app backend/alembic ./alembic
 
 # Writable dirs for the unprivileged user: /app is root-owned, so the app
 # cannot create LOG_DIR (default `logs`, relative to /app) at startup.

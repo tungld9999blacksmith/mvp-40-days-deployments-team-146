@@ -118,7 +118,6 @@ export default function ChatComposer({
               aria-label={streaming ? 'Đang trả lời' : 'Gửi'}
               className={cn(
                 'w-11 h-11 flex-shrink-0 rounded-full flex items-center justify-center transition-colors',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2 focus-visible:ring-offset-card',
                 canSend ? 'bg-brand text-on-brand hover:bg-emerald-bright' : 'bg-card-hover text-muted cursor-not-allowed',
               )}
             >

@@ -223,7 +223,35 @@ class UserVehicleService:
             # The demo ODO seed completes synchronously: answer with it right away.
             sync = self._db.get(VehicleOemSync, vehicle.id)
             result = self.calculate(vehicle, now=now, sync=sync)
-        return _status_out(vehicle.id, result, self._config, sync, now)
+        from src.modules.notification.policy_service import decide_reminder
+        from src.modules.notification.preferences import load_preferences
+        from src.modules.vehicle_usage.service import VehicleUsageService
+
+        out = _status_out(vehicle.id, result, self._config, sync, now)
+        usage = VehicleUsageService(self._db)
+        out.maintenance_forecast = usage.forecast(vehicle, result, now)
+        if out.maintenance_forecast.status == "AVAILABLE":
+            prefs = load_preferences(
+                self._db, vehicle.user_id, default_lead_days=usage.settings.reminder_default_lead_days
+            )
+            out.maintenance_forecast.reminder_lead_days = prefs.lead_days
+            decision = decide_reminder(
+                result,
+                lead_days=prefs.lead_days,
+                due_soon_km=self._config.due_soon_km,
+                today=today_vn(now),
+                forecast=out.maintenance_forecast,
+                predictive_enabled=prefs.reminders_enabled
+                and usage.settings.personalized_reminders_mode_for(vehicle.user_id) == "on",
+            )
+            from src.modules.notification.email_service import has_milestone_booking
+
+            out.maintenance_forecast.reminder_recommended = (
+                "PREDICTED_KM_WINDOW" in decision.trigger_reasons
+                and result.next_milestone is not None
+                and not has_milestone_booking(self._db, vehicle.id, result.next_milestone.odo_milestone_km, now)
+            )
+        return out
 
     def calculate(
         self,

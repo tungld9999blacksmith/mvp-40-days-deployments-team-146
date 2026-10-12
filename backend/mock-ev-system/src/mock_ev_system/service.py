@@ -8,6 +8,7 @@ import re
 import unicodedata
 from datetime import date
 from decimal import Decimal
+from types import SimpleNamespace
 from uuid import uuid4
 
 from sqlalchemy import String
@@ -359,7 +360,9 @@ class DataAdminService:
                 created = updated = 0
                 for index, raw in enumerate(records):
                     try:
-                        obj = model.model_validate(raw)
+                        # From attributes, not the dict: SQLModel reads relationships with
+                        # getattr(), and getattr(dict, "items") is dict.items (MaintenanceSchedule.items).
+                        obj = model.model_validate(SimpleNamespace(**raw), from_attributes=True)
                     except Exception as exc:  # pydantic ValidationError
                         raise DataImportError(name, index, str(exc)) from exc
                     key = getattr(obj, pk)

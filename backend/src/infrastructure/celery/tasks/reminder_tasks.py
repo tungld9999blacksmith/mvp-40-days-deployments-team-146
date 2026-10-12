@@ -26,7 +26,7 @@ class _NoopScheduler:
         return None
 
 
-async def _run_reminder(user_vehicle_id: UUID):
+async def _run_reminder(user_vehicle_id: UUID | None = None, *, delivery_id: UUID | None = None):
     from sqlmodel import Session
 
     from src.config import get_settings
@@ -49,7 +49,7 @@ async def _run_reminder(user_vehicle_id: UUID):
             max_attempts=settings.reminder_max_attempts,
             app_url=settings.frontend_url,
         )
-        return await service.remind(user_vehicle_id)
+        return await service.dispatch_delivery(delivery_id) if delivery_id else await service.remind(user_vehicle_id)
 
 
 @celery.task(name="reminder.remind_vehicle")
@@ -73,6 +73,27 @@ def send_all_reminders_task() -> int:
     return len(ids)
 
 
+@celery.task(name="reminder.dispatch_delivery")
+def dispatch_delivery_task(delivery_id: str) -> int:
+    return asyncio.run(_run_reminder(delivery_id=UUID(delivery_id)))
+
+
+@celery.task(name="reminder.dispatch_due")
+def dispatch_due_task() -> int:
+    from sqlmodel import Session
+
+    from src.config import get_settings
+    from src.infrastructure.supabase.db import engine
+    from src.modules.notification.reminder_service import list_due_delivery_ids
+    from src.modules.oem_integration.service import utc_now
+
+    with Session(engine) as db:
+        ids = list_due_delivery_ids(db, utc_now(), max_attempts=get_settings().reminder_max_attempts)
+    for delivery_id in ids:
+        dispatch_delivery_task.delay(str(delivery_id))
+    return len(ids)
+
+
 @celery.task(name="reminder.retry_emails")
 def retry_emails_task() -> int:
     """Minute tick for due retries/crash recovery, not a second full-vehicle scan."""
@@ -88,17 +109,18 @@ def retry_emails_task() -> int:
     with Session(engine) as db:
         ids = set(
             db.exec(
-                select(EmailOutbox.user_vehicle_id)
+                select(EmailOutbox.delivery_id)
                 .join(ReminderDelivery, ReminderDelivery.id == EmailOutbox.delivery_id)
                 .where(
                     ReminderDelivery.status != DeliveryStatus.SENT,
                     EmailOutbox.delivery_state == "pending",
+                    ReminderDelivery.next_eligible_send_at <= now,
                     or_(EmailOutbox.next_attempt_at <= now, EmailOutbox.lease_until <= now),
                 )
             ).all()
         )
-    for vehicle_id in ids:
-        remind_vehicle_task.delay(str(vehicle_id))
+    for delivery_id in ids:
+        dispatch_delivery_task.delay(str(delivery_id))
     return len(ids)
 
 
@@ -112,3 +134,33 @@ def purge_email_payloads_task() -> int:
 
     with Session(engine) as db:
         return MaintenanceEmailAdapter(db, get_settings()).purge_payloads()
+
+
+@celery.task(name="reminder.runtime_probe")
+def runtime_probe_task() -> dict:
+    """Read-only worker/DB diagnostic. Never evaluates, creates or sends a reminder."""
+    from sqlalchemy import inspect, text
+
+    from src.infrastructure.supabase.db import engine
+
+    # Runtime containers include src/, not the local verification scripts.
+    migration_head = "f2a4c6e8b0d3"
+    with engine.connect() as db:
+        if db.dialect.name == "postgresql":
+            db.execute(text("SET TRANSACTION READ ONLY"))
+            db.execute(text("SET LOCAL statement_timeout = '10s'"))
+        tables = set(inspect(db).get_table_names())
+        base = db.execute(text("SELECT version_num FROM alembic_version")).scalars().all()
+        feature = (
+            db.execute(text("SELECT version_num FROM alembic_version_driving_habit")).scalars().all()
+            if "alembic_version_driving_habit" in tables
+            else []
+        )
+        return {
+            "status": "ok",
+            "databaseConnected": db.execute(text("SELECT 1")).scalar() == 1,
+            "baseRevisions": base,
+            "featureRevisions": feature,
+            "featureMigrationReady": migration_head in base or migration_head in feature,
+            "providerCalls": 0,
+        }

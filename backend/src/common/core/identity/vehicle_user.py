@@ -136,6 +136,13 @@ class VehicleUser(SQLModel, table=True):
         ),
     )
 
+    # The shared "Dùng thử ngay" account (modules/demo_account): read-only profile and
+    # vehicles, no outgoing notifications, reset every DEMO_RESET_INTERVAL_HOURS.
+    is_demo: bool = Field(
+        default=False,
+        sa_column=Column(Boolean, nullable=False, server_default="false"),
+    )
+
     # ── Timestamps ────────────────────────────────────────────────────
     profile_completed_at: datetime | None = Field(
         default=None,

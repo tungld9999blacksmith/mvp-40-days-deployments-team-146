@@ -1,5 +1,5 @@
-import { apiGet } from '@/shared/api/client'
-import type { MaintenanceStatus, ServiceRecordList, VehicleProfile, VehicleSummary } from './types'
+import { apiGet, apiRequest } from '@/shared/api/client'
+import type { MaintenanceStatus, ServiceRecordList, VehicleProfile, VehicleSummary, TripPlan, TripPlanInput } from './types'
 
 /** API-VEH-001 */
 export function listVehicles(): Promise<VehicleSummary[]> {
@@ -23,4 +23,19 @@ export function listServiceRecords(userVehicleId: string): Promise<ServiceRecord
   return apiGet<ServiceRecordList>(`/user-vehicles/${encodeURIComponent(userVehicleId)}/service-records`, {
     timeoutMs: 10_000,
   })
+}
+
+export async function getTripPlan(vehicleId: string): Promise<{ plan: TripPlan | null }> {
+  const response = await apiRequest<TripPlan | null>(`/user-vehicles/${encodeURIComponent(vehicleId)}/trip-plan`)
+  return { plan: response.data }
+}
+
+export async function saveTripPlan(vehicleId: string, input: TripPlanInput): Promise<{ plan: TripPlan | null }> {
+  const response = await apiRequest<TripPlan | null>(`/user-vehicles/${encodeURIComponent(vehicleId)}/trip-plan`, { method: 'PUT', body: input })
+  return { plan: response.data }
+}
+
+export async function deleteTripPlan(vehicleId: string): Promise<{ plan: TripPlan | null }> {
+  const response = await apiRequest<TripPlan | null>(`/user-vehicles/${encodeURIComponent(vehicleId)}/trip-plan`, { method: 'DELETE' })
+  return { plan: response.data }
 }

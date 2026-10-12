@@ -1,5 +1,6 @@
 """Vehicle domain: vehicles linked to a vehicle-owner account."""
 
+from .trip_plan import VehicleTripPlan
 from .user_vehicle import (
     UserVehicle,
     UserVehicleRepository,
@@ -21,6 +22,7 @@ from .vehicle_service_record import (
 )
 
 __all__ = [
+    "VehicleTripPlan",
     "OemSyncTrigger",
     "OemUsageSource",
     "ServiceRecordSource",

@@ -4,6 +4,7 @@
 - ``follow_up.close_expired`` — close follow-ups unanswered for 72h (us-041 JOB-FU-002).
 - ``quote.purge_stale_drafts`` — delete drafts older than the TTL (us-049 JOB-QT-01).
 - ``booking_line.purge_pending_photos`` — delete unattached extra-item photos > 24h (bao-gia-hai-tang OV5).
+- ``booking_line.alert_overdue_replies`` — email the workshop when the owner has not answered in 10 min.
 
 Each task opens its own DB session in the worker process.
 """
@@ -87,3 +88,30 @@ def purge_pending_line_photos_task() -> int:
         return removed
     finally:
         session.close()
+
+
+async def _run_reply_alerts() -> dict:
+    from src.config import get_settings
+    from src.infrastructure.supabase.db import get_session
+    from src.modules.booking_line.jobs import AlertConfig, OverdueReplyAlertJob
+    from src.modules.notification.email_service import email_configuration_ready
+    from src.modules.notification.email_transport import ResendEmailTransport
+
+    s = get_settings()
+    if not email_configuration_ready(s):
+        return {}
+    session = next(get_session())
+    try:
+        job = OverdueReplyAlertJob(
+            session,
+            ResendEmailTransport(s.resend_api_key),
+            AlertConfig(email_mode=s.email_mode, sender=s.email_from, app_url=s.email_app_url),
+        )
+        return (await job.run()).__dict__
+    finally:
+        session.close()
+
+
+@celery.task(name="booking_line.alert_overdue_replies")
+def alert_overdue_replies_task() -> dict:
+    return asyncio.run(_run_reply_alerts())

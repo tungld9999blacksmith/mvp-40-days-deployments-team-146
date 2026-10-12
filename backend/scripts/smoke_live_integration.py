@@ -26,6 +26,7 @@ from sqlmodel import Session, select
 
 from src.common.core.vehicle import UserVehicle, VehicleOdometerReading, VehicleOemSync
 from src.config import get_settings
+from src.infrastructure.oem.gateway import OemHttpClient
 from src.infrastructure.supabase.db import engine
 from src.modules.oem_integration.service import as_utc, eligible_vehicle_filter
 
@@ -129,10 +130,12 @@ async def main(user_id: int, output: Path) -> int:
             checks["backend_health"] = {"ok": health.status_code == 200, "http_status": health.status_code}
             checks["redis"] = {"ok": bool(await redis.ping())}
             oem_url = settings.oem_api_base_url.rstrip("/")
-            oem_health = await client.get(oem_url + "/health")
+            oem = OemHttpClient.from_settings(settings)
+            oem_health = await oem.request("GET", "/health")
             checks["oem_health"] = {"ok": oem_health.status_code == 200}
-            usage = await client.get(f"{oem_url}/vehicles/{vehicle['external_id']}/usage")
-            history = await client.get(f"{oem_url}/vehicles/{vehicle['external_id']}/service-history")
+            # Business routes need the OEM access token (SPEC-SEC-OEM-M2M-001 v2.0).
+            usage = await oem.request("GET", f"/vehicles/{vehicle['external_id']}/usage")
+            history = await oem.request("GET", f"/vehicles/{vehicle['external_id']}/service-history")
             checks["oem_read"] = {
                 "ok": usage.status_code == history.status_code == 200,
                 "usage_status": usage.status_code,

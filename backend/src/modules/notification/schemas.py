@@ -5,11 +5,13 @@ Shapes follow ``docs/specs/sprint-2/api/us-021-sprint-2-spec.api.md`` §C.5, API
 
 from __future__ import annotations
 
+import re
 from datetime import date, datetime, time
 from enum import StrEnum
 from uuid import UUID
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import BaseModel, ConfigDict, StrictBool, StrictInt
+from pydantic import BaseModel, ConfigDict, StrictBool, StrictInt, field_validator, model_validator
 from pydantic.alias_generators import to_camel
 
 from src.common.money import Money
@@ -39,7 +41,35 @@ class ChannelSettingOut(CamelModel):
     status: ChannelStatus
 
 
+class QuietHours(CamelModel):
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True, extra="forbid")
+    start: str
+    end: str
+
+    @field_validator("start", "end", mode="before")
+    @classmethod
+    def valid_time(cls, value):
+        if not isinstance(value, str) or not re.fullmatch(r"(?:[01][0-9]|2[0-3]):[0-5][0-9]", value):
+            raise ValueError("Time must be HH:mm")
+        return value
+
+    @model_validator(mode="after")
+    def nonempty_window(self):
+        if self.start == self.end:
+            raise ValueError("Quiet hours cannot cover the whole day")
+        return self
+
+
 class NotificationSettingsOut(CamelModel):
+    send_schedule_available: bool = False
+    preferred_send_time: str | None = None
+    quiet_hours: QuietHours | None = None
+    timezone: str = "Asia/Ho_Chi_Minh"
+    personalized_reminders_enabled: bool = False
+    personalization_available: bool = True
+    personalization_mode: str = "shadow"
+    personalization_policy_version: str = "driving-usage-2026-10-v1"
+    personalization_consent_at: datetime | None = None
     reminders_enabled: bool
     reminder_lead_days: int
     default_reminder_lead_days: int
@@ -68,6 +98,27 @@ class NotificationSettingsUpdateIn(CamelModel):
     # Range is checked in the service so the error code is INVALID_LEAD_DAYS (API-NOTI-002).
     reminder_lead_days: StrictInt | None = None
     channels: list[ChannelChangeIn] | None = None
+    personalized_reminders_enabled: StrictBool | None = None
+    personalization_policy_version: str | None = None
+    preferred_send_time: str | None = None
+    quiet_hours: QuietHours | None = None
+    timezone: str | None = None
+
+    @field_validator("preferred_send_time", mode="before")
+    @classmethod
+    def validate_send_time(cls, value):
+        return None if value is None else QuietHours.valid_time(value)
+
+    @field_validator("timezone", mode="before")
+    @classmethod
+    def validate_timezone(cls, value):
+        if not isinstance(value, str) or len(value) > 64:
+            raise ValueError("Timezone must be an IANA name")
+        try:
+            ZoneInfo(value)
+        except (ZoneInfoNotFoundError, ValueError) as exc:
+            raise ValueError("Timezone must be an IANA name") from exc
+        return value
 
 
 # ── API-NOTI-003 in-app feed (derived, no notification table) ──

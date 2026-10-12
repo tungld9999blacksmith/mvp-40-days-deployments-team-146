@@ -39,6 +39,7 @@ async def receive_oem_webhook(
         timestamp=request.headers.get(WEBHOOK_TIMESTAMP_HEADER),
         signature=request.headers.get(WEBHOOK_SIGNATURE_HEADER),
         raw_body=raw_body,
+        auth_header=request.headers.get("authorization"),
     )
     return schemas.WebhookAckEnvelope(
         data=schemas.WebhookAckOut(

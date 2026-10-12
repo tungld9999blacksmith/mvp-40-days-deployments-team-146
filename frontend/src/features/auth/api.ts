@@ -16,6 +16,16 @@ export function signIn(): Promise<ApiResponse<SignInData>> {
   return apiRequest<SignInData>('/oauth/sign-in', { method: 'POST', skipSessionExpiry: true, timeoutMs: 15_000 })
 }
 
+/** Custom token for the shared demo account ("Dùng thử ngay"); 404 when the backend has it off. */
+export async function startDemoSession(): Promise<string> {
+  const { data } = await apiRequest<{ customToken: string }>('/auth/demo-session', {
+    method: 'POST',
+    skipSessionExpiry: true,
+    timeoutMs: 30_000,
+  })
+  return data.customToken
+}
+
 /** API-101 — record the logout and queue the refresh-token revoke. 204. */
 export async function logout(): Promise<void> {
   await apiRequest<void>('/oauth/logout', { method: 'POST', skipSessionExpiry: true, timeoutMs: 5_000 })

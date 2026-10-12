@@ -43,6 +43,7 @@ backend/src/agents/
     ├── dependency.py              # AgentToolServices + factory tạo tools được inject
     ├── _services.py               # Lấy chủ xe + xe từ RunnableConfig của phiên chat, dựng service thật
     ├── maintenance_tools.py       # Tình trạng bảo dưỡng của xe (UserVehicleService, TOOL-VEH-001)
+    ├── maintenance_package_tools.py # Lịch sử + 3 gói tối ưu từ backend optimizer
     ├── cost_tools.py              # Ước tính chi phí một mốc tại một xưởng (CostEstimationService, TOOL-301)
     ├── booking_tools.py           # find_workshops, get_available_slots (Đọc) & propose_booking (chỉ tạo đề xuất, us-061)
     ├── booking_line_tools.py      # get_booking_lines (Đọc dòng giá hai tầng)
@@ -65,11 +66,13 @@ backend/src/agents/
 | Tên Tool | Loại | Đầu vào chính (Inputs) | Đầu ra chính (Outputs) | Module Backend liên kết | Trách nhiệm |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `get_due_maintenance` | **Đọc** | (không có, xe lấy từ phiên chat) | `due_status`, `next_milestone` (mốc km, hạn ngày, hạng mục), `remaining_km`, `odometer` | `modules/user_vehicle` (`get_maintenance_status`) | Tình trạng bảo dưỡng theo ODO thật và lịch sử dịch vụ. |
+| `get_service_history` | **Đọc** | `limit` | Các bản ghi bảo dưỡng gần nhất của đúng xe trong phiên | `modules/user_vehicle` (`list_service_records`) | Cung cấp lịch sử thật trước khi tối ưu gói. |
+| `recommend_maintenance_packages` | **Đọc** | `workshop_id`, `budget_vnd`, `available_minutes`, `priority` (tùy chọn) | Ba gói `ESSENTIAL` / `BALANCED` / `COMPREHENSIVE`, hạng mục, tổng giá, thời lượng và trạng thái ràng buộc | `modules/maintenance_package` + `modules/cost_estimate` | Backend phân loại REQUIRED/RECOMMENDED/OPTIONAL; LLM chỉ giải thích kết quả. |
 | `estimate_service_cost` | **Đọc** | `odo_milestone`, `workshop_id` (đều tùy chọn) | Hạng mục, giá, `price_source`, `chargeable_total`, `has_reference_price` | `modules/cost_estimate` (`estimate_for_request`) | Ước tính theo bảng giá xưởng / giá tham khảo; chọn xưởng theo BR-1003 nếu bỏ trống. |
 | `search_ev_knowledge` | **Đọc** | `query`, `model`, `category` | Đoạn trích cẩm nang kỹ thuật + Citation nguồn | `agents/tools/RAG` (Qdrant Cloud) | Tra cứu sổ tay bảo hành, hướng dẫn kỹ thuật chính hãng VinFast. |
 | `find_workshops` | **Đọc** | `area_or_address` (tùy chọn), `limit` | `workshops`: `workshop_id`, tên, địa chỉ, khu vực, `distance_km` | `modules/booking` (`find_nearby`, API-BK-01) | Gợi ý xưởng đang hoạt động; bỏ trống khu vực thì tìm quanh vị trí hồ sơ / xưởng ưu tiên. |
 | `get_available_slots` | **Đọc** | `workshop_id`, `target_date` (YYYY-MM-DD) | `slots`: `time_slot`, `available`, `remaining` | `modules/booking` (`check_availability`, API-BK-02) | Khung giờ theo giờ mở cửa, trừ chỗ đã đặt và slot bị khóa. |
-| `propose_booking` | **Đề xuất** | `workshop_id`, `booking_date`, `time_slot` (HH:MM), `odo_milestone` | `status: PROPOSED`, `proposal_id`; card `BOOKING_PROPOSAL` trong `artifact` (LLM không thấy); lỗi `SLOT_FULL` kèm `alternatives` | `modules/quick_booking` (`propose_from_agent`) | Tạo đề xuất (không booking, không giữ chỗ). Booking chỉ tạo qua nút Xác nhận (API-QB-02). |
+| `propose_booking` | **Đề xuất** | `workshop_id`, `booking_date`, `time_slot` (HH:MM), `odo_milestone`, `maintenance_package_code`, `maintenance_package_token` | `status: PROPOSED`, `proposal_id`; card `BOOKING_PROPOSAL` có gói backend đã kiểm tra; lỗi `SLOT_FULL` kèm `alternatives` | `modules/quick_booking` (`propose_from_agent`) | Tái kiểm tra token để phát hiện ODO/giá thay đổi, rồi tạo đề xuất (không booking, không giữ chỗ). Booking chỉ tạo qua nút Xác nhận (API-QB-02). |
 | `get_booking_lines` | **Đọc** | `booking_id` (tùy chọn) | Dòng giá/phát sinh với trạng thái tiếng Việt; thẻ chat cho booking two_tier | `modules/booking_line` | Chủ xe hỏi về giá/phát sinh của lịch hẹn. Không tool nào ghi `line_status`; tên/lý do của xưởng bọc như dữ liệu không tin cậy. |
 | `create_draft_quote` | **Ghi nháp** | `workshop_id`, `odo_milestone` | Báo giá nháp + thẻ báo giá | `modules/quote` (TOOL-501) | Chỉ khi `QUOTE_FLOW=legacy`. Không gửi xưởng: chủ xe tự bấm "Gửi xưởng duyệt". |
 | `get_quote_status` | **Đọc** | `quote_id` (tùy chọn) | Trạng thái báo giá | `modules/quote` | Chỉ khi `QUOTE_FLOW=legacy`. |
@@ -119,6 +122,8 @@ Agent hoạt động theo mô hình **ReAct (Reasoning + Action)** trên nền t
 |       │    ▼                                         |
 |       │  [Tầng Công cụ: Đọc & Ghi độc lập]           |
 |       │    • get_due_maintenance (quy tắc mốc)      |
+|       │    • get_service_history (lịch sử xe)       |
+|       │    • recommend_maintenance_packages         |
 |       │    • estimate_service_cost (chi phí)        |
 |       │    • search_ev_knowledge (Qdrant RAG)       |
 |       │    • find_workshops (tìm xưởng - Đọc)       |

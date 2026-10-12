@@ -1,8 +1,18 @@
+import os
 from unittest.mock import AsyncMock
 
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+
+# Never trace tests to LangSmith. Modules call load_dotenv() on import, which would
+# copy LANGCHAIN_TRACING_V2=true from the root .env; it does not override set vars.
+for _name in ("LANGCHAIN_TRACING_V2", "LANGSMITH_TRACING_V2", "LANGCHAIN_TRACING", "LANGSMITH_TRACING"):
+    os.environ[_name] = "false"
+# Same for the M2M keys (SPEC-SEC-OEM-M2M-001): with them copied from the root .env the mock
+# would demand access tokens from tests that call it directly. Auth tests set them explicitly.
+for _name in ("EVCARE_PRIVATE_KEY", "OEM_PUBLIC_KEY", "MOCK_PRIVATE_KEY", "EVCARE_PUBLIC_KEY", "MOCK_AUTH_REQUIRED"):
+    os.environ[_name] = ""
 
 
 def pytest_addoption(parser):

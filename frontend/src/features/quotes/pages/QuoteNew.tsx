@@ -7,6 +7,7 @@ import { Card } from '@/shared/ui/Card'
 import Spinner from '@/shared/ui/Spinner'
 import { EmptyState, ErrorState } from '@/shared/ui/States'
 import { useToast } from '@/shared/ui/Toast'
+import { page } from '@/shared/ui/page'
 import { track } from '@/shared/utils/track'
 import { createQuote } from '../api'
 
@@ -53,7 +54,7 @@ export default function QuoteNew() {
   if (!userVehicleId || !workshopId || odoMilestone === null) return <Navigate to="/estimate" replace />
 
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-xl">
+    <div className={page('reading')}>
       <Card>
         {isApiError(error, 'WORKSHOP_INACTIVE') ? (
           <EmptyState

@@ -10,6 +10,13 @@ describe('vehicleModelKey', () => {
     expect(vehicleModelKey('VFE34')).toBe('vfe34')
     expect(vehicleModelKey('VF-8')).toBe('vf8')
     expect(vehicleModelKey('VF 2')).toBe('vf2')
+    expect(vehicleModelKey('VF Wild')).toBe('vfwild')
+    expect(vehicleModelKey('VinFast VF Wild Plus')).toBe('vfwild')
+    expect(vehicleModelKey('VFWILD')).toBe('vfwild')
+  })
+
+  it('ships a photo for VF Wild', () => {
+    expect(vehiclePhotoSrc('VF Wild')).toBe('/vehicles/vfwild.webp')
   })
 
   it('returns null for unknown or missing models', () => {

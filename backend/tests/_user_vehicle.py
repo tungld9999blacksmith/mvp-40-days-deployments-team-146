@@ -37,7 +37,10 @@ from src.common.core.notification import (
     EmailSuppression,
     EmailVehicleGate,
     EmailWebhookEvent,
+    ReminderBookingAttribution,
     ReminderDelivery,
+    ReminderPersonalizationEvent,
+    ReminderPolicyEvaluation,
     UserNotificationChannel,
     UserNotificationSetting,
 )
@@ -48,6 +51,7 @@ from src.common.core.vehicle import (
     VehicleOdometerReading,
     VehicleOemSync,
     VehicleServiceRecord,
+    VehicleTripPlan,
     VehicleVerificationStatus,
 )
 from src.common.core.workshop.service_price import ServicePrice
@@ -70,8 +74,16 @@ from src.modules.vehicle_owner_onboarding.domain import (
 )
 
 TABLES = [
-    AgentMemorySetting.__table__, AgentMemorySource.__table__, AgentUserMemory.__table__, ConversationSummary.__table__, MemoryCleanup.__table__,
-    EmailOutbox.__table__, EmailSuppression.__table__, EmailVehicleGate.__table__, EmailWebhookEvent.__table__,
+    VehicleTripPlan.__table__,
+    AgentMemorySetting.__table__,
+    AgentMemorySource.__table__,
+    AgentUserMemory.__table__,
+    ConversationSummary.__table__,
+    MemoryCleanup.__table__,
+    EmailOutbox.__table__,
+    EmailSuppression.__table__,
+    EmailVehicleGate.__table__,
+    EmailWebhookEvent.__table__,
     VehicleUser.__table__,
     WorkshopOwner.__table__,
     Workshop.__table__,
@@ -87,6 +99,9 @@ TABLES = [
     Reminder.__table__,
     ReminderDelivery.__table__,
     UserNotificationSetting.__table__,
+    ReminderPersonalizationEvent.__table__,
+    ReminderBookingAttribution.__table__,
+    ReminderPolicyEvaluation.__table__,
     UserNotificationChannel.__table__,
     ServicePrice.__table__,
     UserLocation.__table__,

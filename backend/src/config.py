@@ -34,6 +34,26 @@ class Settings(BaseSettings):
     log_file_backup_count: int = Field(default=5, ge=0)
     cors_origins: str = "http://localhost:3000"
 
+    # Observability — OpenTelemetry -> OTel Collector (docs/observability/OBSERVABILITY_SETUP.md).
+    # Off by default: local dev turns it on only while the collector runs.
+    otel_enabled: bool = False
+    # Collector OTLP/HTTP base URL; /v1/traces, /v1/metrics, /v1/logs are appended.
+    otel_exporter_otlp_endpoint: str = "http://localhost:4318"
+    otel_deployment_environment: str = "dev"
+    otel_metric_export_interval_ms: int = Field(default=60_000, ge=1_000)
+
+    # LangSmith (LLM / agent traces). Exported to os.environ by configure_langsmith(),
+    # where the LangChain SDK reads them; always off when APP_ENV=test.
+    langchain_tracing_v2: bool = False
+    langchain_api_key: str = ""
+    langchain_endpoint: str = ""
+    langchain_project: str = ""
+    langchain_workspace_id: str = ""
+    # Celery worker runs (summaries, follow-ups...) go here; "" = "<LANGCHAIN_PROJECT>-jobs".
+    langchain_jobs_project: str = ""
+    # Mask emails / phones in every traced input / output before upload (on for staging).
+    langchain_redact_pii: bool = False
+
     # LLM
     openai_api_key: str = ""
     model_name: str = "gpt-4o-mini"
@@ -82,7 +102,13 @@ class Settings(BaseSettings):
     deepseek_model: str = "deepseek-chat"
     deepseek_base_url: str = "https://api.deepseek.com"
 
-    @field_validator("openrouter_agent_model", "openrouter_rewrite_model", "openrouter_rag_model", "openrouter_write_model", mode="before")
+    @field_validator(
+        "openrouter_agent_model",
+        "openrouter_rewrite_model",
+        "openrouter_rag_model",
+        "openrouter_write_model",
+        mode="before",
+    )
     @classmethod
     def normalize_stage_model(cls, value):
         if isinstance(value, str):
@@ -123,6 +149,8 @@ class Settings(BaseSettings):
     # EV manufacturer system (OEM). In dev this points at mock-ev-system.
     oem_api_base_url: str = "http://localhost:8100"
     oem_api_timeout_seconds: float = Field(default=8.0, gt=0)
+    # X-Admin-Token for mock-ev-system's admin API (its MOCK_ADMIN_TOKEN); used by the demo account reset.
+    oem_admin_token: str = ""
 
     # OEM data sync + webhook (FEAT-VEH-001, docs/specs/sprint-2/**/us-017*)
     oem_sync_interval_seconds: int = Field(default=7200, ge=60)  # Q-309: 120 minutes
@@ -132,6 +160,12 @@ class Settings(BaseSettings):
     oem_sync_alert_failures: int = Field(default=3, ge=1)  # BR-ENT-437 / Q-312
     oem_webhook_secret: str = ""
     oem_webhook_tolerance_seconds: int = Field(default=300, ge=1)
+    # M2M Asymmetric Authentication (SPEC-SEC-OEM-M2M-001)
+    evcare_private_key: str = ""
+    oem_public_key: str = ""
+    oem_auth_mode: Literal["hmac", "jwt", "both"] = "both"
+    # Access token cache TTL = expires_in - this margin, so a cached token is never expired.
+    oem_access_token_refresh_margin_seconds: int = Field(default=60, ge=0)
 
     # Maintenance due status (FEAT-VEH-001 BR-002, BR-006, BR-009)
     due_soon_km: int = Field(default=500, ge=0)
@@ -144,6 +178,12 @@ class Settings(BaseSettings):
     reminder_default_lead_days: int = Field(default=2, ge=0, le=30)
     reminder_job_hour: int = Field(default=8, ge=0, le=23)
     reminder_max_attempts: int = Field(default=3, ge=1)
+    # No forecast is used without a separate, versioned owner opt-in.
+    personalized_reminders_mode: Literal["off", "shadow", "on"] = "shadow"
+    # Optional owner IDs for canary. Outside the cohort, on behaves as shadow.
+    # Empty means all opted-in owners; it never grants consent by itself.
+    personalized_reminders_canary_user_ids: str = ""
+    usage_max_daily_km: float = Field(default=1000, gt=0)
     frontend_url: str = ""
     # Main email is explicit; DEMO_EMAIL_MODE never enables sends on main.
     email_mode: Literal["mock", "resend", "off"] = "mock"
@@ -157,7 +197,8 @@ class Settings(BaseSettings):
     demo_now: str = ""
     agent_checkpoint_mode: Literal["auto", "memory", "postgres"] = "auto"
     agent_memory_context_mode: Literal["off", "shadow", "on"] = "off"
-    agent_memory_input_token_budget: int = Field(default=12000, ge=1000)
+    # The system prompt and tool schemas alone take about 12k tokens; leave room for the turn.
+    agent_memory_input_token_budget: int = Field(default=20000, ge=1000)
     agent_memory_summary_trigger_ratio: float = Field(default=0.75, gt=0, lt=1)
     agent_memory_summary_max_tokens: int = Field(default=1000, ge=100)
     agent_memory_recent_turns: int = Field(default=6, ge=1)
@@ -276,6 +317,22 @@ class Settings(BaseSettings):
     def workshop_consent_policy_version_list(self) -> list[str]:
         return [v.strip() for v in self.workshop_consent_policy_versions.split(",") if v.strip()]
 
+    @field_validator("personalized_reminders_canary_user_ids")
+    @classmethod
+    def _validate_reminder_canary(cls, value: str) -> str:
+        if not value.strip():
+            return ""
+        parts = [part.strip() for part in value.split(",")]
+        if any(not part.isascii() or not part.isdigit() or int(part) < 1 for part in parts):
+            raise ValueError("Canary must contain comma-separated positive owner IDs")
+        return ",".join(str(owner_id) for owner_id in sorted({int(part) for part in parts}))
+
+    def personalized_reminders_mode_for(self, user_id: int) -> Literal["off", "shadow", "on"]:
+        if self.personalized_reminders_mode != "on" or not self.personalized_reminders_canary_user_ids:
+            return self.personalized_reminders_mode
+        cohort = {int(part) for part in self.personalized_reminders_canary_user_ids.split(",")}
+        return "on" if user_id in cohort else "shadow"
+
     @model_validator(mode="after")
     def _no_demo_odometer_in_production(self) -> "Settings":
         if self.app_env == "production" and self.oem_sync_mode == "static":
@@ -317,6 +374,20 @@ class Settings(BaseSettings):
     embedding_huggingface_model: str = "BAAI/bge-m3"
     # Local sentence-transformers model id (requires the optional dependency).
     embedding_local_model: str = "BAAI/bge-m3"
+
+    # Shared demo account behind the "Dùng thử ngay" login button (modules/demo_account).
+    # Off by default: POST /auth/demo-session answers 404 and the reset job is not scheduled.
+    demo_login_enabled: bool = False
+    # Must match mock-ev-system's MOCK_DEMO_OWNER_EMAIL (the ownership check compares emails).
+    demo_account_email: str = "demo@evcare.invalid"
+    demo_reset_interval_hours: int = Field(default=48, ge=1)
+    demo_session_rate_limit_per_hour: int = Field(default=20, ge=1)
+    # The demo account is shared: chat is limited per client IP, plus a cap for the whole account.
+    demo_chat_rate_limit_per_minute: int = Field(default=10, ge=1)
+    demo_chat_rate_limit_per_day: int = Field(default=30, ge=1)
+    demo_chat_total_per_day: int = Field(default=300, ge=1)
+    # Read the client IP from the first X-Forwarded-For hop (only behind a trusted proxy, e.g. Railway).
+    rate_limit_trust_forwarded: bool = False
 
     # Conversation & Chat (F4 — docs/specs/sprint-2/**/us-025*, platform/conversation-messaging.api.md)
     chat_message_max_chars: int = Field(default=2000, ge=1)
@@ -391,6 +462,25 @@ class Settings(BaseSettings):
     @property
     def celery_backend_url(self) -> str:
         return self.redis_backend_url or self._redis_url_for_db(self.celery_backend_db)
+
+    # Transactional outbox (infrastructure/outbox, backend/guide/outbox.md).
+    outbox_dispatch_interval_seconds: float = Field(default=10, ge=1)  # beat safety-net scan
+    # Enqueue a dispatch right after a commit that published an event (beat still scans).
+    outbox_wakeup_enabled: bool = True
+    outbox_batch_size: int = Field(default=50, ge=1)  # events handled per dispatch run
+    outbox_handler_timeout_seconds: float = Field(default=30, gt=0)
+    # A claimed event whose worker died is re-claimed after this; must exceed the handler timeout.
+    outbox_lease_seconds: float = Field(default=120, gt=0)
+    outbox_max_attempts: int = Field(default=10, ge=1)
+    outbox_backoff_base_seconds: float = Field(default=5, gt=0)
+    outbox_backoff_max_seconds: float = Field(default=3600, gt=0)
+    outbox_retention_days: int = Field(default=7, ge=1)  # succeeded rows; dead rows are kept
+
+    @model_validator(mode="after")
+    def _outbox_lease_outlives_handler(self) -> "Settings":
+        if self.outbox_lease_seconds <= self.outbox_handler_timeout_seconds:
+            raise ValueError("OUTBOX_LEASE_SECONDS must be greater than OUTBOX_HANDLER_TIMEOUT_SECONDS")
+        return self
 
     def _redis_url_for_db(self, db: int) -> str:
         auth = f":{quote_plus(self.redis_password)}@" if self.redis_password else ""

@@ -85,3 +85,4 @@ infrastructure/backend/railway/.railway.env
 .vercel
 .env*
 infrastructure\backend\railway\.railway.env
+.tmp/

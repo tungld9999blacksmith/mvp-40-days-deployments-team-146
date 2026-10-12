@@ -79,7 +79,7 @@ function DecisionRow({
             <button
               type="button"
               onClick={() => onPhoto(photo.url!)}
-              className="w-14 h-14 rounded-xl overflow-hidden border border-border shrink-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald/25"
+              className="w-14 h-14 rounded-xl overflow-hidden border border-border shrink-0"
               aria-label={`Xem ảnh lớn: ${line.itemName}`}
             >
               <img src={photo.url} alt={`Ảnh xưởng chụp: ${line.itemName}`} className="w-full h-full object-cover" />

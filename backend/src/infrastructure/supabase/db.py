@@ -19,6 +19,20 @@ _connect_args = (
     else {}
 )
 engine = create_engine(_url, pool_pre_ping=True, connect_args=_connect_args)
+if _url.startswith("postgresql"):
+    # Read-only forecast SELECTs have their own small autocommit pool. Unlike
+    # writes they can safely fail to fallback on a stale connection; a pre-ping
+    # would double each read's network latency. Keepalives/recycle bound idleness.
+    usage_read_engine = create_engine(
+        _url,
+        isolation_level="AUTOCOMMIT",
+        skip_autocommit_rollback=True,
+        pool_size=2,
+        max_overflow=2,
+        pool_recycle=120,
+        connect_args=_connect_args,
+    )
+    engine = engine.execution_options(usage_read_engine=usage_read_engine)
 
 
 def get_session() -> Generator[Session, None, None]:

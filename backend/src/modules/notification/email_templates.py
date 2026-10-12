@@ -5,12 +5,21 @@ from urllib.parse import urlencode, urlparse
 
 from src.common.core.maintenance.reminder import ReminderLevel
 from src.modules.user_vehicle.domain import DueResult
+from src.modules.vehicle_usage.schemas import MaintenanceForecast
 
 from .channels import NotificationMessage
 from .domain import mask_plate
+from .policy_service import ReminderDecision
 
 
-def snapshot(result: DueResult, *, lead_days: int, due_soon_km: int) -> dict:
+def snapshot(
+    result: DueResult,
+    *,
+    lead_days: int,
+    due_soon_km: int,
+    decision: ReminderDecision | None = None,
+    forecast: MaintenanceForecast | None = None,
+) -> dict:
     milestone = result.next_milestone
     if milestone is None:
         raise ValueError("Cannot render an unknown milestone")
@@ -19,7 +28,7 @@ def snapshot(result: DueResult, *, lead_days: int, due_soon_km: int) -> dict:
     if result.due_status.value == "OVERDUE":
         km_hit = result.remaining_km is not None and result.remaining_km < 0
         time_hit = result.remaining_days is not None and result.remaining_days < 0
-    return {
+    details = {
         "templateVersion": "maintenance-v1",
         "dueStatus": result.due_status.value,
         "reason": "BOTH" if km_hit and time_hit else "KM" if km_hit else "TIME",
@@ -34,6 +43,25 @@ def snapshot(result: DueResult, *, lead_days: int, due_soon_km: int) -> dict:
         "dueSoonKm": due_soon_km,
         "items": [{"itemCode": i.item_code, "itemName": i.item_name} for i in milestone.items],
     }
+    if decision:
+        details["snapshotVersion"] = 2
+        details["policyVersion"] = decision.policy_version
+        details["triggerReasons"] = list(decision.trigger_reasons)
+        if decision.trip:
+            details["trip"] = decision.trip
+            details["templateVersion"] = "maintenance-trip-v1"
+            details["reason"] = (
+                "BOTH"
+                if "TRIP_KM_MILESTONE" in decision.trigger_reasons and "TRIP_TIME_DEADLINE" in decision.trigger_reasons
+                else "KM"
+                if "TRIP_KM_MILESTONE" in decision.trigger_reasons
+                else "TIME"
+            )
+        if "PREDICTED_KM_WINDOW" in decision.trigger_reasons:
+            details["reason"] = "BOTH" if time_hit else "KM"
+            details["templateVersion"] = "maintenance-usage-v1"
+            details["personalization"] = forecast.model_dump(mode="json", by_alias=True)
+    return details
 
 
 def build_email_message(
@@ -61,6 +89,24 @@ def build_email_message(
         f"Hạn theo thời gian: {details['dueDate']}.",
         f"Lý do nhắc: {reason}.",
     ]
+    forecast = details.get("personalization")
+    trip = details.get("trip")
+    if trip:
+        lines.append(
+            f"Chuyến đi bạn khai báo: khởi hành {trip['departureDate']}, tổng khoảng {trip['distanceKm']:,} km."
+        )
+        lines.append(
+            "Nên kiểm tra và lên lịch bảo dưỡng trước chuyến đi; quãng đường dự kiến không phải ODO đã ghi nhận."
+        )
+    if forecast and forecast.get("avgKmPerDay") is not None:
+        lines.append(
+            f"Mức sử dụng: khoảng {forecast['avgKmPerDay']:g} km/ngày trong {forecast['observationDays']:g} ngày quan sát."
+        )
+        lines.append(
+            f"Dự kiến chạm mốc km: {forecast['kmForecastDate']}, nếu duy trì mức sử dụng này; đây không phải hạn theo thời gian của hãng."
+        )
+        if forecast.get("possiblyReached"):
+            lines.append("Xe có thể đã chạm mốc km; cần số ODO mới từ hãng để xác nhận.")
     if details["odometerKm"] is not None:
         lines.append(f"ODO ghi nhận: {details['odometerKm']:,} km; cập nhật: {details['odometerRecordedAt']}.")
         if details["odometerStale"]:

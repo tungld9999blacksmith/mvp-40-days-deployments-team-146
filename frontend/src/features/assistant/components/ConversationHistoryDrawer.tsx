@@ -133,7 +133,7 @@ export default function ConversationHistoryDrawer({
               maxLength={100}
               onChange={e => setQuery(e.target.value)}
               placeholder="Tìm trong lịch sử..."
-              className="w-full bg-card border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-emerald/40"
+              className="w-full bg-card border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted focus-field"
             />
           </label>
           {!searchingMode && (

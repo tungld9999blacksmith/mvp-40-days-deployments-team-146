@@ -4,6 +4,7 @@ import { AlertTriangle, Bell, CheckCircle2, ChevronRight, Settings, XCircle, typ
 import { useCachedQuery } from '@/shared/hooks/useCachedQuery'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
 import { EmptyState, ErrorState } from '@/shared/ui/States'
+import { page } from '@/shared/ui/page'
 import { formatRelativeDay } from '@/shared/utils/format'
 import { addDays, todayVn } from '@/features/bookings/utils'
 import { listWorkshopQuotes } from '@/features/quotes/api'
@@ -78,7 +79,7 @@ export default function Notifications({ variant }: { variant: 'owner' | 'portal'
   const unreadCount = entries.filter(entry => entry.unread).length
 
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-3xl">
+    <div className={page('reading')}>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Thông báo</h1>

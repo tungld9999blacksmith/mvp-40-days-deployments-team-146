@@ -4,7 +4,7 @@ import * as vehiclesApi from '../api'
 
 export const VEHICLES_KEY = 'vehicles'
 
-/** API-VEH-001 — MVP: one linked vehicle, the first item. */
+/** API-VEH-001 — all ACTIVE vehicles of the owner; screens show the one from useCurrentVehicle. */
 export function useVehicles() {
   return useCachedQuery(VEHICLES_KEY, vehiclesApi.listVehicles)
 }

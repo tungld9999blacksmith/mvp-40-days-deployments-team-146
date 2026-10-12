@@ -45,34 +45,35 @@ colors:
   dark-banner: "#10161D"
 typography:
   heading:
-    fontFamily: Be Vietnam Pro
+    fontFamily: Inter
     fontWeight: 800
     fontSize: 1.875rem
     lineHeight: 1.2
     letterSpacing: -0.025em
   body:
-    fontFamily: Be Vietnam Pro
+    fontFamily: Inter
     fontWeight: 400
     fontSize: 0.875rem
     lineHeight: 1.55
   label:
-    fontFamily: Be Vietnam Pro
+    fontFamily: Inter
     fontWeight: 600
     fontSize: 0.8125rem
   instrument-label:
-    fontFamily: JetBrains Mono
+    fontFamily: Inter
     fontWeight: 500
     fontSize: 0.71875rem
     letterSpacing: 0.06em
   mono:
-    fontFamily: JetBrains Mono
+    fontFamily: Inter
     fontWeight: 500
     fontSize: 0.8125rem
     fontFeature: tnum
   figure:
-    fontFamily: Barlow Condensed
+    fontFamily: Inter
     fontWeight: 700
-    fontSize: 2.15rem
+    fontFeature: tnum
+    fontSize: 1.625rem
     lineHeight: 1
 rounded:
   sm: 6px
@@ -154,7 +155,7 @@ components:
 - The real EV CARE logo in the sidebar, login, splash, onboarding and favicon.
 - White sidebar, light grey ground, white cards with soft shadows.
 - Solid green buttons with white text. No gradients, no coloured glows.
-- One family for text (Be Vietnam Pro); mono and condensed figures only where they mean data.
+- One family everywhere (Inter, our free stand-in for Tesla's Universal Sans); tabular figures where they mean data.
 - Licence plates drawn as real plates.
 - Home banner: ink panel, crossfading slides, real data only.
 
@@ -173,15 +174,17 @@ components:
 
 ## Typography
 
-All families load from one Google Fonts request in `frontend/src/styles/index.css`; all have Vietnamese subsets (verified 2026-10-04).
+Inter (variable, `opsz` 14–32, weights 100–900) loads from one Google Fonts request in `frontend/src/styles/index.css` and has a Vietnamese subset (verified 2026-10-11). It replaced Be Vietnam Pro, JetBrains Mono and Barlow Condensed on 2026-10-11 to match tesla.com, whose own Universal Sans is proprietary. The `opsz` axis switches to display cuts at large sizes on its own, mirroring Universal Sans Display/Text.
 
-- **Be Vietnam Pro** (300–800): all text. Page greeting 800 at 24–30px with -0.025em tracking; banner titles 800; body 14px; labels 13px semibold; sentence case.
-- **JetBrains Mono** (`font-mono`): km values, prices, timestamps, VIN, booking codes, and the uppercase instrument labels in the banner (11–11.5px, 0.06em tracking).
-- **Barlow Condensed** (`font-plate`): licence plates (`PlateTile`), banner readouts, and the due figure on the maintenance card.
+- **Inter** (`font-sans`, 300–800): all text. Page greeting 800 at 24–30px with -0.025em tracking; banner titles 800; body 14px; labels 13px semibold; sentence case.
+- **`font-mono`** (Inter + `tnum`): km values, prices, timestamps, VIN, booking codes, and the uppercase instrument labels in the banner (11–11.5px, 0.06em tracking).
+- **`font-plate`** (Inter + `tnum`): licence plates (`PlateTile`), banner readouts, and the due figure on the maintenance card.
 
 ## Layout
 
 Unchanged from the existing app: 240px sidebar (drawer below `lg`), 64px topbar, content padding `p-4 sm:p-6 xl:p-8`, Dashboard grid (`xl:grid-cols-3`); on xl the quick actions stack under the AI card in the right column. On `sm`–`lg` the topbar shows the logo because the sidebar is hidden. The Home banner sits between the greeting and the upcoming-booking highlight, full content width; all slides share one grid cell, so its height is the tallest slide and the page never jumps; slide content is centred vertically in that cell.
+
+Owner page widths (`shared/ui/page.ts`, `page(width)`): **full** for pages that fill the content area (Dashboard, Xe của tôi, Lịch sử dịch vụ, Chi phí bảo dưỡng, Đặt lịch, Hỗ trợ; Lịch hẹn của tôi is reading width below xl and full with its rail); **reading** `max-w-3xl`, left-aligned, for single-column lists, details and forms (Báo giá, Thông báo and its settings, Đổi lịch, So sánh xưởng); **ticket** `max-w-xl` centred for one card (vé lịch hẹn, hỏi thăm sau bảo dưỡng). Loading and error states keep the width of their page.
 
 ## Elevation & Depth
 
@@ -201,9 +204,10 @@ Tailwind radius tokens are overridden: `rounded-xl` = 10px (buttons, inputs, nav
 - **Carousel** (`shared/ui/Carousel.tsx`): one ink panel; slides stack and crossfade over 700ms. Autoplay 6s with a filling dot, pauses on hover, focus and the pause button. No autoplay under `prefers-reduced-motion`; swipe on touch; inactive slides are `inert`. Controls (dots, pause, prev/next) sit inside the panel, bottom edge. A single slide renders without controls.
 - **HomeCarousel** (`features/dashboard/components/HomeCarousel.tsx`): slides only from real data or real features (`homeSlides.ts`): maintenance (known milestone; readouts for km and days left, from `sm` up), booking (only when nothing is upcoming), assistant (always, with suggested questions from `sm` up). No promotional slide until there is a real source of offers.
 - **Login brand panel** (`AuthBrandPanel.tsx`): banner tokens, white logo, green highlight phrase.
-- **PlateTile** (`shared/ui/PlateTile.tsx`): white plate, ink border, Barlow Condensed.
+- **PlateTile** (`shared/ui/PlateTile.tsx`): white plate, ink border, `font-plate`; colours from the `plate` / `plate-ink` tokens (`bg-plate text-plate-ink border-plate-ink`), which have no dark override.
 - **VehicleHero** (`features/vehicles/components/VehicleHero.tsx`): the ink panel of Xe của tôi, built from banner tokens like the Home banner: mono uppercase labels, name, PlateTile, masked VIN, a readout grid (ODO, next milestone in `amber-400` when km caused the alert, battery, motor) and the model photo on the ink stage. Below it: maintenance card (2/3) beside ODO and last-service cards, then warranty tiles with a time-used bar (`warrantyTimeline`, display only; `isActive` from the backend decides the status).
 - **Buttons**: primary `bg-brand` + `text-on-brand`; secondary card + border; danger error text and border.
+- **Context rail** (xl and up, `shared/ui/RailRow.tsx` rows): owner pages with spare width put the main column in 2/3 and one card of real data in 1/3, like the Dashboard grid. Booking wizard: `BookingSummaryRail` (vehicle, milestone with items and warranty marks, workshop, time; "Đổi" jumps back a step; sticky; the confirm card hides those rows at xl and keeps cost, note, timer and buttons). Lịch hẹn của tôi: a row opens `BookingPreview` (QR, time, workshop with directions, items, cost, "Đổi lịch", link to the ticket; not sticky because the QR makes it taller than the screen; cancelling stays on the ticket page). Lịch sử dịch vụ: `HistorySummary` strip at every width (periodic visits, latest visit, EV Care spend, next milestone with "Đặt lịch"), and at xl a row opens `ServiceRecordDetail` while the Nguồn and booking-link columns move into it. Below xl the rails are hidden and the pages behave as before.
 - **Quick actions**: green-tint icon tile (`bg-emerald-dim text-emerald`) beside the label from `sm` up.
 - **Robot mascot** (`shared/ui/RobotAvatar.tsx`): the AI assistant's face. White head with ink outline, ink face screen, `#19C37D` eyes, `#007A52` ears, pink cheeks; fixed colours in both themes like PlateTile. Moods: `idle` (message avatar), `thinking` (amber antenna light while streaming), `happy`, `wave` (empty chat). `RobotAvatar` puts it on an `bg-emerald-dim` disc, with an optional online dot. It stands for the assistant only: chat, and "Hỏi trợ lý" buttons that open it.
 - **PhotoUploadTile** (`shared/ui/PhotoUploadTile.tsx`): 72px `rounded-xl` tile, border `{colors.border}`, error border `{colors.error}` with "Tải lại" below; a progress ring over the preview while uploading; `PhotoAddTile` is the dashed "Thêm ảnh" tile that opens the camera on phones (`capture`). Hidden at three photos.
@@ -217,6 +221,8 @@ Tailwind radius tokens are overridden: `rounded-xl` = 10px (buttons, inputs, nav
 - Do render the real logo through `<Logo />` and plates through `<PlateTile />`.
 - Do keep one ink block per page at most (Home banner, Xe của tôi hero), with real data only; the Home banner needs a working action on every slide.
 - Do check both themes and 390px width before merging UI changes.
+- Do leave keyboard focus to the shared ring: links, buttons and `[tabindex]` get a 2px emerald outline (`focus-ring`, offset 2px) from the base layer; fields use `focus-field` (emerald border + 4px soft ring). Don't add per-component focus rings or `outline-none` on controls.
+- Do give touch controls a 44px target: topbar icon buttons (`ICON_BUTTON`) are 36px with a mouse and 44px under `pointer-coarse`.
 - Don't use gradients, glows, blur blobs or gradient text.
 - Don't use mono uppercase labels outside ink panels (Home banner, vehicle hero); elsewhere labels are sentence case.
 - Don't use the logo green `#00A86B` as text on light surfaces.
@@ -250,4 +256,9 @@ Tailwind radius tokens are overridden: `rounded-xl` = 10px (buttons, inputs, nav
 | 2026-10-10 | Home banner (maintenance slide): from `sm` the headline is the milestone only; the readouts carry the km/days figures. Phones keep the figures in the headline | The same "quá X km · quá Y ngày" appeared in the headline, the readouts and the Bảo dưỡng card. (design review FINDING-010) |
 | 2026-10-10 | Login below `lg`: logo, then the brand panel's headline (highlight in `text-emerald`) and promise above the form (`AuthMobileBrand`) | Phones showed only the logo and "Đăng nhập" on the Persuade surface. (design review FINDING-014) |
 | 2026-10-10 | Workshop Dashboard: the four icon-tile KPI cards become one strip of count links (label + mono figure, `warning` when a count needs action); same place, same links | Tall icon tiles for single digits read as AI-dashboard filler. (design review FINDING-015) |
+| 2026-10-11 | Owner screens Đặt lịch bảo dưỡng, Lịch hẹn của tôi and Lịch sử dịch vụ get a context rail at xl (2/3 + 1/3); history also gets a summary strip | On wide screens these pages left half the width empty. User approved the right-rail preview (artifact "Cột phải EV Care"). Real data only; no rail below xl. |
+| 2026-10-11 | Font: Inter everywhere (replaces Be Vietnam Pro, JetBrains Mono, Barlow Condensed); banner readouts 26px with a small unit | User asked for tesla.com's look; Universal Sans is proprietary. Inter is ~40% wider than Barlow Condensed, so "12.500 km" wrapped at 2.15rem. |
+| 2026-10-11 | Owner sidebar "Hỗ trợ" becomes a NavLink to `/support` (active state like nav items); the page shows the booked workshop's contact (2/3), the AI question box in the right rail, and the FAQ. Workshop Portal keeps `SupportLink` | The button only showed a "đang cập nhật" toast. User asked for the page; support tickets stay out of scope (PRD v3.7), so it gathers existing channels only. |
+| 2026-10-12 | Owner pages use three widths through `page()`: full, reading (`max-w-3xl`, left) and ticket (`max-w-xl`, centred); Xe của tôi drops `max-w-6xl`, Đổi lịch is no longer centred, loading states match their page | Pages used five widths (880 / 944 / 976 / full) and mixed centred with left-aligned. User chose the three-tier rule. (design review FINDING-016) |
+| 2026-10-12 | One focus ring for controls (`focus-ring`, the base outline) and one for fields (`focus-field`); topbar icon buttons 44px on touch; PlateTile uses the `plate` tokens | About five ring recipes (ring-2/ring-4, /25 /40 /50, with and without offset) and 36px touch targets. (design review FINDING-012) |
 | 2026-10-04 | Workshop › Sức chứa cells lead with seats left (16px mono); booked and locked lines only when non-zero; full slots read "Hết chỗ" | 56 identical three-line 11px cells hid the few slots that mattered. (design review FINDING-018) |

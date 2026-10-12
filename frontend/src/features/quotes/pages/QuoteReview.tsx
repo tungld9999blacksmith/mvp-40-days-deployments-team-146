@@ -58,7 +58,7 @@ function PriceInput({
         onBlur={() => setFocused(false)}
         onChange={event => onChange(event.target.value.replace(/[^\d]/g, ''))}
         className={cn(
-          'w-32 bg-card border rounded-lg px-3 py-1.5 text-sm text-right font-mono text-foreground placeholder:text-muted/70 focus:outline-none focus:border-emerald/60 focus:ring-4 focus:ring-emerald/15',
+          'w-32 bg-card border rounded-lg px-3 py-1.5 text-sm text-right font-mono text-foreground placeholder:text-muted/70 focus-field',
           error ? 'border-error' : 'border-border',
         )}
       />
@@ -288,7 +288,7 @@ export default function QuoteReview() {
                             disabled={submitting}
                             onChange={event => setNotes(previous => ({ ...previous, [item.quoteItemId]: event.target.value }))}
                             placeholder="Tuỳ chọn"
-                            className="w-full bg-card border border-border rounded-lg px-3 py-1.5 text-sm text-foreground placeholder:text-muted/70 focus:outline-none focus:border-emerald/60"
+                            className="w-full bg-card border border-border rounded-lg px-3 py-1.5 text-sm text-foreground placeholder:text-muted/70 focus-field"
                           />
                         ) : (
                           <span className="text-xs text-muted">{item.reviewerNote ?? ''}</span>

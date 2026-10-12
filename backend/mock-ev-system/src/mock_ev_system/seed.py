@@ -46,7 +46,7 @@ def seed_all(session: Session) -> None:
     session.commit()
 
 
-# ── Vehicle Models (5 models × 1-2 trims) ───────────────────────────
+# ── Vehicle Models (8 models × 1-2 trims) ───────────────────────────
 
 
 def _seed_vehicle_models(session: Session) -> None:
@@ -103,6 +103,46 @@ def _seed_vehicle_models(session: Session) -> None:
             model_id="MDL-07",
             model_name="VF9",
             trim="Plus",
+            battery_capacity_kwh=123.0,
+            motor_power_kw=300,
+            production_year=2023,
+        ),
+        VehicleModel(
+            model_id="MDL-08",
+            model_name="VF Wild",
+            trim="Plus",
+            battery_capacity_kwh=100.0,
+            motor_power_kw=300,
+            production_year=2026,
+        ),
+        VehicleModel(
+            model_id="MDL-09",
+            model_name="VF3",
+            trim="Eco",
+            battery_capacity_kwh=18.64,
+            motor_power_kw=30,
+            production_year=2024,
+        ),
+        VehicleModel(
+            model_id="MDL-10",
+            model_name="VF2",
+            trim="Eco",
+            battery_capacity_kwh=25.0,
+            motor_power_kw=40,
+            production_year=2026,
+        ),
+        VehicleModel(
+            model_id="MDL-11",
+            model_name="VF7",
+            trim="Plus",
+            battery_capacity_kwh=75.3,
+            motor_power_kw=260,
+            production_year=2024,
+        ),
+        VehicleModel(
+            model_id="MDL-12",
+            model_name="VF9",
+            trim="Eco",
             battery_capacity_kwh=123.0,
             motor_power_kw=300,
             production_year=2023,
@@ -388,6 +428,11 @@ def _seed_warranty_policies(session: Session) -> None:
         "MDL-05",
         "MDL-06",
         "MDL-07",
+        "MDL-08",
+        "MDL-09",
+        "MDL-10",
+        "MDL-11",
+        "MDL-12",
     ]
 
     for model_id in model_ids:
@@ -532,6 +577,11 @@ def _seed_maintenance_schedules(session: Session) -> None:
         "MDL-05",
         "MDL-06",
         "MDL-07",
+        "MDL-08",
+        "MDL-09",
+        "MDL-10",
+        "MDL-11",
+        "MDL-12",
     ]
 
     schedules: list[MaintenanceSchedule] = []

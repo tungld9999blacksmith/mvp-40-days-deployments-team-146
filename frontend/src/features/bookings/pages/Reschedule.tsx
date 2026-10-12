@@ -8,6 +8,7 @@ import Skeleton, { SkeletonCard } from '@/shared/ui/Skeleton'
 import { EmptyState, ErrorState, Notice } from '@/shared/ui/States'
 import { useToast } from '@/shared/ui/Toast'
 import { cn } from '@/shared/ui/cn'
+import { page } from '@/shared/ui/page'
 import { formatCountdown } from '@/shared/utils/format'
 import { newId } from '@/shared/utils/id'
 import { track } from '@/shared/utils/track'
@@ -184,7 +185,7 @@ export default function Reschedule() {
 
   if (loadError) {
     return (
-      <div className="p-4 sm:p-6 xl:p-8 max-w-2xl mx-auto">
+      <div className={page('reading')}>
         <Card>
           {isApiError(loadError, 'BOOKING_NOT_FOUND') ? (
             <EmptyState title="Không tìm thấy lịch hẹn" action={<Button onClick={() => navigate('/bookings')}>Lịch hẹn của tôi</Button>} />
@@ -197,7 +198,7 @@ export default function Reschedule() {
   }
   if (!booking) {
     return (
-      <div className="p-4 sm:p-6 xl:p-8 max-w-2xl mx-auto space-y-4" aria-busy>
+      <div className={`${page('reading')} space-y-4`} aria-busy>
         <SkeletonCard lines={2} />
         <SkeletonCard lines={4} />
       </div>
@@ -264,7 +265,7 @@ export default function Reschedule() {
   const visibleSlots = day && slots ? slots.filter(slot => !isPastSlot(day, slot.timeSlot)) : []
 
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-3xl mx-auto space-y-5">
+    <div className={`${page('reading')} space-y-5`}>
       <Link to={ticketPath} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground">
         <ArrowLeft className="w-4 h-4" /> Lịch hẹn
       </Link>

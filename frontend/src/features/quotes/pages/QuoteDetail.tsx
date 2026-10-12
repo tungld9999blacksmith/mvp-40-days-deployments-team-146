@@ -10,6 +10,7 @@ import Dialog from '@/shared/ui/Dialog'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
 import { EmptyState, ErrorState, Notice } from '@/shared/ui/States'
 import { useToast } from '@/shared/ui/Toast'
+import { page } from '@/shared/ui/page'
 import { formatDate, formatKm, formatTimeDayMonth } from '@/shared/utils/format'
 import { newId } from '@/shared/utils/id'
 import { track } from '@/shared/utils/track'
@@ -86,7 +87,7 @@ export default function QuoteDetail() {
   if (error && !quote) {
     if (isApiError(error, 'QUOTE_NOT_FOUND')) {
       return (
-        <div className="p-4 sm:p-6 xl:p-8 max-w-2xl">
+        <div className={page('reading')}>
           <Card>
             <EmptyState
               icon={<FileX2 className="w-5 h-5" />}
@@ -98,7 +99,7 @@ export default function QuoteDetail() {
       )
     }
     return (
-      <div className="p-4 sm:p-6 xl:p-8 max-w-2xl">
+      <div className={page('reading')}>
         <Card>
           <ErrorState traceId={error.traceId} onRetry={() => void load()} />
         </Card>
@@ -108,7 +109,7 @@ export default function QuoteDetail() {
 
   if (!quote) {
     return (
-      <div className="p-4 sm:p-6 xl:p-8 max-w-2xl space-y-4" aria-busy>
+      <div className={`${page('reading')} space-y-4`} aria-busy>
         <SkeletonCard lines={2} />
         <SkeletonCard lines={5} />
       </div>
@@ -167,7 +168,7 @@ export default function QuoteDetail() {
   }
 
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-3xl space-y-5">
+    <div className={`${page('reading')} space-y-5`}>
       <Link to="/quotes" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground">
         <ArrowLeft className="w-4 h-4" /> Báo giá của tôi
       </Link>

@@ -16,6 +16,7 @@ Cách dùng hằng ngày (tìm trace, viết truy vấn, dashboard, alert): xem 
 8. [Bước 5 — Kiểm tra kết nối](#bước-5--kiểm-tra-kết-nối)
 9. [Bước 6 — OTel Collector](#bước-6--otel-collector)
 10. [Bước 7 — Instrument backend & worker](#bước-7--instrument-backend--worker)
+    - [Bước 7b — Telemetry của AI agent (Grafana + LangSmith)](#bước-7b--telemetry-của-ai-agent-grafana--langsmith)
 11. [Bước 8 — Deploy lên Railway](#bước-8--deploy-lên-railway)
 12. [Bảo mật, PII & chi phí](#bảo-mật-pii--chi-phí)
 13. [Xử lý sự cố](#xử-lý-sự-cố)
@@ -59,9 +60,9 @@ Cách dùng hằng ngày (tìm trace, viết truy vấn, dashboard, alert): xem 
 | Tín hiệu | Nguồn | Thu thập bằng | Lưu ở |
 |---|---|---|---|
 | Traces | HTTP request, DB, Redis, HTTP ra ngoài, Celery task, bước agent chính | OTel auto-instrumentation + span thủ công | Grafana Tempo |
-| Metrics | Latency/lỗi theo route, DB, Celery; metric nghiệp vụ (token LLM, guardrail, booking) | OTel instrumentation + OTel Meter | Grafana Prometheus |
+| Metrics | Latency/lỗi theo route, DB, Celery; agent: tool, guardrail, RAG (token / chi phí / độ trễ LLM chỉ ở LangSmith) | OTel instrumentation + OTel Meter | Grafana Prometheus |
 | Logs | structlog / stdlib (đã che PII) | OTel `LoggingHandler` → OTLP; stdout vẫn giữ cho Railway | Grafana Loki |
-| LLM traces | LangChain / LangGraph (prompt, tool call, token, chi phí) | LangSmith SDK (tự động qua LangChain) | LangSmith |
+| LLM / agent traces | Mỗi lượt chat = 1 trace: guard, LangGraph, LLM (prompt, token, chi phí), tool, RAG | LangSmith SDK + `step()` ([Bước 7b](#bước-7b--telemetry-của-ai-agent-grafana--langsmith)) | LangSmith |
 
 ---
 
@@ -72,13 +73,14 @@ Cách dùng hằng ngày (tìm trace, viết truy vấn, dashboard, alert): xem 
 | Grafana Cloud stack + OTLP token | ✅ Xong |
 | LangSmith (APAC) + Service Key dev/staging | ✅ Xong |
 | Biến môi trường trong `.env`, `.railway.env`, file mẫu | ✅ Xong |
-| Gỡ chỗ ép tắt LangSmith tracing trong `orchestrator.py` | ⏳ Chưa làm |
+| Gỡ chỗ ép tắt LangSmith tracing; cấu hình LangSmith từ `Settings` | ✅ Xong |
 | Config OTel Collector + service trong docker-compose (profile `observability`) | ✅ Xong |
-| Instrument backend & worker | ⏳ Chưa làm |
+| Instrument backend & worker (traces, metrics, logs) — chạy thử local | ✅ Xong |
 | Service `otel-collector` trên Railway: script deploy, CI/CD | ✅ Xong (tạo service: [Bước 5c](../deployments/RAILWAY_BACKEND_DEPLOYMENT.MD#bước-5c--tạo-service-otel-collector-observability)) |
+| Telemetry AI agent: trace + metric LangSmith, bộ ba traces / metrics / logs Grafana — chạy thử local | ✅ Xong ([Bước 7b](#bước-7b--telemetry-của-ai-agent-grafana--langsmith)) |
 | Dashboard & alert | ⏳ Chưa làm |
 
-> Bước 7 mô tả thiết kế đích. Khi code xong, cập nhật bảng trên.
+> Chưa làm: metric nghiệp vụ (booking, onboarding, OEM, thông báo), instrument `mock-ev-system`, dashboard / alert, bật trên Railway (`OTEL_ENABLED=true` sau khi deploy collector).
 
 ---
 
@@ -95,6 +97,9 @@ Cách dùng hằng ngày (tìm trace, viết truy vấn, dashboard, alert): xem 
 | 7 | Bật/tắt | `OTEL_SDK_DISABLED=true` mặc định ở test; app chạy bình thường khi collector chết | Test không phụ thuộc hạ tầng |
 | 8 | Mạng Railway | Collector không có domain public; app gửi `http://otel-collector.railway.internal:4318`; collector nghe `[::]` | Private network Railway dùng IPv6 |
 | 9 | Grafana Cloud thay vì tự host | Free tier, $0 | Railway free tier không chứa nổi 5 service LGTM (3 service, 0,5 GB RAM mỗi service) |
+| 10 | Chia vai agent | **LangSmith**: trace đầy đủ nội dung + token, chi phí, độ trễ LLM, tỉ lệ lỗi agent. **Grafana**: span mỏng (không nội dung), metric tool / guardrail / RAG, log, alert Discord | LangSmith không gửi alert Discord có nội dung; Grafana không được chứa prompt (PII) |
+| 11 | Quota LangSmith | Run của Celery worker sang project `<project>-jobs` | Project chat chỉ đếm lượt chat thật |
+| 12 | PII trên LangSmith | `LANGCHAIN_REDACT_PII=true` ở staging, `false` ở local | Staging có dữ liệu thật; local cần thấy nguyên văn để debug |
 
 ---
 
@@ -189,20 +194,22 @@ Secret gốc của người setup để trong `personal/<tên>/` (đã gitignore
 | `LANGCHAIN_API_KEY` | Service Key dev | Service Key staging |
 | `LANGCHAIN_WORKSPACE_ID` | UUID workspace | như local |
 | `LANGCHAIN_PROJECT` | `evcare-dev` | `evcare-staging` |
+| `LANGCHAIN_JOBS_PROJECT` | `evcare-dev-jobs` | `evcare-staging-jobs` (trống → `<LANGCHAIN_PROJECT>-jobs`) |
+| `LANGCHAIN_REDACT_PII` | `false` | `true` — che email / SĐT trong mọi input / output gửi LangSmith |
 | `LANGCHAIN_TRACING_V2` | `true` | `true` |
 
-**OpenTelemetry SDK** (backend & worker, thêm ở bước 7):
+**OpenTelemetry — phía app** (backend & worker, đọc qua `Settings` trong [config.py](../../backend/src/config.py), nên đặt trong `.env` là đủ):
 
-| Biến | Local | Staging |
-|---|---|---|
-| `OTEL_SDK_DISABLED` | `false` (`true` khi không chạy collector) | `false` |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318` | `http://otel-collector.railway.internal:4318` |
-| `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` | `http/protobuf` |
-| `OTEL_SERVICE_NAME` | `ev-care-backend` / `ev-care-worker` | đặt riêng từng service |
-| `OTEL_RESOURCE_ATTRIBUTES` | `deployment.environment=dev` | `deployment.environment=staging` |
-| `OTEL_SEMCONV_STABILITY_OPT_IN` | `http` | `http` |
+| Biến | Local (`.env`) | Compose `dev` | Railway (`.railway.env`) |
+|---|---|---|---|
+| `OTEL_ENABLED` | `false` (mặc định) — `true` khi chạy collector | theo `.env` | `false` cho tới khi deploy collector, rồi `true` |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318` | `http://otel-collector:4318` (compose đè) | `http://otel-collector.railway.internal:4318` |
+| `OTEL_DEPLOYMENT_ENVIRONMENT` | `dev` | `dev` | `staging` |
+| `OTEL_METRIC_EXPORT_INTERVAL_MS` | `60000` (mặc định) | | |
 
-`OTEL_SEMCONV_STABILITY_OPT_IN=http` bật tên metric HTTP ổn định (`http.server.request.duration`, đơn vị giây) thay cho tên cũ.
+- Tên service đặt trong code: `ev-care-backend` (API), `ev-care-worker` (Celery). `service.version` = 12 ký tự đầu của `RAILWAY_GIT_COMMIT_SHA` (local: `dev`).
+- `APP_ENV=test` luôn tắt OTel (và LangSmith), bất kể `.env`.
+- Code tự đặt `OTEL_SEMCONV_STABILITY_OPT_IN=http`: tên metric HTTP ổn định (`http.server.request.duration`, đơn vị giây).
 
 ## Bước 5 — Kiểm tra kết nối
 
@@ -345,14 +352,142 @@ Thoát mã `0` = config hợp lệ.
 
 ## Bước 7 — Instrument backend & worker
 
-> ⏳ Thiết kế đích.
+### 7.1. Code
 
-- Gói: `opentelemetry-sdk`, `opentelemetry-exporter-otlp-proto-http` và các instrumentation `fastapi`, `sqlalchemy`, `psycopg`, `redis`, `httpx`, `celery`, `logging`.
-- Khởi tạo một lần lúc app/worker start (provider cho traces, metrics, logs), tắt hẳn khi `OTEL_SDK_DISABLED=true`.
-- Logs: gắn OTel `LoggingHandler` **sau** bước che PII của structlog ([pii.py](../../backend/src/infrastructure/logging/pii.py)); stdout giữ nguyên.
-- `trace_id` / `span_id` của OTel được đưa vào context structlog để log và trace khớp nhau.
-- LangSmith: bỏ dòng ép `LANGCHAIN_TRACING_V2=false` trong [orchestrator.py](../../backend/src/agents/orchestrator.py); gắn OTel `trace_id` vào metadata của run, và LangSmith run id vào span.
-- Metric nghiệp vụ: chỉ label có cardinality thấp (provider, model, kết quả guardrail).
+| File | Vai trò |
+|---|---|
+| [observability/telemetry.py](../../backend/src/infrastructure/observability/telemetry.py) | `setup_telemetry(service)`: TracerProvider + MeterProvider + LoggerProvider → OTLP/HTTP; instrument `httpx`, `requests`, `redis`, `celery`, `sqlalchemy` (engine có sẵn). `instrument_fastapi(app)`, `shutdown_telemetry()` |
+| [observability/log_handler.py](../../backend/src/infrastructure/observability/log_handler.py) | Handler OTLP: body = dòng JSON **đã che PII**; attribute chỉ giữ vị trí code + `exception.type` (bỏ extras / message exception thô) |
+| [observability/context.py](../../backend/src/infrastructure/observability/context.py) | `current_trace_ids()` — `trace_id` / `span_id` của span đang chạy |
+| [observability/langsmith.py](../../backend/src/infrastructure/observability/langsmith.py) | `configure_langsmith(settings)` — chép `LANGCHAIN_*` từ `Settings` vào `os.environ` (cả tiền tố `LANGSMITH_*`) |
+| [logging/config.py](../../backend/src/infrastructure/logging/config.py) | Processor `add_otel_trace_context` (gắn `trace_id`/`span_id` vào mọi dòng log); tham số `otel_logger_provider` thêm handler OTLP |
+| [correlation_id.py](../../backend/src/infrastructure/fastapi/middlewares/correlation_id.py) | `trace_id` của request = trace OTel (khi bật) |
+| [main.py](../../backend/src/main.py) | `configure_langsmith` → `setup_telemetry("ev-care-backend")` → `configure_logging(otel_logger_provider=...)` → `instrument_fastapi`; flush khi tắt |
+| [celery_tasks.py](../../backend/src/celery_tasks.py) | Log worker **luôn JSON** (file `logs/worker.*`); telemetry `ev-care-worker` khởi tạo sau fork (prefork) hoặc ở `worker_init` (solo / threads) |
+| [orchestrator.py](../../backend/src/agents/orchestrator.py) | Bỏ dòng ép tắt LangSmith; run có metadata `otel_trace_id`, `conversation_id` |
+
+Thư viện (pin cùng một dòng phát hành — SDK `1.45.0` ↔ instrumentation `0.66b0`, nâng cùng lúc): `opentelemetry-api`, `-sdk`, `-exporter-otlp-proto-http`, `-instrumentation-fastapi`, `-sqlalchemy`, `-redis`, `-httpx`, `-celery`, `-requests`, `-logging`. Có trong cả `pyproject.toml` / `uv.lock` (Docker) và `requirements.txt` (CI).
+
+### 7.2. Được gì
+
+| Tín hiệu | Nội dung |
+|---|---|
+| Traces | Span server cho mọi request (trừ `/health`, `/api/v1/health/*`), span con cho SQL, Redis, HTTP ra ngoài (OEM, LLM, Firebase), Celery publish → run. `traceparent` đến từ ngoài được nối tiếp |
+| Metrics | `http.server.request.duration` (histogram, theo `http.route`, method, status), `http.client.*`, `db.client.*` của SQLAlchemy… — xuất mỗi 60 giây |
+| Logs | Mọi dòng log (structlog + stdlib, uvicorn, celery) — body JSON đã che PII, kèm `trace_id` / `span_id` |
+| LangSmith | Run của agent có metadata `otel_trace_id` → dán vào Tempo để xem cả request |
+
+### 7.3. Chạy thử ở local
+
+```bash
+# 1. Hạ tầng + collector
+docker compose -f docker-compose.infra.yaml --profile observability up -d
+
+# 2. Backend (terminal) — bật OTel cho phiên này, hoặc đặt OTEL_ENABLED=true trong .env
+cd backend
+OTEL_ENABLED=true uv run uvicorn src.main:app --reload --port 8000 \
+  --loop src.agents.checkpoint:selector_loop_factory     # Windows: psycopg async cần SelectorEventLoop
+
+# 3. Worker (terminal khác). Windows: -B không chạy được, chạy beat riêng nếu cần
+OTEL_ENABLED=true uv run celery -A src.celery_tasks worker --loglevel=info --pool=solo
+```
+
+Kiểm tra:
+
+1. Log backend có `OpenTelemetry enabled: exporting to http://localhost:4318 (dev)`.
+2. Gọi vài API → `docker logs p146_otel_collector` có dòng `Traces` / `Logs` (ngay) và `Metrics` (sau ≤ 60 giây), không có `Exporting failed`.
+3. Dòng log backend / worker có `trace_id`, `span_id`; header `X-Request-ID` vẫn trả về như cũ.
+4. Grafana → Explore → Tempo: service `ev-care-backend`, `ev-care-worker`; Loki: `{service_name="ev-care-backend"}`.
+
+> Windows + Git Bash: thêm `PYTHONIOENCODING=utf-8` nếu chuyển stdout vào file (log tiếng Việt lỗi `cp1252`).
+
+### 7.4. Test
+
+[test_observability.py](../../backend/tests/test_infrastructure/test_observability.py) dùng exporter in-memory, không cần collector: span server có `http.route`, `/health` không bị trace, log / middleware / span cùng `trace_id`, `traceparent` được nối tiếp, log OTLP đã che PII, bật / tắt LangSmith, worker log JSON, regression "import orchestrator không ép tắt tracing".
+
+`tests/conftest.py` tắt LangSmith cho toàn bộ test (các module gọi `load_dotenv()` lúc import sẽ chép `LANGCHAIN_TRACING_V2=true` từ `.env`).
+
+## Bước 7b — Telemetry của AI agent (Grafana + LangSmith)
+
+Một điểm đo, hai nơi nhận ([tracing.py](../../backend/src/infrastructure/observability/tracing.py) — `step()`):
+
+| | LangSmith | Grafana |
+|---|---|---|
+| Trace | Cây đầy đủ **có nội dung**: prompt, câu trả lời, tham số tool, tài liệu RAG | Span **mỏng**: tên, thời gian, trạng thái, attribute ít giá trị — **không** nội dung |
+| Metric | Token, chi phí, độ trễ LLM, tỉ lệ lỗi agent (tab *Monitor*, tự tính từ run) | Tool, guardrail, RAG (bảng 7b.3) |
+| Log | — | Dòng `Agent turn finished` mỗi lượt, kèm `trace_id` |
+| Alert | — | Discord (Grafana Alerting) |
+| Liên kết | metadata `otel_trace_id` | attribute `langsmith.run_id`, `langsmith.trace_id` |
+
+### 7b.1. Cây trace của một lượt chat
+
+```text
+GRAFANA (Tempo)                                        LANGSMITH (project evcare-<env>)
+POST /api/v1/conversations/{id}/messages   (auto)
+└─ agent.turn  agent.outcome, agent.tools, ──────────  agent.turn  (root, 1 trace / lượt chat)
+   │           langsmith.run_id                         │  metadata: thread_id, otel_trace_id, outcome
+   ├─ agent.guard.input  guard.decision,                ├─ agent.guard.input   (message → report)
+   │                     guard.pii_types                └─ LangGraph
+   ├─ chat <model>  gen_ai.request.model, agent.node       ├─ ChatOpenRouter  [llm] prompt, token, chi phí
+   │   POST openrouter.ai/...  (httpx auto)                 ├─ agent.guard.tool_calls
+   ├─ agent.guard.tool_calls  guard.decision               ├─ <tool>  [tool] tham số, kết quả
+   ├─ execute_tool <tool>  tool.status                      │   └─ rag.query → rag.retrieve / rag.rerank [retriever]
+   │   ├─ SELECT ... (auto)                                 │                   chat <model> [llm] (rewrite / generate)
+   │   └─ rag.query  rag.outcome, rag.cache                 └─ ChatOpenRouter  [llm]
+   │       ├─ rag.retrieve  rag.hits
+   │       ├─ rag.rerank    rag.hits
+   │       └─ chat <model>  (rewrite / generate)
+   └─ ...
+```
+
+### 7b.2. Code
+
+| File | Vai trò |
+|---|---|
+| [observability/tracing.py](../../backend/src/infrastructure/observability/tracing.py) | `step(name, run_type, attributes, inputs, metadata, langsmith_run)` — span OTel + run LangSmith, tự liên kết hai chiều. `use_tracer_provider()` cho test |
+| [observability/metrics.py](../../backend/src/infrastructure/observability/metrics.py) | Metric agent cho Grafana (`get_agent_metrics()`); `use_meter_provider()` cho test |
+| [observability/agent_hooks.py](../../backend/src/infrastructure/observability/agent_hooks.py) | `agent_callbacks()` — callback LangChain tạo span `chat <model>` (không token); `instrument_tools()` — bọc thân tool: span `execute_tool <name>` + metric |
+| [observability/langsmith.py](../../backend/src/infrastructure/observability/langsmith.py) | Client LangSmith dùng chung (+ anonymizer khi `LANGCHAIN_REDACT_PII`); `jobs_project()` |
+| [llm/traced.py](../../backend/src/infrastructure/llm/traced.py) | `TracedLLMProvider` — LLM gọi ngoài LangChain (RAG rewrite / generate, review booking, follow-up): run `llm` có token trên LangSmith, span mỏng trên Grafana. Gắn trong [llm/dependency.py](../../backend/src/infrastructure/llm/dependency.py) |
+| [agents/telemetry.py](../../backend/src/agents/telemetry.py) | `TurnRecorder` (outcome, tool, log tổng kết), ghi nhận guard input / tool-call |
+| [agents/orchestrator.py](../../backend/src/agents/orchestrator.py) | `run_agent_turn` = root `agent.turn` bọc `_run_turn`; `agent.guard.input`; callback trong `_run_config` |
+| [agents/graph.py](../../backend/src/agents/graph.py) | `instrument_tools(bound_tools)`; `agent.guard.tool_calls`; `stream_usage=True` (token của lượt chat stream) |
+| [RAG/query/rag_pipeline.py](../../backend/src/agents/tools/RAG/query/rag_pipeline.py) | `rag.query` (outcome, cache), `rag.retrieve`, `rag.rerank` (run `retriever` hiện danh sách tài liệu) |
+| [celery_tasks.py](../../backend/src/celery_tasks.py) | Worker trace vào project `-jobs` (đặt ở `worker_init` / `worker_process_init`, không ảnh hưởng process API) |
+
+`agent.turn.outcome`: `answered` · `fallback` (RAG / agent trả `fallback_required`) · `error` (exception trong graph — người dùng vẫn nhận câu xin lỗi) · `cancelled` (client ngắt).
+
+### 7b.3. Metric agent trên Grafana
+
+| Metric | Loại | Label | Ý nghĩa |
+|---|---|---|---|
+| `evcare.agent.tool.calls` | Counter | `gen_ai.tool.name`, `tool.status` (`ok` / `empty` / `error` / `exception`) | Tool nào hay lỗi |
+| `evcare.agent.guardrail.decisions` | Counter | `guard.stage` (`input` / `tool_calls`), `guard.decision` (`pass` / `flag` / `modify`), `guard.reason` (`injection` / `pii` / `tool_call_rewrite` / `none`) | Guardrail chặn / sửa bao nhiêu |
+| `evcare.rag.queries` | Counter | `rag.outcome` (`answered` / `fallback` / `empty` / `out_of_scope` / `error`), `rag.cache` (`hit` / `miss`) | Tỉ lệ RAG không tìm thấy tài liệu |
+| `evcare.rag.stage.duration` | Histogram (s) | `rag.stage` (`retrieve` / `rerank`) | Độ trễ phần không phải LLM của RAG |
+
+Trên Prometheus, dấu `.` thành `_` và counter có hậu tố `_total`, vd `evcare_agent_tool_calls_total`. Token, chi phí, độ trễ LLM và tỉ lệ lỗi agent **không** có trên Grafana (quyết định #10) — xem LangSmith *Monitor*.
+
+### 7b.4. LangSmith — xem gì, cấu hình gì
+
+- **Threads**: metadata `thread_id = conversation_id` → gom các lượt của một cuộc hội thoại.
+- **Monitor** (trong project): số trace, tỉ lệ lỗi, p50 / p99 latency, token, chi phí theo thời gian.
+- **Chi phí**: LangSmith tính từ token × bảng giá model. Model OpenRouter (vd `google/gemini-2.5-flash`) có thể chưa có giá → *Settings → Model pricing* → thêm model + giá / 1M token.
+- **Project**: `evcare-<env>` chỉ có lượt chat; `evcare-<env>-jobs` cho Celery (summary, follow-up...).
+- **Anonymizer** (`LANGCHAIN_REDACT_PII=true`): email / SĐT trong mọi chuỗi thành `***` trước khi gửi (cùng luật với log). Biển số, tên **không** bị che.
+
+### 7b.5. Chạy thử ở local
+
+Bật collector + `OTEL_ENABLED=true` như 7.3, LangSmith bật trong `.env`. Gửi một tin nhắn chat, rồi:
+
+1. LangSmith → project `evcare-dev` → trace `agent.turn` mới: có `agent.guard.input`, LangGraph, model, tool; metadata `otel_trace_id`.
+2. Grafana → Explore → Tempo → TraceQL `{ trace:id = "<otel_trace_id>" }` (hoặc `{ name = "agent.turn" }`): span `agent.turn` có `agent.outcome`, `langsmith.run_id`.
+3. Prometheus: `sum by (gen_ai_tool_name, tool_status) (evcare_agent_tool_calls_total)` sau ≤ 60 giây.
+4. Loki: `{service_name="ev-care-backend"} |= "Agent turn finished"`.
+
+### 7b.6. Test
+
+[test_agent_observability.py](../../backend/tests/test_infrastructure/test_agent_observability.py) — exporter OTel in-memory + client LangSmith giả (không gọi mạng): `step` liên kết span ↔ run, lỗi đánh dấu hai phía, một lượt chat = một trace LangSmith (guard + graph nằm dưới root), lượt lỗi → `outcome=error`, span tool / metric / trạng thái, guard tool-call, span `chat <model>`, `TracedLLMProvider` (token chỉ ở LangSmith), RAG (cache, outcome, stage), anonymizer, project `-jobs`, regression `stream_usage`. Mọi test kiểm tra **không có email / biển số trong attribute span**.
 
 ## Bước 8 — Deploy lên Railway
 
@@ -368,20 +503,20 @@ Chi tiết từng bước: [RAILWAY_BACKEND_DEPLOYMENT.MD — Bước 5c](../dep
    - Job `deploy-backend`: `railway up` collector **trước** mock / backend / worker.
    - Trigger thêm path `infrastructure/observability/**`.
    - GitHub Environment `staging` có thể thêm variable `RAILWAY_COLLECTOR_SERVICE` (trống → `otel-collector`).
-7. Sau khi instrument app (bước 7): đặt `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector.railway.internal:4318` cho `backend`, `worker`.
+7. Bật app: trong `.railway.env` đặt `OTEL_ENABLED=true` (endpoint `http://otel-collector.railway.internal:4318` đã có sẵn) → `vars` → `deploy`.
 
 ---
 
 ## Bảo mật, PII & chi phí
 
 - **Secret**: token Grafana chỉ nằm ở service `otel-collector`. Không commit `.env`, `.railway.env`, `personal/`. Lộ key → revoke ngay (Grafana: *Access Policies*; LangSmith: *Settings → API Keys*).
-- **PII**: log đã qua `PiiRedactor` trước khi xuất. Collector xoá thêm header `Authorization`, `Cookie`. Prompt gửi LangSmith có thể chứa tên, SĐT, biển số → che theo [mask inputs/outputs](https://docs.langchain.com/langsmith/mask-inputs-outputs).
+- **PII**: log đã qua `PiiRedactor` trước khi xuất. Collector xoá thêm header `Authorization`, `Cookie`. Span agent trên Grafana **không** chứa nội dung (có test). Prompt gửi LangSmith: staging bật `LANGCHAIN_REDACT_PII` (email / SĐT bị che — [mask inputs/outputs](https://docs.langchain.com/langsmith/mask-inputs-outputs)); tên, biển số vẫn còn.
 - **Chi phí**:
 
   | Dịch vụ | Free tier | Rủi ro vượt |
   |---|---|---|
   | Grafana Cloud | 10k series, 50 GB logs/traces, 14 ngày | Label cardinality cao (user_id, URL thô) |
-  | LangSmith | 5k trace/tháng, 14 ngày | Eval/benchmark chạy nhiều → dùng project riêng |
+  | LangSmith | 5k trace/tháng, 14 ngày (1 lượt chat = 1 trace) | Job Celery / eval → project `-jobs` / project riêng |
   | Railway | Collector ~50–100 MB RAM | Không đáng kể |
 
   Theo dõi mức dùng: Grafana → **Administration → Cost management / Usage**; LangSmith → **Settings → Usage**.
@@ -395,13 +530,20 @@ Chi tiết từng bước: [RAILWAY_BACKEND_DEPLOYMENT.MD — Bước 5c](../dep
 | LangSmith `403` mọi call | Service Key thiếu workspace | Đặt `LANGCHAIN_WORKSPACE_ID` |
 | LangSmith `401/403` dù đúng key | Sai region | Endpoint phải khớp region giao diện (APAC → `apac.api.smith...`) |
 | Key LangSmith bắt đầu `llsv2_` | Copy thừa ký tự | Dán lại, key đúng bắt đầu `lsv2_sk_` |
-| Agent không có trace LangSmith | Code ép tắt tracing | Xem bước 7 |
+| Agent không có trace LangSmith | `LANGCHAIN_TRACING_V2` / `LANGCHAIN_API_KEY` trống, hoặc `APP_ENV=test` | Kiểm tra `.env`; LangSmith luôn tắt khi chạy test |
+| Backend không gửi gì tới collector | `OTEL_ENABLED` vẫn `false` | Đặt `true` (`.env` hoặc biến môi trường), khởi động lại |
+| Backend log `Exporting failed` / `Connection refused :4318` | Collector chưa chạy | `docker compose ... --profile observability up -d otel-collector`, hoặc tắt `OTEL_ENABLED` |
+| Windows: backend khởi động lỗi `PoolTimeout` / `ProactorEventLoop` | psycopg async không chạy trên ProactorEventLoop | Thêm `--loop src.agents.checkpoint:selector_loop_factory` cho uvicorn |
+| Windows: `-B option does not work on Windows` | Celery không cho chạy beat kèm worker trên Windows | Bỏ `-B`, chạy `celery -A src.celery_tasks beat` ở terminal riêng nếu cần |
 | Railway: app không gửi được tới collector | Collector nghe IPv4 / sai hostname | Nghe `[::]`; dùng `otel-collector.railway.internal` |
 | Collector log `Exporting failed` | Sai credential / endpoint Grafana | Kiểm tra `GRAFANA_CLOUD_*` trên service collector, chạy lại curl ở bước 5 |
 | Collector log `"otlphttp" alias is deprecated` | Config cũ | Exporter tên `otlp_http/...` (đã đổi) |
 | `validate` báo `unknown ... level` | `OTEL_DEBUG_VERBOSITY` sai giá trị | Chỉ `basic` / `normal` / `detailed` |
 | Git Bash: `unable to read the file file:C:/Program Files/Git/etc/...` | Git Bash đổi đường dẫn `/etc/...` | Thêm `MSYS_NO_PATHCONV=1` trước `docker run` |
 | Collector bị Railway restart liên tục | Vượt RAM / `memory_limiter` | Tăng `OTEL_MEMORY_LIMIT_MIB` và `GOMEMLIMIT` (≈80%) cùng lúc |
+| LangSmith: các bước của một lượt chat thành nhiều trace rời | Gọi graph ngoài `run_agent_turn` (script, eval) | Bình thường — chỉ `run_agent_turn` tạo root `agent.turn` |
+| LangSmith: lượt chat không có token / chi phí | Model stream không trả usage, hoặc chưa có giá model | `stream_usage=True` (đã bật cho OpenRouter / OpenAI); thêm giá ở *Settings → Model pricing* |
+| Log `Failed to detach context` khi lượt chat bị bỏ dở | Generator `run_agent_turn` bị đóng trong context khác (GC) | Luôn tiêu thụ bằng `async with aclosing(...)` như `ConversationService` |
 | Có trace nhưng không có metric | Cardinality vượt giới hạn hoặc chưa đợi đủ chu kỳ export (~60s) | Xem *Usage*; đợi 1–2 phút |
 
 ---

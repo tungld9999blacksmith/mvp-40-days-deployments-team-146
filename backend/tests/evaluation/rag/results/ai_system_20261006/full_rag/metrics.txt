@@ -1,0 +1,14 @@
+{
+  "evaluated_answers": 6,
+  "retrieval_success": 1.0,
+  "answer_correctness_heuristic": 0.5045,
+  "expected_keyword_coverage": 0.7222,
+  "faithfulness_heuristic": 0.8281,
+  "citation_validity": 1.0,
+  "average_latency_ms": 8192.7,
+  "p95_latency_ms": 12923.7,
+  "hallucination_rate_negative_cases": 0.0,
+  "hallucination_rate_general": "NOT MEASURED",
+  "negative_cases_passed": 4,
+  "negative_cases_total": 4
+}

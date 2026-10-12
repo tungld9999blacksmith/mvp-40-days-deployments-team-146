@@ -312,6 +312,9 @@ async def test_claim_blocks_other_worker_and_recovery_reuses_payload(setup):
     frozen = dict(outbox.payload)
     outbox.next_attempt_at = None
     outbox.claim_token, outbox.lease_until = "old-worker", now[0] + timedelta(seconds=60)
+    delivery = db.get(ReminderDelivery, outbox.delivery_id)
+    delivery.next_eligible_send_at = outbox.lease_until
+    db.add(delivery)
     db.add(outbox)
     db.commit()
     await reminder.remind(vehicle.id)

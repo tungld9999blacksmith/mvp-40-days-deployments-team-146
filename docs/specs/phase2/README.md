@@ -13,13 +13,19 @@
 ```text
 docs/specs/phase2/
 ├── README.md                  ← tài liệu này: quy ước, mục lục, tham số, thuật ngữ chung
-└── feature-functional/        ← Functional Specification (FF) cho 33 tính năng
-    ├── bk-01-phase2-spec.ff.md
-    ├── ...
-    └── pl-03-phase2-spec.ff.md
+├── booking/                   ← BK-01…10  Đặt lịch: tự lập lịch, huỷ / lỡ hẹn, widget lịch, bản đồ, định kỳ, danh sách chờ, báo trễ, tối ưu
+├── workshop-operations/       ← WS-01…03  Vận hành xưởng: tự nhận lịch, sức chứa, tài khoản KTV và phân công
+├── technician-assistant/      ← TA-01…02  Trợ lý cho KTV: tra cứu, nhắc việc, hỗ trợ tại khoang
+├── advisory-and-quotes/       ← AD-01…04  Tư vấn và báo giá: giá theo mốc, sửa chữa, bảo hành, phát sinh
+├── service-history/           ← HS-01…02  Lịch sử bảo dưỡng và gộp việc
+├── personalization/           ← PS-01…05  Cá nhân hoá: bộ nhớ agent, phản hồi, giải thích gợi ý, nhóm tương đồng, phong cách
+│   └── driving-habit/         ←           Nhắc theo mức sử dụng xe (contract P1–P3)
+├── chat-experience/           ← CH-01…02  Trải nghiệm chat: gợi ý một chạm, thẻ tương tác
+├── owner-workshop-chat/       ← MC-01…02  Chat chủ xe ↔ xưởng theo lịch hẹn, agent cùng tham gia
+└── platform/                  ← PL-01…03  Nền tảng: quyền riêng tư / đồng ý, chuyển người thật, chỉ số
 ```
 
-Thư mục `api/`, `entity/`, `frontend/`, `agent/` sẽ được thêm khi viết đặc tả kỹ thuật cho từng tính năng, theo template trong [docs/specs/templates](../templates).
+Mỗi thư mục gom **mọi tài liệu của một nhóm nghiệp vụ** (theo tiền tố mã tính năng). Mỗi tính năng có đủ 4 file cùng tiền tố, nằm cạnh nhau: `bk-01-phase2-spec.ff.md` (Functional), `.api.md`, `.entity.md`, `.fe.md`. Tra theo mã: tiền tố mã ⇒ thư mục ở bảng trên (hoặc cột *Spec* của mục lục). FF liên kết tới 3 file kỹ thuật ở đầu file, bảng Document Information và mục 26. AI-Agent Spec cho các agent mới (trợ lý xưởng TA-01, agent trong luồng MC-02) sẽ thêm vào `docs/specs/ai-agent/` khi làm kỹ thuật.
 
 ## 2. Quy ước
 
@@ -31,6 +37,10 @@ Thư mục `api/`, `entity/`, `frontend/`, `agent/` sẽ được thêm khi vi�
 | Quy tắc từ PRD | Giữ nguyên mã `BR-<mã>-xx` của PRD; spec có thể thêm quy tắc mới, đánh số tiếp | PRD có BR-BK01-01…10, spec thêm BR-BK01-11 |
 | Trạng thái tài liệu | `Draft` → `Review` → `Approved` | Toàn bộ đang `Draft` |
 | Quy tắc MVP được tham chiếu | Ghi mã gốc kèm spec gốc | us-029 BR-013 |
+| Mã trong spec kỹ thuật | `API-<mã>-NN`, `ENT-<mã>-NN`, `SVC-`/`HOOK-`/`JOB-`/`TOOL-<mã>-NN`, `BR-ENT-<mã>-NN` | `API-BK01-05`, `ENT-WS02-01`, `JOB-BK02-01` |
+| Định dạng spec kỹ thuật | Theo template nhưng rút gọn như spec sprint-4 (us-061): bảng API Group, Guards, xử lý từng endpoint, Error Cases, Test Checklist | [bk-01 API](booking/bk-01-phase2-spec.api.md) |
+| Route chủ xưởng | Spec ghi theo hiện trạng `/technician/*` (là chủ xưởng, DESIGN.md); app KTV mới (WS-03) dùng `/ktv/*`. Khi P2Q-01 chốt chuyển chủ xưởng sang `/workshop/*` thì đổi 1:1 | [ws-03 FE §2.1](workshop-operations/ws-03-phase2-spec.fe.md) |
+| Sự kiện chỉ số | Tên `snake_case` theo danh mục PL-03 (`product_event`) | `booking_intent_started`, `chip_clicked` |
 
 **Cấu trúc mỗi FF** theo [template FF](../templates/uk-xxx-sprint-x-spec.ff.md). Một số mục dùng chung được gom về README này để tránh lặp:
 - Stakeholder và người duyệt (mục 6).
@@ -41,41 +51,41 @@ Spec chỉ ghi thuật ngữ riêng của tính năng đó.
 
 ## 3. Mục lục
 
-| Giai đoạn | Mã | Tính năng | Loại | MoSCoW | Spec |
-| --- | --- | --- | --- | --- | --- |
-| P2-A | BK-01 | Tự động lập lịch theo ràng buộc của chủ xe | Chức năng | Must | [bk-01](feature-functional/bk-01-phase2-spec.ff.md) |
-| P2-A | BK-02 | Chính sách huỷ lịch và lỡ hẹn | Cải tiến MVP | Must | [bk-02](feature-functional/bk-02-phase2-spec.ff.md) |
-| P2-A | BK-03 | Bảo dưỡng sớm hoặc trễ so với mốc | Cải tiến MVP | Should | [bk-03](feature-functional/bk-03-phase2-spec.ff.md) |
-| P2-A | BK-04 | Widget lịch | Chức năng | Should | [bk-04](feature-functional/bk-04-phase2-spec.ff.md) |
-| P2-A | BK-05 | Bản đồ xưởng (Google Maps) | Chức năng | Should | [bk-05](feature-functional/bk-05-phase2-spec.ff.md) |
-| P2-A | HS-01 | Tra cứu lịch sử bảo dưỡng phía chủ xe | Chức năng | Must | [hs-01](feature-functional/hs-01-phase2-spec.ff.md) |
-| P2-A | PS-01 | Bộ nhớ ngắn hạn và dài hạn của agent | Cải tiến MVP | Should | [ps-01](feature-functional/ps-01-phase2-spec.ff.md) |
-| P2-A | CH-01 | Gợi ý một chạm | Chức năng | Must | [ch-01](feature-functional/ch-01-phase2-spec.ff.md) |
-| P2-A | CH-02 | Thẻ tương tác trong chat | Cải tiến MVP | Should | [ch-02](feature-functional/ch-02-phase2-spec.ff.md) |
-| P2-A | AD-01 | Giá bảo dưỡng theo mốc, tách phần bảo hành | Cải tiến MVP | Should | [ad-01](feature-functional/ad-01-phase2-spec.ff.md) |
-| P2-A | WS-01 | Tự nhận lịch hẹn có điều kiện | Cải tiến MVP | Must | [ws-01](feature-functional/ws-01-phase2-spec.ff.md) |
-| P2-A | WS-02 | Sức chứa theo thời lượng và hạn phản hồi | Cải tiến MVP | Should | [ws-02](feature-functional/ws-02-phase2-spec.ff.md) |
-| P2-A | PL-01 | Quyền riêng tư và sự đồng ý | Chức năng | Must | [pl-01](feature-functional/pl-01-phase2-spec.ff.md) |
-| P2-A | PL-03 | Chỉ số đo hiệu quả | Phi chức năng | Must | [pl-03](feature-functional/pl-03-phase2-spec.ff.md) |
-| P2-B | BK-06 | Lịch bảo dưỡng định kỳ tại xưởng quen | Chức năng | Should | [bk-06](feature-functional/bk-06-phase2-spec.ff.md) |
-| P2-B | BK-07 | Danh sách chờ | Chức năng | Could | [bk-07](feature-functional/bk-07-phase2-spec.ff.md) |
-| P2-B | BK-08 | Báo trễ chủ động hai chiều | Chức năng | Could | [bk-08](feature-functional/bk-08-phase2-spec.ff.md) |
-| P2-B | HS-02 | Gộp việc vào một lần đến xưởng | Chức năng | Could | [hs-02](feature-functional/hs-02-phase2-spec.ff.md) |
-| P2-B | PS-02 | Cá nhân hoá theo phản hồi dịch vụ | Chức năng | Should | [ps-02](feature-functional/ps-02-phase2-spec.ff.md) |
-| P2-B | PS-03 | Giải thích và phản hồi gợi ý | Cải tiến MVP | Should | [ps-03](feature-functional/ps-03-phase2-spec.ff.md) |
-| P2-B | AD-02 | Tư vấn phụ tùng và báo giá sửa chữa | Chức năng | Should | [ad-02](feature-functional/ad-02-phase2-spec.ff.md) |
-| P2-B | AD-03 | Tư vấn bảo hành và gói bảo hành | Chức năng | Should | [ad-03](feature-functional/ad-03-phase2-spec.ff.md) |
-| P2-B | AD-04 | Báo giá phát sinh khi thay phụ tùng | Chức năng | Should | [ad-04](feature-functional/ad-04-phase2-spec.ff.md) |
-| P2-B | WS-03 | Tài khoản kỹ thuật viên và tự phân công | Chức năng | Must | [ws-03](feature-functional/ws-03-phase2-spec.ff.md) |
-| P2-B | TA-01 | Trợ lý tra cứu và nhắc việc cho KTV | Chức năng | Should | [ta-01](feature-functional/ta-01-phase2-spec.ff.md) |
-| P2-B | PL-02 | Chuyển sang người thật | Chức năng | Should | [pl-02](feature-functional/pl-02-phase2-spec.ff.md) |
-| P2-C | BK-09 | Chọn xưởng theo phụ tùng sẵn có | Chức năng | Could | [bk-09](feature-functional/bk-09-phase2-spec.ff.md) |
-| P2-C | BK-10 | Tối ưu hoá lập lịch | Phi chức năng | Could | [bk-10](feature-functional/bk-10-phase2-spec.ff.md) |
-| P2-C | PS-04 | Gợi ý từ chủ xe có đặc điểm tương đồng | Chức năng | Could | [ps-04](feature-functional/ps-04-phase2-spec.ff.md) |
-| P2-C | PS-05 | Agent trả lời theo phong cách giao tiếp | Chức năng | Could | [ps-05](feature-functional/ps-05-phase2-spec.ff.md) |
-| P2-C | TA-02 | Hỗ trợ tại khoang làm việc | Chức năng | Could | [ta-02](feature-functional/ta-02-phase2-spec.ff.md) |
-| P2-C | MC-01 | Chat theo từng lịch hẹn giữa xưởng và chủ xe | Chức năng | Could | [mc-01](feature-functional/mc-01-phase2-spec.ff.md) |
-| P2-C | MC-02 | Agent cùng tham gia luồng chat | Chức năng | Could | [mc-02](feature-functional/mc-02-phase2-spec.ff.md) |
+| Giai đoạn | Mã | Tính năng | Loại | MoSCoW | Spec | API | Entity | Frontend |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P2-A | BK-01 | Tự động lập lịch theo ràng buộc của chủ xe | Chức năng | Must | [bk-01](booking/bk-01-phase2-spec.ff.md) | [api](booking/bk-01-phase2-spec.api.md) | [entity](booking/bk-01-phase2-spec.entity.md) | [fe](booking/bk-01-phase2-spec.fe.md) |
+| P2-A | BK-02 | Chính sách huỷ lịch và lỡ hẹn | Cải tiến MVP | Must | [bk-02](booking/bk-02-phase2-spec.ff.md) | [api](booking/bk-02-phase2-spec.api.md) | [entity](booking/bk-02-phase2-spec.entity.md) | [fe](booking/bk-02-phase2-spec.fe.md) |
+| P2-A | BK-03 | Bảo dưỡng sớm hoặc trễ so với mốc | Cải tiến MVP | Should | [bk-03](booking/bk-03-phase2-spec.ff.md) | [api](booking/bk-03-phase2-spec.api.md) | [entity](booking/bk-03-phase2-spec.entity.md) | [fe](booking/bk-03-phase2-spec.fe.md) |
+| P2-A | BK-04 | Widget lịch | Chức năng | Should | [bk-04](booking/bk-04-phase2-spec.ff.md) | [api](booking/bk-04-phase2-spec.api.md) | [entity](booking/bk-04-phase2-spec.entity.md) | [fe](booking/bk-04-phase2-spec.fe.md) |
+| P2-A | BK-05 | Bản đồ xưởng (Google Maps) | Chức năng | Should | [bk-05](booking/bk-05-phase2-spec.ff.md) | [api](booking/bk-05-phase2-spec.api.md) | [entity](booking/bk-05-phase2-spec.entity.md) | [fe](booking/bk-05-phase2-spec.fe.md) |
+| P2-A | HS-01 | Tra cứu lịch sử bảo dưỡng phía chủ xe | Chức năng | Must | [hs-01](service-history/hs-01-phase2-spec.ff.md) | [api](service-history/hs-01-phase2-spec.api.md) | [entity](service-history/hs-01-phase2-spec.entity.md) | [fe](service-history/hs-01-phase2-spec.fe.md) |
+| P2-A | PS-01 | Bộ nhớ ngắn hạn và dài hạn của agent | Cải tiến MVP | Should | [ps-01](personalization/ps-01-phase2-spec.ff.md) | [api](personalization/ps-01-phase2-spec.api.md) | [entity](personalization/ps-01-phase2-spec.entity.md) | [fe](personalization/ps-01-phase2-spec.fe.md) |
+| P2-A | CH-01 | Gợi ý một chạm | Chức năng | Must | [ch-01](chat-experience/ch-01-phase2-spec.ff.md) | [api](chat-experience/ch-01-phase2-spec.api.md) | [entity](chat-experience/ch-01-phase2-spec.entity.md) | [fe](chat-experience/ch-01-phase2-spec.fe.md) |
+| P2-A | CH-02 | Thẻ tương tác trong chat | Cải tiến MVP | Should | [ch-02](chat-experience/ch-02-phase2-spec.ff.md) | [api](chat-experience/ch-02-phase2-spec.api.md) | [entity](chat-experience/ch-02-phase2-spec.entity.md) | [fe](chat-experience/ch-02-phase2-spec.fe.md) |
+| P2-A | AD-01 | Giá bảo dưỡng theo mốc, tách phần bảo hành | Cải tiến MVP | Should | [ad-01](advisory-and-quotes/ad-01-phase2-spec.ff.md) | [api](advisory-and-quotes/ad-01-phase2-spec.api.md) | [entity](advisory-and-quotes/ad-01-phase2-spec.entity.md) | [fe](advisory-and-quotes/ad-01-phase2-spec.fe.md) |
+| P2-A | WS-01 | Tự nhận lịch hẹn có điều kiện | Cải tiến MVP | Must | [ws-01](workshop-operations/ws-01-phase2-spec.ff.md) | [api](workshop-operations/ws-01-phase2-spec.api.md) | [entity](workshop-operations/ws-01-phase2-spec.entity.md) | [fe](workshop-operations/ws-01-phase2-spec.fe.md) |
+| P2-A | WS-02 | Sức chứa theo thời lượng và hạn phản hồi | Cải tiến MVP | Should | [ws-02](workshop-operations/ws-02-phase2-spec.ff.md) | [api](workshop-operations/ws-02-phase2-spec.api.md) | [entity](workshop-operations/ws-02-phase2-spec.entity.md) | [fe](workshop-operations/ws-02-phase2-spec.fe.md) |
+| P2-A | PL-01 | Quyền riêng tư và sự đồng ý | Chức năng | Must | [pl-01](platform/pl-01-phase2-spec.ff.md) | [api](platform/pl-01-phase2-spec.api.md) | [entity](platform/pl-01-phase2-spec.entity.md) | [fe](platform/pl-01-phase2-spec.fe.md) |
+| P2-A | PL-03 | Chỉ số đo hiệu quả | Phi chức năng | Must | [pl-03](platform/pl-03-phase2-spec.ff.md) | [api](platform/pl-03-phase2-spec.api.md) | [entity](platform/pl-03-phase2-spec.entity.md) | [fe](platform/pl-03-phase2-spec.fe.md) |
+| P2-B | BK-06 | Lịch bảo dưỡng định kỳ tại xưởng quen | Chức năng | Should | [bk-06](booking/bk-06-phase2-spec.ff.md) | [api](booking/bk-06-phase2-spec.api.md) | [entity](booking/bk-06-phase2-spec.entity.md) | [fe](booking/bk-06-phase2-spec.fe.md) |
+| P2-B | BK-07 | Danh sách chờ | Chức năng | Could | [bk-07](booking/bk-07-phase2-spec.ff.md) | [api](booking/bk-07-phase2-spec.api.md) | [entity](booking/bk-07-phase2-spec.entity.md) | [fe](booking/bk-07-phase2-spec.fe.md) |
+| P2-B | BK-08 | Báo trễ chủ động hai chiều | Chức năng | Could | [bk-08](booking/bk-08-phase2-spec.ff.md) | [api](booking/bk-08-phase2-spec.api.md) | [entity](booking/bk-08-phase2-spec.entity.md) | [fe](booking/bk-08-phase2-spec.fe.md) |
+| P2-B | HS-02 | Gộp việc vào một lần đến xưởng | Chức năng | Could | [hs-02](service-history/hs-02-phase2-spec.ff.md) | [api](service-history/hs-02-phase2-spec.api.md) | [entity](service-history/hs-02-phase2-spec.entity.md) | [fe](service-history/hs-02-phase2-spec.fe.md) |
+| P2-B | PS-02 | Cá nhân hoá theo phản hồi dịch vụ | Chức năng | Should | [ps-02](personalization/ps-02-phase2-spec.ff.md) | [api](personalization/ps-02-phase2-spec.api.md) | [entity](personalization/ps-02-phase2-spec.entity.md) | [fe](personalization/ps-02-phase2-spec.fe.md) |
+| P2-B | PS-03 | Giải thích và phản hồi gợi ý | Cải tiến MVP | Should | [ps-03](personalization/ps-03-phase2-spec.ff.md) | [api](personalization/ps-03-phase2-spec.api.md) | [entity](personalization/ps-03-phase2-spec.entity.md) | [fe](personalization/ps-03-phase2-spec.fe.md) |
+| P2-B | AD-02 | Tư vấn phụ tùng và báo giá sửa chữa | Chức năng | Should | [ad-02](advisory-and-quotes/ad-02-phase2-spec.ff.md) | [api](advisory-and-quotes/ad-02-phase2-spec.api.md) | [entity](advisory-and-quotes/ad-02-phase2-spec.entity.md) | [fe](advisory-and-quotes/ad-02-phase2-spec.fe.md) |
+| P2-B | AD-03 | Tư vấn bảo hành và gói bảo hành | Chức năng | Should | [ad-03](advisory-and-quotes/ad-03-phase2-spec.ff.md) | [api](advisory-and-quotes/ad-03-phase2-spec.api.md) | [entity](advisory-and-quotes/ad-03-phase2-spec.entity.md) | [fe](advisory-and-quotes/ad-03-phase2-spec.fe.md) |
+| P2-B | AD-04 | Báo giá phát sinh khi thay phụ tùng | Chức năng | Should | [ad-04](advisory-and-quotes/ad-04-phase2-spec.ff.md) | [api](advisory-and-quotes/ad-04-phase2-spec.api.md) | [entity](advisory-and-quotes/ad-04-phase2-spec.entity.md) | [fe](advisory-and-quotes/ad-04-phase2-spec.fe.md) |
+| P2-B | WS-03 | Tài khoản kỹ thuật viên và tự phân công | Chức năng | Must | [ws-03](workshop-operations/ws-03-phase2-spec.ff.md) | [api](workshop-operations/ws-03-phase2-spec.api.md) | [entity](workshop-operations/ws-03-phase2-spec.entity.md) | [fe](workshop-operations/ws-03-phase2-spec.fe.md) |
+| P2-B | TA-01 | Trợ lý tra cứu và nhắc việc cho KTV | Chức năng | Should | [ta-01](technician-assistant/ta-01-phase2-spec.ff.md) | [api](technician-assistant/ta-01-phase2-spec.api.md) | [entity](technician-assistant/ta-01-phase2-spec.entity.md) | [fe](technician-assistant/ta-01-phase2-spec.fe.md) |
+| P2-B | PL-02 | Chuyển sang người thật | Chức năng | Should | [pl-02](platform/pl-02-phase2-spec.ff.md) | [api](platform/pl-02-phase2-spec.api.md) | [entity](platform/pl-02-phase2-spec.entity.md) | [fe](platform/pl-02-phase2-spec.fe.md) |
+| P2-C | BK-09 | Chọn xưởng theo phụ tùng sẵn có | Chức năng | Could | [bk-09](booking/bk-09-phase2-spec.ff.md) | [api](booking/bk-09-phase2-spec.api.md) | [entity](booking/bk-09-phase2-spec.entity.md) | [fe](booking/bk-09-phase2-spec.fe.md) |
+| P2-C | BK-10 | Tối ưu hoá lập lịch | Phi chức năng | Could | [bk-10](booking/bk-10-phase2-spec.ff.md) | [api](booking/bk-10-phase2-spec.api.md) | [entity](booking/bk-10-phase2-spec.entity.md) | [fe](booking/bk-10-phase2-spec.fe.md) |
+| P2-C | PS-04 | Gợi ý từ chủ xe có đặc điểm tương đồng | Chức năng | Could | [ps-04](personalization/ps-04-phase2-spec.ff.md) | [api](personalization/ps-04-phase2-spec.api.md) | [entity](personalization/ps-04-phase2-spec.entity.md) | [fe](personalization/ps-04-phase2-spec.fe.md) |
+| P2-C | PS-05 | Agent trả lời theo phong cách giao tiếp | Chức năng | Could | [ps-05](personalization/ps-05-phase2-spec.ff.md) | [api](personalization/ps-05-phase2-spec.api.md) | [entity](personalization/ps-05-phase2-spec.entity.md) | [fe](personalization/ps-05-phase2-spec.fe.md) |
+| P2-C | TA-02 | Hỗ trợ tại khoang làm việc | Chức năng | Could | [ta-02](technician-assistant/ta-02-phase2-spec.ff.md) | [api](technician-assistant/ta-02-phase2-spec.api.md) | [entity](technician-assistant/ta-02-phase2-spec.entity.md) | [fe](technician-assistant/ta-02-phase2-spec.fe.md) |
+| P2-C | MC-01 | Chat theo từng lịch hẹn giữa xưởng và chủ xe | Chức năng | Could | [mc-01](owner-workshop-chat/mc-01-phase2-spec.ff.md) | [api](owner-workshop-chat/mc-01-phase2-spec.api.md) | [entity](owner-workshop-chat/mc-01-phase2-spec.entity.md) | [fe](owner-workshop-chat/mc-01-phase2-spec.fe.md) |
+| P2-C | MC-02 | Agent cùng tham gia luồng chat | Chức năng | Could | [mc-02](owner-workshop-chat/mc-02-phase2-spec.ff.md) | [api](owner-workshop-chat/mc-02-phase2-spec.api.md) | [entity](owner-workshop-chat/mc-02-phase2-spec.entity.md) | [fe](owner-workshop-chat/mc-02-phase2-spec.fe.md) |
 
 ## 4. Phụ thuộc giữa các tính năng
 
@@ -153,6 +163,26 @@ Mọi ngưỡng nghiệp vụ là tham số cấu hình, không viết cứng tr
 | `HANDOFF_NO_SOURCE_RETRY` | 2 | Số lần không có nguồn trước khi chuyển người | PL-02 | — |
 | `DELETE_SLA_HOURS` | 24 | Thời hạn xoá dữ liệu theo yêu cầu | PL-01 | P2Q-11 |
 
+### 5.1 Tham số kỹ thuật bổ sung (từ spec API / Entity)
+
+Các tham số dưới đây do spec kỹ thuật đặt thêm; cũng là cấu hình, không viết cứng.
+
+| Tham số | Mặc định đề xuất | Ý nghĩa | Spec |
+| --- | --- | --- | --- |
+| `SCHEDULER_OPTION_TTL_MIN` | 5 | Hạn của một phương án chưa giữ chỗ (kiểm lại khi chọn) | BK-01 |
+| `SCHEDULER_TIMEOUT_MS` | 1.800 | Ngân sách thời gian một lần chạy bộ lập lịch | BK-01 |
+| `SCHEDULER_WEIGHTS` | yêu thích 40, khoảng cách 25, giờ quen 20, đánh giá 10, tin cậy xưởng 5, hài lòng trước đây 10, phụ tùng 15, nhóm 25/5 | Trọng số chấm điểm (Q-BK01-01) | BK-01, PS-02, PS-04, BK-09 |
+| `SCHEDULER_DAY_PARTS` | sáng 08–12, chiều 12–17, tối 17–20 | Buổi trong ngày | BK-01, CH-01 |
+| `PROACTIVE_HOLD_MAX_PCT` | 30% | Tỉ lệ tối đa chỗ giữ chủ động mỗi xưởng mỗi ngày (Q-BK01-03) | BK-01 |
+| `OFF_PEAK_FILL_PCT` | 50% | Ngưỡng "giờ thấp điểm" cho bậc Giới hạn | BK-01, BK-02 |
+| `CONSENT_DEFAULTS` | theo PL-01 entity §4 | Mặc định các đồng ý (P2Q-11) | PL-01 |
+| `PRIVACY_POLICY_VERSION` | — | Phiên bản văn bản giải thích đồng ý | PL-01 |
+| `RELIABILITY_TIERS` | 1 / 2 / 3 | Ngưỡng bậc tin cậy | BK-02 |
+| `PL03_HASH_SALT` | bí mật | Muối băm định danh trong sự kiện | PL-03 |
+| `MAPS_MONTHLY_BUDGET_USD`, `MAPS_ROUTES_PER_USER_DAY`, `MAPS_LOADS_PER_USER_DAY` | chờ P2Q-07, 60, 30 | Ngân sách và giới hạn Google Maps | BK-05 |
+| `TA_STAGE_MAX_MIN` | theo bước | Thời lượng chuẩn của từng bước tiến độ để nhắc KTV | TA-01 |
+| `OPTIMIZER_DEFAULT_WEIGHTS` | đặt sau baseline M-09, M-10 | Trọng số T₁…T₅ mặc định | BK-10 |
+
 ## 6. Stakeholder và người duyệt (chung)
 
 | Stakeholder | Vai trò |
@@ -194,3 +224,20 @@ Mỗi spec có mục **Approval** riêng để ghi trạng thái duyệt của t
 ## 8. Trạng thái lịch hẹn (nhắc lại từ MVP)
 
 Phase 2 **không thêm** trạng thái mới cho `booking`: `pending`, `confirmed`, `checked_in`, `in_progress`, `completed`, `cancelled`. Các khái niệm mới (giữ chỗ chủ động, lỡ hẹn, báo trễ, phát sinh) được ghi bằng thuộc tính hoặc thực thể riêng, mô tả trong từng spec.
+
+## 9. Quyết định kỹ thuật cần PO xác nhận
+
+Khi viết spec API / Entity / Frontend, một số điểm được chọn khác gợi ý trong FF hoặc cần chốt thêm. Mỗi điểm có ghi chú trong spec tương ứng. Cột *Trạng thái*: **Đã chốt** (PO quyết định, spec và FF đã sửa theo), **Chờ** (spec đang dùng phương án đề xuất) hoặc **Pending** (PO đang xem xét, chưa triển khai phần đó).
+
+| # | Điểm | Spec đã chọn | Trạng thái | Ở đâu |
+| --- | --- | --- | --- | --- |
+| 1 | Bảng đồng ý: FF đặt tên `user_consent`, trùng bảng MVP (ENT-006) | Dùng `data_consent` / `data_consent_log` | **Đã chốt** 2026-10-12 | [pl-01 entity](platform/pl-01-phase2-spec.entity.md) |
+| 2 | Bộ nhớ agent: FF gợi ý bảng `agent_memory` mới | Mở rộng bảng MVP `agent_user_memory` | **Đã chốt** 2026-10-12 | [ps-01 entity](personalization/ps-01-phase2-spec.entity.md) |
+| 3 | Báo giá phát sinh: FF ghi `quote` loại `extra` (F5b) | Xây trên `booking_line` (báo giá hai tầng đã duyệt) + bảng nhóm `extra_quote` | **Đã chốt** 2026-10-12 | [ad-04 entity](advisory-and-quotes/ad-04-phase2-spec.entity.md) |
+| 4 | Xưởng đã ẩn: FF gợi ý `owner_hidden_workshop` | Dùng ràng buộc `EXCLUDED_WORKSHOP` của hồ sơ BK-01 | Chờ | [ps-02 entity](personalization/ps-02-phase2-spec.entity.md) |
+| 5 | Vai trò KTV thứ ba (DESIGN.md đang ghi "đúng hai vai trò") | Có vai trò KTV. Tài khoản do **xưởng tạo** (tên đăng nhập + mật khẩu tạm), xưởng là quản trị viên; KTV **đổi mật khẩu lần đầu**; quên mật khẩu ⇒ chủ xưởng đặt lại. App KTV ở `/ktv/*`. Còn chờ: P2Q-01 (route chủ xưởng) và sửa mục *Roles* của DESIGN.md | **Đã chốt** 2026-10-12 (vai trò + cách tạo tài khoản) | [ws-03 FF](workshop-operations/ws-03-phase2-spec.ff.md) · [API §3–4](workshop-operations/ws-03-phase2-spec.api.md) · [FE](workshop-operations/ws-03-phase2-spec.fe.md) |
+| 6 | KTV nghỉ đột xuất: BR-WS03-05 (tự xử lý) khác WS-02 EF-03 (chỉ cảnh báo) | Phân lại cho KTV khác; lịch không còn người làm ⇒ **báo chủ xe + đề xuất xưởng phù hợp / tương tự** (BK-01 `API-BK01-09`, `source = TECHNICIAN_ABSENCE`). WS-02 giảm số thợ thủ công vẫn chỉ cảnh báo | **Đã chốt** 2026-10-12 | [ws-03 API §5](workshop-operations/ws-03-phase2-spec.api.md) · [bk-01 API §7](booking/bk-01-phase2-spec.api.md) |
+| 7 | Font số liệu: CH-02 FF ghi JetBrains Mono | Theo DESIGN.md (Inter `tnum`, `font-mono`) | **Đã chốt** 2026-10-12 | [ch-02 FE](chat-experience/ch-02-phase2-spec.fe.md) |
+| 8 | Realtime chat người–người (P2Q-12, ADR-02) | Giữ nguyên công nghệ chat MVP: Postgres + Redis pub/sub + WebSocket | **Đã chốt** 2026-10-12 | [mc-01 entity](owner-workshop-chat/mc-01-phase2-spec.entity.md) |
+| 9 | Giọng nói TA-02 dùng nhận dạng của trình duyệt (có thể gửi âm thanh tới dịch vụ của trình duyệt) | Web Speech API + thông báo lần đầu; cần duyệt quyền riêng tư | **Pending** — PO xem xét công nghệ và tính khả thi (Q-TA02-02); chưa triển khai giọng nói | [ta-02 FE §2.3](technician-assistant/ta-02-phase2-spec.fe.md) |
+| 10 | Checklist TA-02: cho chủ xưởng ghi đè khi còn mục bắt buộc? | Mặc định không cho | Chờ | [ta-02 API §5](technician-assistant/ta-02-phase2-spec.api.md) |

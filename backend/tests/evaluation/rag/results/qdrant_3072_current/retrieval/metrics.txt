@@ -1,0 +1,39 @@
+=================================================================
+  RAG EVALUATION METRICS REPORT
+=================================================================
+  Total queries    : 100
+
+  RETRIEVAL QUALITY
+  Hit Rate @1      : 79.0%
+  Hit Rate @3      : 97.0%
+  Hit Rate @5      : 97.0%
+  MRR              : 0.8717
+  Avg Top Score    : 0.8531
+  Score Pass Rate  : 99.0%
+
+  ANSWER-READINESS (RETRIEVAL PROXY)
+  Source correctness: 97.0%
+  Evidence coverage : 82.4%
+  Context precision : 61.2%
+  Context recall    : 81.4%
+  Coverage Pass Rate: 84.0%
+  Grounded Pass Rate: 82.0%
+  Answer relevancy  : N/A (retrieval-only run)
+  Citation correctness: N/A (retrieval-only run)
+
+  LATENCY
+  Avg Latency      : 759.8ms
+  P95 Latency      : 1013.4ms
+
+  PER-CATEGORY BREAKDOWN
+  Category       Pass/Total    Pass%   AvgScore   Hit@3
+  -------------- ------------ ------  ---------  ------
+  battery        16/20           80.0%     0.8905  100.0%  ✅
+  general        3/4            75.0%     0.9735  100.0%  ✅
+  maintenance    20/26           76.9%     0.8206   92.3%  ✅
+  pricing        15/16           93.8%     0.8483   93.8%  ✅
+  procedure      10/14           71.4%     0.8076  100.0%  ✅
+  warranty       18/20           90.0%     0.8694  100.0%  ✅
+
+  ✅  Đánh giá: RAG hoạt động TỐT
+=================================================================

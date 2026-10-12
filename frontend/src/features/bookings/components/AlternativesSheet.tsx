@@ -36,7 +36,7 @@ export default function AlternativesSheet({
               <button
                 type="button"
                 onClick={() => onPick(alternative)}
-                className="w-full text-left rounded-xl border border-border bg-card px-4 py-3 flex items-center gap-3 hover:bg-card-hover hover:border-emerald/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald/40"
+                className="w-full text-left rounded-xl border border-border bg-card px-4 py-3 flex items-center gap-3 hover:bg-card-hover hover:border-emerald/40 transition-colors"
               >
                 <span className="flex-1 min-w-0">
                   <span className="block text-sm font-semibold text-foreground truncate">{alternative.name}</span>

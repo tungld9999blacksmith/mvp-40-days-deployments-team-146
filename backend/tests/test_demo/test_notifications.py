@@ -440,9 +440,19 @@ def test_agent_http_sse_settings_context_replay_and_ownership_without_external_l
         run(services)
         foreign_rid = next(r["id"] for r in services.store.reminders.values() if r["uid"] == "bob")
         model.script["foreign"] = ("get_reminder_context", {"reminder_id": foreign_rid})
-        send("foreign", "foreign-1", "get_reminder_context")
-        assert model.outputs[-1]["status"] == "error" and model.outputs[-1]["code"] == "REMINDER_NOT_FOUND"
-        assert model.outputs[-1]["data"] == {}
+        outputs_before = len(model.outputs)
+        reply = send("foreign", "foreign-1", "get_reminder_context")
+        # A failed tool ends the turn with a fixed reply (guardrails.tool_failure): the
+        # model never sees the result, so nothing about Bob's reminder can reach it.
+        assert len(model.outputs) == outputs_before
+        completed = reply.split("event: message.completed\ndata: ", 1)[1].split("\n", 1)[0]
+        answer = json.loads(completed)["message"]["content"]
+        assert "Chưa có kết quả thành công" in answer and foreign_rid not in reply and "bob" not in reply
+        tools = {tool.name: tool for tool in build_tools(services)}
+        config = {"configurable": {"ctx": AgentCtx(user["userId"], vehicle["userVehicleId"], cid)}}
+        foreign = json.loads(asyncio.run(tools["get_reminder_context"].ainvoke({"reminder_id": foreign_rid}, config)))
+        assert foreign["status"] == "error" and foreign["code"] == "REMINDER_NOT_FOUND"
+        assert foreign["data"] == {}
 
         send("disable", "disable-1", "update_reminder_settings")
         state = client.get("/api/v1/notification-settings", headers=headers).json()["data"]

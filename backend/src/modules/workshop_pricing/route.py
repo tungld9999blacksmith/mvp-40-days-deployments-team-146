@@ -6,19 +6,36 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Path, Query
+from fastapi.concurrency import run_in_threadpool
 from sqlmodel import Session
 
-from src.infrastructure.supabase.db import get_session
+from src.infrastructure.supabase.db import end_read_transaction, get_session
+from src.modules.vehicle_owner_onboarding.dependency import get_oem_gateway
+from src.modules.vehicle_owner_onboarding.ports import OemVehicleGateway
 from src.modules.workshop_board.dependency import OwnerWorkshop, get_owner_workshop
 
 from . import schemas
+from .catalog import catalog_names
 from .service import WorkshopPricingService
 
 router = APIRouter(prefix="/workshop-owner/price-list", tags=["workshop-pricing"])
 
 
-def get_pricing_service(session: Annotated[Session, Depends(get_session)]) -> WorkshopPricingService:
-    return WorkshopPricingService(session)
+async def get_catalog_names(
+    gateway: Annotated[OemVehicleGateway, Depends(get_oem_gateway)],
+    session: Annotated[Session, Depends(get_session)],
+) -> dict[str, str]:
+    # The owner guard has already read the DB; do not wait on the manufacturer (up to
+    # TIMEOUT_SECONDS) with that connection "idle in transaction" (see end_read_transaction).
+    await run_in_threadpool(end_read_transaction, session)
+    return await catalog_names(gateway)
+
+
+def get_pricing_service(
+    session: Annotated[Session, Depends(get_session)],
+    names: Annotated[dict[str, str], Depends(get_catalog_names)],
+) -> WorkshopPricingService:
+    return WorkshopPricingService(session, catalog_names=names)
 
 
 Scope = Annotated[OwnerWorkshop, Depends(get_owner_workshop)]

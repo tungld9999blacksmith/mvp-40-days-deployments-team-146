@@ -99,7 +99,7 @@ export default function BookingSlots() {
   if (!workshopId) return <Navigate to={`/booking/workshops${searchFor({})}`} replace />
 
   return (
-    <div className="max-w-3xl space-y-5">
+    <div className="max-w-3xl xl:max-w-none space-y-5">
       <Card>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">

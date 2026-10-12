@@ -15,7 +15,7 @@ export function reminderActions(context: ReminderContext) {
   const booked = context.hasCurrentBooking ?? (context.resolutionReason === 'HAS_BOOKING' && current?.odoMilestoneKm === context.odoMilestoneKm)
   return {
     booking: current && !booked
-      ? `/booking?${new URLSearchParams({ ...vehicle, odoMilestone: String(current.odoMilestoneKm) })}`
+      ? `/booking?${new URLSearchParams({ ...vehicle, odoMilestone: String(current.odoMilestoneKm), ...(current.odoMilestoneKm === context.odoMilestoneKm ? { sourceReminderId: context.reminderId } : {}) })}`
       : null,
     chat: `/ai/new?${new URLSearchParams({ ...vehicle, q: `Hãy giải thích lời nhắc bảo dưỡng ${context.reminderId} và tình trạng hiện tại của xe tôi.` })}`,
   }

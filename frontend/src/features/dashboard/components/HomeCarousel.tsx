@@ -1,16 +1,18 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Bot, CalendarClock, CalendarPlus, ChevronRight, Wrench } from 'lucide-react'
+import { Bot, CalendarCheck2, CalendarClock, CalendarPlus, ChevronRight, Wrench } from 'lucide-react'
 import Carousel, { type CarouselSlide } from '@/shared/ui/Carousel'
 import { cn } from '@/shared/ui/cn'
 import { formatLicensePlate, formatNumber } from '@/shared/utils/format'
 import { useUpcomingBookings } from '@/features/bookings/hooks/useUpcomingBookings'
+import { bookingsOfVehicle } from '@/features/bookings/utils'
 import { ASK_AI_QUESTION } from '@/features/vehicles/components/MaintenanceStatusCard'
 import { QUICK_BOOKING_ENTRY_PATH } from '@/features/assistant/quickBooking/entry'
-import { useMaintenanceStatus, useVehicles } from '@/features/vehicles/hooks/useVehicleQueries'
+import { useMaintenanceStatus } from '@/features/vehicles/hooks/useVehicleQueries'
+import { useCurrentVehicle } from '@/features/vehicles/currentVehicle/CurrentVehicleContext'
 import type { MaintenanceStatus, VehicleSummary } from '@/features/vehicles/types'
 import { milestoneTitle, remainingParts } from '@/features/vehicles/utils/maintenanceFormat'
-import { homeSlideKinds } from './homeSlides'
+import { homeSlideKinds, maintenanceSlideAction } from './homeSlides'
 
 const DUE_TAG: Record<string, string> = {
   NORMAL: 'Đúng hạn',
@@ -18,7 +20,7 @@ const DUE_TAG: Record<string, string> = {
   OVERDUE: 'Quá hạn',
 }
 
-const ASSISTANT_QUESTIONS = [ASK_AI_QUESTION, 'Hạng mục nào được bảo hành miễn phí?', 'Chính sách bảo hành pin thế nào?']
+const ASSISTANT_QUESTIONS = [ASK_AI_QUESTION, 'Gợi ý gói bảo dưỡng tối ưu cho xe của tôi', 'Chính sách bảo hành pin thế nào?']
 
 const PRIMARY = 'bg-banner-accent text-banner-on-accent hover:brightness-110'
 const GHOST = 'border border-banner-foreground/40 text-banner-foreground hover:bg-banner-foreground/10'
@@ -56,6 +58,7 @@ function SlideText({ title, body }: { title: ReactNode; body: string }) {
 interface Readout {
   label: string
   value: string
+  unit: string
   alert: boolean
 }
 
@@ -66,10 +69,10 @@ function readouts(status: MaintenanceStatus): Readout[] {
   const dayAlert = alerting && (status.dueReason === 'TIME' || status.dueReason === 'BOTH')
   const cells: Readout[] = []
   const { remainingKm: km, remainingDays: days } = status
-  if (km !== null) cells.push({ label: km >= 0 ? 'Còn lại' : 'Quá mốc', value: `${formatNumber(Math.abs(km))} km`, alert: kmAlert })
-  if (days !== null) cells.push({ label: days >= 0 ? 'Thời gian' : 'Quá hạn', value: `${formatNumber(Math.abs(days))} ngày`, alert: dayAlert })
+  if (km !== null) cells.push({ label: km >= 0 ? 'Còn lại' : 'Quá mốc', value: formatNumber(Math.abs(km)), unit: 'km', alert: kmAlert })
+  if (days !== null) cells.push({ label: days >= 0 ? 'Thời gian' : 'Quá hạn', value: formatNumber(Math.abs(days)), unit: 'ngày', alert: dayAlert })
   if (cells.length < 2 && status.nextMilestone) {
-    cells.push({ label: 'Mốc', value: `${formatNumber(status.nextMilestone.odoMilestoneKm)} km`, alert: false })
+    cells.push({ label: 'Mốc', value: formatNumber(status.nextMilestone.odoMilestoneKm), unit: 'km', alert: false })
   }
   return cells
 }
@@ -81,14 +84,19 @@ function ReadoutGrid({ cells }: { cells: Readout[] }) {
       {cells.slice(0, 2).map((cell, i) => (
         <div key={cell.label} className={cn('px-4 py-3', i > 0 && 'border-l border-banner-border')}>
           <p className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-banner-muted">{cell.label}</p>
-          <p className={cn('mt-1 font-plate text-[2.15rem] font-bold leading-none', cell.alert && 'text-amber-400')}>{cell.value}</p>
+          {/* Same scale as the VehicleHero readouts: Inter is wider than a condensed face, so the unit sits small beside the figure. */}
+          <p className={cn('mt-1 font-plate text-[26px] font-bold leading-none whitespace-nowrap', cell.alert && 'text-amber-400')}>
+            {cell.value}
+            <span className={cn('ml-1 text-sm', !cell.alert && 'text-banner-muted')}>{cell.unit}</span>
+          </p>
         </div>
       ))}
     </div>
   )
 }
 
-function MaintenanceSlide({ vehicle, status }: { vehicle: VehicleSummary; status: MaintenanceStatus }) {
+function MaintenanceSlide({ vehicle, status, openBookingId }: { vehicle: VehicleSummary; status: MaintenanceStatus; openBookingId: string | null }) {
+  const action = maintenanceSlideAction(openBookingId)
   const milestone = status.nextMilestone!
   const remaining = remainingParts(status).map(part => part.text).join(' · ')
   const model = [vehicle.modelName, vehicle.trim].filter(Boolean).join(' ')
@@ -106,12 +114,16 @@ function MaintenanceSlide({ vehicle, status }: { vehicle: VehicleSummary; status
               {remaining && <span className="sm:hidden">: {remaining.charAt(0).toLowerCase()}{remaining.slice(1)}</span>}
             </>
           }
-          body="Xem chi phí dự kiến cho gói tiêu chuẩn, rồi chọn khung giờ trống tại xưởng gần bạn."
+          body={
+            action.kind === 'view'
+              ? 'Xe đã có lịch hẹn tại xưởng. Xem chi phí dự kiến cho gói tiêu chuẩn trước khi đến.'
+              : 'Xem chi phí dự kiến cho gói tiêu chuẩn, rồi chọn khung giờ trống tại xưởng gần bạn.'
+          }
         />
         <div className="mt-5 flex flex-wrap gap-2.5">
-          <SlideButton to={QUICK_BOOKING_ENTRY_PATH} tone={PRIMARY}>
-            <CalendarPlus className="w-4 h-4" aria-hidden />
-            Đặt lịch bảo dưỡng nhanh
+          <SlideButton to={action.to} tone={PRIMARY}>
+            {action.kind === 'view' ? <CalendarCheck2 className="w-4 h-4" aria-hidden /> : <CalendarPlus className="w-4 h-4" aria-hidden />}
+            {action.label}
           </SlideButton>
           <SlideButton to={`/estimate?odoMilestone=${milestone.odoMilestoneKm}`} tone={GHOST}>
             Xem chi phí dự kiến
@@ -179,16 +191,16 @@ function AssistantSlide() {
 
 /** Home banner (top of Dashboard): due status, booking, assistant. Built only from real data and real features. */
 export default function HomeCarousel() {
-  const vehicles = useVehicles()
-  const vehicle = vehicles.data?.[0] ?? null
+  const vehicle = useCurrentVehicle().current
   const status = useMaintenanceStatus(vehicle?.userVehicleId ?? null)
   const upcoming = useUpcomingBookings()
-  const hasUpcomingBooking = (upcoming.data?.items.length ?? 0) > 0
+  const openBooking = bookingsOfVehicle(upcoming.data?.items ?? [], vehicle?.userVehicleId ?? null)[0] ?? null
+  const hasUpcomingBooking = openBooking !== null
 
   const kinds = homeSlideKinds({ status: vehicle ? status.data : null, hasUpcomingBooking })
   const slides: CarouselSlide[] = kinds.map(kind => {
     if (kind === 'maintenance' && vehicle && status.data) {
-      return { id: kind, label: 'Hạn bảo dưỡng', content: <MaintenanceSlide vehicle={vehicle} status={status.data} /> }
+      return { id: kind, label: 'Hạn bảo dưỡng', content: <MaintenanceSlide vehicle={vehicle} status={status.data} openBookingId={openBooking?.bookingId ?? null} /> }
     }
     if (kind === 'booking') return { id: kind, label: 'Đặt lịch', content: <BookingSlide /> }
     return { id: 'assistant', label: 'AI Trợ lý', content: <AssistantSlide /> }

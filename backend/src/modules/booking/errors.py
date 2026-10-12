@@ -146,6 +146,13 @@ class LegacyQuoteNotAcceptedError(BookingError):
         super().__init__("Quotes are no longer attached to new bookings; the price is set when you book.")
 
 
+class MaintenancePackageChangedError(BookingError):
+    code = "MAINTENANCE_PACKAGE_CHANGED"
+
+    def __init__(self) -> None:
+        super().__init__("The selected maintenance package no longer matches the current service schedule.")
+
+
 class ServiceUnavailableError(BookingError):
     code = "SERVICE_UNAVAILABLE"
 

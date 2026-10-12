@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500&family=Barlow+Condensed:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import 'tailwindcss';
 
 /* Design tokens — DESIGN.md ("Showroom sáng" + cockpit banner). Light is the default theme; dark overrides below. */
@@ -41,10 +41,18 @@
   --color-banner-accent: #19C37D;
   --color-banner-on-accent: #0A0E13;
 
-  --font-sans: 'Be Vietnam Pro', 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  /* Licence plates stay white with ink in both themes (no dark override). */
+  --color-plate: #FFFFFF;
+  --color-plate-ink: #111820;
+
+  /* One family everywhere (Tesla-style). Inter's opsz axis gives display cuts at large sizes. */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /* Data: km, prices, timestamps, VIN, codes. Tabular figures keep digits aligned. */
+  --font-mono: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono--font-feature-settings: 'tnum';
   /* Licence plates and large instrument-style figures. */
-  --font-plate: 'Barlow Condensed', 'Be Vietnam Pro', ui-sans-serif, sans-serif;
+  --font-plate: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-plate--font-feature-settings: 'tnum';
 
   /* Corners: controls 10px (rounded-xl), cards 14px (rounded-2xl), dialogs 20px (rounded-3xl). */
   --radius-xl: 0.625rem;
@@ -157,10 +165,21 @@
   background-image: none;
 }
 
+/* The one focus ring of every control (DESIGN.md). Links, buttons and [tabindex] get it from
+   the base rule below; `peer-focus-visible:focus-ring` draws it on a stand-in (Checkbox box). */
+@utility focus-ring {
+  outline: 2px solid color-mix(in oklab, var(--color-emerald) 70%, transparent);
+  outline-offset: 2px;
+}
+
+/* The one focus style of text fields, selects and time inputs: emerald border + soft ring. */
+@utility focus-field {
+  @apply focus:outline-none focus:border-emerald/60 focus:ring-4 focus:ring-emerald/15;
+}
+
 @layer base {
   :where(a, button, summary, [tabindex]):focus-visible {
-    outline: 2px solid color-mix(in oklab, var(--color-emerald) 70%, transparent);
-    outline-offset: 2px;
+    @apply focus-ring;
   }
 
   /* Tailwind v4 preflight resets buttons to cursor: default; clickable cards need the pointer. */

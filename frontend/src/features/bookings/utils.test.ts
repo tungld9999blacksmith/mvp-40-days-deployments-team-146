@@ -3,13 +3,17 @@ import {
   addDays,
   bookableDays,
   bookingErrorMessage,
+  bookingsOfVehicle,
   dayChip,
   formatDistance,
   formatLongDay,
   isBookableDay,
   isPastSlot,
   isPendingStatus,
+  mapsUrl,
+  milestoneItemsFor,
   pickDefaultDay,
+  previewedBookingId,
   remainingLabel,
   secondsLeft,
   slotLabel,
@@ -112,5 +116,61 @@ describe('labels', () => {
     expect(bookingErrorMessage('SLOT_FULL')).toBe('Khung giờ này vừa hết chỗ.')
     expect(bookingErrorMessage('WORKSHOP_NOT_FOUND')).toContain('Chưa có xưởng')
     expect(bookingErrorMessage('SOMETHING_ELSE')).toBeNull()
+  })
+})
+
+describe('bookingsOfVehicle', () => {
+  const row = (bookingId: string, userVehicleId?: string) =>
+    ({ bookingId, ...(userVehicleId && { vehicle: { userVehicleId, modelName: 'VF 6', plateMasked: '30A-***.45' } }) }) as never
+
+  it('keeps only the selected vehicle bookings (FINDING-009)', () => {
+    const items = [row('b1', 'car-a'), row('b2', 'car-b'), row('b3', 'car-a')]
+    expect(bookingsOfVehicle(items, 'car-b')).toEqual([items[1]])
+    expect(bookingsOfVehicle(items, 'car-a')).toEqual([items[0], items[2]])
+  })
+
+  it('keeps rows from a backend that does not name the vehicle yet', () => {
+    const items = [row('b1'), row('b2', 'car-b')]
+    expect(bookingsOfVehicle(items, 'car-a')).toEqual([items[0]])
+  })
+
+  it('keeps everything while no vehicle is selected', () => {
+    const items = [row('b1', 'car-a'), row('b2', 'car-b')]
+    expect(bookingsOfVehicle(items, null)).toEqual(items)
+  })
+})
+
+describe('milestoneItemsFor', () => {
+  const next = { odoMilestoneKm: 24_000, items: ['phanh', 'lốp'] }
+
+  it('returns the next milestone items when no milestone is requested or it is the same one', () => {
+    expect(milestoneItemsFor(next, null)).toEqual(['phanh', 'lốp'])
+    expect(milestoneItemsFor(next, 24_000)).toEqual(['phanh', 'lốp'])
+  })
+
+  it('returns nothing for another milestone or an unknown status', () => {
+    expect(milestoneItemsFor(next, 36_000)).toEqual([])
+    expect(milestoneItemsFor(null, null)).toEqual([])
+  })
+})
+
+describe('mapsUrl', () => {
+  it('searches name and address, and the name alone without an address', () => {
+    expect(mapsUrl('Xưởng A', '12 Lê Lợi')).toBe('https://www.google.com/maps/search/?api=1&query=X%C6%B0%E1%BB%9Fng%20A%2C%2012%20L%C3%AA%20L%E1%BB%A3i')
+    expect(mapsUrl('Xưởng A', null)).toBe('https://www.google.com/maps/search/?api=1&query=X%C6%B0%E1%BB%9Fng%20A')
+  })
+})
+
+describe('previewedBookingId', () => {
+  const items = [{ bookingId: 'b1' }, { bookingId: 'b2' }]
+
+  it('keeps the chosen booking while it is listed', () => {
+    expect(previewedBookingId(items, 'b2')).toBe('b2')
+  })
+
+  it('falls back to the first row when nothing or a vanished booking is chosen', () => {
+    expect(previewedBookingId(items, null)).toBe('b1')
+    expect(previewedBookingId(items, 'gone')).toBe('b1')
+    expect(previewedBookingId([], 'b1')).toBeNull()
   })
 })

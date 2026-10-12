@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { CalendarClock, Car, MapPin, Wrench } from 'lucide-react'
+import { CalendarClock, Car, MapPin, PackageCheck, Wrench } from 'lucide-react'
 import { isApiError } from '@/shared/api/client'
 import Badge from '@/shared/ui/Badge'
 import Button from '@/shared/ui/Button'
@@ -48,6 +48,43 @@ function OptionLine({ option, locationLabel }: { option: ProposalOption; locatio
         {option.distanceKm !== null ? `Cách bạn ${formatDistance(option.distanceKm)}` : (locationLabel ?? null)}
       </p>
     </>
+  )
+}
+
+const TIER_LABEL = {
+  REQUIRED: 'Bắt buộc',
+  RECOMMENDED: 'Khuyến nghị',
+  OPTIONAL: 'Tùy chọn',
+} as const
+
+function MaintenancePackage({ option }: { option: ProposalOption }) {
+  const maintenancePackage = option.maintenancePackage
+  if (!maintenancePackage) return null
+  return (
+    <section className="rounded-2xl border border-emerald/30 bg-emerald-dim p-3 space-y-2" aria-label="Gói bảo dưỡng đã chọn">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+          <PackageCheck className="w-4 h-4 text-emerald" aria-hidden />
+          Gói {maintenancePackage.name}
+        </p>
+        <Badge tone="neutral">{maintenancePackage.packageCode}</Badge>
+      </div>
+      <ul className="space-y-1">
+        {maintenancePackage.items.map(item => (
+          <li key={item.itemCode} className="flex justify-between gap-3 text-xs text-foreground">
+            <span>{item.itemName} <span className="text-muted">· {TIER_LABEL[item.tier]}</span></span>
+            <span className="font-mono whitespace-nowrap">{item.covered ? 'Bảo hành' : formatMoney(item.price)}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="flex justify-between gap-3 border-t border-border pt-2 text-xs">
+        <span className="text-muted">{maintenancePackage.estimatedDurationMinutes} phút dự kiến</span>
+        <span className="font-mono font-semibold text-foreground">{formatMoney(maintenancePackage.estimatedTotal)}</span>
+      </div>
+      {maintenancePackage.pricingUpdatedForWorkshop && (
+        <p className="text-[11px] text-muted">Giá đã được cập nhật theo xưởng này; phạm vi hạng mục của gói được giữ nguyên.</p>
+      )}
+    </section>
   )
 }
 
@@ -130,6 +167,7 @@ export default function BookingProposalCard({ card, confirmationHref }: { card: 
             {primary.estimate.hasReferencePrice && <span className="text-muted"> · Giá tham khảo, xưởng có thể báo khác</span>}
           </p>
         )}
+        <MaintenancePackage option={primary} />
       </div>
 
       {view.code && (

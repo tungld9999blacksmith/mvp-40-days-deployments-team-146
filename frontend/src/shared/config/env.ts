@@ -36,3 +36,6 @@ export const API_MOCKS: 'off' | 'all' | 'demo' | string[] = (() => {
   return raw.split(',').map(value => value.trim()).filter(Boolean)
 })()
 export const isAuthConfigured = isFirebaseConfigured
+
+/** "Dùng thử ngay" on the owner login: the shared demo account (backend DEMO_LOGIN_ENABLED). */
+export const DEMO_LOGIN_ENABLED = env.VITE_DEMO_LOGIN_ENABLED === 'true'

@@ -22,8 +22,7 @@ from .service import WorkshopOnboardingService
 
 
 def get_service_center_gateway() -> OemServiceCenterGateway:
-    settings = get_settings()
-    return HttpOemServiceCenterGateway(settings.oem_api_base_url, timeout_seconds=settings.oem_api_timeout_seconds)
+    return HttpOemServiceCenterGateway.from_settings(get_settings())
 
 
 def get_retry_scheduler() -> VerificationRetryScheduler:

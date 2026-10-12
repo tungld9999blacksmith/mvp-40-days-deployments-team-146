@@ -90,7 +90,7 @@ export default function WorkshopSuccessStep() {
       </div>
 
       <Button size="lg" fullWidth onClick={() => navigate('/technician', { replace: true })}>
-        Vào Dashboard
+        Vào trang chủ
       </Button>
     </div>
   )

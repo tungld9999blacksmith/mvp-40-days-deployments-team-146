@@ -15,6 +15,7 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     SmallInteger,
+    String,
     func,
 )
 from sqlmodel import Field, SQLModel
@@ -36,6 +37,18 @@ class UserNotificationSetting(SQLModel, table=True):
     )
     reminders_enabled: bool = Field(default=True, sa_column=Column(Boolean, nullable=False, server_default="true"))
     reminder_lead_days: int = Field(default=2, sa_column=Column(SmallInteger, nullable=False, server_default="2"))
+    personalized_reminders_enabled: bool = Field(
+        default=False, sa_column=Column(Boolean, nullable=False, server_default="false")
+    )
+    personalization_policy_version: str | None = Field(default=None, sa_column=Column(String(64)))
+    personalization_consent_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
+    personalization_revoked_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
+    preferred_send_time: str | None = Field(default=None, sa_column=Column(String(5)))
+    quiet_hours_start: str | None = Field(default=None, sa_column=Column(String(5)))
+    quiet_hours_end: str | None = Field(default=None, sa_column=Column(String(5)))
+    timezone: str = Field(
+        default="Asia/Ho_Chi_Minh", sa_column=Column(String(64), nullable=False, server_default="Asia/Ho_Chi_Minh")
+    )
     created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
         sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)

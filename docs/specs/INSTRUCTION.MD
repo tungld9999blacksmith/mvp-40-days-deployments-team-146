@@ -252,6 +252,7 @@ docs/specs/
 ├── platform/               ← quy tắc dùng chung (lỗi, nhắn tin...)
 ├── ai-agent/               ← AI-Agent Spec (AI-001 ...)
 ├── mock-system/            ← ERD của hệ thống hãng xe giả lập (mock-ev-system)
+├── phase2/                ← spec Phase 2, gom theo nhóm nghiệp vụ (booking, workshop-operations, …); mỗi tính năng có .ff/.api/.entity/.fe cạnh nhau
 └── sprint-1 … sprint-4/    ← spec theo sprint
     ├── OUTLINE.MD          ← danh sách user story của sprint
     ├── feature-functional/ ← *.ff.md

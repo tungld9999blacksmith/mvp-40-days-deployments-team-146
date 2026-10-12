@@ -7,6 +7,7 @@ import { Card } from '@/shared/ui/Card'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
 import { EmptyState, ErrorState } from '@/shared/ui/States'
 import { cn } from '@/shared/ui/cn'
+import { page } from '@/shared/ui/page'
 import { formatDate, formatKm } from '@/shared/utils/format'
 import { formatVnd } from '@/features/estimate/utils'
 import { listMyQuotes } from '../api'
@@ -44,7 +45,7 @@ export default function MyQuotes() {
   }, [load])
 
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-3xl">
+    <div className={page('reading')}>
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Báo giá của tôi</h1>

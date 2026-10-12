@@ -33,7 +33,7 @@ export function DayStrip({
             disabled={disabled}
             onClick={() => onSelect(day)}
             className={cn(
-              'rounded-xl border px-2 py-2.5 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald/40',
+              'rounded-xl border px-2 py-2.5 text-center transition-colors',
               active ? 'border-emerald bg-emerald/10' : 'border-border bg-card hover:bg-card-hover',
               disabled && 'opacity-50 cursor-not-allowed hover:bg-card',
             )}
@@ -86,7 +86,7 @@ export function SlotGrid({
             disabled={disabled}
             onClick={() => onSelect(slot)}
             className={cn(
-              'rounded-xl border px-2 py-3 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald/40',
+              'rounded-xl border px-2 py-3 text-center transition-colors',
               active ? 'border-emerald bg-emerald/10' : 'border-border bg-card hover:bg-card-hover',
               !slot.available && !isCurrent && 'opacity-50 cursor-not-allowed hover:bg-card',
               isCurrent && 'border-dashed border-emerald/50 cursor-not-allowed hover:bg-card',

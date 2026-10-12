@@ -6,6 +6,11 @@ import logging
 import threading
 import time
 from collections import OrderedDict
+from collections.abc import Iterator
+from contextlib import contextmanager
+from typing import Any
+
+from src.infrastructure.observability import get_agent_metrics, step
 
 from .citation_builder import CitationBuilder
 from .generator import GroundedAnswerGenerator
@@ -15,6 +20,45 @@ from .rewriter import QueryRewriter
 from .schemas import RAGResponse, UserVehicleContext
 
 logger = logging.getLogger(__name__)
+
+
+def _rag_outcome(response: RAGResponse) -> str:
+    reason = response.metadata.get("reason")
+    if reason == "out_of_scope":
+        return "out_of_scope"
+    if reason == "no_documents_found" or response.metadata.get("retrieved_chunks_count") == 0:
+        return "empty"
+    return "fallback" if response.fallback_required else "answered"
+
+
+def _documents(chunks: list[Any]) -> list[dict[str, Any]]:
+    """LangSmith ``retriever`` output shape: rendered as a document list in the UI."""
+    return [
+        {
+            "page_content": getattr(chunk, "content", ""),
+            "metadata": {
+                "chunk_id": getattr(chunk, "chunk_id", None),
+                "doc_id": getattr(chunk, "doc_id", None),
+                "rerank_score": getattr(chunk, "rerank_score", None),
+                "rrf_score": getattr(chunk, "rrf_score", None),
+            },
+        }
+        for chunk in chunks
+    ]
+
+
+@contextmanager
+def _stage(name: str, query: str) -> Iterator[Any]:
+    """Non-LLM RAG stage: LangSmith retriever run + Grafana span + duration histogram."""
+    started = time.monotonic()
+    try:
+        with step(
+            f"rag.{name}", run_type="retriever", attributes={"rag.stage": name}, inputs={"query": query}
+        ) as current:
+            yield current
+    finally:
+        get_agent_metrics().rag_stage_duration.record(time.monotonic() - started, {"rag.stage": name})
+
 
 _loop: asyncio.AbstractEventLoop | None = None
 _loop_lock = threading.Lock()
@@ -70,6 +114,39 @@ class RAGPipeline:
         expand_neighbors: bool = True,
     ) -> RAGResponse:
         """Xử lý truy vấn end-to-end theo luồng RAG nâng cao."""
+        with step(
+            "rag.query",
+            attributes={"rag.top_k": top_k, "rag.category": (category or "").strip().lower() or None},
+            inputs={"query": query, "category": category, "top_k": top_k},
+        ) as current:
+            try:
+                response, cache = await self._query(query, vehicle_context, top_k, category, expand_neighbors)
+            except Exception:
+                get_agent_metrics().rag_queries.add(1, {"rag.outcome": "error", "rag.cache": "miss"})
+                raise
+            outcome = _rag_outcome(response)
+            current.set(
+                **{
+                    "rag.cache": cache,
+                    "rag.outcome": outcome,
+                    "rag.confidence": response.confidence,
+                    "rag.citations": len(response.citations),
+                }
+            )
+            current.outputs(
+                {"answer": response.answer, "confidence": response.confidence, "citations": len(response.citations)}
+            )
+            get_agent_metrics().rag_queries.add(1, {"rag.outcome": outcome, "rag.cache": cache})
+            return response
+
+    async def _query(
+        self,
+        query: str,
+        vehicle_context: UserVehicleContext | None,
+        top_k: int,
+        category: str | None,
+        expand_neighbors: bool,
+    ) -> tuple[RAGResponse, str]:
         key = (
             " ".join(query.lower().split()),
             vehicle_context.model_dump_json() if vehicle_context else None,
@@ -79,12 +156,12 @@ class RAGPipeline:
         )
         cached = self._cache_get(key)
         if cached is not None:
-            return cached
+            return cached, "hit"
         response = await self._answer(query, vehicle_context, top_k, category, expand_neighbors)
         # Never cache a degraded answer (LLM down, nothing retrieved).
         if not response.fallback_required and response.confidence != "low":
             self._cache_put(key, response)
-        return response
+        return response, "miss"
 
     def _cache_get(self, key: tuple) -> RAGResponse | None:
         with self._cache_lock:
@@ -142,20 +219,26 @@ class RAGPipeline:
 
         # BƯỚC 2: Metadata Filter & Hybrid Retrieval (Dense Qdrant + Sparse BM25 + RRF)
         # Blocking I/O (embedding, Qdrant) and CPU (rerank) run off the event loop.
-        fused_candidates = await asyncio.to_thread(
-            self.hybrid_retriever.retrieve,
-            analysis=query_analysis,
-            top_candidates=20,
-        )
+        with _stage("retrieve", query_analysis.rewritten_query) as retrieve:
+            fused_candidates = await asyncio.to_thread(
+                self.hybrid_retriever.retrieve,
+                analysis=query_analysis,
+                top_candidates=20,
+            )
+            retrieve.set(**{"rag.hits": len(fused_candidates)})
+            retrieve.outputs({"documents": _documents(fused_candidates)})
         logger.debug(f"Hybrid retrieval thu được: {len(fused_candidates)} candidates")
 
         # BƯỚC 3: Cross-Encoder Reranking Top-K
-        reranked_chunks = await asyncio.to_thread(
-            self.reranker.rerank,
-            query=query_analysis.rewritten_query,
-            candidates=fused_candidates,
-            top_k=max(top_k * 3, top_k),
-        )
+        with _stage("rerank", query_analysis.rewritten_query) as rerank:
+            reranked_chunks = await asyncio.to_thread(
+                self.reranker.rerank,
+                query=query_analysis.rewritten_query,
+                candidates=fused_candidates,
+                top_k=max(top_k * 3, top_k),
+            )
+            rerank.set(**{"rag.hits": len(reranked_chunks)})
+            rerank.outputs({"documents": _documents(reranked_chunks)})
         reranked_chunks = self.hybrid_retriever.select_context(
             candidates=reranked_chunks,
             analysis=query_analysis,

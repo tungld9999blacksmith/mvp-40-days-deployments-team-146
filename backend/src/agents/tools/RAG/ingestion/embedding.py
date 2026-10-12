@@ -4,11 +4,7 @@ import logging
 import os
 from abc import ABC, abstractmethod
 
-from dotenv import load_dotenv
-
 from .config import rag_settings
-
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 

@@ -29,6 +29,13 @@ export function formatDate(value: string | Date): string {
   }).format(toDate(value))
 }
 
+const weekdayFormat = new Intl.DateTimeFormat('vi-VN', { timeZone: TIME_ZONE, weekday: 'long', day: 'numeric', month: 'long' })
+
+/** "Thứ Hai, 12 tháng 10": the date above both Dashboards' greeting. */
+export function formatWeekdayDate(value: string | Date): string {
+  return weekdayFormat.format(toDate(value))
+}
+
 /** "28/09" — built from parts because ICU's vi-VN day-month pattern prints "28-09". */
 function formatDayMonth(date: Date): string {
   const parts = new Intl.DateTimeFormat('vi-VN', { timeZone: TIME_ZONE, day: '2-digit', month: '2-digit' }).formatToParts(date)

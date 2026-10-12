@@ -33,6 +33,22 @@ def fingerprint(value) -> str:
     return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True, default=str).encode()).hexdigest()
 
 
+def text_digest_variants(path: Path) -> set[str]:
+    """Hashes for identical UTF-8 text checked out with LF or CRLF.
+
+    Recorded baselines may be produced on Windows while CI uses Linux/macOS.
+    This keeps content verification strict without treating Git line-ending
+    conversion as a changed golden set.
+    """
+    raw = path.read_bytes()
+    lf = raw.replace(b"\r\n", b"\n")
+    return {
+        hashlib.sha256(raw).hexdigest(),
+        hashlib.sha256(lf).hexdigest(),
+        hashlib.sha256(lf.replace(b"\n", b"\r\n")).hexdigest(),
+    }
+
+
 def percentile(values, probability):
     return sorted(values)[max(0, math.ceil(len(values) * probability) - 1)] if values else None
 
@@ -63,11 +79,14 @@ def validate_baseline(directory: Path, golden_path: Path, *, allow_prompt_change
     metrics = json.loads((directory / "metrics.json").read_text(encoding="utf-8"))
     if not metrics.get("complete") or metrics.get("errors") or metrics.get("preflight_error"):
         raise ValueError("Baseline must be a completed, error-free full RAG run")
-    if manifest["configuration"].get("mode") != "full_rag" or manifest["configuration"]["golden_sha256"] != digest(golden_path):
+    if (
+        manifest["configuration"].get("mode") != "full_rag"
+        or manifest["configuration"]["golden_sha256"] not in text_digest_variants(golden_path)
+    ):
         raise ValueError("Baseline mode/golden set mismatch")
     hashes = {name.replace("\\", "/"): value for name, value in manifest["source_hashes"].items()}
     builder_path = "backend/src/agents/tools/RAG/query/citation_builder.py"
-    if hashes[builder_path] != digest(ROOT / builder_path):
+    if hashes[builder_path] not in text_digest_variants(ROOT / builder_path):
         raise ValueError("Citation packaging changed; cannot claim identical context")
     # The baseline generator was clean at HEAD. Verify that exact source blob
     # against its saved hash before comparing the system prompt to today's code.

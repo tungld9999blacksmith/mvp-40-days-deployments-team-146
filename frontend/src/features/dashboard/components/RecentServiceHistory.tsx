@@ -3,7 +3,8 @@ import { SkeletonCard } from '@/shared/ui/Skeleton'
 import { cn } from '@/shared/ui/cn'
 import { formatDate, formatKm } from '@/shared/utils/format'
 import { serviceRecordSource, serviceRecordTitle } from '@/features/maintenance/utils'
-import { useServiceRecords, useVehicles } from '@/features/vehicles/hooks/useVehicleQueries'
+import { useServiceRecords } from '@/features/vehicles/hooks/useVehicleQueries'
+import { useCurrentVehicle } from '@/features/vehicles/currentVehicle/CurrentVehicleContext'
 
 const RECENT = 3
 // Workshop and source columns drop below `sm`; the workshop moves under the item instead.
@@ -17,8 +18,7 @@ const COLUMNS = [
 
 /** Home: the three latest service records (API-VEH-005). Vehicle errors are shown by the card above. */
 export default function RecentServiceHistory() {
-  const vehicles = useVehicles()
-  const vehicle = vehicles.data?.[0] ?? null
+  const vehicle = useCurrentVehicle().current
   const records = useServiceRecords(vehicle?.userVehicleId ?? null)
 
   if (!vehicle) return null

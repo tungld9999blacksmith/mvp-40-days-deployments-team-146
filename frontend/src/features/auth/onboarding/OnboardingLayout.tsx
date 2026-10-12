@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { LogOut } from 'lucide-react'
 import Stepper from '@/shared/ui/Stepper'
 import { Notice } from '@/shared/ui/States'
 import { formatDate } from '@/shared/utils/format'
 import { useAuth } from '../context/AuthContext'
 import SplashScreen from '../components/SplashScreen'
-import LogoutConfirmDialog from '../components/LogoutConfirmDialog'
+import StandaloneHeader from '../components/StandaloneHeader'
 import { OnboardingProvider, useOnboarding } from './OnboardingContext'
-import Logo from '@/shared/ui/Logo'
 
 const STEPS = ['Thông tin cá nhân', 'Thông tin xe', 'Xác thực']
 
@@ -22,7 +20,6 @@ function OnboardingShell() {
   const { user, onboarding, logout } = useAuth()
   const { snapshot, loadSnapshot } = useOnboarding()
   const location = useLocation()
-  const [logoutOpen, setLogoutOpen] = useState(false)
 
   // Prefill data, remaining attempts and resume state (AF-002, EDGE-001).
   useEffect(() => {
@@ -35,21 +32,12 @@ function OnboardingShell() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="h-16 bg-surface border-b border-border">
-        <div className="max-w-3xl mx-auto h-full px-4 sm:px-6 flex items-center gap-3">
-          <Logo className="h-8 text-foreground" />
-          <span className="hidden sm:inline text-muted text-sm">· Thiết lập tài khoản</span>
-          <span className="ml-auto hidden md:inline text-sm text-muted truncate max-w-[220px]">{user?.email}</span>
-          <button
-            type="button"
-            onClick={() => setLogoutOpen(true)}
-            className="ml-auto md:ml-2 flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-muted hover:text-error hover:bg-error/10 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            Đăng xuất
-          </button>
-        </div>
-      </header>
+      <StandaloneHeader
+        width="max-w-3xl"
+        label={<span className="hidden sm:inline text-muted text-sm">· Thiết lập tài khoản</span>}
+        email={user?.email}
+        onLogout={logout}
+      />
 
       <main className="max-w-xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <div className="mb-8">
@@ -60,8 +48,6 @@ function OnboardingShell() {
         )}
         <Outlet />
       </main>
-
-      <LogoutConfirmDialog open={logoutOpen} onClose={() => setLogoutOpen(false)} onConfirm={logout} />
     </div>
   )
 }

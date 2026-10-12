@@ -21,9 +21,9 @@ export function CardHeader({ title, icon, action }: { title: string; icon?: Reac
 }
 
 /** Label / value row used in detail cards. */
-export function InfoRow({ label, value, mono }: { label: string; value: ReactNode; mono?: boolean }) {
+export function InfoRow({ label, value, mono, className }: { label: string; value: ReactNode; mono?: boolean; className?: string }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-3 border-b border-border last:border-b-0">
+    <div className={cn('flex items-center justify-between gap-4 py-3 border-b border-border last:border-b-0', className)}>
       <span className="text-sm text-muted">{label}</span>
       <span className={cn('text-sm font-medium text-foreground text-right', mono && 'font-mono')}>{value}</span>
     </div>

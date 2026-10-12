@@ -131,3 +131,36 @@ export function bookingErrorMessage(code: string): string | null {
       return null
   }
 }
+
+/**
+ * Bookings of the selected vehicle (FINDING-009). BR-013 allows one open booking per vehicle, so
+ * Home shows the selected car's own appointment. A row without `vehicle` (backend before the field)
+ * is kept, as is everything while no vehicle is selected.
+ */
+export function bookingsOfVehicle<T extends { vehicle?: { userVehicleId: string | null } }>(
+  items: T[],
+  userVehicleId: string | null,
+): T[] {
+  if (!userVehicleId) return items
+  return items.filter(item => !item.vehicle?.userVehicleId || item.vehicle.userVehicleId === userVehicleId)
+}
+
+/**
+ * Items of the milestone being booked: the vehicle's next milestone, unless the query asks for
+ * another one, whose items the status endpoint does not return.
+ */
+export function milestoneItemsFor<T>(next: { odoMilestoneKm: number; items: T[] } | null, requested: number | null): T[] {
+  if (!next) return []
+  return requested === null || requested === next.odoMilestoneKm ? next.items : []
+}
+
+/** Google Maps search for a workshop: name plus address, so a missing address still finds it. */
+export function mapsUrl(name: string, address: string | null): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([name, address].filter(Boolean).join(', '))}`
+}
+
+/** Booking shown in the side preview: the chosen one while it is still listed, else the first row. */
+export function previewedBookingId(items: { bookingId: string }[], chosen: string | null): string | null {
+  if (chosen && items.some(item => item.bookingId === chosen)) return chosen
+  return items[0]?.bookingId ?? null
+}

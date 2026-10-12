@@ -26,6 +26,7 @@ import {
   openFollowUpNow,
   resetDemo,
   restartWorkshopOnboarding,
+  seedMultiVehicleOwner,
   skipOwnerOnboarding,
   type DemoProgress,
 } from '@/mocks/server/demo'
@@ -345,6 +346,16 @@ export default function DemoPanel() {
     window.location.assign('/dashboard')
   }
 
+  /** Three vehicles and no remembered pick, so the owner lands on the vehicle picker. */
+  async function multiVehicleOwner() {
+    setBusy(true)
+    seedMultiVehicleOwner()
+    await demoSignIn()
+    clearSessionCaches()
+    setPortal('owner')
+    window.location.assign('/dashboard')
+  }
+
   function replayWorkshopOnboarding() {
     restartWorkshopOnboarding()
     setPortal('workshop')
@@ -472,6 +483,9 @@ export default function DemoPanel() {
               Bỏ qua onboarding
             </Button>
           )}
+          <Button size="sm" variant="secondary" icon={<Car className="h-3.5 w-3.5" />} onClick={() => void multiVehicleOwner()} disabled={busy}>
+            Chủ xe có 3 xe
+          </Button>
           {surveyPending && booking && (
             <Button size="sm" variant="secondary" icon={<FastForward className="h-3.5 w-3.5" />} onClick={() => openFollowUpNow(booking.bookingId)}>
               Mở khảo sát ngay

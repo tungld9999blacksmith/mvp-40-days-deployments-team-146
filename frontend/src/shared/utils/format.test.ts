@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatCountdown, formatDate, formatDuration, formatKm, formatLicensePlate } from './format'
+import { formatCountdown, formatDate, formatDuration, formatKm, formatLicensePlate, formatWeekdayDate } from './format'
 
 describe('format helpers (vi-VN, Asia/Ho_Chi_Minh)', () => {
   it('km with Vietnamese grouping', () => {
@@ -24,5 +24,12 @@ describe('format helpers (vi-VN, Asia/Ho_Chi_Minh)', () => {
   it('licence plate display only', () => {
     expect(formatLicensePlate('30A12345')).toBe('30A-123.45')
     expect(formatLicensePlate('30A1234')).toBe('30A-1234')
+  })
+})
+
+describe('formatWeekdayDate', () => {
+  it('names the weekday, day and month in Vietnam time, like the owner Dashboard', () => {
+    // 17:30 UTC on Sunday 11/10 is already Monday 12/10 in Vietnam.
+    expect(formatWeekdayDate(new Date('2026-10-11T17:30:00Z'))).toBe('Thứ Hai, 12 tháng 10')
   })
 })

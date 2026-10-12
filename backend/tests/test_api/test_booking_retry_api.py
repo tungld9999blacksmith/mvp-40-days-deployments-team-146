@@ -80,3 +80,31 @@ async def test_idempotency_key_length_bounds(booking_api, key, status):
     client, body, _ = booking_api
     response = await client.post("/api/v1/bookings", json=body, headers={"Idempotency-Key": key})
     assert response.status_code == status
+
+
+@pytest.mark.asyncio
+async def test_http_booking_preserves_origin_and_counts_confirmed_booking(booking_api):
+    from datetime import UTC, datetime
+    from uuid import UUID
+
+    from src.common.core.maintenance import Reminder
+    from src.common.core.maintenance.reminder import ReminderChannel, ReminderLevel
+    from src.common.core.notification import ReminderBookingAttribution
+
+    client, body, db = booking_api
+    reminder = Reminder(
+        user_vehicle_id=UUID(body["userVehicleId"]),
+        target_odo_milestone=12000,
+        reminder_level=ReminderLevel.EARLY,
+        channel=ReminderChannel.IN_APP,
+        scheduled_at=datetime.now(UTC) - timedelta(days=1),
+    )
+    db.add(reminder)
+    db.commit()
+    response = await client.post(
+        "/api/v1/bookings", json={**body, "milestoneRef": "12000", "sourceReminderId": str(reminder.id)}
+    )
+    assert response.status_code == 201
+    origin = db.exec(select(ReminderBookingAttribution)).one()
+    assert origin.reminder_id == reminder.id and origin.match_method == "DIRECT"
+    assert origin.confirmed_at is not None

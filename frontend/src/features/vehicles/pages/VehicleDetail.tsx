@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
 import { track } from '@/shared/utils/track'
 import Skeleton, { SkeletonCard } from '@/shared/ui/Skeleton'
+import { page } from '@/shared/ui/page'
 import { isApiError } from '@/shared/api/client'
 import MaintenanceStatusCard from '../components/MaintenanceStatusCard'
+import TripPlanningCard from '../components/TripPlanningCard'
 import { LastServiceCard, OdometerCard, WarrantyCard } from '../components/VehicleCards'
 import VehicleHero from '../components/VehicleHero'
 import VehicleGate, { VehicleApiError } from '../components/VehicleGate'
@@ -73,6 +75,7 @@ function VehicleDetailContent({ vehicleId }: { vehicleId: string }) {
         </div>
       </div>
 
+      {profile.data && <TripPlanningCard key={vehicleId} vehicleId={vehicleId} />}
       {profile.data ? <WarrantyCard warranties={profile.data.warranties} /> : !profile.error && <SkeletonCard lines={3} />}
     </div>
   )
@@ -81,7 +84,7 @@ function VehicleDetailContent({ vehicleId }: { vehicleId: string }) {
 /** SCR-302 — vehicle profile, read-only; all data comes from the manufacturer (US-017 FE). */
 export default function VehicleDetail() {
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-6xl">
+    <div className={page()}>
       {/* The hero opens the page; the heading stays for screen readers. */}
       <h1 className="sr-only">Xe của tôi</h1>
       <VehicleGate

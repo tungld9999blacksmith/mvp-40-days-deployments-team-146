@@ -23,6 +23,7 @@ export interface BookingParams {
   timeSlot: string | null
   odoMilestone: number | null
   quoteId: string | null
+  sourceReminderId: string | null
 }
 
 interface BookingWizardValue {
@@ -66,6 +67,7 @@ export function BookingWizardProvider({ vehicle, children }: { vehicle: VehicleS
       timeSlot: searchParams.get('timeSlot'),
       odoMilestone: readNumber(searchParams.get('odoMilestone')),
       quoteId: searchParams.get('quoteId'),
+      sourceReminderId: searchParams.get('sourceReminderId'),
     }),
     [searchParams],
   )
@@ -74,7 +76,7 @@ export function BookingWizardProvider({ vehicle, children }: { vehicle: VehicleS
     overrides => {
       const next = new URLSearchParams()
       const merged: Record<string, string | number | null> = { ...params, ...overrides }
-      for (const key of ['userVehicleId', 'proposalId', 'workshopId', 'date', 'timeSlot', 'odoMilestone', 'quoteId'] as const) {
+      for (const key of ['userVehicleId', 'proposalId', 'workshopId', 'date', 'timeSlot', 'odoMilestone', 'quoteId', 'sourceReminderId'] as const) {
         const value = merged[key]
         if (value !== null && value !== undefined && value !== '') next.set(key, String(value))
       }

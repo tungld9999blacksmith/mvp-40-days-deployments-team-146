@@ -28,6 +28,7 @@ from sqlalchemy import func, select
 from sqlmodel import Session, col
 from starlette.concurrency import run_in_threadpool
 
+from src.common.client_ip import client_key, current_client_ip
 from src.common.concurrency import wait_through_cancellation
 from src.common.core.conversation import (
     ChatMessage,
@@ -36,12 +37,14 @@ from src.common.core.conversation import (
     ConversationRepository,
     MessageRole,
 )
+from src.common.core.identity.vehicle_user import VehicleUser
 from src.common.core.vehicle import UserVehicle, VehicleLinkStatus
 from src.common.data_access import eq, ge, gt, in_, lt
 from src.config import Settings
 from src.infrastructure.llm.base import ChatMessage as LlmMessage
 from src.infrastructure.llm.base import LLMProvider, Role
 from src.infrastructure.messaging import AppendResult, ConversationNotFoundError, MessageDto, MessageService
+from src.infrastructure.prompts import load_prompt
 from src.infrastructure.redis import RedisToolkit
 from src.infrastructure.vectorstore import CONVERSATION_MESSAGES, VectorStore
 from src.modules.booking_line.cards import CARD_BOOKING_LINES, enrich_line_cards
@@ -57,11 +60,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-_SYSTEM_PROMPT = (
-    "Bạn là trợ lý chăm sóc xe điện của EV Care. Trả lời bằng tiếng Việt, ngắn gọn. "
-    "Chỉ khẳng định thông tin kỹ thuật/bảo hành khi có trong tài liệu chính hãng được "
-    "cung cấp; nếu không có nguồn, hãy nói rõ chưa có dữ liệu chính hãng và gợi ý liên hệ xưởng."
-)
+_SYSTEM_PROMPT = load_prompt("customer_chat")
 _HISTORY_TURNS = 20
 _RETRIEVE_K = 5
 
@@ -678,8 +677,21 @@ class ChatService:
     # -- rate limit -------------------------------------------------------
     async def _check_rate_limit(self, user_id: int) -> None:
         now = time.time()
+        if self._settings.demo_login_enabled and await run_in_threadpool(self._is_demo_user, user_id):
+            # One account for every visitor: limit each client IP, and the account as a whole.
+            s = self._settings
+            key = client_key(current_client_ip())
+            await self._enforce_window(f"chat:rl:demo:{key}:min", now, 60, s.demo_chat_rate_limit_per_minute)
+            await self._enforce_window(f"chat:rl:demo:{key}:day", now, 86400, s.demo_chat_rate_limit_per_day)
+            await self._enforce_window("chat:rl:demo:all:day", now, 86400, s.demo_chat_total_per_day)
+            return
         await self._enforce_window(f"chat:rl:{user_id}:min", now, 60, self._settings.chat_rate_limit_per_minute)
         await self._enforce_window(f"chat:rl:{user_id}:day", now, 86400, self._settings.chat_rate_limit_per_day)
+
+    def _is_demo_user(self, user_id: int) -> bool:
+        with Session(self._engine) as session:
+            user = session.get(VehicleUser, user_id)
+            return bool(user and user.is_demo)
 
     async def _enforce_window(self, key: str, now: float, window: int, limit: int) -> None:
         zset = self._toolkit.sorted_set(key, str, ttl=window)

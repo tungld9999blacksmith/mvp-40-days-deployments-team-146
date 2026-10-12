@@ -56,6 +56,8 @@ services:
       # Gmail dev: tự tạo chủ xe + xe khi khởi động (xem DEV_GUIDE.md).
       MOCK_DEV_OWNER_EMAILS: "${MOCK_DEV_OWNER_EMAILS:-}"
       MOCK_DEV_OWNER_VEHICLES: "${MOCK_DEV_OWNER_VEHICLES:-2}"
+      # Chủ xe OWN-DEMO (VF3, VF8, VF Wild) của tài khoản "Dùng thử ngay"; trùng DEMO_ACCOUNT_EMAIL.
+      MOCK_DEMO_OWNER_EMAIL: "${MOCK_DEMO_OWNER_EMAIL:-demo@evcare.invalid}"
       # Fixed date the generated ODO / dates / warranty status are computed against.
       MOCK_DEV_REFERENCE_DATE: "${MOCK_DEV_REFERENCE_DATE:-}"
       # Persistent SQLite file on the mock_ev_data volume: data survives restart,

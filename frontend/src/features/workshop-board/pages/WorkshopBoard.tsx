@@ -376,7 +376,7 @@ export default function WorkshopBoard() {
             onChange={event => setSearchText(event.target.value)}
             placeholder="Mã lịch hẹn hoặc biển số"
             aria-label="Tìm lịch hẹn"
-            className="w-full bg-card border border-border rounded-xl pl-9 pr-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-emerald/60 focus:ring-4 focus:ring-emerald/15"
+            className="w-full bg-card border border-border rounded-xl pl-9 pr-3 py-2 text-sm text-foreground placeholder:text-muted focus-field"
           />
         </div>
       </Card>
@@ -540,7 +540,7 @@ export default function WorkshopBoard() {
                               onClick={() => openDetail(item.bookingId)}
                               onKeyDown={event => event.key === 'Enter' && openDetail(item.bookingId)}
                               className={cn(
-                                'border-b border-border last:border-0 cursor-pointer hover:bg-card-hover focus:bg-card-hover focus:outline-none',
+                                'border-b border-border last:border-0 cursor-pointer hover:bg-card-hover focus-visible:bg-card-hover',
                                 bookingId === item.bookingId && 'bg-emerald/5',
                               )}
                             >

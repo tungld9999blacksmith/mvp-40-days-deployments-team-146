@@ -29,6 +29,16 @@ def configured(monkeypatch):
         openrouter_rag_model="legacy-rag",
         openrouter_write_model="reserved-write",
         openrouter_agent_endpoint_order="mistral/us",
+        llm_orchestrator_provider="",
+        llm_orchestrator_model="",
+        llm_rewrite_provider="",
+        llm_rewrite_model="",
+        llm_rag_provider="",
+        llm_rag_model="",
+        llm_booking_provider="",
+        llm_booking_model="",
+        llm_booking_check_enabled=False,
+        llm_fallback_provider="",
     )
     dependency.get_llm_provider_for_stage.cache_clear()
     monkeypatch.setattr(dependency, "get_settings", lambda: settings)

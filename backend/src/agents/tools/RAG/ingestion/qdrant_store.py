@@ -5,7 +5,6 @@ import os
 import uuid
 from typing import Any
 
-from dotenv import load_dotenv
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest_models
 from qdrant_client.http.models import (
@@ -19,8 +18,6 @@ from qdrant_client.http.models import (
 
 from .embedding import BaseEmbeddingProvider, get_embedding_provider
 from .metadata import DocumentChunk, SearchResult, canonicalize_vehicle_model
-
-load_dotenv()
 
 logger = logging.getLogger(__name__)
 

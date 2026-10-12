@@ -9,7 +9,7 @@ import Skeleton from '@/shared/ui/Skeleton'
 import { cn } from '@/shared/ui/cn'
 import { EmptyState, ErrorState } from '@/shared/ui/States'
 import { PORTAL_BOOKING_STATUS as BOOKING_STATUS } from '@/shared/domain/bookingLabels'
-import { formatKm, formatLicensePlate, formatTimeDayMonth } from '@/shared/utils/format'
+import { formatKm, formatLicensePlate, formatTimeDayMonth, formatWeekdayDate } from '@/shared/utils/format'
 import { useWorkshopAuth } from '@/features/workshop-auth/context/WorkshopAuthContext'
 import { slotLabel, todayVn } from '@/features/bookings/utils'
 import { getBoard } from '@/features/workshop-board/api'
@@ -20,7 +20,8 @@ import { usePricingFlow } from '@/features/booking-lines/flow'
 import { awaitingOwnerItems } from '@/features/booking-lines/logic'
 import type { WorkshopQuoteList } from '@/features/quotes/types'
 
-const TODAY_LABEL = new Intl.DateTimeFormat('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' })
+/** Name + vehicle, then the badges: stacked on phones, one line from `sm`. */
+const ROW_BODY = 'flex-1 min-w-0 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-4'
 
 /**
  * `/technician` — today's summary from API-WB-01 (first 5 bookings), plus quotes waiting for review (QT-11)
@@ -70,7 +71,7 @@ export default function TechnicianDashboard() {
     <div className="p-4 sm:p-6 xl:p-8">
       <div className="flex flex-wrap items-end justify-between gap-3 mb-8">
         <div>
-          <p className="text-xs font-medium text-muted first-letter:uppercase">{TODAY_LABEL.format(new Date())}</p>
+          <p className="text-xs font-medium text-muted first-letter:uppercase">{formatWeekdayDate(new Date())}</p>
           <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
             Xin chào{displayName ? ', ' : ''}
             {displayName && <span>{displayName}</span>}
@@ -116,13 +117,20 @@ export default function TechnicianDashboard() {
                 <li key={item.bookingId}>
                   <Link to={`/technician/board/${encodeURIComponent(item.bookingId)}`} className="px-5 py-3.5 flex items-center gap-4 hover:bg-card-hover transition-colors">
                     <span className="text-sm font-bold text-foreground font-mono w-12">{slotLabel(item.timeSlot)}</span>
-                    <span className="flex-1 min-w-0">
-                      <span className="block text-sm font-medium text-foreground truncate">{item.customer.fullName}</span>
-                      <span className="block text-xs text-muted truncate">
-                        {item.vehicle.modelName} · {formatLicensePlate(item.vehicle.licensePlate)}
+                    {/* FINDING-021: on phones the badge sits under the name instead of truncating it. */}
+                    <span className={ROW_BODY}>
+                      <span className="min-w-0 sm:flex-1">
+                        <span className="block text-sm font-medium text-foreground truncate">{item.customer.fullName}</span>
+                        <span className="block text-xs text-muted truncate">
+                          {item.vehicle.modelName} · {formatLicensePlate(item.vehicle.licensePlate)}
+                        </span>
                       </span>
+                      {BOOKING_STATUS[item.status] && (
+                        <Badge tone={BOOKING_STATUS[item.status].tone} className="self-start sm:self-auto">
+                          {BOOKING_STATUS[item.status].label}
+                        </Badge>
+                      )}
                     </span>
-                    {BOOKING_STATUS[item.status] && <Badge tone={BOOKING_STATUS[item.status].tone}>{BOOKING_STATUS[item.status].label}</Badge>}
                     <ChevronRight className="w-4 h-4 text-muted" />
                   </Link>
                 </li>
@@ -149,14 +157,18 @@ export default function TechnicianDashboard() {
                 {awaiting.slice(0, 5).map(item => (
                   <li key={item.bookingId}>
                     <Link to={`/technician/board/${encodeURIComponent(item.bookingId)}`} className="px-5 py-3.5 flex items-center gap-4 hover:bg-card-hover transition-colors">
-                      <span className="flex-1 min-w-0">
-                        <span className="block text-sm font-medium text-foreground truncate">{item.customer.fullName}</span>
-                        <span className="block text-xs text-muted truncate">
-                          {item.vehicle.modelName} · {formatLicensePlate(item.vehicle.licensePlate)}
+                      <span className={ROW_BODY}>
+                        <span className="min-w-0 sm:flex-1">
+                          <span className="block text-sm font-medium text-foreground truncate">{item.customer.fullName}</span>
+                          <span className="block text-xs text-muted truncate">
+                            {item.vehicle.modelName} · {formatLicensePlate(item.vehicle.licensePlate)}
+                          </span>
+                        </span>
+                        <span className="flex flex-wrap gap-1.5">
+                          {(item.ownerReplyOverdue ?? 0) > 0 && <Badge tone="error">Cần gọi</Badge>}
+                          <Badge tone="warning">{item.awaitingOwner} phát sinh</Badge>
                         </span>
                       </span>
-                      {(item.ownerReplyOverdue ?? 0) > 0 && <Badge tone="error">Cần gọi</Badge>}
-                      <Badge tone="warning">{item.awaitingOwner} phát sinh</Badge>
                       <ChevronRight className="w-4 h-4 text-muted" />
                     </Link>
                   </li>
@@ -188,16 +200,20 @@ export default function TechnicianDashboard() {
                       to={`/technician/quote-review?quoteId=${encodeURIComponent(quote.quoteId)}`}
                       className="px-5 py-3.5 flex items-center gap-4 hover:bg-card-hover transition-colors"
                     >
-                      <span className="flex-1 min-w-0">
-                        <span className="block text-sm font-medium text-foreground truncate">
-                          {quote.modelName} · <span className="font-mono">{formatLicensePlate(quote.plateNumber)}</span>
+                      <span className={ROW_BODY}>
+                        <span className="min-w-0 sm:flex-1">
+                          <span className="block text-sm font-medium text-foreground truncate">
+                            {quote.modelName} · <span className="font-mono">{formatLicensePlate(quote.plateNumber)}</span>
+                          </span>
+                          <span className="block text-xs text-muted truncate">
+                            {quote.customer.fullName} · Mốc {formatKm(quote.odoMilestone)} · gửi {quote.submittedAt ? formatTimeDayMonth(quote.submittedAt) : '—'}
+                          </span>
                         </span>
-                        <span className="block text-xs text-muted truncate">
-                          {quote.customer.fullName} · Mốc {formatKm(quote.odoMilestone)} · gửi {quote.submittedAt ? formatTimeDayMonth(quote.submittedAt) : '—'}
+                        <span className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                          <span className="font-mono text-sm text-foreground">{formatVnd(quote.estimatedTotal)}</span>
+                          {quote.isWaitingLong && <Badge tone="error">Chờ &gt; 24h</Badge>}
                         </span>
                       </span>
-                      <span className="font-mono text-sm text-foreground">{formatVnd(quote.estimatedTotal)}</span>
-                      {quote.isWaitingLong && <Badge tone="error">Chờ &gt; 24h</Badge>}
                       <ChevronRight className="w-4 h-4 text-muted" />
                     </Link>
                   </li>

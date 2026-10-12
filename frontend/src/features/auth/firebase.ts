@@ -6,6 +6,7 @@ import {
   getAuth,
   getRedirectResult,
   setPersistence,
+  signInWithCustomToken,
   signInWithPopup,
   signInWithRedirect,
   signOut,
@@ -67,6 +68,13 @@ export async function signInWithGoogle(): Promise<User | null> {
     }
     throw error
   }
+}
+
+/** Signs in to the shared demo account with the custom token from `POST /auth/demo-session`. */
+export async function signInWithDemoToken(customToken: string): Promise<User> {
+  const instance = getFirebaseAuth()
+  if (!instance) throw new Error('Firebase is not configured')
+  return (await signInWithCustomToken(instance, customToken)).user
 }
 
 /** Surfaces errors of a pending redirect sign-in (no-op otherwise). */

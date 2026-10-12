@@ -6,7 +6,7 @@ export default function PlateTile({ plate, size = 'md', className }: { plate: st
   return (
     <span
       className={cn(
-        'inline-flex items-center whitespace-nowrap bg-white text-[#111820] border-[#111820] font-plate font-semibold leading-none tracking-[0.02em]',
+        'inline-flex items-center whitespace-nowrap bg-plate text-plate-ink border-plate-ink font-plate font-semibold leading-none tracking-[0.02em]',
         size === 'md' ? 'text-xl border-2 rounded-md px-2 pt-1 pb-[3px]' : 'text-base border-[1.5px] rounded px-1.5 pt-0.5 pb-px',
         className,
       )}

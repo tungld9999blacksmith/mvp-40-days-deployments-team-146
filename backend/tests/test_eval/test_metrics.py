@@ -9,9 +9,7 @@ from __future__ import annotations
 import math
 
 import pytest
-
 from eval.metrics import stats, text, tool_calling, trajectory
-
 
 # --- stats -----------------------------------------------------------------
 

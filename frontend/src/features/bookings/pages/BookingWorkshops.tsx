@@ -87,7 +87,7 @@ export default function BookingWorkshops() {
   const noWorkshop = isApiError(error, 'WORKSHOP_NOT_FOUND') || isApiError(error, 'NO_WORKSHOP_AVAILABLE') || data?.workshops.length === 0
 
   return (
-    <div className="max-w-3xl space-y-4">
+    <div className="max-w-3xl xl:max-w-none space-y-4">
       <LocationAnchorPicker resolved={data?.anchor ?? null} value={anchor} onChange={setAnchor} forceOpen={anchorRequired} />
 
       <div className="grid grid-cols-2 gap-3">
@@ -113,7 +113,7 @@ export default function BookingWorkshops() {
       </div>
 
       {data?.anchor.rankedBy === 'REGION' && data.workshops.length > 0 && (
-        <p className="text-xs text-muted">Sắp xếp theo khu vực (chưa có toạ độ để tính khoảng cách).</p>
+        <p className="text-xs text-muted">Xưởng trong khu vực bạn chọn. Để xếp theo khoảng cách, bấm “Đổi vị trí” rồi chọn “Vị trí hiện tại”.</p>
       )}
 
       {loading ? (

@@ -47,6 +47,9 @@ class UserSummaryOut(CamelModel):
     full_name: str | None = None
     account_status: str
     roles: list[str] = Field(default_factory=list)
+    # Shared demo account (modules/demo_account): the app shows a banner until the next reset.
+    is_demo: bool = False
+    demo_resets_at: datetime | None = None
 
 
 class ProfileOut(CamelModel):

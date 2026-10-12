@@ -46,6 +46,8 @@ services:
       # Celery broker/result backend: empty -> built from REDIS_HOST/REDIS_PORT (db 0/1).
       REDIS_BROKER_URL: ""
       REDIS_BACKEND_URL: ""
+      # OpenTelemetry: still off unless OTEL_ENABLED=true in .env (+ --profile observability).
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4318"
     volumes:
       - ./data:/app/data
     depends_on:
@@ -86,6 +88,8 @@ services:
       # Gmail dev: tự tạo chủ xe + xe khi khởi động (xem DEV_GUIDE.md).
       MOCK_DEV_OWNER_EMAILS: "${MOCK_DEV_OWNER_EMAILS:-}"
       MOCK_DEV_OWNER_VEHICLES: "${MOCK_DEV_OWNER_VEHICLES:-2}"
+      # Chủ xe OWN-DEMO (VF3, VF8, VF Wild) của tài khoản "Dùng thử ngay"; trùng DEMO_ACCOUNT_EMAIL.
+      MOCK_DEMO_OWNER_EMAIL: "${MOCK_DEMO_OWNER_EMAIL:-demo@evcare.invalid}"
       # Fixed date the generated ODO / dates / warranty status are computed against.
       MOCK_DEV_REFERENCE_DATE: "${MOCK_DEV_REFERENCE_DATE:-}"
     restart: unless-stopped

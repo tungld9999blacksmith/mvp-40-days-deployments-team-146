@@ -12,10 +12,12 @@ if str(backend_root) not in sys.path:
     sys.path.insert(0, str(backend_root))
 
 import src.common.core  # noqa: F401, E402  (registers every core table, all domains)
+import src.infrastructure.outbox.models  # noqa: F401, E402  (transactional outbox_event table)
 import src.infrastructure.vectorstore.models  # noqa: F401, E402  (generic vector_embedding table)
 from src.config import get_settings  # noqa: E402
 from src.modules.auth import domain as _auth_domain  # noqa: F401, E402
 from src.modules.authorization.domain import Role  # noqa: F401, E402
+from src.modules.demo_account import domain as _demo_account_domain  # noqa: F401, E402
 from src.modules.vehicle_owner_onboarding import domain as _onboarding_domain  # noqa: F401, E402
 from src.modules.workshop_owner_auth import domain as _workshop_auth_domain  # noqa: F401, E402
 from src.modules.workshop_owner_onboarding import domain as _workshop_onboarding_domain  # noqa: F401, E402

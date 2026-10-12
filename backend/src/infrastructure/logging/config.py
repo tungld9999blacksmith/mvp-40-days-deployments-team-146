@@ -1,4 +1,4 @@
-"""structlog configuration shared by the API process.
+"""structlog configuration shared by the API process and the Celery worker.
 
 Pipeline::
 
@@ -8,11 +8,15 @@ Pipeline::
                                ├─> [stdout]      exc -> PII redact -> JSON | console
                                ├─> [app.log]     exc -> PII redact -> LogLineRenderer
                                ├─> [app.jsonl]   exc -> PII redact -> JSONRenderer
-                               └─> [app.csv]     exc -> PII redact -> CsvRenderer
+                               ├─> [app.csv]     exc -> PII redact -> CsvRenderer
+                               └─> [OTLP]        exc -> PII redact -> JSON body
+                                                 (only when an OTel LoggerProvider is passed)
 
 Stdlib records (``logging.getLogger(__name__)``, uvicorn, libraries) go through
 the same ``foreign_pre_chain`` so they are rendered the same way and also carry
-the bound context (``correlation_id``, ``trace_id``, ...).
+the bound context (``correlation_id``, ``trace_id``, ...). While an OpenTelemetry
+span is active, ``trace_id`` / ``span_id`` are the span's, so log lines and traces
+join up in Grafana.
 
 PII redaction runs per output, *after* tracebacks are formatted, so exception
 messages are scrubbed too. File outputs are opt-in via ``file_formats``.
@@ -21,6 +25,7 @@ messages are scrubbed too. File outputs are opt-in via ``file_formats``.
 from __future__ import annotations
 
 import logging
+import os
 import sys
 from collections.abc import Iterable
 from pathlib import Path
@@ -28,6 +33,8 @@ from typing import Any, Literal, TextIO
 
 import structlog
 from structlog.types import Processor
+
+from src.infrastructure.observability.context import current_trace_ids
 
 from .handlers import rotating_file_handler
 from .pii import PiiRedactor
@@ -45,9 +52,22 @@ _PROPAGATED_LOGGERS = ("uvicorn", "uvicorn.error")
 _MANAGED_ATTR = "_structlog_managed"
 
 
+def add_otel_trace_context(_logger: Any, _method: str, event_dict: dict[str, Any]) -> dict[str, Any]:
+    """Set ``trace_id`` / ``span_id`` from the active OpenTelemetry span, if any.
+
+    Runs after ``merge_contextvars`` so the span (the source of truth for traces)
+    wins over ids bound earlier; without a span the bound ids stay untouched.
+    """
+    ids = current_trace_ids()
+    if ids is not None:
+        event_dict["trace_id"], event_dict["span_id"] = ids
+    return event_dict
+
+
 def _shared_processors() -> list[Processor]:
     return [
         structlog.contextvars.merge_contextvars,
+        add_otel_trace_context,
         structlog.stdlib.add_log_level,
         structlog.stdlib.add_logger_name,
         structlog.stdlib.ExtraAdder(),
@@ -106,12 +126,16 @@ def configure_logging(
     file_name: str = "app",
     max_bytes: int = 10 * 1024 * 1024,
     backup_count: int = 5,
+    otel_logger_provider: Any | None = None,
 ) -> None:
     """Configure structlog + the stdlib root logger. Safe to call more than once.
 
     ``file_formats`` picks the file exports among ``log`` / ``json`` / ``csv``
     (e.g. ``"log"`` or ``["log", "csv"]``); each is written to
     ``<log_dir>/<file_name>.<ext>`` with size-based rotation.
+
+    ``otel_logger_provider`` (from ``setup_telemetry``) adds an OTLP handler whose
+    body is the same redacted JSON line as stdout.
     """
     shared = _shared_processors()
     redactor = PiiRedactor() if redact_pii else None
@@ -147,7 +171,11 @@ def configure_logging(
         "json": (structlog.processors.JSONRenderer(ensure_ascii=False), True),
         "csv": (CsvRenderer(), False),
     }
-    for fmt in parse_file_formats(file_formats):
+    formats = parse_file_formats(file_formats)
+    # An unwritable directory (Railway: root-owned volume, app runs as uid 1000) would fail
+    # every record; keep stdout only and say so once below.
+    file_export_disabled = bool(formats) and not _writable_dir(Path(log_dir))
+    for fmt in () if file_export_disabled else formats:
         renderer, structured_exc = renderers[fmt]
         handler = rotating_file_handler(
             Path(log_dir) / f"{file_name}{_FILE_SUFFIX[fmt]}",
@@ -157,6 +185,20 @@ def configure_logging(
         )
         handler.setFormatter(_formatter(renderer, shared=shared, structured_exc=structured_exc, redactor=redactor))
         handlers.append(handler)
+
+    if otel_logger_provider is not None:
+        from src.infrastructure.observability.log_handler import RedactedOtlpLogHandler
+
+        otlp = RedactedOtlpLogHandler(logger_provider=otel_logger_provider)
+        otlp.setFormatter(
+            _formatter(
+                structlog.processors.JSONRenderer(ensure_ascii=False),
+                shared=shared,
+                structured_exc=True,
+                redactor=redactor,
+            )
+        )
+        handlers.append(otlp)
 
     for handler in handlers:
         setattr(handler, _MANAGED_ATTR, True)
@@ -176,6 +218,17 @@ def configure_logging(
         logger = logging.getLogger(name)
         logger.handlers.clear()
         logger.propagate = False
+
+    if file_export_disabled:
+        get_logger(__name__).warning("logging.file_export_disabled", log_dir=str(log_dir))
+
+
+def _writable_dir(path: Path) -> bool:
+    try:
+        path.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        return False
+    return os.access(path, os.W_OK)
 
 
 def get_logger(name: str | None = None, **initial_values: Any) -> structlog.stdlib.BoundLogger:

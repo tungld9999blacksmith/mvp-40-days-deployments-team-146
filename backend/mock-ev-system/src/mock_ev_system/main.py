@@ -15,10 +15,11 @@ import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 
+from .auth import require_access_token
 from .db import init_db
-from .routers import admin, lookup, maintenance, usage, vehicles, verify, warranty, webhooks
+from .routers import admin, lookup, maintenance, oauth, usage, vehicles, verify, warranty, webhooks
 from .simulator import run_simulator
 
 
@@ -56,19 +57,23 @@ app = FastAPI(
         "- 🔧 Maintenance — lịch bảo dưỡng, lịch sử, mốc tiếp theo\n"
         "- 📊 Vehicle Usage — snapshot & SSE stream odometer realtime\n"
         "- 📋 Lookup — mẫu xe, xưởng dịch vụ\n"
-        "- 🔔 Webhooks — signed notifications to EV Care (usage / service history)"
+        "- 🔔 Webhooks — signed notifications to EV Care (usage / service history)\n"
+        "- 🔑 OAuth — `POST /oauth/token`: client assertion → access token (M2M)"
     ),
     version="0.1.0",
     lifespan=lifespan,
 )
 
-# Register routers
-app.include_router(vehicles.router)
-app.include_router(verify.router)
-app.include_router(warranty.router)
-app.include_router(maintenance.router)
-app.include_router(usage.router)
-app.include_router(lookup.router)
+# Business routers require an access token from POST /oauth/token (SPEC-SEC-OEM-M2M-001 v2.0)
+# once EVCARE_PUBLIC_KEY is configured or MOCK_AUTH_REQUIRED is on.
+m2m_deps = [Depends(require_access_token)]
+app.include_router(oauth.router)
+app.include_router(vehicles.router, dependencies=m2m_deps)
+app.include_router(verify.router, dependencies=m2m_deps)
+app.include_router(warranty.router, dependencies=m2m_deps)
+app.include_router(maintenance.router, dependencies=m2m_deps)
+app.include_router(usage.router, dependencies=m2m_deps)
+app.include_router(lookup.router, dependencies=m2m_deps)
 app.include_router(webhooks.router)
 app.include_router(admin.router)
 

@@ -15,9 +15,9 @@ import AlternativesSheet from '../components/AlternativesSheet'
 import BookingSummaryCard, { quoteCode, type SummaryCost } from '../components/BookingSummaryCard'
 import { useBookingWizard } from '../context/BookingWizardContext'
 import { useSlotRequest } from '../hooks/useSlotRequest'
-import { useBookingMilestone } from './BookingLayout'
+import { useBookingMilestone } from '../hooks/useBookingMilestone'
 import type { Alternative, Booking } from '../types'
-import { bookingErrorMessage, slotLabel } from '../utils'
+import { bookingErrorMessage, milestoneItemsFor, slotLabel } from '../utils'
 
 /** Router state handed to the ticket screen (no GET /bookings/{id} yet — us-053). */
 export interface TicketState {
@@ -80,8 +80,7 @@ export default function BookingConfirm() {
   const current = card
 
   const workshop = workshopById(current.workshopId)
-  const next = status.data?.nextMilestone ?? null
-  const items = next && (params.odoMilestone === null || params.odoMilestone === next.odoMilestoneKm) ? next.items : []
+  const items = milestoneItemsFor(status.data?.nextMilestone ?? null, params.odoMilestone)
 
   const recheck = (withQuote: string | null = quoteId) =>
     void requestSlot({ workshopId: current.workshopId, date: current.date, timeSlot: current.timeSlot }, { quoteId: withQuote })
@@ -94,6 +93,7 @@ export default function BookingConfirm() {
           confirmationToken: current.confirmationToken,
           ...(params.proposalId ? { proposalId: params.proposalId } : {}),
           userVehicleId: vehicle.userVehicleId,
+          ...(params.sourceReminderId ? { sourceReminderId: params.sourceReminderId } : {}),
           ...(quoteId ? { quoteId } : {}),
           ...(milestone !== null ? { milestoneRef: String(milestone) } : {}),
           ...(note.trim() ? { note: note.trim() } : {}),
@@ -143,8 +143,9 @@ export default function BookingConfirm() {
   }
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl xl:max-w-none">
       <BookingSummaryCard
+        detailsInRail
         workshop={{ name: workshop?.name ?? 'Xưởng đã chọn', address: workshop?.address || null }}
         date={current.date}
         timeSlot={current.timeSlot}

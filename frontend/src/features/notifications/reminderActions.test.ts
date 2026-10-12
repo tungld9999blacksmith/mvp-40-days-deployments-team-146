@@ -9,6 +9,11 @@ const context = {
 } as ReminderContext
 
 describe('actions from an email reminder', () => {
+  it('carries reminder attribution only while booking the same milestone', () => {
+    const direct = reminderActions({ ...context, currentStatus: { ...context.currentStatus, nextMilestone: { odoMilestoneKm: 24000 } } } as ReminderContext)
+    expect(new URL(direct.booking!, 'http://localhost').searchParams.get('sourceReminderId')).toBe('reminder-a')
+    expect(new URL(reminderActions(context).booking!, 'http://localhost').searchParams.has('sourceReminderId')).toBe(false)
+  })
   it('keeps the correct vehicle and books the current milestone after maintenance', () => {
     const actions = reminderActions(context)
     const booking = new URL(actions.booking!, 'http://localhost')

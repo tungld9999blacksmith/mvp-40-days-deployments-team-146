@@ -47,6 +47,7 @@
 | [backend/guide/alembic.md](backend/guide/alembic.md) | Migration CSDL với Alembic |
 | [backend/src/guide/data-access.md](backend/src/guide/data-access.md) | Repository dùng chung (`SQLModelRepository`): CRUD, filter, phân trang offset / keyset / cursor |
 | [backend/guide/redis.md](backend/guide/redis.md) | Redis toolkit |
+| [backend/guide/outbox.md](backend/guide/outbox.md) | Transactional outbox: publish event cùng transaction, viết handler, retry / dead-letter |
 | [docs/specs/platform/location-search.api.md](docs/specs/platform/location-search.api.md) | API tìm vị trí (proxy Amazon Location + GrabMaps), hiển thị bản đồ MapLibre |
 | [backend/guide/qdrant.md](backend/guide/qdrant.md) | Qdrant vector store |
 | [backend/guide/agent.md](backend/guide/agent.md) | AI agent — quy ước đặt tên & tổ chức |
@@ -84,6 +85,9 @@
 | [docs/guide/devops/docker-cicd.md](docs/guide/devops/docker-cicd.md) | Docker & CI/CD |
 | [docs/observability/OBSERVABILITY_SETUP.md](docs/observability/OBSERVABILITY_SETUP.md) | Observability — setup OTel Collector, Grafana Cloud, LangSmith |
 | [docs/observability/OBSERVABILITY_USAGE.md](docs/observability/OBSERVABILITY_USAGE.md) | Observability — dùng Grafana (TraceQL, LogQL, PromQL, dashboard, alert) & LangSmith |
+| [docs/observability/GRAFANA_GUIDE.md](docs/observability/GRAFANA_GUIDE.md) | Grafana — Drilldown, Explore, đọc trace, chọn visualization, dựng dashboard |
+| [docs/observability/GRAFANA_ALERTING.md](docs/observability/GRAFANA_ALERTING.md) | Grafana — alert rule gửi Discord (contact point, template, Query/Expression A-B-C, policy) |
+| [backend/src/infrastructure/prompts/README.md](backend/src/infrastructure/prompts/README.md) | Prompt versioning — sửa prompt, lock version, push/pull LangSmith Prompt Hub |
 | [tools/repo_sync/README.md](tools/repo_sync/README.md) | Đồng bộ code nhánh `develop` sang repo deploy riêng |
 
 > Thêm hướng dẫn dev mới? Thêm một dòng vào bảng phù hợp ở trên.
@@ -233,6 +237,25 @@ evm post vehicles/verify-ownership --body '{"vin":"<VIN>","license_plate":"<bi�
 ```
 
 Test API backend qua Swagger: xem [backend/guide/testing-swagger-onboarding.md](backend/guide/testing-swagger-onboarding.md).
+
+### 4.1 Chủ xe có nhiều xe (màn chọn xe, issue #27)
+
+App chưa có luồng "Thêm xe", nên tài khoản dev có xe thứ 2 nhờ script. Mock cần cấp sẵn từ 2 xe trở lên cho Gmail đó (`MOCK_DEV_OWNER_VEHICLES=2`, §2.1), và tài khoản đã onboarding xong (§4).
+
+```bash
+cd backend
+python scripts/seed_multi_vehicle_owner.py --email <gmail>                 # xem kế hoạch, không ghi DB
+python scripts/seed_multi_vehicle_owner.py --email <gmail> --apply         # liên kết các xe còn lại
+python scripts/seed_multi_vehicle_owner.py --email <gmail> --undo --apply  # gỡ hết, chỉ giữ xe cũ nhất
+```
+
+Script xác thực từng VIN với hãng giống onboarding và chạy lại nhiều lần vẫn an toàn. `--undo` gỡ cả những xe không do script thêm, nên chỉ dùng cho tài khoản dev/QA. Script ghi vào DB mà `.env` trỏ tới: hỏi nhóm trước khi chạy `--apply` trên DB Supabase dùng chung.
+
+Không cần backend: chạy frontend với mock (`VITE_API_MOCKS=demo VITE_BACKEND_URL=http://127.0.0.1:9 npx vite --port 5175`), đăng nhập Google, rồi gõ vào console của trình duyệt:
+
+```js
+import('/src/mocks/server/demo.ts').then(m => { m.seedMultiVehicleOwner(); location.assign('/dashboard') })
+```
 
 ---
 

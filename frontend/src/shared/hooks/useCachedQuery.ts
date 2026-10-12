@@ -3,6 +3,7 @@ import type { ApiError } from '@/shared/api/client'
 import { onSessionEnd } from '@/shared/session/sessionCache'
 
 interface Entry<T> {
+  generation: number
   data: T | null
   error: ApiError | null
   fetchedAt: number | null
@@ -32,6 +33,7 @@ function getEntry<T>(key: string): Entry<T> {
   let entry = cache.get(key) as Entry<T> | undefined
   if (!entry) {
     entry = {
+      generation: 0,
       data: null,
       error: null,
       fetchedAt: null,
@@ -52,16 +54,20 @@ function publish<T>(entry: Entry<T>) {
 function run<T>(key: string, fetcher: () => Promise<T>): Promise<void> {
   const entry = getEntry<T>(key)
   if (entry.promise) return entry.promise
+  const generation = entry.generation
   entry.promise = fetcher()
     .then(data => {
+      if (entry.generation !== generation) return
       entry.data = data
       entry.error = null
       entry.fetchedAt = Date.now()
     })
     .catch((error: ApiError) => {
+      if (entry.generation !== generation) return
       entry.error = error
     })
     .finally(() => {
+      if (entry.generation !== generation) return
       entry.promise = null
       publish(entry)
     })
@@ -72,6 +78,8 @@ function run<T>(key: string, fetcher: () => Promise<T>): Promise<void> {
 /** Replaces cached data after a successful mutation (e.g. PUT returns the new settings). */
 export function setQueryData<T>(key: string, data: T): void {
   const entry = getEntry<T>(key)
+  entry.generation += 1
+  entry.promise = null
   entry.data = data
   entry.error = null
   entry.fetchedAt = Date.now()
@@ -82,10 +90,19 @@ export function setQueryData<T>(key: string, data: T): void {
 export function invalidateQuery(key: string): void {
   const entry = cache.get(key)
   if (!entry) return
+  entry.generation += 1
+  entry.promise = null
   entry.data = null
   entry.error = null
   entry.fetchedAt = null
   publish(entry)
+}
+
+/** Remove derived vehicle/reminder data after a consent change, including in-flight reads. */
+export function invalidateQueries(...prefixes: string[]): void {
+  for (const key of cache.keys()) {
+    if (prefixes.some(prefix => key.startsWith(prefix))) invalidateQuery(key)
+  }
 }
 
 const EMPTY: QueryState<never> = { data: null, error: null, isFetching: false, fetchedAt: null }

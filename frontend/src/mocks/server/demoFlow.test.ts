@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { addDays, getDb, isDemo, resetDb, todayVn } from './db'
-import { demoProgress, DEMO_SAMPLE, openFollowUpNow, restartWorkshopOnboarding, skipOwnerOnboarding } from './demo'
+import { demoProgress, DEMO_SAMPLE, EXTRA_DEMO_VEHICLES, openFollowUpNow, restartWorkshopOnboarding, seedMultiVehicleOwner, skipOwnerOnboarding } from './demo'
 import { configure, handleRequest } from './index'
 
 type Method = 'GET' | 'POST' | 'PUT' | 'DELETE'
@@ -194,6 +194,21 @@ describe('demo mode — booking to completion', () => {
 })
 
 describe('demo mode — panel shortcuts', () => {
+  it('seeds an owner with three vehicles in different due states', async () => {
+    seedMultiVehicleOwner()
+    seedMultiVehicleOwner() // idempotent: still three vehicles
+    await call('POST', '/oauth/sign-in')
+    const vehicles = (await call('GET', '/user-vehicles')).data
+    expect(vehicles.map((vehicle: { userVehicleId: string }) => vehicle.userVehicleId)).toEqual([
+      'demo-owner-vehicle',
+      ...EXTRA_DEMO_VEHICLES.map(vehicle => vehicle.userVehicleId),
+    ])
+    const due = await Promise.all(
+      vehicles.map(async (vehicle: { userVehicleId: string }) => (await call('GET', `/user-vehicles/${vehicle.userVehicleId}/maintenance-status`)).data.dueStatus),
+    )
+    expect(due).toEqual(['DUE_SOON', 'OVERDUE', 'NORMAL'])
+  })
+
   it('skips the onboarding into a returning owner with history and an open survey', async () => {
     skipOwnerOnboarding()
     const signIn = await call('POST', '/oauth/sign-in')

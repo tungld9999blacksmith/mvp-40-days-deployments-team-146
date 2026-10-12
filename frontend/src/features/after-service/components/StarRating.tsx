@@ -53,7 +53,7 @@ export default function StarRating({
               tabIndex={checked || (value === null && rating === 1) ? 0 : -1}
               disabled={disabled}
               onClick={() => onChange(rating)}
-              className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform hover:scale-110 disabled:hover:scale-100 focus-visible:ring-4 focus-visible:ring-emerald/25 focus-visible:outline-none"
+              className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform hover:scale-110 disabled:hover:scale-100"
             >
               <Star className={cn('w-9 h-9 transition-colors', filled ? 'text-warning fill-warning' : 'text-muted/50')} strokeWidth={1.5} />
             </button>

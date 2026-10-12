@@ -45,7 +45,7 @@ export default function PhoneDecisionDialog({
       aria-checked={decision === value}
       onClick={() => setDecision(value)}
       className={cn(
-        'flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-emerald/25',
+        'flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-colors',
         decision === value ? 'border-emerald bg-emerald-dim text-emerald' : 'border-border text-foreground hover:bg-card-hover',
       )}
     >

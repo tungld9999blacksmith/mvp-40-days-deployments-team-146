@@ -99,7 +99,7 @@ def test_bundled_dump_gives_every_model_all_milestones():
         assert seed.ITEM_CODE_RE.match(r["item_code"])
         per_model.setdefault(r["model_id"], set()).add(r["odo_milestone"])
     assert warnings == []
-    assert len(per_model) == 7
+    assert len(per_model) == 12  # MDL-01…MDL-12
     # VinFast EV schedule from 2026-01-01: every 15,000 km or 1 year.
     assert all(kms == {15000, 30000, 45000, 60000, 75000} for kms in per_model.values())
 

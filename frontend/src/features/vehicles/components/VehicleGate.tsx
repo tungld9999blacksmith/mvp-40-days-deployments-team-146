@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Car } from 'lucide-react'
 import { isApiError, type ApiError } from '@/shared/api/client'
 import Button from '@/shared/ui/Button'
@@ -9,10 +9,11 @@ import { useOnboardingRequiredRedirect } from '@/features/auth/hooks/useOnboardi
 import { invalidateQuery } from '@/shared/hooks/useCachedQuery'
 import type { VehicleSummary } from '../types'
 import { useVehicles, VEHICLES_KEY } from '../hooks/useVehicleQueries'
+import { useCurrentVehicle } from '../currentVehicle/CurrentVehicleContext'
 
 /**
- * Resolves the owner's (single) vehicle before rendering vehicle screens:
- * loading / list error / empty state / not-active state (US-017 FE §10.1, §11.2).
+ * Resolves the owner's current vehicle before rendering vehicle screens:
+ * loading / list error / empty state / unknown linked vehicle (US-017 FE §10.1, §11.2).
  */
 export default function VehicleGate({
   loading,
@@ -22,27 +23,24 @@ export default function VehicleGate({
   children: (vehicle: VehicleSummary) => ReactNode
 }) {
   const navigate = useNavigate()
-  const [search] = useSearchParams()
-  const vehicles = useVehicles()
-  useOnboardingRequiredRedirect(vehicles.error)
+  const { resolution, error, isFetching, refetch } = useCurrentVehicle()
+  useOnboardingRequiredRedirect(error)
 
-  if (vehicles.data === null) {
-    if (vehicles.error) {
+  if (resolution === null) {
+    if (error) {
       return (
         <Card>
-          <ErrorState traceId={vehicles.error.traceId} onRetry={() => void vehicles.refetch()} retrying={vehicles.isFetching} />
+          <ErrorState traceId={error.traceId} onRetry={() => void refetch()} retrying={isFetching} />
         </Card>
       )
     }
     return <>{loading}</>
   }
 
-  const requested = search.get('userVehicleId')
-  const vehicle = requested ? vehicles.data.find(v => v.userVehicleId === requested) : vehicles.data[0]
-  if (requested && !vehicle) {
+  if (resolution.kind === 'not-found') {
     return <Card><ErrorState title="Không tìm thấy xe trong liên kết." description="Hãy mở lại lời nhắc từ mục Thông báo của tài khoản." /></Card>
   }
-  if (!vehicle) {
+  if (resolution.kind === 'none') {
     return (
       <Card>
         <EmptyState
@@ -54,7 +52,9 @@ export default function VehicleGate({
       </Card>
     )
   }
-  return <>{children(vehicle)}</>
+  // `needs-selection`: RequireCurrentVehicle is already sending the owner to the picker.
+  if (resolution.kind !== 'selected') return <>{loading}</>
+  return <>{children(resolution.vehicle)}</>
 }
 
 /** Shared handling of vehicle-level API errors (404 → reload list, 409 → not active). */

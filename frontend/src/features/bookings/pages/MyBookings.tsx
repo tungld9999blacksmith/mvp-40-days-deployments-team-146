@@ -9,21 +9,51 @@ import { SkeletonCard } from '@/shared/ui/Skeleton'
 import Spinner from '@/shared/ui/Spinner'
 import { EmptyState, ErrorState } from '@/shared/ui/States'
 import { cn } from '@/shared/ui/cn'
+import { page } from '@/shared/ui/page'
+import { useMediaQuery, XL_QUERY } from '@/shared/hooks/useMediaQuery'
 import { BOOKING_STATUS } from '@/shared/domain/bookingLabels'
 import { formatVnd } from '@/features/estimate/utils'
+import { useCurrentVehicle } from '@/features/vehicles/currentVehicle/CurrentVehicleContext'
 import { listMyBookings } from '../api'
+import BookingPreview from '../components/BookingPreview'
 import type { MyBookingItem } from '../types'
-import { dayChip, slotLabel } from '../utils'
+import { dayChip, previewedBookingId, slotLabel } from '../utils'
 
 type Scope = 'UPCOMING' | 'PAST'
 
-function BookingRow({ item }: { item: MyBookingItem }) {
+/**
+ * `showVehicle`: the owner has several vehicles, so each row names its car.
+ * `onPreview` (xl): the row opens the side preview instead of the ticket page.
+ */
+function BookingRow({
+  item,
+  showVehicle,
+  selected,
+  onPreview,
+}: {
+  item: MyBookingItem
+  showVehicle: boolean
+  selected?: boolean
+  onPreview?: () => void
+}) {
   const chip = dayChip(item.bookingDate)
   const status = BOOKING_STATUS[item.status]
   return (
     <Link
       to={`/bookings/${encodeURIComponent(item.bookingId)}`}
-      className="group flex items-center gap-4 bg-card border border-border rounded-2xl p-4 elevation-sm hover:border-emerald/30 hover:-translate-y-0.5 hover:elevation-md transition-all"
+      onClick={
+        onPreview
+          ? event => {
+              event.preventDefault()
+              onPreview()
+            }
+          : undefined
+      }
+      aria-current={selected ? 'true' : undefined}
+      className={cn(
+        'group flex items-center gap-4 bg-card border border-border rounded-2xl p-4 elevation-sm hover:border-emerald/30 hover:-translate-y-0.5 hover:elevation-md transition-all',
+        selected && 'border-emerald ring-1 ring-emerald hover:border-emerald',
+      )}
     >
       <span className="w-14 shrink-0 rounded-xl bg-emerald/10 text-emerald text-center py-2">
         <span className="block text-[11px] font-semibold uppercase">{chip.weekday}</span>
@@ -35,6 +65,12 @@ function BookingRow({ item }: { item: MyBookingItem }) {
           <Store className="w-3.5 h-3.5 shrink-0" />
           {item.workshop.name}
         </span>
+        {showVehicle && item.vehicle && (
+          <span className="block text-xs text-muted mt-0.5 truncate">
+            {/* Plate first: it is what tells the cars apart when the line is cut on phones. */}
+            <span className="font-mono">{item.vehicle.plateMasked}</span> · {item.vehicle.modelName}
+          </span>
+        )}
       </span>
       <span className="text-right shrink-0">
         {status && <Badge tone={status.tone}>{status.label}</Badge>}
@@ -60,6 +96,11 @@ export default function MyBookings() {
   const [error, setError] = useState<ApiError | null>(null)
   const [loadingMore, setLoadingMore] = useState(false)
   const sentinel = useRef<HTMLDivElement>(null)
+  const showVehicle = (useCurrentVehicle().vehicles?.length ?? 0) > 1
+  // xl: list on the left, the chosen booking previewed on the right (DESIGN.md 2026-10-11).
+  const wide = useMediaQuery(XL_QUERY)
+  const [chosen, setChosen] = useState<string | null>(null)
+  const previewId = wide && items ? previewedBookingId(items, chosen) : null
 
   const load = useCallback(
     async (from: string | null) => {
@@ -96,7 +137,7 @@ export default function MyBookings() {
   }, [cursor, load, loadingMore])
 
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-2xl">
+    <div className={`${page('reading')} xl:max-w-none`}>
       <div className="flex flex-wrap items-end justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Lịch hẹn của tôi</h1>
@@ -107,6 +148,8 @@ export default function MyBookings() {
         </Button>
       </div>
 
+      <div className="xl:grid xl:grid-cols-3 xl:gap-6 xl:items-start">
+        <div className="xl:col-span-2 min-w-0">
       <div className="inline-flex p-1 rounded-xl bg-card border border-border mb-4" role="tablist" aria-label="Lịch hẹn">
         {(['UPCOMING', 'PAST'] as const).map(key => (
           <button
@@ -146,7 +189,12 @@ export default function MyBookings() {
           <ul className="space-y-3">
             {items?.map(item => (
               <li key={item.bookingId}>
-                <BookingRow item={item} />
+                <BookingRow
+                  item={item}
+                  showVehicle={showVehicle}
+                  selected={item.bookingId === previewId}
+                  onPreview={wide ? () => setChosen(item.bookingId) : undefined}
+                />
               </li>
             ))}
           </ul>
@@ -156,6 +204,10 @@ export default function MyBookings() {
           {scope === 'PAST' && !cursor && <p className="text-xs text-muted text-center">Chỉ hiển thị 90 ngày gần nhất.</p>}
         </>
       )}
+        </div>
+        {/* Not sticky: with the QR the card is taller than most screens, so its actions would never scroll into view. */}
+        {previewId && <BookingPreview bookingId={previewId} className="xl:mt-[52px]" />}
+      </div>
     </div>
   )
 }

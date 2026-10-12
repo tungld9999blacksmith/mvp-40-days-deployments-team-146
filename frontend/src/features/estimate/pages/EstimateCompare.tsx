@@ -7,6 +7,7 @@ import Button from '@/shared/ui/Button'
 import { Card } from '@/shared/ui/Card'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
 import { EmptyState, ErrorState } from '@/shared/ui/States'
+import { page } from '@/shared/ui/page'
 import VehicleGate from '@/features/vehicles/components/VehicleGate'
 import type { VehicleSummary } from '@/features/vehicles/types'
 import { compareEstimates } from '../api'
@@ -144,7 +145,7 @@ export default function EstimateCompare() {
   const odo = searchParams.get('odoMilestone')
   if (odo) back.set('odoMilestone', odo)
   return (
-    <div className="p-4 sm:p-6 xl:p-8">
+    <div className={page('reading')}>
       <Link to={`/estimate${back.toString() ? `?${back}` : ''}`} className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground mb-3">
         <ArrowLeft className="w-4 h-4" /> Chi phí bảo dưỡng
       </Link>

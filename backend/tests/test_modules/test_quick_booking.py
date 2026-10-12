@@ -630,6 +630,67 @@ async def test_revise_to_an_alternative_needs_a_new_confirmation(session, toolki
 
 
 @pytest.mark.asyncio
+async def test_agent_package_scope_survives_workshop_and_slot_revision(session, toolkit):
+    user, vehicle, conversation = _owner_with_vehicle(session, odo=11_500)
+    add_rules(session)
+    first = _workshop(session, "VinFast A", 2)
+    second = _workshop(session, "VinFast B", 5)
+    service = _service(session, toolkit)
+    target_day = _today() + timedelta(days=3)
+    package = {
+        "package_code": "ESSENTIAL",
+        "name": "Thiết yếu",
+        "items": [
+            {
+                "item_code": "BRAKE_INSPECTION",
+                "item_name": "Brake inspection",
+                "tier": "REQUIRED",
+                "price": "0",
+                "covered": False,
+                "price_source": "REFERENCE_PRICE",
+                "duration_minutes": 30,
+                "seen_in_service_history": False,
+            }
+        ],
+        "item_codes": ["BRAKE_INSPECTION"],
+        "omitted_item_codes": ["BATTERY_CHECK"],
+        "estimated_total": "0",
+        "estimated_duration_minutes": 30,
+        "constraint_status": "FITS",
+    }
+
+    proposal, card = await service.propose_from_agent(
+        user.user_id,
+        vehicle.id,
+        conversation.id,
+        first.id,
+        target_day,
+        time(9),
+        12_000,
+        package,
+    )
+    other = next(option for option in card["alternatives"] if option["workshopId"] == str(second.id))
+    assert other["maintenancePackage"]["itemCodes"] == ["BRAKE_INSPECTION"]
+
+    revised = await service.revise(
+        user.user_id,
+        conversation.id,
+        proposal.id,
+        ReviseRequest(
+            workshopId=second.id,
+            date=date.fromisoformat(other["date"]),
+            timeSlot=time.fromisoformat(other["timeSlot"]),
+        ),
+    )
+
+    selected = revised.message.card["primary"]
+    assert selected["workshopId"] == str(second.id)
+    assert selected["maintenancePackage"]["packageCode"] == "ESSENTIAL"
+    assert selected["maintenancePackage"]["itemCodes"] == ["BRAKE_INSPECTION"]
+    assert selected["maintenancePackage"]["pricingUpdatedForWorkshop"] is True
+
+
+@pytest.mark.asyncio
 async def test_revise_rejects_a_workshop_not_offered_and_a_too_early_slot(session, toolkit):
     user, vehicle, conversation = _owner_with_vehicle(session)
     add_rules(session)

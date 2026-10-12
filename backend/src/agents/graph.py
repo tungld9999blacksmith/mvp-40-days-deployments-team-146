@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import os
 from typing import Any
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
@@ -9,7 +8,6 @@ from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import ToolNode
-from langgraph.types import interrupt
 from pydantic import SecretStr
 
 try:
@@ -17,14 +15,13 @@ try:
 except ImportError:
     from src.config import get_settings
 
+from ..infrastructure.observability import instrument_tools, step
 from .evidence import collect_rag_evidence, preserve_rag_fallback
 from .guardrails import guarded_calls, tool_failure
 from .prompts import format_system_prompt
 from .state import AgentState
+from .telemetry import record_tool_call_guard, tool_call_signature
 from .tools import CUSTOMER_AGENT_TOOLS
-
-# Tắt tracing tự động nếu chưa cấu hình dự án LangSmith
-os.environ.setdefault("LANGCHAIN_TRACING_V2", "false")
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +104,8 @@ def get_agent_llm(*, fallback: bool = False) -> Any:
             temperature=0.2,
             timeout=settings.llm_call_timeout_seconds,
             max_retries=0,
+            # Usage in the final stream chunk: LangSmith counts tokens / cost of streamed turns.
+            stream_usage=True,
             **routing,
         )
 
@@ -138,6 +137,7 @@ def get_agent_llm(*, fallback: bool = False) -> Any:
             temperature=0.2,
             timeout=settings.llm_call_timeout_seconds,
             max_retries=max_retries,
+            stream_usage=True,
         )
 
     raise ValueError(f"Agent provider {settings.llm_provider!r} is unsupported or missing its API key")
@@ -172,7 +172,8 @@ def build_graph(
         checkpointer: LangGraph checkpointer (mặc định: auto-detect PostgreSQL hoặc MemorySaver)
     """
     model = llm if llm is not None else get_agent_llm()
-    bound_tools = tools if tools is not None else CUSTOMER_AGENT_TOOLS
+    # Grafana-side spans + tool metrics around each tool body (idempotent).
+    bound_tools = instrument_tools(tools if tools is not None else CUSTOMER_AGENT_TOOLS)
     model_with_tools = model.bind_tools(bound_tools)
     settings = get_settings()
     memory_config = memory_settings if memory_settings is not None else settings
@@ -286,7 +287,10 @@ def build_graph(
                     pass  # Nếu không patch được, giữ nguyên — LLM args vẫn được dùng
 
         # Nếu có init_messages từ query legacy, đưa vào messages trả về để lưu trong state
-        response = guarded_calls(response, messages, bound_tools)
+        with step("agent.guard.tool_calls", attributes={"guard.stage": "tool_calls"}) as guard:
+            before = tool_call_signature(response)
+            response = guarded_calls(response, messages, bound_tools)
+            record_tool_call_guard(guard, before, response)
         response = preserve_rag_fallback(response, messages)
         from .memory_guard import verified_memory_response, verified_preference_recall
         response = verified_memory_response(response, messages)
@@ -342,61 +346,19 @@ def build_graph(
             outputs = result["messages"]
         return {"messages": outputs + rejected}
 
-    def hitl_routing(state: AgentState) -> str:
-        """Kiểm tra xem LLM có muốn gọi create_booking_draft không.
-        Nếu có → chuyển sang hitl_node để xin xác nhận từ user trước.
-        Nếu không → chuyển sang tools_node bình thường.
+    def agent_routing(state: AgentState) -> str:
+        """Run requested tools or finish the turn.
+
+        Booking HITL is owned by the proposal card and API-QB-02. The graph
+        never pauses before ``propose_booking`` because that tool performs no
+        booking write and does not reserve a slot.
         """
         messages = state.get("messages", [])
         if not messages:
             return "end"
         last = messages[-1]
         tool_calls = getattr(last, "tool_calls", None) or []
-        has_booking = any(tc.get("name") == "create_booking_draft" for tc in tool_calls)
-        if has_booking:
-            return "hitl"
-        if tool_calls:
-            return "tools"
-        return "end"
-
-    async def hitl_node(state: AgentState) -> dict[str, Any]:
-        """Human-in-the-Loop node: tạm dừng graph, chờ chủ xe xác nhận.
-
-        Gọi interrupt() để LangGraph lưu checkpoint và trả quyền kiểm soát về orchestrator.
-        Orchestrator sẽ emit sự kiện 'hitl_required' cho frontend, rồi resume graph
-        khi user xác nhận hoặc hủy thông qua confirm_booking_turn().
-        """
-        messages = state.get("messages", [])
-        last = messages[-1] if messages else None
-        tool_calls = getattr(last, "tool_calls", None) or []
-
-        # Trích thông tin booking draft để gửi lên frontend
-        booking_draft: dict[str, Any] = {}
-        for tc in tool_calls:
-            if tc.get("name") == "create_booking_draft":
-                booking_draft = tc.get("args", {})
-                break
-
-        # interrupt() lưu state vào checkpointer và raise exception đặc biệt của LangGraph
-        # Giá trị trả về là dữ liệu mà orchestrator truyền vào khi resume (confirmed / rejected)
-        user_decision: dict[str, Any] = interrupt(
-            {
-                "type": "booking_confirmation_required",
-                "draft": booking_draft,
-            }
-        )
-
-        # Nếu user từ chối → xóa tool_call booking khỏi messages, trả thông báo hủy
-        if not user_decision.get("confirmed", False):
-            from langchain_core.messages import AIMessage
-
-            cancel_msg = AIMessage(
-                content="Đã hủy yêu cầu đặt lịch theo ý bạn. Bạn có muốn chọn khung giờ khác hoặc xưởng khác không?",
-            )
-            return {"messages": [cancel_msg], "draft_booking": None}
-
-        # Nếu user xác nhận → tiếp tục, graph sẽ tự route sang tools_node để thực thi create_booking_draft
-        return {}
+        return "tools" if tool_calls else "end"
 
     workflow = StateGraph(AgentState)  # type: ignore[reportArgumentType]
 
@@ -404,22 +366,13 @@ def build_graph(
     workflow.add_node("agent", agent_node)
     workflow.add_node("tools", guarded_tools_node)
     workflow.add_node("tool_error", tool_error_node)
-    workflow.add_node("hitl", hitl_node)
 
-    # Luồng chính: START → agent → (routing) → tools/hitl/end
+    # Luồng chính: START → agent → tools/end. Booking confirmation is API-QB-02.
     workflow.add_edge(START, "agent")
     workflow.add_conditional_edges(
         "agent",
-        hitl_routing,
-        {"tools": "tools", "hitl": "hitl", "end": "__end__"},
-    )
-    # Sau HITL (user xác nhận) → tools để thực thi create_booking_draft
-    workflow.add_conditional_edges(
-        "hitl",
-        lambda state: (
-            "tools" if state.get("messages") and getattr(state["messages"][-1], "tool_calls", None) else "agent"
-        ),
-        {"tools": "tools", "agent": "agent"},
+        agent_routing,
+        {"tools": "tools", "end": "__end__"},
     )
     workflow.add_conditional_edges(
         "tools", lambda state: "tool_error" if tool_failure(list(state.get("messages", []))) else "agent",

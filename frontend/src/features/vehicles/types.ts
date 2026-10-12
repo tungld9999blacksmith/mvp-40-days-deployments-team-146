@@ -29,6 +29,7 @@ export interface NextMilestone {
 }
 
 export interface MaintenanceStatus {
+  maintenanceForecast?: MaintenanceForecast | null
   userVehicleId: string
   dueStatus: DueStatus | string
   dueReason: DueReason | null
@@ -41,6 +42,24 @@ export interface MaintenanceStatus {
   lastService: { type: string; date: string; odoKm: number | null } | null
   thresholds: { dueSoonKm: number; dueSoonDays: number }
   oemSyncedAt: string | null
+  calculatedAt: string
+}
+
+export interface MaintenanceForecast {
+  status: string
+  quality: string | null
+  avgKmPerDay: number | null
+  observationDays: number | null
+  sampleDays: number | null
+  anchorRecordedAt: string | null
+  kmForecastDate: string | null
+  officialTimeDueDate: string | null
+  projectedDueDate: string | null
+  basis: 'KM_FORECAST' | 'TIME_ONLY' | null
+  possiblyReached: boolean
+  reminderRecommended: boolean
+  reminderLeadDays: number | null
+  algorithmVersion: string
   calculatedAt: string
 }
 
@@ -95,4 +114,32 @@ export interface ServiceRecord {
 
 export interface ServiceRecordList {
   items: ServiceRecord[]
+}
+
+export interface TripPlan {
+  id: string
+  departureDate: string
+  returnDate: string | null
+  distanceKm: number
+  reminderEnabled: boolean
+  updatedAt: string
+  advice: {
+    status: 'DEPARTED' | 'UNKNOWN' | 'ODO_UNAVAILABLE' | 'NO_MILESTONE_CROSSING' | 'MAINTENANCE_RECOMMENDED'
+    reasons: string[]
+    milestoneKm: number | null
+    projectedTripEndKm: number | null
+    projectedUsageBeforeDepartureKm: number
+    prepareBy: string | null
+    hasBooking: boolean
+    reminderActive: boolean
+    preferredServiceWindow: { day: string; period: string; suggestedDate?: string } | null
+    preferredWorkshop: { workshop_id: string; name?: string } | null
+  }
+}
+
+export interface TripPlanInput {
+  departureDate: string
+  returnDate: string | null
+  distanceKm: number
+  reminderEnabled: boolean
 }

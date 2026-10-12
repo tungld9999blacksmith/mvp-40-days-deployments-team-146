@@ -12,6 +12,7 @@ import { formatDate, formatKm, formatTimeDayMonth } from '@/shared/utils/format'
 import type { MaintenanceStatus } from '../types'
 import { DUE_REASON_TEXT, milestoneProgress, milestoneTitle, remainingParts } from '../utils/maintenanceFormat'
 import DueStatusBadge, { dueTone } from './DueStatusBadge'
+import UsageForecastCard from './UsageForecastCard'
 
 const TONE_TEXT = { success: 'text-emerald', warning: 'text-warning', error: 'text-error', neutral: 'text-muted' }
 const TONE_BAR = { success: 'bg-emerald', warning: 'bg-warning', error: 'bg-error', neutral: 'bg-muted' }
@@ -62,7 +63,7 @@ export default function MaintenanceStatusCard({
   const unknown = status.dueStatus === 'UNKNOWN' || !['NORMAL', 'DUE_SOON', 'OVERDUE'].includes(status.dueStatus)
   const parts = unknown ? [] : remainingParts(status)
   const progress = unknown ? null : milestoneProgress(status)
-  const alerting = status.dueStatus === 'DUE_SOON' || status.dueStatus === 'OVERDUE'
+  const alerting = status.dueStatus === 'DUE_SOON' || status.dueStatus === 'OVERDUE' || Boolean(status.maintenanceForecast?.reminderRecommended)
   const items = status.nextMilestone?.items ?? []
   const shownItems = compact ? items.slice(0, 3) : items
 
@@ -144,6 +145,8 @@ export default function MaintenanceStatusCard({
           )}
         </>
       )}
+
+      {!unknown && <UsageForecastCard forecast={status.maintenanceForecast} />}
 
       {status.odometer ? (
         <p className="text-xs text-muted mt-4">

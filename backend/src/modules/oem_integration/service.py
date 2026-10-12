@@ -10,6 +10,7 @@ Spec: ``docs/specs/sprint-2/api/us-017-sprint-2-spec.api.md``.
 
 from __future__ import annotations
 
+import hmac
 import json
 import logging
 import random
@@ -18,7 +19,18 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from uuid import UUID
 
-from ev_contracts import WebhookEvent, WebhookEventType, verify_webhook_signature
+from ev_contracts import (
+    BODY_HASH_CLAIM,
+    EVCARE_CLIENT_ID,
+    OEM_ISSUER,
+    M2MAuthError,
+    M2MTokenInvalidError,
+    WebhookEvent,
+    WebhookEventType,
+    body_sha256,
+    verify_m2m_token,
+    verify_webhook_signature,
+)
 from pydantic import ValidationError
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
@@ -352,7 +364,7 @@ class WebhookResult:
 
 
 class OemWebhookService:
-    """Authenticates manufacturer webhooks and schedules syncs (API-VEH-004)."""
+    """Authenticates manufacturer webhooks and schedules syncs (API-VEH-004, SPEC-SEC-OEM-M2M-001)."""
 
     def __init__(
         self,
@@ -363,6 +375,8 @@ class OemWebhookService:
         secret: str,
         tolerance_seconds: int = 300,
         clock: Callable[[], datetime] = utc_now,
+        oem_public_key: str = "",
+        auth_mode: str = "both",
     ) -> None:
         self._db = session
         self._scheduler = scheduler
@@ -370,6 +384,53 @@ class OemWebhookService:
         self._secret = secret
         self._tolerance = tolerance_seconds
         self._clock = clock
+        self._oem_public_key = oem_public_key
+        self._auth_mode = auth_mode
+
+    def _verify_auth(
+        self,
+        *,
+        auth_header: str | None,
+        timestamp: str | None,
+        signature: str | None,
+        raw_body: bytes,
+    ) -> None:
+        """Verify request authenticity using Asymmetric M2M JWT, HMAC, or either."""
+        jwt_verified = False
+        if auth_header and self._oem_public_key and self._auth_mode != "hmac":
+            try:
+                claims = verify_m2m_token(
+                    auth_header,
+                    self._oem_public_key,
+                    expected_issuer=OEM_ISSUER,
+                    expected_audience=EVCARE_CLIENT_ID,
+                )
+                # The token must be bound to this body, or it could be replayed with another one.
+                expected_hash = str(claims.get(BODY_HASH_CLAIM) or "")
+                if not hmac.compare_digest(expected_hash, body_sha256(raw_body)):
+                    raise M2MTokenInvalidError("Webhook token body hash does not match the request body")
+                jwt_verified = True
+            except M2MAuthError as exc:
+                logger.warning("M2M JWT verification failed (%s): %s", exc.code, exc)
+                if self._auth_mode == "jwt":
+                    raise errors.WebhookSignatureInvalidError() from exc
+
+        if self._auth_mode == "jwt":
+            if not jwt_verified:
+                raise errors.WebhookSignatureInvalidError()
+            return
+
+        if jwt_verified:
+            # If JWT verified successfully in "both" mode, authentication passes.
+            return
+
+        # Fallback to HMAC signature verification
+        self._check_timestamp(timestamp)
+        if not self._secret:
+            logger.error("OEM_WEBHOOK_SECRET is not configured; rejecting webhook")
+            raise errors.WebhookSignatureInvalidError()
+        if not signature or not verify_webhook_signature(self._secret, timestamp, raw_body, signature):
+            raise errors.WebhookSignatureInvalidError()
 
     async def handle(
         self,
@@ -378,13 +439,14 @@ class OemWebhookService:
         timestamp: str | None,
         signature: str | None,
         raw_body: bytes,
+        auth_header: str | None = None,
     ) -> WebhookResult:
-        self._check_timestamp(timestamp)
-        if not self._secret:
-            logger.error("OEM_WEBHOOK_SECRET is not configured; rejecting webhook")
-            raise errors.WebhookSignatureInvalidError()
-        if not signature or not verify_webhook_signature(self._secret, timestamp, raw_body, signature):
-            raise errors.WebhookSignatureInvalidError()
+        self._verify_auth(
+            auth_header=auth_header,
+            timestamp=timestamp,
+            signature=signature,
+            raw_body=raw_body,
+        )
         if not event_id or len(event_id) > 128:
             raise errors.InvalidWebhookRequestError("X-OEM-Event-Id header is required.")
 

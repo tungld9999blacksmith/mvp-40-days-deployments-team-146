@@ -7,6 +7,7 @@ import Button from '@/shared/ui/Button'
 import { Card } from '@/shared/ui/Card'
 import { EmptyState, ErrorState, Notice } from '@/shared/ui/States'
 import { useToast } from '@/shared/ui/Toast'
+import { page } from '@/shared/ui/page'
 
 export default function DemoEmailOutbox() {
   const query = useCachedQuery('demo-email-outbox', getDemoEmailOutbox, 0)
@@ -26,13 +27,13 @@ export default function DemoEmailOutbox() {
     } finally { setBusy(false) }
   }
   if (query.data && !['mock', 'resend_test'].includes(query.data.mode)) return (
-    <div className="p-4 sm:p-6 space-y-4">
+    <div className={`${page('reading')} space-y-4`}>
       <Link to="/notifications" className="text-sm text-emerald">← Thông báo</Link>
       <Notice>Hộp thư mô phỏng chỉ có khi ứng dụng dùng email mock. Xem trạng thái gửi thật trong chi tiết lời nhắc.</Notice>
     </div>
   )
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-3xl space-y-5">
+    <div className={`${page('reading')} space-y-5`}>
       <Link to="/notifications/settings" className="text-sm text-emerald">← Cài đặt nhắc bảo dưỡng</Link>
       <h1 className="text-2xl font-bold text-foreground">Hộp thư demo</h1>
       <Notice>{realTest

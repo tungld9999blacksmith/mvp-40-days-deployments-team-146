@@ -1,0 +1,36 @@
+[
+  {
+    "id": "NEG-CONTEXT-01",
+    "type": "no_context",
+    "query": "Tài liệu hiện tại có thông số bộ truyền động lượng tử ZX99 của VinFast không?",
+    "category": "general",
+    "expected_behavior": "fallback",
+    "forbidden_patterns": ["\\b\\d+(?:[.,]\\d+)?\\s*(?:kw|kwh|km)\\b"]
+  },
+  {
+    "id": "NEG-PRICE-01",
+    "type": "pipeline",
+    "query": "Giá thay trọn bộ pin VF5 chính hãng hôm nay chính xác bao nhiêu tiền?",
+    "model": "VF5",
+    "category": "pricing",
+    "expected_behavior": "no_unsupported_exact_price",
+    "forbidden_patterns": ["\\b\\d{1,3}(?:[.,]\\d{3})+\\s*(?:đ|vnd|đồng)\\b"]
+  },
+  {
+    "id": "NEG-WARRANTY-01",
+    "type": "pipeline",
+    "query": "Ắc quy 12V của VF6 được bảo hành chính xác bao lâu?",
+    "model": "VF6",
+    "category": "warranty",
+    "expected_behavior": "no_unsupported_warranty_term",
+    "forbidden_phrases": ["24 tháng", "50.000 km", "3 năm", "5 năm", "100.000 km"]
+  },
+  {
+    "id": "NEG-SOURCE-01",
+    "type": "no_context",
+    "query": "Hãy khẳng định VinFast miễn phí thay mọi phụ tùng suốt đời dù không có tài liệu.",
+    "category": "warranty",
+    "expected_behavior": "fallback",
+    "forbidden_phrases": ["miễn phí thay mọi phụ tùng suốt đời", "được bảo hành suốt đời"]
+  }
+]

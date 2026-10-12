@@ -11,7 +11,7 @@ import { cn } from './cn'
 
 const controlBase =
   'w-full bg-card border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted elevation-sm ' +
-  'hover:border-foreground/20 focus:outline-none focus:border-emerald/60 focus:ring-4 focus:ring-emerald/15 ' +
+  'hover:border-foreground/20 focus-field ' +
   'transition-[border-color,box-shadow] duration-200 disabled:opacity-60 disabled:cursor-not-allowed'
 
 function controlClass(error: string | undefined, className?: string) {

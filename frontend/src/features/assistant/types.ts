@@ -76,6 +76,30 @@ export interface ProposalOption {
   date: string
   timeSlot: string
   estimate: { chargeableTotal: string; hasReferencePrice: boolean; coveredCount: number } | null
+  maintenancePackage?: MaintenancePackageSnapshot
+}
+
+export type MaintenancePackageTier = 'REQUIRED' | 'RECOMMENDED' | 'OPTIONAL'
+
+export interface MaintenancePackageSnapshot {
+  packageCode: 'ESSENTIAL' | 'BALANCED' | 'COMPREHENSIVE'
+  name: string
+  items: {
+    itemCode: string
+    itemName: string
+    tier: MaintenancePackageTier
+    price: string
+    covered: boolean
+    priceSource: string | null
+    durationMinutes: number
+    seenInServiceHistory: boolean
+  }[]
+  itemCodes: string[]
+  omittedItemCodes: string[]
+  estimatedTotal: string
+  estimatedDurationMinutes: number
+  constraintStatus: string
+  pricingUpdatedForWorkshop?: boolean
 }
 
 export interface ProposalMilestone {
@@ -98,6 +122,7 @@ export interface ProposalBooking {
   bookingCode: string | null
   status: string
   ownerCancelableUntil: string | null
+  maintenancePackageCode?: string | null
 }
 
 export interface BookingProposalCard {
@@ -135,6 +160,7 @@ export interface ConfirmProposalResult {
     bookingDate: string
     timeSlot: string
     ownerCancelableUntil: string | null
+    maintenancePackageCode?: string | null
   }
   message: MessageDto | null
   replayed: boolean

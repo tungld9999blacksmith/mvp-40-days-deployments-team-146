@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from src.common.core.maintenance.reminder import ReminderChannel, ReminderLevel
 from src.modules.user_vehicle.domain import DueResult, DueStatus
+from src.modules.vehicle_usage.schemas import MaintenanceForecast
 
 from .channels import NotificationMessage
 
@@ -57,6 +58,8 @@ def build_message(
     result: DueResult,
     level: ReminderLevel,
     app_url: str = "",
+    forecast: MaintenanceForecast | None = None,
+    trip: dict | None = None,
 ) -> NotificationMessage:
     """BR-509: no VIN / phone / email / national id; plate partly masked; link to the app."""
     milestone = result.next_milestone
@@ -90,6 +93,10 @@ def build_message(
         subject = "Xe sắp đến hạn bảo dưỡng"
         body = f"Xe {vehicle} sắp đến mốc bảo dưỡng {label} (hạn {due}, {remaining})."
 
+    if forecast and forecast.status == "AVAILABLE" and forecast.km_forecast_date:
+        body += f" Mức sử dụng khoảng {forecast.avg_km_per_day:g} km/ngày; dự kiến chạm mốc km {forecast.km_forecast_date.strftime('%d/%m/%Y')} nếu duy trì mức sử dụng này."
+    if trip:
+        body += f" Chuyến đi khai báo ngày {trip['departureDate']}, khoảng {trip['distanceKm']} km: nên lên kế hoạch bảo dưỡng trước khi đi. Quãng đường này chưa phải ODO đã ghi nhận."
     link = f"{app_url.rstrip('/')}/booking" if app_url else None
     if link:
         body += f" Đặt lịch bảo dưỡng: {link}"

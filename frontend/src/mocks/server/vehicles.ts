@@ -57,6 +57,8 @@ const WARRANTY_TERMS = [
  * defaults give the "500 km / 12 days left" case of the us-061 spec.
  */
 export function createOwnerVehicle(input: {
+  /** Extra vehicles of a multi-vehicle owner need their own id; the onboarding vehicle keeps the default. */
+  userVehicleId?: string
   vin: string
   licensePlate: string
   modelId: string
@@ -72,7 +74,7 @@ export function createOwnerVehicle(input: {
   const deliveredAt = addDays(today, -(input.deliveredDaysAgo ?? 353))
   const productionYear = input.productionYear ?? Number(deliveredAt.slice(0, 4))
   const vehicle: MockVehicle = {
-    userVehicleId: OWNER_VEHICLE_ID,
+    userVehicleId: input.userVehicleId ?? OWNER_VEHICLE_ID,
     modelId: model.modelId,
     modelName: `VinFast ${[model.modelName, model.trim].filter(Boolean).join(' ')}`,
     licensePlate: normalizePlate(input.licensePlate),

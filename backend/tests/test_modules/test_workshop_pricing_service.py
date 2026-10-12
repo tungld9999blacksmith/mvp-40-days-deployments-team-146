@@ -129,9 +129,146 @@ def test_model_names_come_from_verified_vehicles(world):
     from tests._user_vehicle import add_owner, add_vehicle
 
     session, workshop, pricing = world
-    add_rules(session, "MDL-07")
-    assert pricing.price_list(workshop, MODEL_ID).model_names == {}  # no vehicle yet: the UI shows the code
-    add_vehicle(session, add_owner(session))  # MDL-03, VF6 Plus
+    add_rules(session, "MDL-99")
+    assert pricing.price_list(workshop, MODEL_ID).model_names == {MODEL_ID: "VF6 Plus"}  # static table
+    vehicle = add_vehicle(session, add_owner(session))  # MDL-03
+    vehicle.trim = "Plus 2025"
+    session.add(vehicle)
+    session.commit()
     out = pricing.price_list(workshop, MODEL_ID)
-    assert out.models == [MODEL_ID, "MDL-07"]
-    assert out.model_names == {MODEL_ID: "VF6 Plus"}
+    assert out.models == [MODEL_ID, "MDL-99"]
+    assert out.model_names == {MODEL_ID: "VF6 Plus 2025"}  # the snapshot beats the static table; MDL-99 shows its code
+
+
+# Regression: the picker showed "MDL-02", "MDL-03" for VF6 Eco/Plus because no owner had verified one.
+def test_catalog_names_cover_models_without_a_vehicle(world):
+    from tests._user_vehicle import add_owner, add_vehicle
+
+    session, workshop, _ = world
+    add_rules(session, "MDL-07")
+    add_vehicle(session, add_owner(session))  # MDL-03 snapshot "VF6 Plus"
+    pricing = WorkshopPricingService(
+        session, clock=lambda: NOW, catalog_names={"MDL-07": "VF9 Plus", MODEL_ID: "VF6 Plus (catalog)"}
+    )
+    assert pricing.price_list(workshop, MODEL_ID).model_names == {MODEL_ID: "VF6 Plus (catalog)", "MDL-07": "VF9 Plus"}
+
+
+class _Gateway:
+    def __init__(self, models=None, error: Exception | None = None):
+        self.models, self.error, self.calls = models or [], error, 0
+
+    async def list_models(self):
+        self.calls += 1
+        if self.error:
+            raise self.error
+        return self.models
+
+
+def test_catalog_names_are_cached_and_tolerate_an_outage():
+    import asyncio
+
+    from src.modules.workshop_pricing import catalog
+
+    catalog.clear_cache()
+    down = _Gateway(error=TimeoutError("down"))
+    assert asyncio.run(catalog.catalog_names(down, clock=lambda: 0)) == {}
+
+    up = _Gateway(
+        [
+            {"model_id": "MDL-02", "model_name": "VF6", "trim": "Eco"},
+            {"model_id": "MDL-08", "model_name": "VF Wild", "trim": "Plus"},
+        ]
+    )
+    start = catalog.FAILURE_TTL_SECONDS + 1
+    assert asyncio.run(catalog.catalog_names(up, clock=lambda: start)) == {
+        "MDL-02": "VF6 Eco",
+        "MDL-08": "VF Wild Plus",
+    }
+    asyncio.run(catalog.catalog_names(up, clock=lambda: start + catalog.TTL_SECONDS - 1))
+    assert up.calls == 1  # still fresh
+    asyncio.run(catalog.catalog_names(up, clock=lambda: start + catalog.TTL_SECONDS + 1))
+    assert up.calls == 2
+    catalog.clear_cache()
+
+
+# Regression: with the manufacturer down every price-list request waited out the 2 s timeout (~2.8 s each).
+def test_catalog_outage_is_remembered_briefly():
+    import asyncio
+
+    from src.modules.workshop_pricing import catalog
+
+    catalog.clear_cache()
+    down = _Gateway(error=TimeoutError())
+    asyncio.run(catalog.catalog_names(down, clock=lambda: 0))
+    assert asyncio.run(catalog.catalog_names(down, clock=lambda: catalog.FAILURE_TTL_SECONDS - 1)) == {}
+    assert down.calls == 1  # no second wait while the outage is remembered
+    asyncio.run(catalog.catalog_names(down, clock=lambda: catalog.FAILURE_TTL_SECONDS + 1))
+    assert down.calls == 2  # then it tries again
+    catalog.clear_cache()
+
+
+def test_catalog_outage_keeps_the_last_names_read():
+    import asyncio
+
+    from src.modules.workshop_pricing import catalog
+
+    catalog.clear_cache()
+    up = _Gateway([{"model_id": "MDL-02", "model_name": "VF6", "trim": "Eco"}])
+    asyncio.run(catalog.catalog_names(up, clock=lambda: 0))
+    down = _Gateway(error=TimeoutError())
+    later = catalog.TTL_SECONDS + 1
+    assert asyncio.run(catalog.catalog_names(down, clock=lambda: later)) == {"MDL-02": "VF6 Eco"}
+    assert asyncio.run(catalog.catalog_names(down, clock=lambda: later + 1)) == {"MDL-02": "VF6 Eco"}
+    assert down.calls == 1
+    catalog.clear_cache()
+
+
+# Regression: the owner guard's SELECT left the transaction open while the price list waited on
+# the manufacturer (up to 2 s), pinning a pooled connection "idle in transaction" (see P1).
+def test_price_list_waits_on_the_manufacturer_without_an_open_transaction(world):
+    import asyncio
+
+    from sqlmodel import select
+
+    from src.common.core.workshop import Workshop
+    from src.modules.workshop_pricing import catalog
+    from src.modules.workshop_pricing.route import get_catalog_names
+
+    session, workshop, _ = world
+    session.exec(select(Workshop).where(Workshop.id == workshop.id)).first()  # as get_owner_workshop does
+    assert session.in_transaction()
+    seen: list[bool] = []
+
+    class Gateway(_Gateway):
+        async def list_models(self):
+            seen.append(session.in_transaction())
+            return await super().list_models()
+
+    catalog.clear_cache()
+    names = asyncio.run(get_catalog_names(Gateway([{"model_id": "MDL-02", "model_name": "VF6"}]), session))
+    assert names == {"MDL-02": "VF6"} and seen == [False]
+    assert workshop.name  # loaded rows stay usable
+    catalog.clear_cache()
+
+
+# Regression: with the manufacturer down and no verified vehicle, the picker showed bare "MDL-07".
+def test_static_names_cover_an_outage(world):
+    session, workshop, pricing = world  # no catalog names, no vehicle
+    add_rules(session, "MDL-07")
+    add_rules(session, "MDL-99")
+    out = pricing.price_list(workshop, MODEL_ID)
+    assert out.model_names == {MODEL_ID: "VF6 Plus", "MDL-07": "VF9 Plus"}  # MDL-99 is unknown: its code
+
+
+def test_picker_lists_models_by_name_then_bare_codes():
+    from src.modules.workshop_pricing.service import picker_order
+
+    names = {
+        "MDL-01": "VF5 Plus",
+        "MDL-07": "VF9 Plus",
+        "MDL-08": "VF Wild Plus",
+        "MDL-09": "VF3 Eco",
+        "MDL-12": "VF9 Eco",
+    }
+    models = ["MDL-01", "MDL-07", "MDL-08", "MDL-09", "MDL-12", "MDL-99"]
+    assert picker_order(models, names) == ["MDL-09", "MDL-01", "MDL-12", "MDL-07", "MDL-08", "MDL-99"]

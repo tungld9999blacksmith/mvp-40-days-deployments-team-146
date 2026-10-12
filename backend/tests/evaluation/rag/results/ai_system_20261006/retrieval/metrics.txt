@@ -1,0 +1,60 @@
+{
+  "queries": 100,
+  "completed": 100,
+  "errors": 0,
+  "retrieval_success": 0.99,
+  "hit_at_1": 0.82,
+  "hit_at_3": 0.97,
+  "hit_at_5": 0.99,
+  "mrr": 0.8957,
+  "average_score": 0.9811,
+  "average_latency_ms": 1251.7,
+  "p95_latency_ms": 3068.9,
+  "categories": {
+    "battery": {
+      "queries": 20,
+      "hit_at_1": 0.95,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "mrr": 0.975
+    },
+    "general": {
+      "queries": 4,
+      "hit_at_1": 1.0,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "mrr": 1.0
+    },
+    "maintenance": {
+      "queries": 26,
+      "hit_at_1": 0.8846,
+      "hit_at_3": 0.9615,
+      "hit_at_5": 1.0,
+      "mrr": 0.9244
+    },
+    "pricing": {
+      "queries": 16,
+      "hit_at_1": 0.8125,
+      "hit_at_3": 0.9375,
+      "hit_at_5": 0.9375,
+      "mrr": 0.875
+    },
+    "procedure": {
+      "queries": 14,
+      "hit_at_1": 0.7857,
+      "hit_at_3": 1.0,
+      "hit_at_5": 1.0,
+      "mrr": 0.881
+    },
+    "warranty": {
+      "queries": 20,
+      "hit_at_1": 0.6,
+      "hit_at_3": 0.95,
+      "hit_at_5": 1.0,
+      "mrr": 0.785
+    }
+  },
+  "failed_query_ids": [
+    "P01"
+  ]
+}

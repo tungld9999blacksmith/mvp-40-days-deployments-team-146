@@ -54,6 +54,7 @@ async def chat():
         chat_message_max_chars=3000,
         chat_rate_limit_per_minute=100,
         chat_rate_limit_per_day=1000,
+        demo_login_enabled=False,
     )
     service = ChatService(None, messages, toolkit, None, None, None, settings, orchestrator)
     service._get_chat_vehicle = Mock(return_value=vehicle)

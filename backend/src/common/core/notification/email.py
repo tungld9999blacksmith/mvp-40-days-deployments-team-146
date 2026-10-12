@@ -36,6 +36,7 @@ class EmailOutbox(SQLModel, table=True):
     provider_message_id: str | None = Field(default=None, sa_column=Column(String(255), unique=True))
     delivery_state: str = Field(default="pending", sa_column=Column(String(32), nullable=False, index=True))
     first_attempt_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
+    uncertain_attempt_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
     next_attempt_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), index=True))
     retry_until: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
     lease_until: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))

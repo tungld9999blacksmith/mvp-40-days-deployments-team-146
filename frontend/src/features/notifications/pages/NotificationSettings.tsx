@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { Link, useBlocker, useLocation } from 'react-router-dom'
 import { ArrowLeft, BellRing, Info } from 'lucide-react'
 import { isApiError } from '@/shared/api/client'
-import { setQueryData } from '@/shared/hooks/useCachedQuery'
+import { invalidateQueries, setQueryData } from '@/shared/hooks/useCachedQuery'
 import Button from '@/shared/ui/Button'
 import { Card } from '@/shared/ui/Card'
 import Dialog from '@/shared/ui/Dialog'
@@ -12,9 +12,10 @@ import { ErrorState, Notice } from '@/shared/ui/States'
 import Switch from '@/shared/ui/Switch'
 import { cn } from '@/shared/ui/cn'
 import { useToast } from '@/shared/ui/Toast'
+import { page } from '@/shared/ui/page'
 import { track } from '@/shared/utils/track'
 import { useOnboardingRequiredRedirect } from '@/features/auth/hooks/useOnboardingRequiredRedirect'
-import { NOTIFICATION_SETTINGS_KEY, updateNotificationSettings } from '../api'
+import { NOTIFICATION_SETTINGS_KEY, deletePersonalizationData, updateNotificationSettings } from '../api'
 import NotificationChannelList from '../components/NotificationChannelList'
 import { useNotificationSettings } from '../hooks/useNotificationSettings'
 import { buildSettingsPatch, isDirty, toForm, validateSettings, type SettingsErrors } from '../settingsForm'
@@ -27,6 +28,7 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
   const [form, setForm] = useState<SettingsForm>(() => toForm(saved))
   const [errors, setErrors] = useState<SettingsErrors>({})
   const [saving, setSaving] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
   const stayRef = useRef<HTMLButtonElement>(null)
   const dirty = isDirty(saved, form)
 
@@ -58,12 +60,13 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
   async function save() {
     const validation = validateSettings(form)
     setErrors(validation)
-    if (validation.reminderLeadDays) return
+    if (Object.values(validation).some(Boolean)) return
     const patch = buildSettingsPatch(saved, form)
     if (!Object.keys(patch).length) return
     setSaving(true)
     try {
       const updated = await updateNotificationSettings(patch)
+      invalidateQueries('maintenance:', 'reminder:')
       setQueryData(NOTIFICATION_SETTINGS_KEY, updated)
       setForm(toForm(updated))
       toast.show('Đã lưu cài đặt thông báo. Thay đổi áp dụng từ lần kiểm tra kế tiếp.', 'success')
@@ -83,6 +86,14 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
           toast.show('Kênh này chưa được hỗ trợ.', 'error')
           onReload()
           break
+        case 'PERSONALIZATION_CONSENT_REQUIRED':
+          toast.show('Thông tin đồng ý đã thay đổi. Vui lòng đọc lại phần cá nhân hoá trước khi lưu.', 'error')
+          onReload()
+          break
+        case 'PERSONALIZATION_UNAVAILABLE':
+          toast.show('Nhắc theo mức sử dụng đang tạm tắt trên hệ thống.', 'error')
+          onReload()
+          break
         case 'EMAIL_NOT_VERIFIED':
           toast.show('Cần email đăng nhập đã xác minh để bật nhận email.', 'error')
           break
@@ -91,6 +102,9 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
           break
         case 'EMAIL_SUPPRESSED':
           toast.show('Địa chỉ email đang bị chặn do lỗi giao nhận trước đó.', 'error')
+          break
+        case 'DEMO_READ_ONLY':
+          toast.show('Tài khoản dùng thử không đổi được cài đặt thông báo.', 'error')
           break
         case 'NETWORK_ERROR':
         case 'TIMEOUT_ERROR':
@@ -105,6 +119,22 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
   }
 
   const off = !form.remindersEnabled
+
+  async function erasePersonalization() {
+    setSaving(true)
+    try {
+      const updated = await deletePersonalizationData()
+      invalidateQueries('maintenance:', 'reminder:')
+      setQueryData(NOTIFICATION_SETTINGS_KEY, updated)
+      setForm(toForm(updated))
+      setDeleteOpen(false)
+      toast.show('Đã tắt cá nhân hoá và xoá dữ liệu suy ra đã lưu.', 'success')
+    } catch {
+      toast.show('Không xoá được dữ liệu. Vui lòng thử lại.', 'error')
+    } finally {
+      setSaving(false)
+    }
+  }
 
   return (
     <>
@@ -161,6 +191,51 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
           </div>
         </Card>
 
+        {saved.sendScheduleAvailable && <Card className="p-6 space-y-4">
+          <div className="flex items-start gap-4">
+            <div className="flex-1"><p className="text-sm font-semibold text-foreground">Giờ nhận nhắc bảo dưỡng</p><p className="text-sm text-muted mt-1">Lời nhắc hiện ngay trong ứng dụng. Các kênh bên ngoài chờ giờ bạn chọn, thường trong vòng 15 phút.</p></div>
+            <Switch checked={form.preferredSendTimeEnabled} onChange={checked => change({ ...form, preferredSendTimeEnabled: checked })} label="Chọn giờ nhận nhắc" disabled={saving} />
+          </div>
+          {form.preferredSendTimeEnabled && <label className="block text-sm text-foreground">Giờ nhận
+            <input type="time" step="60" value={form.preferredSendTime} onChange={event => change({ ...form, preferredSendTime: event.target.value })} disabled={saving} aria-invalid={Boolean(errors.preferredSendTime)} className="mt-1 block w-full rounded-lg border border-border bg-background p-3 text-foreground focus-field" />
+            {errors.preferredSendTime && <span className="text-error">{errors.preferredSendTime}</span>}
+          </label>}
+          <div className="flex items-start gap-4">
+            <div className="flex-1"><p className="text-sm font-semibold text-foreground">Giờ yên lặng</p><p className="text-sm text-muted mt-1">Tạm ngừng gửi qua kênh bên ngoài, kể cả gửi lại sau lỗi.</p></div>
+            <Switch checked={form.quietHoursEnabled} onChange={checked => change({ ...form, quietHoursEnabled: checked })} label="Bật giờ yên lặng" disabled={saving} />
+          </div>
+          {form.quietHoursEnabled && <div className="grid grid-cols-2 gap-3">
+            <label className="text-sm text-foreground">Bắt đầu<input type="time" step="60" value={form.quietHoursStart} onChange={event => change({ ...form, quietHoursStart: event.target.value })} disabled={saving} aria-invalid={Boolean(errors.quietHours)} className="mt-1 block w-full min-w-0 rounded-lg border border-border bg-background p-3 text-foreground focus-field" /></label>
+            <label className="text-sm text-foreground">Kết thúc<input type="time" step="60" value={form.quietHoursEnd} onChange={event => change({ ...form, quietHoursEnd: event.target.value })} disabled={saving} aria-invalid={Boolean(errors.quietHours)} className="mt-1 block w-full min-w-0 rounded-lg border border-border bg-background p-3 text-foreground focus-field" /></label>
+            {errors.quietHours && <p className="col-span-2 text-sm text-error">{errors.quietHours}</p>}
+          </div>}
+          <label className="block text-sm text-foreground">Múi giờ
+            <select value={form.timezone} onChange={event => change({ ...form, timezone: event.target.value })} disabled={saving} className="mt-1 block w-full rounded-lg border border-border bg-background p-3 text-foreground focus-field">
+              {[...new Set(['Asia/Ho_Chi_Minh', 'Asia/Tokyo', 'Asia/Singapore', 'UTC', 'America/New_York', 'Europe/London', form.timezone])].map(zone => <option key={zone} value={zone}>{zone === 'Asia/Ho_Chi_Minh' ? 'Việt Nam (UTC+7)' : zone}</option>)}
+            </select>
+          </label>
+          <p className="text-xs text-muted">Nếu giờ nhận nằm trong giờ yên lặng, thông báo chờ tới khi giờ yên lặng kết thúc. Sau gián đoạn, hệ thống gửi tối đa một thông báo còn phù hợp, không gửi bù hàng loạt.</p>
+          {off && <p className="text-sm text-muted">Nhắc tổng đang tắt; giờ nhận vẫn được lưu lại.</p>}
+        </Card>}
+
+        {saved.personalizationPolicyVersion && <Card className="p-6 space-y-3" >
+          <div id="personalization" className="flex items-start gap-4 scroll-mt-6">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-foreground">Nhắc theo mức sử dụng xe</p>
+              <p className="text-sm text-muted mt-1">Dùng lịch sử số km hãng đã cập nhật trong 30 ngày gần đây để dự kiến khi xe tới mốc bảo dưỡng và nhắc bạn sớm hơn. Bật và bấm Lưu để đồng ý dùng dữ liệu này.</p>
+            </div>
+            <Switch checked={form.personalizedRemindersEnabled} onChange={checked => change({ ...form, personalizedRemindersEnabled: checked })} label="Nhắc theo mức sử dụng xe" disabled={saving || (saved.personalizationAvailable === false && !form.personalizedRemindersEnabled)} />
+          </div>
+          <p className="text-xs text-muted">Dùng số ngày nhắc trước bạn đã chọn. Bạn vẫn được nhắc khi tới ngưỡng km cố định hoặc hạn theo thời gian. Tắt cá nhân hoá thì dùng cách nhắc cố định.</p>
+          {off && <p className="text-sm text-muted">Nhắc tổng đang tắt. Lựa chọn này được giữ lại; chưa tạo hoặc gửi nhắc bảo dưỡng.</p>}
+          {saved.personalizationMode === 'shadow' && <p className="text-sm text-muted">Đang đánh giá dự báo; lời nhắc hiện vẫn dùng mốc km và thời gian cố định.</p>}
+          {saved.personalizationAvailable === false && <p className="text-sm text-muted">Nhắc theo mức sử dụng chưa được bật trên hệ thống.</p>}
+          <div className="flex flex-wrap gap-3">
+            <Link className="text-sm text-emerald underline" to="/vehicle">Xem mức sử dụng xe</Link>
+            <button type="button" className="text-sm text-muted underline disabled:opacity-50" onClick={() => setDeleteOpen(true)} disabled={saving || dirty}>Xoá dữ liệu suy ra đã lưu</button>
+          </div>
+        </Card>}
+
         <Card className={cn('p-6 transition-opacity', off && 'opacity-50')}>
           <p className="text-sm font-semibold text-foreground">Kênh nhận thông báo</p>
           <p className="text-sm text-muted mt-1 mb-4">
@@ -192,7 +267,7 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 lg:left-60 z-30 bg-surface border-t border-border">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-3 flex gap-2 justify-end">
+        <div className="max-w-3xl px-4 sm:px-6 xl:px-8 py-3 flex gap-2 justify-end">
           <Button variant="secondary" className="flex-1 sm:flex-none" disabled={!dirty || saving} onClick={() => change(toForm(saved))}>
             Huỷ thay đổi
           </Button>
@@ -200,12 +275,22 @@ function SettingsEditor({ saved, onReload }: { saved: Settings; onReload: () => 
             className="flex-1 sm:flex-none"
             onClick={() => void save()}
             loading={saving}
-            disabled={!dirty || Boolean(errors.reminderLeadDays)}
+            disabled={!dirty || Object.values(errors).some(Boolean)}
           >
             Lưu
           </Button>
         </div>
       </div>
+
+      <Dialog
+        open={deleteOpen}
+        onClose={() => { if (!saving) setDeleteOpen(false) }}
+        role="alertdialog"
+        title="Xoá dữ liệu cá nhân hoá?"
+        footer={<><Button variant="secondary" onClick={() => setDeleteOpen(false)} disabled={saving}>Huỷ</Button><Button variant="danger" onClick={() => void erasePersonalization()} loading={saving}>Xoá dữ liệu suy ra</Button></>}
+      >
+        <p className="text-sm text-muted">Tắt nhắc theo mức sử dụng, xoá dữ liệu dự báo đã lưu và dừng các lần gửi cá nhân hoá đang chờ. Lịch sử số km từ hãng và lịch sử bảo dưỡng vẫn được giữ để theo dõi xe.</p>
+      </Dialog>
 
       <Dialog
         open={blocker.state === 'blocked'}
@@ -234,7 +319,7 @@ export default function NotificationSettings() {
   useOnboardingRequiredRedirect(settings.error)
 
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-2xl">
+    <div className={page('reading')}>
       <Link to="/notifications" className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground transition-colors mb-4">
         <ArrowLeft className="w-4 h-4" />
         Thông báo

@@ -6,7 +6,7 @@ import { DAY_LABELS, dayError } from '../../operatingHours'
 import type { OperatingHour } from '../../types'
 
 const timeInput =
-  'w-full bg-background border rounded-xl px-3 py-2 text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-emerald/40 disabled:opacity-40'
+  'w-full bg-background border rounded-xl px-3 py-2 text-sm font-mono text-foreground focus-field disabled:opacity-40'
 
 /** 7 rows (Mon → Sun): open toggle + one open/close window per day (US-009 FE §4.3). */
 export default function OperatingHoursEditor({

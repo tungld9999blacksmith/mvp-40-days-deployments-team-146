@@ -28,10 +28,15 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from ev_contracts import (
+    BODY_HASH_CLAIM,
+    EVCARE_CLIENT_ID,
+    OEM_ISSUER,
     WEBHOOK_EVENT_ID_HEADER,
     WEBHOOK_SIGNATURE_HEADER,
     WEBHOOK_TIMESTAMP_HEADER,
     WebhookEventType,
+    body_sha256,
+    create_m2m_token,
     sign_webhook,
 )
 
@@ -46,6 +51,7 @@ class WebhookSettings:
     secret: str
     usage_min_interval_seconds: float
     timeout_seconds: float
+    private_key: str = ""
 
     @property
     def enabled(self) -> bool:
@@ -67,6 +73,7 @@ def load_settings() -> WebhookSettings:
         secret=os.getenv("MOCK_WEBHOOK_SECRET", ""),
         usage_min_interval_seconds=float(os.getenv("MOCK_WEBHOOK_USAGE_MIN_INTERVAL_SECONDS", "300")),
         timeout_seconds=float(os.getenv("MOCK_WEBHOOK_TIMEOUT_SECONDS", "5")),
+        private_key=os.getenv("MOCK_PRIVATE_KEY", ""),
     )
 
 
@@ -75,6 +82,7 @@ def build_request(
     vehicle_id: str,
     secret: str,
     *,
+    private_key: str = "",
     now: datetime | None = None,
 ) -> tuple[str, dict[str, str], bytes]:
     """Build (event_id, headers, raw_body) for one signed webhook call."""
@@ -93,8 +101,18 @@ def build_request(
         "Content-Type": "application/json",
         WEBHOOK_EVENT_ID_HEADER: event_id,
         WEBHOOK_TIMESTAMP_HEADER: timestamp,
-        WEBHOOK_SIGNATURE_HEADER: sign_webhook(secret, timestamp, body),
+        WEBHOOK_SIGNATURE_HEADER: sign_webhook(secret, timestamp, body) if secret else "",
     }
+    if private_key and private_key.strip():
+        # The token carries the body hash so it cannot be replayed with another body.
+        token = create_m2m_token(
+            private_key,
+            issuer=OEM_ISSUER,
+            audience=EVCARE_CLIENT_ID,
+            now=now,
+            extra_claims={BODY_HASH_CLAIM: body_sha256(body)},
+        )
+        headers["Authorization"] = f"Bearer {token}"
     return event_id, headers, body
 
 
@@ -121,7 +139,7 @@ async def send_event(
     if not settings.enabled:
         return None
 
-    event_id, headers, body = build_request(event_type, vehicle_id, settings.secret)
+    event_id, headers, body = build_request(event_type, vehicle_id, settings.secret, private_key=settings.private_key)
     last_error: str | None = None
     status: int | None = None
     max_attempts = len(RETRY_BACKOFF_SECONDS) + 1

@@ -7,7 +7,8 @@ from .booking_tools import (
     propose_booking,
 )
 from .cost_tools import estimate_service_cost
-from .maintenance_tools import get_due_maintenance
+from .maintenance_package_tools import get_service_history, recommend_maintenance_packages
+from .maintenance_tools import get_due_maintenance, get_planned_trip
 from .memory_tools import build_memory_tools
 from .quote_tools import create_draft_quote, get_quote_status
 from .RAG import (
@@ -20,6 +21,9 @@ from .reminder_tools import get_reminder_context, get_reminder_settings, update_
 # Danh mục công cụ cung cấp cho Agent phục vụ chủ xe (Customer Orchestrator)
 CUSTOMER_AGENT_TOOLS = [
     get_due_maintenance,
+    get_planned_trip,
+    get_service_history,
+    recommend_maintenance_packages,
     estimate_service_cost,
     find_workshops,
     get_available_slots,
@@ -36,6 +40,9 @@ CUSTOMER_AGENT_TOOLS = [
 
 __all__ = [
     "get_due_maintenance",
+    "get_planned_trip",
+    "get_service_history",
+    "recommend_maintenance_packages",
     "estimate_service_cost",
     "find_workshops",
     "get_available_slots",

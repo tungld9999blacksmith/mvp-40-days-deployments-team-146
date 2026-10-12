@@ -74,11 +74,13 @@ def init_db(reset: bool = False) -> None:
         _load_startup_data(mock_tables)
     _add_missing_columns(mock_tables)
 
-    # Owners + vehicles for the Gmail accounts in MOCK_DEV_OWNER_EMAILS.
+    # Owners + vehicles for the Gmail accounts in MOCK_DEV_OWNER_EMAILS, and EV Care's demo account.
     with Session(engine) as session:
+        from .demo_account import ensure_demo_owner
         from .dev_accounts import ensure_dev_owners
 
         ensure_dev_owners(session)
+        ensure_demo_owner(session)
 
 
 def _has_data(tables: list) -> bool:

@@ -62,6 +62,10 @@ evm-dump: ## ev_mock_data: dump the whole mock database to a file
 evm-reset: ## ev_mock_data: drop all data and reload the startup data
 	$(PYTHON) tools/ev_mock_data/ev_mock_data.py reset $(ARGS)
 
+# --- demo account ("Dùng thử ngay") ------------------------------------------
+demo-reset: ## Reset the shared demo account now (ARGS="--dry" shows the state only)
+	cd $(BACKEND) && uv run python scripts/demo_account_reset.py $(if $(filter --dry,$(ARGS)),,--apply --force)
+
 # --- repo_sync: mirror origin/develop -> deploy repo -------------------------
 repo-sync: ## repo_sync: sync (ARGS="--full" to copy everything)
 	$(PYTHON) tools/repo_sync/repo_sync.py $(ARGS)

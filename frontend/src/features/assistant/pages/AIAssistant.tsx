@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { BatteryCharging, CalendarClock, Car, CircleDot, History, Plus, ShieldCheck, Trash2, Wrench, type LucideIcon } from 'lucide-react'
+import { BatteryCharging, CalendarClock, Car, CircleDot, History, PackageCheck, Plus, Trash2, Wrench, type LucideIcon } from 'lucide-react'
 import { isApiError } from '@/shared/api/client'
 import Button from '@/shared/ui/Button'
 import Dialog from '@/shared/ui/Dialog'
@@ -32,7 +32,7 @@ import type { CitationDto } from '../types'
 /** Icon and one-line hint per SUGGESTED_QUESTIONS entry, same order. */
 const STARTER_META: { icon: LucideIcon; hint: string }[] = [
   { icon: Wrench, hint: 'Theo lịch định kỳ của hãng cho xe bạn' },
-  { icon: ShieldCheck, hint: 'Những hạng mục bạn không phải trả phí' },
+  { icon: PackageCheck, hint: 'Ba phương án theo lịch sử và chi phí của xe bạn' },
   { icon: BatteryCharging, hint: 'Thời hạn, điều kiện và cách yêu cầu' },
   { icon: CircleDot, hint: 'Áp suất, đảo lốp và thay lốp' },
 ]
@@ -259,7 +259,7 @@ function ChatScreen({ vehicle }: { vehicle: VehicleSummary }) {
             type="button"
             onClick={() => navigate(`/ai/new${vehicleQuery}`)}
             aria-label="Cuộc trò chuyện mới"
-            className="inline-flex items-center justify-center gap-2 h-10 min-w-10 px-2.5 md:px-3.5 rounded-xl bg-foreground text-background text-[13px] font-semibold hover:opacity-90 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+            className="inline-flex items-center justify-center gap-2 h-10 min-w-10 px-2.5 md:px-3.5 rounded-xl bg-foreground text-background text-[13px] font-semibold hover:opacity-90 transition-opacity"
           >
             <Plus className="w-4 h-4" aria-hidden />
             <span className="hidden md:inline">Trò chuyện mới</span>

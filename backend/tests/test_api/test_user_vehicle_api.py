@@ -126,6 +126,26 @@ async def test_list_returns_only_active_verified_vehicles(api: _Api, ready_vehic
     }
 
 
+@pytest.mark.asyncio
+async def test_list_returns_every_active_vehicle_oldest_first(api: _Api, ready_vehicle):
+    """Multi-vehicle owners pick from this list on /select-vehicle (issue #27)."""
+    second = add_vehicle(
+        api.session,
+        api.session.get(VehicleUser, ready_vehicle.user_id),
+        vin="LVVDB11B1PE000003",
+        external_vehicle_id="VEH-008",
+    )
+    second.created_at = NOW
+    ready_vehicle.created_at = NOW - timedelta(days=30)
+    api.session.add_all([second, ready_vehicle])
+    api.session.commit()
+
+    r = await api.client.get("/api/v1/user-vehicles", headers=AUTH)
+
+    assert r.status_code == 200
+    assert [v["userVehicleId"] for v in r.json()["data"]] == [str(ready_vehicle.id), str(second.id)]
+
+
 # ── API-VEH-002 ────────────────────────────────────────────────────────────
 
 

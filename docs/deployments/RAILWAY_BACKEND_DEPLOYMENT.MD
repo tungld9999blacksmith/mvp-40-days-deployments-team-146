@@ -741,12 +741,9 @@ Kết hợp với Bước 12 (environment chỉ cho nhánh `staging`), luồng c
 
 ## Việc còn tồn đọng
 
-- **Migration database:** image chỉ copy `backend/src`, không có `alembic/` → container không chạy được `alembic upgrade`. Hiện phải chạy từ local, trỏ vào DB staging:
-
-  ```bash
-  cd backend && alembic upgrade head
-  ```
-
-  Hướng cải tiến: copy `backend/alembic` + `alembic.ini` vào image và đặt Railway **Pre-deploy Command** = `alembic upgrade head`.
+- **Migration database:** image chứa `backend/alembic` và `alembic.ini`. Đặt Railway
+  **Pre-deploy Command** cho service backend là `alembic upgrade head`; lệnh này phải
+  hoàn tất trước khi Railway thay thế application instances. Không chạy migration
+  đồng thời trong CMD của nhiều replica.
 - **Token:** chuyển từ Account Token sang Project Token để giới hạn quyền.
 - **Bảo mật:** nếu `.env` hoặc file Firebase JSON từng bị chia sẻ/commit, rotate lại key (Firebase service account, Supabase service role, Gemini/OpenAI, ...).

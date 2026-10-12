@@ -7,11 +7,13 @@ from .base import LLMProvider
 from .factory import create_llm_provider
 from .fallback import FallbackLLMProvider
 from .routing import LLMStage, fallback_provider, model_for_provider, settings_for_stage
+from .traced import traced
 
 
 @lru_cache
 def _cached_provider(name: str) -> LLMProvider:
-    return create_llm_provider(get_settings(), provider=name)
+    # Traced per concrete provider: a fallback shows as a second LLM run / span.
+    return traced(create_llm_provider(get_settings(), provider=name))
 
 
 def get_llm_provider() -> LLMProvider:
@@ -31,7 +33,7 @@ def _cached_stage_provider(name: str, model: str, endpoints: tuple[str, ...]) ->
         model_for_provider(name): model,
         "openrouter_endpoint_order": ",".join(endpoints),
     })
-    return create_llm_provider(settings, provider=name)
+    return traced(create_llm_provider(settings, provider=name))
 
 
 @lru_cache

@@ -11,6 +11,9 @@ import SuccessStep from '@/features/auth/onboarding/pages/SuccessStep'
 import FailedStep from '@/features/auth/onboarding/pages/FailedStep'
 import OwnerLayout from '@/layouts/OwnerLayout'
 import TechnicianLayout from '@/layouts/TechnicianLayout'
+import { CurrentVehicleProvider } from '@/features/vehicles/currentVehicle/CurrentVehicleContext'
+import RequireCurrentVehicle from '@/features/vehicles/currentVehicle/RequireCurrentVehicle'
+import SelectVehicle from '@/features/vehicles/pages/SelectVehicle'
 import Dashboard from '@/features/dashboard/pages/Dashboard'
 import VehicleDetail from '@/features/vehicles/pages/VehicleDetail'
 import ServiceHistory from '@/features/maintenance/pages/ServiceHistory'
@@ -26,6 +29,7 @@ import MyBookings from '@/features/bookings/pages/MyBookings'
 import Reschedule from '@/features/bookings/pages/Reschedule'
 import BookingByCode, { QrEntry } from '@/features/bookings/pages/BookingByCode'
 import FollowUp from '@/features/after-service/pages/FollowUp'
+import Support from '@/features/support/pages/Support'
 import WorkshopBoard from '@/features/workshop-board/pages/WorkshopBoard'
 import CheckIn from '@/features/workshop-board/pages/CheckIn'
 import Capacity from '@/features/workshop-board/pages/Capacity'
@@ -103,34 +107,40 @@ function AppRoutes() {
         </Route>
 
         <Route element={<RequireActiveUser />}>
-          <Route element={<OwnerLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/vehicle" element={<VehicleDetail />} />
-            <Route path="/history" element={<ServiceHistory />} />
-            <Route path="/ai" element={<AIAssistant />} />
-            <Route path="/ai/:conversationId" element={<AIAssistant />} />
-            <Route path="/estimate" element={<Estimate />} />
-            <Route path="/estimate/compare" element={<EstimateCompare />} />
-            <Route path="/quotes" element={<MyQuotes />} />
-            <Route path="/quotes/new" element={<QuoteNew />} />
-            <Route path="/quotes/:quoteId" element={<QuoteDetail />} />
-            <Route path="/booking" element={<BookingLayout />}>
-              <Route index element={<BookingStart />} />
-              <Route path="proposal" element={<BookingProposal />} />
-              <Route path="workshops" element={<BookingWorkshops />} />
-              <Route path="slots" element={<BookingSlots />} />
-              <Route path="confirm" element={<BookingConfirm />} />
+          <Route element={<CurrentVehicleProvider />}>
+            <Route path="/select-vehicle" element={<SelectVehicle />} />
+            <Route element={<RequireCurrentVehicle />}>
+              <Route element={<OwnerLayout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/vehicle" element={<VehicleDetail />} />
+                <Route path="/history" element={<ServiceHistory />} />
+                <Route path="/ai" element={<AIAssistant />} />
+                <Route path="/ai/:conversationId" element={<AIAssistant />} />
+                <Route path="/estimate" element={<Estimate />} />
+                <Route path="/estimate/compare" element={<EstimateCompare />} />
+                <Route path="/quotes" element={<MyQuotes />} />
+                <Route path="/quotes/new" element={<QuoteNew />} />
+                <Route path="/quotes/:quoteId" element={<QuoteDetail />} />
+                <Route path="/booking" element={<BookingLayout />}>
+                  <Route index element={<BookingStart />} />
+                  <Route path="proposal" element={<BookingProposal />} />
+                  <Route path="workshops" element={<BookingWorkshops />} />
+                  <Route path="slots" element={<BookingSlots />} />
+                  <Route path="confirm" element={<BookingConfirm />} />
+                </Route>
+                <Route path="/bookings" element={<MyBookings />} />
+                <Route path="/bookings/by-code/:bookingCode" element={<BookingByCode />} />
+                <Route path="/bookings/:bookingId" element={<BookingTicket />} />
+                <Route path="/bookings/:bookingId/reschedule" element={<Reschedule />} />
+                <Route path="/booking-success" element={<BookingSuccessRedirect />} />
+                <Route path="/follow-ups/:followUpId" element={<FollowUp />} />
+                <Route path="/notifications" element={<Notifications variant="owner" />} />
+                <Route path="/notifications/settings" element={<NotificationSettings />} />
+                <Route path="/notifications/reminders/:reminderId" element={<ReminderDetail />} />
+                <Route path="/notifications/demo-email" element={<DemoEmailOutbox />} />
+                <Route path="/support" element={<Support />} />
+              </Route>
             </Route>
-            <Route path="/bookings" element={<MyBookings />} />
-            <Route path="/bookings/by-code/:bookingCode" element={<BookingByCode />} />
-            <Route path="/bookings/:bookingId" element={<BookingTicket />} />
-            <Route path="/bookings/:bookingId/reschedule" element={<Reschedule />} />
-            <Route path="/booking-success" element={<BookingSuccessRedirect />} />
-            <Route path="/follow-ups/:followUpId" element={<FollowUp />} />
-            <Route path="/notifications" element={<Notifications variant="owner" />} />
-            <Route path="/notifications/settings" element={<NotificationSettings />} />
-            <Route path="/notifications/reminders/:reminderId" element={<ReminderDetail />} />
-            <Route path="/notifications/demo-email" element={<DemoEmailOutbox />} />
           </Route>
         </Route>
       </Route>

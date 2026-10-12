@@ -222,6 +222,10 @@ function historyOf(booking: MockBooking) {
   return [...status, ...moves].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 20)
 }
 
+function vehicleOf(booking: MockBooking) {
+  return { userVehicleId: booking.userVehicleId, modelName: booking.vehicle.modelName, plateMasked: maskPlate(booking.vehicle.licensePlate) }
+}
+
 export function ticketView(booking: MockBooking) {
   const workshop = workshopOf(booking.workshopId)
   const confirmed = booking.status === 'confirmed'
@@ -237,7 +241,7 @@ export function ticketView(booking: MockBooking) {
     timeSlot: booking.timeSlot,
     appointmentAt: apptOf(booking),
     workshop: { workshopId: workshop.workshopId, name: workshop.name, address: workshop.address || null, phone: workshop.phone || null },
-    vehicle: { userVehicleId: booking.userVehicleId, modelName: booking.vehicle.modelName, plateMasked: maskPlate(booking.vehicle.licensePlate) },
+    vehicle: vehicleOf(booking),
     estimatedCost: cost.amount,
     estimateLabel: 'Chi phí ước tính',
     qrUrl: confirmed ? `/api/v1/bookings/${booking.bookingId}/qr` : null,
@@ -276,6 +280,7 @@ function listItem(booking: MockBooking) {
     bookingDate: booking.bookingDate,
     timeSlot: booking.timeSlot,
     workshop: { workshopId: workshop.workshopId, name: workshop.name },
+    vehicle: vehicleOf(booking),
     cost: { amount: cost.amount, label: cost.label },
     allowedActions: ownerActions(booking).allowedActions,
   }

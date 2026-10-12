@@ -68,9 +68,26 @@ Biến môi trường:
 | Biến | Mặc định | Ý nghĩa |
 |------|----------|---------|
 | `MOCK_WEBHOOK_URL` | (trống = tắt) | URL nhận của EV Care, vd. `http://localhost:8000/api/v1/integrations/oem/webhooks` |
-| `MOCK_WEBHOOK_SECRET` | (trống) | Secret HMAC, phải bằng `OEM_WEBHOOK_SECRET` của backend |
+| `MOCK_WEBHOOK_SECRET` | (trống) | Secret HMAC, phải bằng `OEM_WEBHOOK_SECRET` của backend (backward-compat) |
 | `MOCK_WEBHOOK_USAGE_MIN_INTERVAL_SECONDS` | `300` | Khoảng cách tối thiểu giữa 2 sự kiện usage của một xe |
 | `MOCK_WEBHOOK_TIMEOUT_SECONDS` | `5` | Timeout mỗi lần gửi |
+| `MOCK_PRIVATE_KEY` | (trống) | Private key PEM (Ed25519/RS256) của OEM: ký access token (`/oauth/token`) và JWT của webhook (kèm `body_sha256`) |
+| `EVCARE_PUBLIC_KEY` | (trống) | Public key PEM của EV Care: verify client assertion ở `/oauth/token` |
+| `MOCK_ACCESS_TOKEN_TTL_SECONDS` | `900` | Thời hạn access token |
+| `MOCK_AUTH_REQUIRED` | `false` | `true`: luôn bắt buộc access token. Mặc định bắt buộc khi đã có `EVCARE_PUBLIC_KEY`, bypass khi chưa có |
+
+Chi tiết đặc tả xem tại: [`docs/specs/mock-system/m2m_authentication_spec.md`](../../docs/specs/mock-system/m2m_authentication_spec.md).
+
+### 🔑 OAuth (xác thực M2M, SPEC-SEC-OEM-M2M-001 v2.0)
+
+| Method | Path | Mô tả |
+|--------|------|--------|
+| POST | `/oauth/token` | Form `grant_type=client_credentials`, `client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer`, `client_assertion=<JWT EV Care ký>` → `{access_token, token_type, expires_in}` |
+
+Khi bật xác thực, mọi route nghiệp vụ (vehicles, owners, verify, warranty, maintenance, usage, models,
+service-centers) cần `Authorization: Bearer <access_token>`; sai/thiếu trả `401` với
+`{"detail": {"code": "M2M_..."}}`. Không áp dụng cho `/health`, `/oauth/token`, `/admin/**`, `/webhooks/**`.
+Mỗi client assertion chỉ dùng được một lần (`jti`).
 
 Retry 3 lần (1 s, 4 s) khi lỗi mạng / 5xx; không retry 4xx.
 

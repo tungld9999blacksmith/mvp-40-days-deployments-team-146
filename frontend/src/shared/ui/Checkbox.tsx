@@ -35,7 +35,7 @@ export default function Checkbox({ checked, onChange, label, description, disabl
           aria-hidden
           className={cn(
             'w-5 h-5 flex-shrink-0 rounded-md flex items-center justify-center border transition-colors',
-            'peer-focus-visible:ring-2 peer-focus-visible:ring-emerald/50',
+            'peer-focus-visible:focus-ring',
             checked ? 'bg-emerald border-emerald' : error ? 'bg-card border-error' : 'bg-card border-border',
           )}
         >

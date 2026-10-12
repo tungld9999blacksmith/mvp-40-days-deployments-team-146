@@ -69,9 +69,15 @@ COPY --from=builder --chown=app:app /app/.venv /app/.venv
 # Preserve the "src" package layout used by relative imports
 # (main.py is loaded as `src.main`, not a top-level module).
 COPY --chown=app:app backend/src ./src
+# Ship schema migrations with the release image. Deploy platforms should run
+# `alembic upgrade head` once as a pre-deploy/release command before replacing
+# application instances.
+COPY --chown=app:app backend/alembic.ini ./alembic.ini
+COPY --chown=app:app backend/alembic ./alembic
 
-# Data directory (mounted as a volume in compose).
-RUN mkdir -p /app/data && chown app:app /app/data
+# Writable runtime directories. The image runs as an unprivileged user and the
+# default logging configuration writes rotating files under /app/logs.
+RUN mkdir -p /app/data /app/logs && chown app:app /app/data /app/logs
 
 USER app
 

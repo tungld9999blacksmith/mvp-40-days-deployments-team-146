@@ -1,0 +1,943 @@
+{
+  "mode": "full_rag",
+  "environment": {
+    "qdrant_collection": "ev_care_knowledge_base_3072",
+    "qdrant_points": 819,
+    "embedding_provider": "GeminiEmbeddingProvider",
+    "embedding_model": "models/gemini-embedding-001",
+    "embedding_dimension": 3072,
+    "collection_dimension": 3072,
+    "bm25_indexed_chunks": 819,
+    "reranker": "FlashRankReranker",
+    "reranker_model": "ms-marco-TinyBERT-L-2-v2",
+    "top_k": 3,
+    "generator": "GroundedAnswerGenerator",
+    "generation_model": "google/gemma-4-26b-a4b-it"
+  },
+  "retrieval_metrics": {
+    "queries": 6,
+    "completed": 6,
+    "errors": 0,
+    "retrieval_success": 1.0,
+    "hit_at_1": 0.6667,
+    "hit_at_3": 1.0,
+    "hit_at_5": 1.0,
+    "mrr": 0.8333,
+    "average_score": 0.999,
+    "average_latency_ms": 8192.7,
+    "p95_latency_ms": 12923.7,
+    "categories": {
+      "battery": {
+        "queries": 1,
+        "hit_at_1": 1.0,
+        "hit_at_3": 1.0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0
+      },
+      "general": {
+        "queries": 1,
+        "hit_at_1": 1.0,
+        "hit_at_3": 1.0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0
+      },
+      "maintenance": {
+        "queries": 1,
+        "hit_at_1": 1.0,
+        "hit_at_3": 1.0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0
+      },
+      "pricing": {
+        "queries": 1,
+        "hit_at_1": 0.0,
+        "hit_at_3": 1.0,
+        "hit_at_5": 1.0,
+        "mrr": 0.5
+      },
+      "procedure": {
+        "queries": 1,
+        "hit_at_1": 0.0,
+        "hit_at_3": 1.0,
+        "hit_at_5": 1.0,
+        "mrr": 0.5
+      },
+      "warranty": {
+        "queries": 1,
+        "hit_at_1": 1.0,
+        "hit_at_3": 1.0,
+        "hit_at_5": 1.0,
+        "mrr": 1.0
+      }
+    },
+    "failed_query_ids": []
+  },
+  "metrics": {
+    "evaluated_answers": 6,
+    "retrieval_success": 1.0,
+    "answer_correctness_heuristic": 0.5045,
+    "expected_keyword_coverage": 0.7222,
+    "faithfulness_heuristic": 0.8281,
+    "citation_validity": 1.0,
+    "average_latency_ms": 8192.7,
+    "p95_latency_ms": 12923.7,
+    "hallucination_rate_negative_cases": 0.0,
+    "hallucination_rate_general": "NOT MEASURED",
+    "negative_cases_passed": 4,
+    "negative_cases_total": 4
+  },
+  "results": [
+    {
+      "id": "M01",
+      "query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+      "category": "maintenance",
+      "model": "VF8",
+      "expected_doc_ids": [
+        "warranty_maintenance_VF8",
+        "lich_bao_duong_ALL",
+        "dich_vu_bao_duong_ALL",
+        "toi_uu_moc_bao_duong_ALL"
+      ],
+      "expected_keywords": [
+        "15.000",
+        "bảo dưỡng",
+        "kiểm tra"
+      ],
+      "error": null,
+      "analysis": {
+        "original_query": "Bảo dưỡng định kỳ mốc 15.000 km xe VF8 gồm những hạng mục gì?",
+        "rewritten_query": "Danh sách các hạng mục bảo dưỡng định kỳ tại mốc 15.000 km cho dòng xe VinFast VF8 gồm những hạng mục nào?",
+        "keywords": [
+          "bảo dưỡng định kỳ",
+          "15000 km",
+          "VF8",
+          "hạng mục kiểm tra",
+          "lịch bảo dưỡng"
+        ],
+        "model": "VF8",
+        "category": "maintenance",
+        "milestone_km": 15000,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "retrieved_doc_ids": [
+        "lich_bao_duong_ALL",
+        "warranty_maintenance_VF8",
+        "toi_uu_moc_bao_duong_ALL"
+      ],
+      "retrieved_chunks": [
+        {
+          "chunk_id": "lich_bao_duong_ALL_chk_0008",
+          "doc_id": "lich_bao_duong_ALL",
+          "score": 0.9986,
+          "metadata": {
+            "source": "lich_bao_duong_ALL.md",
+            "doc_id": "lich_bao_duong_ALL",
+            "title": "Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện",
+            "file_type": "md",
+            "section_header": "1.2. Lịch bảo dưỡng xe Fadil",
+            "chunk_index": 7,
+            "total_chunks": 38,
+            "category": "maintenance",
+            "model": "ALL",
+            "milestone_km": 15000,
+            "source_url": "https://shop.vinfastauto.com/vn_vi/dat-lich-dich-vu.html",
+            "expanded_chunk_ids": [
+              "lich_bao_duong_ALL_chk_0008",
+              "lich_bao_duong_ALL_chk_0009"
+            ]
+          },
+          "content": "[Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện > 1.2. Lịch bảo dưỡng xe Fadil]\n### 1.2. Lịch bảo dưỡng xe Fadil\n\nBảo dưỡng ô tô xăng Fadil được VinFast khuyến cáo nên thực hiện sau 12 tháng hoặc 15.000km sử dụng xe (tuỳ điều kiện nào đến trước). Các hạng mục được kiểm tra trong quá trình bảo dưỡng gồm:\n\n[Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện > 1.2. Lịch bảo dưỡng xe Fadil]\n| Hạng mục bảo dưỡng ○ Kiểm tra ● Thay mới | Kilomet hoặc thời gian theo tháng, tùy điều kiện nào đến trước |\n| --- | --- |\n| x 1.000 km (1) | 15 | 30 | 45 | 60 |\n| Năm (1) | 1 | 2 | 3 | 4 |\n| HỆ THỐNG KIỂM SOÁT KHÍ XẢ |\n| Tấm lọc gió | ○ | ○ | ○ | ● |\n| Bugi | ○ | ○ | ○ | ● |\n| Bộ hấp thụ khí xả & đường ống hơi (4) | ○ | ○ | ○ | ○ |\n| HỆ THỐNG ĐIỀU KHIỂN ĐỘNG CƠ |\n| Đai truyền động (2) | ○ | ○ | ○ | ○ |\n| Dầu động cơ & bộ lọc dầu động cơ | Xem chú thích bên dưới (3) |\n| Ống & đường nối hệ thống làm mát | ○ | ○ | ○ | ○ |\n| Dung dịch làm mát động cơ | Thay thế sau mỗi 240.000Km hoặc 5 năm |\n| Đường dẫn và đường nối nhiên liệu (4) | ○ | ○ | | ○ |\n| KHUNG GẦM VÀ THÂN XE |\n| Bộ lọc không khí (A/C) (5) | ● | ● | ● | ● |\n| Ống xả & giá đỡ | ○ | ○ | ○ | ○ |\n| Dầu phanh | Thay thế sau mỗi 60.000km hoặc 2 năm |\n| Má và đĩa phanh trước (4) | ○ | ○ | ○ | ○ |\n| Má phanh sau & đĩa hoặc trống phanh sau & bố phanh sau (4) | ○ | ○ | ○ | ○ |\n| Đường phanh & đường nối (bao gồm trợ lực phanh) | ○ | ○ | ○ | ○ |\n| Dầu hộp số sàn | Thay thế sau mỗi 160.000km hoặc 10 năm |\n| Hộp số biến thiên vô cấp (CVT) | Xem chú thích bên dưới (6) |\n| Bulong & đai ốc khung gầm | ○ | ○ | ○ | ○ |\n| Tình trạng lốp & áp suất lốp | Xem chú thích bên dưới (7) |\n| Đảo lốp | Đảo lốp sau mỗi 12.000Km |\n| Góc đặt bánh xe | Xem chú thích bên dưới (8) |\n| Vô lăng & các đăng lái | ○ | ○ | ○ | ○ |\n| Cao su chụp bụi trục láp | ○ | ○ | ○ | ○ |\n| Dây an toàn, khóa cài & bộ neo | ○ | ○ | ○ | ○ |\n| Khó bôi trơn, bản lề & lẫy cài nắp capo | ○ | ○ | ○ | ○ |"
+        },
+        {
+          "chunk_id": "warranty_maintenance_VF8_chk_0043",
+          "doc_id": "warranty_maintenance_VF8",
+          "score": 0.994,
+          "metadata": {
+            "source": "warranty_maintenance_VF8.pdf",
+            "doc_id": "warranty_maintenance_VF8",
+            "title": "Sổ bảo hành & nhật ký bảo dưỡng VinFast VF8",
+            "file_type": "pdf",
+            "section_header": "IV. Nhật ký bảo dưỡng định kỳ",
+            "chunk_index": 42,
+            "total_chunks": 64,
+            "category": "maintenance",
+            "model": "VF8",
+            "milestone_km": 0,
+            "expanded_chunk_ids": [
+              "warranty_maintenance_VF8_chk_0042",
+              "warranty_maintenance_VF8_chk_0043"
+            ]
+          },
+          "content": "[Sổ bảo hành & nhật ký bảo dưỡng VinFast VF8 > IV. Nhật ký bảo dưỡng định kỳ]\n25\nXÁC NHẬN CỦA XDV/NPP\n(Ký, ghi rõ họ tên và đóng dấu)\nXÁC NHẬN CỦA XDV/NPP\n(Ký, ghi rõ họ tên và đóng dấu)\nBảo dưỡng cấp: ............... số km: .....................\nNgày ............... Tháng ............... Năm ...............\nLẦN 7\nBảo dưỡng cấp: ............... số km: .....................\nNgày ............... Tháng ............... Năm ...............\nLẦN 10\nXÁC NHẬN CỦA XDV/NPP\n(Ký, ghi rõ họ tên và đóng dấu)\nXÁC NHẬN CỦA XDV/NPP\n(Ký, ghi rõ họ tên và đóng dấu)\nBảo dưỡng cấp: ............... số km: .....................\nNgày ............... Tháng ............... Năm ...............\nLẦN 8\nBảo dưỡng cấp: ............... số km: .....................\nNgày ............... Tháng ............... Năm ...............\nLẦN 11\nXÁC NHẬN CỦA XDV/NPP\n(Ký, ghi rõ họ tên và đóng dấu)\nXÁC NHẬN CỦA XDV/NPP\n(Ký, ghi rõ họ tên và đóng dấu)\nBảo dưỡng cấp: ............... số km: .....................\nNgày ............... Tháng ............... Năm ...............\nLẦN 9\nBảo dưỡng cấp: ............... số km: .....................\nNgày ............... Tháng ............... Năm ...............\nLẦN 12\n\n[Sổ bảo hành & nhật ký bảo dưỡng VinFast VF8 > IV. Nhật ký bảo dưỡng định kỳ]\nIV. Nhật ký bảo dưỡng định kỳ\n\n26"
+        },
+        {
+          "chunk_id": "toi_uu_moc_bao_duong_ALL_chk_0001",
+          "doc_id": "toi_uu_moc_bao_duong_ALL",
+          "score": 0.9982,
+          "metadata": {
+            "source": "toi_uu_moc_bao_duong_ALL.md",
+            "doc_id": "toi_uu_moc_bao_duong_ALL",
+            "title": "VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG",
+            "file_type": "md",
+            "section_header": "VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG",
+            "chunk_index": 0,
+            "total_chunks": 12,
+            "category": "maintenance",
+            "model": "ALL",
+            "milestone_km": 15000,
+            "expanded_chunk_ids": [
+              "toi_uu_moc_bao_duong_ALL_chk_0001",
+              "toi_uu_moc_bao_duong_ALL_chk_0002"
+            ]
+          },
+          "content": "[VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG > VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG]\n# VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG\n\nTừ 01/01/2026, VinFast chính thức điều chỉnh mốc bảo dưỡng định kỳ cho các dòng ô tô điện* như sau:\n\n15.000 km hoặc 1 năm**\n\n(So với mốc cũ: 12.000 km hoặc 1 năm)\n\nĐây là kết quả của quá trình nghiên cứu kỹ lưỡng và kiểm thử khắt khe trong điều kiện thực tế tại Việt Nam. VinFast cam kết việc nới rộng chu kỳ bảo dưỡng không ảnh hưởng đến độ bền và an toàn của xe, Quý khách hoàn toàn yên tâm khi vận hành.\n\nLợi ích thiết thực dành cho Quý khách:\n\n[VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG > VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG]\nLợi ích thiết thực dành cho Quý khách:\n\n- Tiết kiệm chi phí: Giảm số lần vào xưởng, hạn chế chi phí phát sinh – đặc biệt hiệu quả với khách hàng di chuyển nhiều.\n- Tối ưu thời gian: Giảm tần suất bảo dưỡng định kỳ, xe điện có nhiều thời gian hơn để đồng hành cùng Quý khách, hạn chế gián đoạn và nâng cao hiệu quả sử dụng.\n\nVới VinFast, mỗi cải tiến đều xuất phát từ mong muốn mang đến sự hài lòng và giá trị lâu dài cho khách hàng – để mỗi km lăn bánh đều trọn vẹn an tâm!\n\nLưu ý:\n\n(*) Không áp dụng với phiên bản Lạc Hồng chống đạn.\n\n(**) Tùy theo điều kiện nào đến trước.\n\nLịch nhắc bảo dưỡng điều chỉnh:"
+        }
+      ],
+      "rank": 1,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "reciprocal_rank": 1.0,
+      "top_score": 0.9986,
+      "answer": {
+        "text": "Hiện tài liệu chính hãng chưa có thông tin chi tiết về danh sách các hạng mục bảo dưỡng cụ thể cho dòng xe VinFast VF8 tại mốc 15.000 km. Các tài liệu hiện có chỉ cung cấp thông tin về việc điều chỉnh mốc bảo dưỡng định kỳ cho các dòng ô tô điện (bao gồm VF8) là 15.000 km hoặc 1 năm, tùy theo điều kiện nào đến trước [Tài liệu 1]. \n\nĐể biết chính xác các hạng mục cần kiểm tra hoặc thay thế cho xe VF8 tại mốc này, Quý khách vui lòng liên hệ xưởng dịch vụ VinFast gần nhất hoặc đặt lịch hẹn để kỹ thuật viên kiểm tra trực tiếp.",
+        "confidence": "low",
+        "fallback_required": true,
+        "cited_doc_ids": [
+          "toi_uu_moc_bao_duong_ALL"
+        ],
+        "metadata": {
+          "model": "google/gemma-4-26b-a4b-it",
+          "rewritten_query": "Danh sách các hạng mục bảo dưỡng định kỳ tại mốc 15.000 km cho dòng xe VinFast VF8 gồm những hạng mục nào?",
+          "source_cited_doc_indexes": [
+            3
+          ]
+        },
+        "keyword_coverage": 1.0,
+        "correctness_heuristic": 0.5926,
+        "citation_validity": 1.0,
+        "faithfulness_heuristic": 0.6875
+      },
+      "latency_ms": 8351.6
+    },
+    {
+      "id": "M21",
+      "query": "Nếu cần báo giá phụ tùng mà lịch bảo dưỡng không nêu giá, chủ xe nên liên hệ đâu?",
+      "category": "pricing",
+      "model": null,
+      "expected_doc_ids": [
+        "lich_bao_duong_ALL"
+      ],
+      "expected_keywords": [
+        "giá phụ tùng",
+        "xưởng dịch vụ gần nhất",
+        "1900 23 23 89"
+      ],
+      "error": null,
+      "analysis": {
+        "original_query": "Nếu cần báo giá phụ tùng mà lịch bảo dưỡng không nêu giá, chủ xe nên liên hệ đâu?",
+        "rewritten_query": "Người dùng muốn biết quy trình hoặc địa chỉ liên hệ để nhận báo giá phụ tùng khi lịch bảo dưỡng định kỳ không cung cấp thông tin giá.",
+        "keywords": [
+          "báo giá phụ tùng",
+          "lịch bảo dưỡng",
+          "không nêu giá",
+          "liên hệ",
+          "quy trình"
+        ],
+        "model": "ALL",
+        "category": "pricing",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "retrieved_doc_ids": [
+        "pricing_bao_gia_dich_vu_ALL",
+        "lich_bao_duong_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "retrieved_chunks": [
+        {
+          "chunk_id": "pricing_bao_gia_dich_vu_ALL_chk_0002",
+          "doc_id": "pricing_bao_gia_dich_vu_ALL",
+          "score": 0.9993,
+          "metadata": {
+            "source": "pricing_bao_gia_dich_vu_ALL.md",
+            "doc_id": "pricing_bao_gia_dich_vu_ALL",
+            "title": "Chính sách tra cứu và xác nhận báo giá dịch vụ VinFast",
+            "file_type": "md",
+            "section_header": "Chi phí bảo dưỡng và phụ tùng",
+            "chunk_index": 1,
+            "total_chunks": 3,
+            "category": "pricing",
+            "model": "ALL",
+            "milestone_km": 0,
+            "source_url": "https://vinfastauto.com/vn_vi/dich-vu-bao-duong-oto",
+            "expanded_chunk_ids": [
+              "pricing_bao_gia_dich_vu_ALL_chk_0002"
+            ]
+          },
+          "content": "[Chính sách tra cứu và xác nhận báo giá dịch vụ VinFast > Chi phí bảo dưỡng và phụ tùng]\n## Chi phí bảo dưỡng và phụ tùng\n\nVinFast công bố rằng bảng giá phụ tùng và phí dịch vụ được công khai minh bạch\nvà áp dụng đồng nhất tại hệ thống Showroom, Nhà phân phối. Tuy nhiên, trang lịch\nbảo dưỡng công khai không nêu một mức tiền cố định cho từng mốc bảo dưỡng hoặc\ntừng phụ tùng sửa chữa.\n\nChi phí thực tế phụ thuộc vào dòng xe, tình trạng xe, hạng mục cần thực hiện và\nphụ tùng cần thay thế. Để nhận giá chi tiết, khách hàng cần liên hệ hotline\nXưởng Dịch vụ gần nhất hoặc hotline VinFast **1900 23 23 89**.\n\nVì vậy, khi tài liệu không có con số cụ thể, không được tự ước tính giá tiền\ncông, lọc gió, dầu phanh, dung dịch làm mát, má phanh, gạt mưa hoặc các phụ\ntùng khác."
+        },
+        {
+          "chunk_id": "lich_bao_duong_ALL_chk_0030",
+          "doc_id": "lich_bao_duong_ALL",
+          "score": 0.9055,
+          "metadata": {
+            "source": "lich_bao_duong_ALL.md",
+            "doc_id": "lich_bao_duong_ALL",
+            "title": "Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện",
+            "file_type": "md",
+            "section_header": "3. Chi phí bảo dưỡng xe VinFast định kỳ",
+            "chunk_index": 29,
+            "total_chunks": 38,
+            "category": "pricing",
+            "model": "ALL",
+            "milestone_km": 0,
+            "source_url": "https://shop.vinfastauto.com/vn_vi/dat-lich-dich-vu.html",
+            "expanded_chunk_ids": [
+              "lich_bao_duong_ALL_chk_0030",
+              "lich_bao_duong_ALL_chk_0031"
+            ]
+          },
+          "content": "[Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện > 3. Chi phí bảo dưỡng xe VinFast định kỳ]\n## 3. Chi phí bảo dưỡng xe VinFast định kỳ\n\nHệ thống xưởng dịch vụ và trung tâm bảo dưỡng VinFast trên toàn quốc không ngừng đầu tư trang thiết bị, nâng cao trình độ kỹ thuật viên và chất lượng dịch vụ nhằm mang đến những trải nghiệm tốt nhất cho khách hàng. Bảng giá phụ tùng, phí dịch vụ được công khai minh bạch và được áp dụng đồng nhất tại tất cả các Showroom, NPP của VinFast. Khách hàng có thể dễ dàng tham khảo và chủ động tài chính khi có nhu cầu sửa chữa, thay thế.\n\nĐể nhận được thông tin chi tiết về chi phí bảo dưỡng và phụ tùng xe VinFast định kỳ, khách hàng vui lòng liên hệ hotline xưởng dịch vụ gần nhất, hoặc hotline VinFast: 1900 23 23 89 để được hỗ trợ.\n\n[Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện > 3. Chi phí bảo dưỡng xe VinFast định kỳ]\nNhững thông tin về lịch bảo dưỡng xe VinFast giúp khách hàng nắm rõ được những thời gian và quy định kiểm tra, thay mới và sửa chữa xe. Mạng lưới trung tâm bảo dưỡng rộng khắp toàn quốc đảm bảo cũng mang lại sự thuận tiện tối đa cho khách hàng.\n\nKhách hàng có thể đặt lịch lái thử hoặc đặt cọc mua ô tô và xe máy điện VinFast ngay hôm nay để có cơ hội sở hữu xe VinFast với chất lượng vượt trội và trải nghiệm dịch vụ ưu việt của VinFast với chi phí tiết kiệm.\n\nĐể có thêm thông tin hoặc cần hỗ trợ tư vấn về sản phẩm của VinFast, vui lòng liên hệ với chúng tôi:\n\n- Tổng đài tư vấn: 1900 23 23 89\n- Email chăm sóc khách hàng: support.vn@vinfastauto.com"
+        },
+        {
+          "chunk_id": "faq_baoduong_baohanh_ALL_chk_0090",
+          "doc_id": "faq_baoduong_baohanh_ALL",
+          "score": 0.9931,
+          "metadata": {
+            "source": "faq_baoduong_baohanh_ALL.md",
+            "doc_id": "faq_baoduong_baohanh_ALL",
+            "title": "Hỗ trợ",
+            "file_type": "md",
+            "section_header": "Tôi cần lưu ý gì đối với trường hợp sử dụng xe ngoài khu vực bảo hành?",
+            "chunk_index": 89,
+            "total_chunks": 419,
+            "category": "warranty",
+            "model": "ALL",
+            "milestone_km": 0,
+            "source_url": "https://shop.vinfastauto.com/vn_vi/chi-phi-lan-banh",
+            "expanded_chunk_ids": [
+              "faq_baoduong_baohanh_ALL_chk_0089",
+              "faq_baoduong_baohanh_ALL_chk_0090",
+              "faq_baoduong_baohanh_ALL_chk_0091"
+            ]
+          },
+          "content": "[Hỗ trợ > Tôi cần lưu ý gì đối với trường hợp sử dụng xe ngoài khu vực bảo hành?]\n## Tôi cần lưu ý gì đối với trường hợp sử dụng xe ngoài khu vực bảo hành?\n\nĐể giúp Quý khách chuẩn bị tốt nhất, VinFast xin lưu ý một số điểm đối với trường hợp xe được mang sang sử dụng tại quốc gia nằm ngoài khu vực bảo hành xuyên biên giới nêu trên.\n\nVề nguyên tắc chung Trường hợp xe được mua tại một thị trường nhưng mang sang sử dụng tại quốc gia khác ngoài phạm vi áp dụng bảo hành xuyên biên giới, xe sẽ không được áp dụng các quyền lợi bảo hành theo chính sách ban đầu. Trong những trường hợp này, ngay cả khi Quý khách sẵn sàng chi trả chi phí, khả năng hỗ trợ dịch vụ vẫn phụ thuộc vào một số yếu tố kỹ thuật và vận hành.\n\n[Hỗ trợ > Tôi cần lưu ý gì đối với trường hợp sử dụng xe ngoài khu vực bảo hành?]\nVề phụ tùng Cùng một dòng xe nhưng phiên bản dành cho từng thị trường có thể có những khác biệt nhất định, dẫn đến phụ tùng tương ứng cũng khác nhau. Việc đặt phụ tùng chéo giữa các thị trường (nếu khả thi) có thể phát sinh thời gian chờ và chi phí cao hơn do liên quan đến vận chuyển quốc tế.\n\nVề kỹ thuật Một số hạng mục như cập nhật phần mềm có thể không tương thích hoặc không thực hiện được trên phiên bản xe thuộc thị trường khác.\n\n[Hỗ trợ > Tôi cần lưu ý gì đối với trường hợp sử dụng xe ngoài khu vực bảo hành?]\nVề kỹ thuật Một số hạng mục như cập nhật phần mềm có thể không tương thích hoặc không thực hiện được trên phiên bản xe thuộc thị trường khác.\n\nVề khả năng phục vụ tại Xưởng Dịch vụ • Tại các thị trường VinFast có hiện diện và cung cấp dịch vụ, Xưởng Dịch vụ luôn sẵn sàng hỗ trợ kiểm tra tình trạng xe cho Quý khách. Tuy nhiên, khả năng sửa chữa hoàn chỉnh sẽ tùy thuộc vào điều kiện phụ tùng và kỹ thuật như nêu trên, và VinFast không thể cam kết trước trong mọi trường hợp.\n\n• Tại các thị trường VinFast chưa có hiện diện, về cơ bản chúng tôi chưa thể cung cấp dịch vụ hỗ trợ trực tiếp."
+        }
+      ],
+      "rank": 2,
+      "hit_at_1": false,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "reciprocal_rank": 0.5,
+      "top_score": 0.9993,
+      "answer": {
+        "text": "Trong trường hợp lịch bảo dưỡng công khai không nêu mức tiền cố định cho từng mốc bảo dưỡng hoặc từng phụ tùng sửa chữa, chủ xe có thể liên hệ theo các phương thức sau để nhận báo giá chi tiết:\n\n* Liên hệ hotline Xưởng Dịch vụ gần nhất [Tài liệu 1, Tài liệu 2].\n* Liên hệ hotline VinFast: 1900 23 23 89 [Tài liệu 1, Tài liệu 2].\n* Liên hệ qua Email chăm sóc khách hàng: support.vn@vinfastauto.com [Tài liệu 2].\n\nLưu ý rằng chi phí thực tế sẽ phụ thuộc vào dòng xe, tình trạng xe, hạng mục cần thực hiện và phụ tùng cần thay thế [Tài liệu 1].",
+        "confidence": "high",
+        "fallback_required": false,
+        "cited_doc_ids": [
+          "pricing_bao_gia_dich_vu_ALL",
+          "lich_bao_duong_ALL"
+        ],
+        "metadata": {
+          "model": "google/gemma-4-26b-a4b-it",
+          "rewritten_query": "Người dùng muốn biết quy trình hoặc địa chỉ liên hệ để nhận báo giá phụ tùng khi lịch bảo dưỡng định kỳ không cung cấp thông tin giá.",
+          "source_cited_doc_indexes": [
+            1,
+            2
+          ]
+        },
+        "keyword_coverage": 0.6667,
+        "correctness_heuristic": 0.5333,
+        "citation_validity": 1.0,
+        "faithfulness_heuristic": 0.9494
+      },
+      "latency_ms": 5163.2
+    },
+    {
+      "id": "W01",
+      "query": "Chính sách bảo hành xe VF8 là bao nhiêu năm?",
+      "category": "warranty",
+      "model": "VF8",
+      "expected_doc_ids": [
+        "warranty_policy_ALL",
+        "warranty_policy_vi",
+        "warranty_maintenance_VF8",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "expected_keywords": [
+        "10 năm",
+        "200.000",
+        "VF8"
+      ],
+      "error": null,
+      "analysis": {
+        "original_query": "Chính sách bảo hành xe VF8 là bao nhiêu năm?",
+        "rewritten_query": "Chính sách bảo hành cho dòng xe VinFast VF8 là bao nhiêu năm?",
+        "keywords": [
+          "chính sách bảo hành",
+          "VinFast VF8",
+          "thời hạn bảo hành",
+          "năm bảo hành"
+        ],
+        "model": "VF8",
+        "category": "warranty",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "retrieved_doc_ids": [
+        "warranty_maintenance_VF8",
+        "warranty_maintenance_VFe34",
+        "warranty_policy_vi"
+      ],
+      "retrieved_chunks": [
+        {
+          "chunk_id": "warranty_maintenance_VF8_chk_0024",
+          "doc_id": "warranty_maintenance_VF8",
+          "score": 0.9997,
+          "metadata": {
+            "source": "warranty_maintenance_VF8.pdf",
+            "doc_id": "warranty_maintenance_VF8",
+            "title": "Sổ bảo hành & nhật ký bảo dưỡng VinFast VF8",
+            "file_type": "pdf",
+            "section_header": "III. Chính sách bảo hành",
+            "chunk_index": 23,
+            "total_chunks": 64,
+            "category": "warranty",
+            "model": "VF8",
+            "milestone_km": 0,
+            "expanded_chunk_ids": [
+              "warranty_maintenance_VF8_chk_0023",
+              "warranty_maintenance_VF8_chk_0024",
+              "warranty_maintenance_VF8_chk_0025"
+            ]
+          },
+          "content": "[Sổ bảo hành & nhật ký bảo dưỡng VinFast VF8 > III. Chính sách bảo hành]\n17\n\n[Sổ bảo hành & nhật ký bảo dưỡng VinFast VF8 > III. Chính sách bảo hành]\nIII. Chính sách bảo hành\n5. THỜI GIAN\nBẢO HÀNH\nThời hạn bảo hành chung đối với VF 8 là 10 năm hoặc 200.000 km tùy thuộc vào điều kiện nào đến\ntrước kể từ ngày bán lẻ tới khách hàng ghi trên hóa đơn.\nPhụ tùng được thay thế theo chính sách bảo hành xe có thời hạn bảo hành bằng thời hạn bảo hành\ncòn lại của xe.\nThời hạn bảo hành xe mới (Bao gồm hệ truyền động) đối với xe được sử dụng cho mục đích thương\nmại: 5 năm hoặc 100.000 km tùy điều kiện nào đến trước và không ưu tiên xếp hàng sửa chữa.\nGhi chú: Xe sử dụng cho mục đích thương mại là đối tượng KH sử dụng xe để kinh doanh, bao gồm\nnhưng không giới hạn: xe taxi và xe sử dụng cho dịch vụ chở khách, kể cả các dịch vụ như Grab, Be\nhay tương tự; xe cho thuê; xe đưa đón; xe giao hàng.\n•\n•\n6. CÁC\nCHI TIẾT\nBẢO HÀNH\nGIỚI HẠN\n4. THỪA KẾ\nBẢO HÀNH\nTrong thời hạn bảo hành còn lại, mọi điều kiện bảo hành vẫn được đảm bảo cho chủ sở hữu tiếp\ntheo. Vui lòng mang xe và Sổ bảo hành đến các XDV/NPP của VinFast để đăng ký lại thông tin bảo\nhành.\n•\nPIN (MUA LẦN ĐẦU THEO XE MỚI):\nNgoại trừ trường hợp khách hàng sử dụng xe cho mục đích thương mại (nêu dưới đây), pin có thời hạn\nbảo hành là 10 năm từ ngày kích hoạt bảo hành xe (không giới hạn quãng đường sử dụng).\nTrong trường hợp khách hàng sử dụng xe cho mục đích thương mại, bao gồm nhưng không giới hạn, xe\ntaxi và xe sử dụng cho dịch vụ chở khách, kể cả các dịch vụ như Grab, Be hay tương tự; xe cho thuê; xe\nđưa đón; xe giao hàng (gọi chung là “xe sử dụng cho mục đích thương mại”) thì thời hạn bảo hành là 10\nnăm hoặc 200.000 km tùy thuộc vào điều kiện nào đến trước.\nĐối với xe đã từng được sử dụng cho mục đích thương mại, chính sách bảo hành pin áp dụng cho\nxe sử dụng cho mục đích thương mại sẽ tiếp tục được duy trì và áp dụng kể cả trong trường hợp\nchuyển nhượng xe cho chủ sở hữu mới.\n\n•\n•\n•\n•\n•\n\n[Sổ bảo hành & nhật ký bảo dưỡng VinFast VF8 > III. Chính sách bảo hành]\n18"
+        },
+        {
+          "chunk_id": "warranty_maintenance_VFe34_chk_0024",
+          "doc_id": "warranty_maintenance_VFe34",
+          "score": 0.9994,
+          "metadata": {
+            "source": "warranty_maintenance_VFe34.pdf",
+            "doc_id": "warranty_maintenance_VFe34",
+            "title": "Sổ bảo hành & nhật ký bảo dưỡng VinFast VF e34",
+            "file_type": "pdf",
+            "section_header": "III. Chính sách bảo hành",
+            "chunk_index": 23,
+            "total_chunks": 61,
+            "category": "warranty",
+            "model": "ALL",
+            "milestone_km": 0,
+            "expanded_chunk_ids": [
+              "warranty_maintenance_VFe34_chk_0023",
+              "warranty_maintenance_VFe34_chk_0024",
+              "warranty_maintenance_VFe34_chk_0025"
+            ]
+          },
+          "content": "[Sổ bảo hành & nhật ký bảo dưỡng VinFast VF e34 > III. Chính sách bảo hành]\n17\n\n[Sổ bảo hành & nhật ký bảo dưỡng VinFast VF e34 > III. Chính sách bảo hành]\nIII. Chính sách bảo hành\n5. THỜI GIAN\nBẢO HÀNH\nThời hạn bảo hành chung đối với VF 8 là 10 năm hoặc 200.000 km tùy thuộc vào điều kiện nào đến\ntrước kể từ ngày bán lẻ tới khách hàng ghi trên hóa đơn.\nPhụ tùng được thay thế theo chính sách bảo hành xe có thời hạn bảo hành bằng thời hạn bảo hành\ncòn lại của xe.\n•\n•\n6. CÁC\nCHI TIẾT\nBẢO HÀNH\nGIỚI HẠN\nPIN:\nPin mua kèm xe mới có thời hạn bảo hành là 10 năm không giới hạn quãng đường sử dụng.\nKhách hàng sử dụng xe với mục đích kinh doanh vận tải, bao gồm nhưng không giới hạn, xe taxi và xe\nsử dụng cho dịch vụ chở khách, kể cả các dịch vụ như Grab, Be hay tương tự; xe cho thuê; xe đưa đón; xe\ngiao hàng thì thời hạn bảo hành là 10 năm hoặc 200.000 km tùy thuộc vào điều kiện nào đến trước.\nTuổi thọ của pin phụ thuộc nhiều vào cách sạc, dòng sạc, số lần phóng điện và nhiệt độ môi trường trong\nquá trình sử dụng. Khách hàng cần đọc kỹ sách Hướng dẫn sử dụng để hiểu rõ và sử dụng đúng.\n4. THỪA KẾ\nBẢO HÀNH\nTrong thời hạn bảo hành còn lại, mọi điều kiện bảo hành vẫn được đảm bảo cho chủ sở hữu tiếp\ntheo. Vui lòng mang xe và Sổ bảo hành đến các XDV/NPP của VinFast để đăng ký lại thông tin bảo\nhành\nNếu xe đã được sử dụng với mục đích kinh doanh vận tải thì phạm vi bảo hành còn lại áp dụng\ncho chủ sở hữu tiếp theo sẽ theo chính sách bảo hành Khách hàng kinh doanh vận tải*. Nếu xe đã\nđược sử dụng với mục đích thông thường được bán để sử dụng cho mục đích kinh doanh vận tải\nthì phạm vi bảo hành còn lại áp dụng cho chủ sở hữu tiếp theo sẽ theo chính sách bảo hành Khách\nhàng kinh doanh vận tải*.\n\n[Sổ bảo hành & nhật ký bảo dưỡng VinFast VF e34 > III. Chính sách bảo hành]\n*Khách hàng kinh doanh vận tải, bao gồm nhưng không giới hạn, xe taxi và xe sử dụng cho dịch\nvụ chở khách, kể cả các dịch vụ như Grab, Be hay tương tự; xe cho thuê; xe đưa đón; xe giao hàng.\n•\n•\n\n•\n•\n•\n\n18"
+        },
+        {
+          "chunk_id": "warranty_policy_vi_chk_0002",
+          "doc_id": "warranty_policy_vi",
+          "score": 0.9995,
+          "metadata": {
+            "source": "warranty_policy_vi.md",
+            "doc_id": "warranty_policy_vi",
+            "title": "Chính sách bảo hành VinFast hiện hành - bản chuẩn hóa tiếng Việt",
+            "file_type": "md",
+            "section_header": "Thời hạn bảo hành xe mới",
+            "chunk_index": 1,
+            "total_chunks": 9,
+            "category": "warranty",
+            "model": "ALL",
+            "milestone_km": 0,
+            "expanded_chunk_ids": [
+              "warranty_policy_vi_chk_0002"
+            ]
+          },
+          "content": "[Chính sách bảo hành VinFast hiện hành - bản chuẩn hóa tiếng Việt > Thời hạn bảo hành xe mới]\n## Thời hạn bảo hành xe mới\n\n- VF 8 và VF 9: 10 năm hoặc 200.000 km, tùy điều kiện nào đến trước.\n- VF 3, VF 5, VF 6, VF 7, VF e34 và VF MPV7: 7 năm hoặc 160.000 km, tùy điều kiện nào đến trước.\n- VF EC Van: 5 năm hoặc 130.000 km, tùy điều kiện nào đến trước.\n\nNguồn: `warranty_policy_ALL.md`, mục `New Vehicle Warranty Period`."
+        }
+      ],
+      "rank": 1,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "reciprocal_rank": 1.0,
+      "top_score": 0.9997,
+      "answer": {
+        "text": "Chính sách bảo hành cho dòng xe VinFast VF8 được quy định cụ thể tùy theo mục đích sử dụng như sau:\n\n* **Đối với mục đích sử dụng thông thường:** Thời hạn bảo hành chung là 10 năm hoặc 200.000 km, tùy thuộc vào điều kiện nào đến trước kể từ ngày bán lẻ tới khách hàng [Tài liệu 1, Tài liệu 3].\n* **Đối với mục đích thương mại (kinh doanh vận tải như taxi, Grab, Be, xe cho thuê, xe giao hàng...):** Thời hạn bảo hành xe mới (bao gồm hệ truyền động) là 5 năm hoặc 100.000 km, tùy điều kiện nào đến trước [Tài liệu 1].\n* **Đối với Pin (mua lần đầu theo xe mới):** \n    * Nếu không sử dụng cho mục đích thương mại: Thời hạn bảo hành pin là 10 năm kể từ ngày kích hoạt bảo hành xe và không giới hạn quãng đường sử dụng [Tài liệu 1].\n    * Nếu sử dụng cho mục đích thương mại: Thời hạn bảo hành pin là 10 năm hoặc 200.000 km, tùy thuộc vào điều kiện nào đến trước [Tài liệu 1].",
+        "confidence": "high",
+        "fallback_required": false,
+        "cited_doc_ids": [
+          "warranty_maintenance_VF8"
+        ],
+        "metadata": {
+          "model": "google/gemma-4-26b-a4b-it",
+          "rewritten_query": "Chính sách bảo hành cho dòng xe VinFast VF8 là bao nhiêu năm?",
+          "source_cited_doc_indexes": [
+            1
+          ]
+        },
+        "keyword_coverage": 1.0,
+        "correctness_heuristic": 0.6981,
+        "citation_validity": 1.0,
+        "faithfulness_heuristic": 0.9157
+      },
+      "latency_ms": 5486.8
+    },
+    {
+      "id": "B01",
+      "query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+      "category": "battery",
+      "model": null,
+      "expected_doc_ids": [
+        "battery_quy_dinh_su_dung_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "expected_keywords": [
+        "55°C",
+        "-20°C",
+        "24 giờ"
+      ],
+      "error": null,
+      "analysis": {
+        "original_query": "VinFast khuyến cáo giới hạn nhiệt độ nào khi bảo quản ô tô điện?",
+        "rewritten_query": "VinFast khuyến cáo giới hạn nhiệt độ bảo quản tối ưu cho xe điện là bao nhiêu?",
+        "keywords": [
+          "VinFast",
+          "khuyến cáo",
+          "giới hạn nhiệt độ",
+          "bảo quản",
+          "xe điện",
+          "nhiệt độ tối ưu"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "retrieved_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "lich_bao_duong_ALL",
+        "toi_uu_moc_bao_duong_ALL"
+      ],
+      "retrieved_chunks": [
+        {
+          "chunk_id": "faq_baoduong_baohanh_ALL_chk_0105",
+          "doc_id": "faq_baoduong_baohanh_ALL",
+          "score": 0.9971,
+          "metadata": {
+            "source": "faq_baoduong_baohanh_ALL.md",
+            "doc_id": "faq_baoduong_baohanh_ALL",
+            "title": "Hỗ trợ",
+            "file_type": "md",
+            "section_header": "VinFast khuyến cáo khách hàng như thế nào về sạc cho xe điện?",
+            "chunk_index": 104,
+            "total_chunks": 419,
+            "category": "general",
+            "model": "ALL",
+            "milestone_km": 0,
+            "source_url": "https://shop.vinfastauto.com/vn_vi/chi-phi-lan-banh",
+            "expanded_chunk_ids": [
+              "faq_baoduong_baohanh_ALL_chk_0105"
+            ]
+          },
+          "content": "[Hỗ trợ > VinFast khuyến cáo khách hàng như thế nào về sạc cho xe điện?]\n## VinFast khuyến cáo khách hàng như thế nào về sạc cho xe điện?\n\nKhách hàng chỉ sử dụng thiết bị sạc hoặc trạm sạc do VinFast Trading cung cấp hoặc của nhà sản xuất mà VinFast chỉ định."
+        },
+        {
+          "chunk_id": "lich_bao_duong_ALL_chk_0012",
+          "doc_id": "lich_bao_duong_ALL",
+          "score": 0.9991,
+          "metadata": {
+            "source": "lich_bao_duong_ALL.md",
+            "doc_id": "lich_bao_duong_ALL",
+            "title": "Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện",
+            "file_type": "md",
+            "section_header": "1.2. Lịch bảo dưỡng xe Fadil",
+            "chunk_index": 11,
+            "total_chunks": 38,
+            "category": "maintenance",
+            "model": "ALL",
+            "milestone_km": 15000,
+            "source_url": "https://shop.vinfastauto.com/vn_vi/dat-lich-dich-vu.html",
+            "expanded_chunk_ids": [
+              "lich_bao_duong_ALL_chk_0011",
+              "lich_bao_duong_ALL_chk_0012"
+            ]
+          },
+          "content": "[Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện > 1.2. Lịch bảo dưỡng xe Fadil]\nTrong đó:\n\n| (1) Tùy điều kiện nào đến trước. |\n| --- |\n| (2) Động cơ 1.4 kiểm tra trực quan sau mỗi 240.000km hoặc 10 năm tùy điều kiện nào đến trước. Kiểm tra xem có bị sờn, rạn nứt hoặc nhiều hư hỏng hay không. Thay thế nếu cần thiết. |\n| (3) Thay thế mỗi năm hoặc khi thông báo \"Thay dầu động cơ\" hoặc đèn cảnh báo trong cụm đồng hồ \"hiển thị\". |\n| (4) Cần bảo dưỡng xe thường xuyên hơn trong điều kiện khắc nghiệt, lái xe quãng đường ngắn, chạy xe không tải liên tục, thường xuyên vận hành ở tốc độ thấp trong giao thông dừng - đi hoặc lái xe trong điều kiện bụi bặm. |\n| (5) Cần thay thế bộ lọc không khí cabin ô tô thường xuyên hơn nếu lái xe trong các khu vực có mật độ giao thông cao, chất lượng không khí thấp, khu vực nhiều bụi hoặc vùng nhạy cảm với các chất gây dị ứng môi trường. |\n| (6) Không cần kiểm tra, chỉ cần kiểm tra dầu hộp số nếu có lỗi hộp số hoặc rò rỉ dầu. Không cần thay thế trong điều kiện thông thường, nhưng cần thay thế định kỳ 72.000km nếu xe thường xuyên vận hành trong các điều kiện khắc nghiệt: Mật độ giao thông thành phố cao, nhiệt độ bên ngoài thường đạt 30◦C hoặc cao hơn; Trên các địa hình đồi núi. |\n| (7) Cần kiểm tra tình trạng lốp trước khi lái xe và kiểm tra áp suất lốp mỗi lần đổ xăng hoặc ít nhất 1 lần 1 tháng bằng dụng cụ đo áp suất lốp. (8) Đảo và cân bằng bánh xe nếu cần thiết. |\n\n[Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện > 1.2. Lịch bảo dưỡng xe Fadil]\nVinFast khuyến cáo chủ xe Fadil nên thay thế bộ lọc sau mỗi 15.000km di chuyển hoặc sau 1 năm sử dụng xe (tùy điều kiện nào đến trước) để đảm bảo không khí trong cabin trong lành, hạn chế vi khuẩn sinh sôi. Ngoài ra, người dùng có thể đảo lốp sau mỗi 12.000 km để duy trì độ bám đường cho xe."
+        },
+        {
+          "chunk_id": "toi_uu_moc_bao_duong_ALL_chk_0002",
+          "doc_id": "toi_uu_moc_bao_duong_ALL",
+          "score": 0.9982,
+          "metadata": {
+            "source": "toi_uu_moc_bao_duong_ALL.md",
+            "doc_id": "toi_uu_moc_bao_duong_ALL",
+            "title": "VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG",
+            "file_type": "md",
+            "section_header": "VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG",
+            "chunk_index": 1,
+            "total_chunks": 12,
+            "category": "maintenance",
+            "model": "ALL",
+            "milestone_km": 15000,
+            "expanded_chunk_ids": [
+              "toi_uu_moc_bao_duong_ALL_chk_0001",
+              "toi_uu_moc_bao_duong_ALL_chk_0002",
+              "toi_uu_moc_bao_duong_ALL_chk_0003"
+            ]
+          },
+          "content": "[VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG > VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG]\n# VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG\n\nTừ 01/01/2026, VinFast chính thức điều chỉnh mốc bảo dưỡng định kỳ cho các dòng ô tô điện* như sau:\n\n15.000 km hoặc 1 năm**\n\n(So với mốc cũ: 12.000 km hoặc 1 năm)\n\nĐây là kết quả của quá trình nghiên cứu kỹ lưỡng và kiểm thử khắt khe trong điều kiện thực tế tại Việt Nam. VinFast cam kết việc nới rộng chu kỳ bảo dưỡng không ảnh hưởng đến độ bền và an toàn của xe, Quý khách hoàn toàn yên tâm khi vận hành.\n\nLợi ích thiết thực dành cho Quý khách:\n\n[VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG > VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG]\nLợi ích thiết thực dành cho Quý khách:\n\n- Tiết kiệm chi phí: Giảm số lần vào xưởng, hạn chế chi phí phát sinh – đặc biệt hiệu quả với khách hàng di chuyển nhiều.\n- Tối ưu thời gian: Giảm tần suất bảo dưỡng định kỳ, xe điện có nhiều thời gian hơn để đồng hành cùng Quý khách, hạn chế gián đoạn và nâng cao hiệu quả sử dụng.\n\nVới VinFast, mỗi cải tiến đều xuất phát từ mong muốn mang đến sự hài lòng và giá trị lâu dài cho khách hàng – để mỗi km lăn bánh đều trọn vẹn an tâm!\n\nLưu ý:\n\n(*) Không áp dụng với phiên bản Lạc Hồng chống đạn.\n\n(**) Tùy theo điều kiện nào đến trước.\n\nLịch nhắc bảo dưỡng điều chỉnh:\n\n[VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG > VINFAST TỐI ƯU MỐC BẢO DƯỠNG, GIẢM CHI PHÍ VẬN HÀNH CHO KHÁCH HÀNG]\nLưu ý:\n\n(*) Không áp dụng với phiên bản Lạc Hồng chống đạn.\n\n(**) Tùy theo điều kiện nào đến trước.\n\nLịch nhắc bảo dưỡng điều chỉnh:\n\nĐể giúp Quý khách dễ dàng theo dõi lịch bảo dưỡng, các thông báo nhắc bảo dưỡng sẽ được điều chỉnh theo mốc bảo dưỡng mới như sau:\n\n- Đối với các xe chưa thực hiện bảo dưỡng: cố định mốc nhắc bảo dưỡng mới là 15.000km, 30.000 km,…\n- Đối với các xe đã thực hiện bảo dưỡng: Các mốc nhắc bảo dưỡng tiếp theo sẽ được quy đổi về mốc điều chỉnh (B) tương ứng, sau đó áp dụng theo các mốc bảo dưỡng mới. Cụ thể quy đổi như sau:\n\n(Đơn vị tính: km)"
+        }
+      ],
+      "rank": 1,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "reciprocal_rank": 1.0,
+      "top_score": 0.9971,
+      "answer": {
+        "text": "Hiện tài liệu chính hãng chưa có thông tin chi tiết về giới hạn nhiệt độ khuyến cáo khi bảo quản ô tô điện. Khách hàng vui lòng liên hệ xưởng dịch vụ hoặc đặt lịch để được kỹ thuật viên tư vấn và hỗ trợ trực tiếp.",
+        "confidence": "low",
+        "fallback_required": true,
+        "cited_doc_ids": [],
+        "metadata": {
+          "model": "google/gemma-4-26b-a4b-it",
+          "rewritten_query": "VinFast khuyến cáo giới hạn nhiệt độ bảo quản tối ưu cho xe điện là bao nhiêu?",
+          "source_cited_doc_indexes": []
+        },
+        "keyword_coverage": 0.0,
+        "correctness_heuristic": 0.0759,
+        "citation_validity": 1.0,
+        "faithfulness_heuristic": 0.6809
+      },
+      "latency_ms": 6249.5
+    },
+    {
+      "id": "PR01",
+      "query": "Đặt lịch bảo dưỡng xe VinFast qua app như thế nào?",
+      "category": "procedure",
+      "model": null,
+      "expected_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "dich_vu_bao_duong_ALL"
+      ],
+      "expected_keywords": [
+        "app",
+        "đặt lịch",
+        "xác nhận"
+      ],
+      "error": null,
+      "analysis": {
+        "original_query": "Đặt lịch bảo dưỡng xe VinFast qua app như thế nào?",
+        "rewritten_query": "Hướng dẫn chi tiết cách đặt lịch bảo dưỡng định kỳ cho xe VinFast thông qua ứng dụng di động VinFast Care.",
+        "keywords": [
+          "đặt lịch",
+          "bảo dưỡng",
+          "ứng dụng",
+          "VinFast Care",
+          "lịch bảo dưỡng định kỳ",
+          "đặt lịch bảo dưỡng",
+          "hướng dẫn"
+        ],
+        "model": "ALL",
+        "category": "procedure",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "retrieved_doc_ids": [
+        "lich_bao_duong_ALL",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "retrieved_chunks": [
+        {
+          "chunk_id": "lich_bao_duong_ALL_chk_0027",
+          "doc_id": "lich_bao_duong_ALL",
+          "score": 0.9998,
+          "metadata": {
+            "source": "lich_bao_duong_ALL.md",
+            "doc_id": "lich_bao_duong_ALL",
+            "title": "Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện",
+            "file_type": "md",
+            "section_header": "2. Quy trình bảo dưỡng xe VinFast",
+            "chunk_index": 26,
+            "total_chunks": 38,
+            "category": "procedure",
+            "model": "ALL",
+            "milestone_km": 0,
+            "source_url": "https://shop.vinfastauto.com/vn_vi/dat-lich-dich-vu.html",
+            "expanded_chunk_ids": [
+              "lich_bao_duong_ALL_chk_0026",
+              "lich_bao_duong_ALL_chk_0027"
+            ]
+          },
+          "content": "[Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện > 2. Quy trình bảo dưỡng xe VinFast]\nKhách hàng đăng ký dịch vụ bảo dưỡng tại xưởng sẽ được nhắc lịch trước 10 ngày so với khuyến cáo của VinFast.\n\n- Bước 2: Tiếp nhận và tư vấn\n\nVinFast tiếp nhận yêu cầu và hướng dẫn khách hàng đến xưởng dịch vụ. Sau khi kiểm tra xe, nhân viên sẽ báo giá các chi tiết bảo dưỡng, sửa chữa (nếu có) và xin chữ ký xác nhận của khách hàng.\n\n- Bước 3: Sửa chữa\n\nKhách hàng được hỗ trợ sửa chữa, bảo dưỡng xe theo yêu cầu (nếu có) và luôn được cập nhật tiến độ trong thời gian thực hiện dịch vụ.\n\n- Bước 4: Bàn giao xe\n\nXe được rửa sạch trước khi giao (nếu khách hàng có nhu cầu). Khách hàng nhận xe tại khu vực được hướng dẫn.\n\n- Bước 5: Chăm sóc sau bảo dưỡng\n\n[Lịch bảo dưỡng xe VinFast định kỳ dành cho ô tô, xe máy điện > 2. Quy trình bảo dưỡng xe VinFast]\nXe được rửa sạch trước khi giao (nếu khách hàng có nhu cầu). Khách hàng nhận xe tại khu vực được hướng dẫn.\n\n- Bước 5: Chăm sóc sau bảo dưỡng\n\nKhách hàng làm dịch vụ sẽ được nhân viên tư vấn gọi điện để ghi nhận phản hồi trong vòng 2 ngày sau khi bảo dưỡng xe.\n\nLưu ý:\n\n- Khách hàng mua xe mới và làm dịch vụ tại xưởng sẽ được nhắc lịch bảo dưỡng trước 10 ngày so với lịch dự kiến.\n- Khách hàng đặt lịch trước ít nhất 4 tiếng sẽ được tiếp nhận và xác nhận hẹn."
+        },
+        {
+          "chunk_id": "faq_baoduong_baohanh_ALL_chk_0393",
+          "doc_id": "faq_baoduong_baohanh_ALL",
+          "score": 0.9996,
+          "metadata": {
+            "source": "faq_baoduong_baohanh_ALL.md",
+            "doc_id": "faq_baoduong_baohanh_ALL",
+            "title": "Hỗ trợ",
+            "file_type": "md",
+            "section_header": "Cách kiểm tra quá trình sửa chữa, bảo dưỡng xe ô tô điện VinFast qua Ứng dụng VinFast",
+            "chunk_index": 392,
+            "total_chunks": 419,
+            "category": "procedure",
+            "model": "ALL",
+            "milestone_km": 0,
+            "source_url": "https://shop.vinfastauto.com/vn_vi/chi-phi-lan-banh",
+            "expanded_chunk_ids": [
+              "faq_baoduong_baohanh_ALL_chk_0393",
+              "faq_baoduong_baohanh_ALL_chk_0394"
+            ]
+          },
+          "content": "[Hỗ trợ > Cách kiểm tra quá trình sửa chữa, bảo dưỡng xe ô tô điện VinFast qua Ứng dụng VinFast]\n## Cách kiểm tra quá trình sửa chữa, bảo dưỡng xe ô tô điện VinFast qua Ứng dụng VinFast\n\nNgười dùng có thể theo dõi quá trình sửa chữa, bảo dưỡng xe ngay trên Ứng dụng VinFast. Thông tin về bảng báo giá, thời gian dự kiến hoàn thành, hóa đơn đều được hiển thị đầy đủ, rõ ràng. Sau khi hoàn thành, người dùng có thể thanh toán hóa đơn thông qua ứng dụng hoặc thanh toán trực tiếp khi nhận xe. Các bước kiểm tra quá trình sửa chữa, bảo dưỡng:\n\n[Hỗ trợ > Cách kiểm tra quá trình sửa chữa, bảo dưỡng xe ô tô điện VinFast qua Ứng dụng VinFast]\n- Bước 1: Vào Dịch vụ, chọn Đặt dịch vụ, chọn lịch hẹn sắp tới để theo dõi quá trình sửa chữa, bảo dưỡng;\n- Bước 2: Xem chi tiết dịch vụ sau khi đặt lịch. Người dùng có thể hủy hoặc đặt lịch vào thời gian khác trước khi lịch hẹn diễn ra;\n- Bước 3: VinFast sẽ gửi bảng báo giá dịch vụ. Người dùng kiểm tra thông tin bảng báo giá và chọn Đồng ý để tiến hành dịch vụ. Nếu chọn dịch vụ Mobile Service, cần xác nhận báo giá tối thiểu 4 tiếng trước lịch hẹn đã đặt;\n- Bước 4: Khi xe đang sửa chữa, ứng dụng sẽ hiển thị thời gian hoàn thành dự kiến;\n- Bước 5: Khi dịch vụ hoàn thành, người dùng có thể xem hoá đơn và thanh toán bằng cách: Thanh toán ngay qua ứng dụng; Thanh toán khi nhận xe tại xưởng; Thanh toán trực tiếp cho kỹ thuật viên VinFast.\n- Bước 6: Xem lại các lịch hẹn trong mục Lịch sử dịch vụ."
+        }
+      ],
+      "rank": 2,
+      "hit_at_1": false,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "reciprocal_rank": 0.5,
+      "top_score": 0.9998,
+      "answer": {
+        "text": "Để đặt lịch và theo dõi quá trình bảo dưỡng xe VinFast qua ứng dụng, bạn thực hiện theo các bước sau:\n\n*   **Quy trình đặt và theo dõi lịch hẹn trên ứng dụng:**\n    *   **Bước 1:** Truy cập vào mục **Dịch vụ**, chọn **Đặt dịch vụ**, sau đó chọn **Lịch hẹn sắp tới** để theo dõi quá trình sửa chữa, bảo dưỡng [Tài liệu 2].\n    *   **Bước 2:** Xem chi tiết dịch vụ sau khi đã đặt lịch. Tại đây, bạn có thể thực hiện hủy lịch hoặc đặt lại vào thời gian khác trước khi lịch hẹn diễn ra [Tài liệu 2].\n    *   **Bước 3:** Kiểm tra bảng báo giá dịch vụ do VinFast gửi qua ứng dụng. Bạn cần chọn **Đồng ý** để tiến hành dịch vụ. Lưu ý: Nếu bạn chọn dịch vụ Mobile Service, cần phải xác nhận báo giá tối thiểu 4 tiếng trước lịch hẹn đã đặt [Tài liệu 2].\n    *   **Bước 4:** Theo dõi thời gian hoàn thành dự kiến được hiển thị trên ứng dụng khi xe đang trong quá trình sửa chữa [Tài liệu 2].\n    *   **Bước 5:** Sau khi dịch vụ hoàn thành, bạn có thể xem hóa đơn và lựa chọn các hình thức thanh toán: Thanh toán ngay qua ứng dụng, thanh toán khi nhận xe tại xưởng, hoặc thanh toán trực tiếp cho kỹ thuật viên VinFast [Tài liệu 2].\n    *   **Bước 6:** Bạn có thể xem lại các lịch hẹn đã thực hiện trong mục **Lịch sử dịch vụ** [Tài liệu 2].\n\n*   **Lưu ý quan trọng:**\n    *   Để được tiếp nhận và xác nhận hẹn, khách hàng cần đặt lịch trước ít nhất 4 tiếng [Tài liệu 1].\n    *   Khách hàng mua xe mới và làm dịch vụ tại xưởng sẽ được hệ thống nhắc lịch bảo dưỡng trước 10 ngày so với lịch dự kiến [Tài liệu 1].",
+        "confidence": "high",
+        "fallback_required": false,
+        "cited_doc_ids": [
+          "lich_bao_duong_ALL",
+          "faq_baoduong_baohanh_ALL"
+        ],
+        "metadata": {
+          "model": "google/gemma-4-26b-a4b-it",
+          "rewritten_query": "Hướng dẫn chi tiết cách đặt lịch bảo dưỡng định kỳ cho xe VinFast thông qua ứng dụng di động VinFast Care.",
+          "source_cited_doc_indexes": [
+            1,
+            2
+          ]
+        },
+        "keyword_coverage": 0.6667,
+        "correctness_heuristic": 0.4644,
+        "citation_validity": 1.0,
+        "faithfulness_heuristic": 0.8739
+      },
+      "latency_ms": 13894.9
+    },
+    {
+      "id": "G02",
+      "query": "VinFast có ứng dụng di động để theo dõi xe không?",
+      "category": "general",
+      "model": null,
+      "expected_doc_ids": [
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "expected_keywords": [
+        "theo dõi",
+        "pin"
+      ],
+      "error": null,
+      "analysis": {
+        "original_query": "VinFast có ứng dụng di động để theo dõi xe không?",
+        "rewritten_query": "VinFast có cung cấp ứng dụng di động nào để theo dõi trạng thái, vị trí hoặc thông số kỹ thuật của xe điện không?",
+        "keywords": [
+          "ứng dụng di động",
+          "theo dõi xe",
+          "VinFast",
+          "trạng thái xe",
+          "vị trí xe",
+          "thông số kỹ thuật"
+        ],
+        "model": "ALL",
+        "category": "general",
+        "milestone_km": null,
+        "subsystem": null,
+        "is_out_of_scope": false
+      },
+      "retrieved_doc_ids": [
+        "faq_baoduong_baohanh_ALL",
+        "quy_trinh_ung_dung_ALL",
+        "battery_cuu_ho_ALL"
+      ],
+      "retrieved_chunks": [
+        {
+          "chunk_id": "faq_baoduong_baohanh_ALL_chk_0379",
+          "doc_id": "faq_baoduong_baohanh_ALL",
+          "score": 0.9996,
+          "metadata": {
+            "source": "faq_baoduong_baohanh_ALL.md",
+            "doc_id": "faq_baoduong_baohanh_ALL",
+            "title": "Hỗ trợ",
+            "file_type": "md",
+            "section_header": "Ứng dụng VinFast là gì?",
+            "chunk_index": 378,
+            "total_chunks": 419,
+            "category": "general",
+            "model": "ALL",
+            "milestone_km": 0,
+            "source_url": "https://shop.vinfastauto.com/vn_vi/chi-phi-lan-banh",
+            "expanded_chunk_ids": [
+              "faq_baoduong_baohanh_ALL_chk_0379",
+              "faq_baoduong_baohanh_ALL_chk_0380"
+            ]
+          },
+          "content": "[Hỗ trợ > Ứng dụng VinFast là gì?]\n## Ứng dụng VinFast là gì?\n\nỨng dụng VinFast được phát triển bởi đội ngũ VinFast giúp người lái kết nối và điều khiển xe từ xa thông qua thiết bị di động. Ứng dụng này được tích hợp nhiều tính năng thông minh, tối ưu trải nghiệm cho người dùng. Theo đó, thông qua ứng dụng VinFast cho xe ô tô điện, Khách hàng có thể:\n\n- Đăng ký, đăng nhập tài khoản.\n- Cài đặt nâng cao, quản lý phần mềm và thay đổi vai trò của người lái trên xe.\n- Theo dõi tình trạng pin và trạng thái sạc.\n- Lên lịch hành trình và chuyển đến xe.\n- Theo dõi tình trạng xe.\n- Cùng nhiều tính năng tiện lợi, thông minh khác.\n\n>>> Khách hàng có thể tìm hiểu thêm về Ứng dụng VinFast:\n\nHướng dẫn cài đặt Ứng dụng VinFast cho ô tô điện (Phần 1)\n\n[Hỗ trợ > Ứng dụng VinFast là gì?]\n>>> Khách hàng có thể tìm hiểu thêm về Ứng dụng VinFast:\n\nHướng dẫn cài đặt Ứng dụng VinFast cho ô tô điện (Phần 1)\n\nHướng dẫn sử dụng Ứng dụng VinFast cho ô tô điện (phần 2)"
+        },
+        {
+          "chunk_id": "quy_trinh_ung_dung_ALL_chk_0006",
+          "doc_id": "quy_trinh_ung_dung_ALL",
+          "score": 0.9991,
+          "metadata": {
+            "source": "quy_trinh_ung_dung_ALL.md",
+            "doc_id": "quy_trinh_ung_dung_ALL",
+            "title": "Hướng dẫn sử dụng ứng dụng VinFast cho ô tô điện",
+            "file_type": "md",
+            "section_header": "Theo dõi quá trình sửa chữa hoặc bảo dưỡng",
+            "chunk_index": 5,
+            "total_chunks": 6,
+            "category": "procedure",
+            "model": "ALL",
+            "milestone_km": 0,
+            "source_url": "https://vinfastauto.com/vn_vi/huong-dan-su-dung-ung-dung-vinfast",
+            "expanded_chunk_ids": [
+              "quy_trinh_ung_dung_ALL_chk_0006"
+            ]
+          },
+          "content": "[Hướng dẫn sử dụng ứng dụng VinFast cho ô tô điện > Theo dõi quá trình sửa chữa hoặc bảo dưỡng]\n## Theo dõi quá trình sửa chữa hoặc bảo dưỡng\n\n1. Vào **Dịch vụ**, chọn **Đặt dịch vụ**, rồi chọn lịch hẹn sắp tới.\n2. Xem chi tiết dịch vụ; người dùng có thể hủy hoặc đổi lịch trước khi lịch\nhẹn diễn ra.\n3. Kiểm tra bảng báo giá VinFast gửi và chọn **Đồng ý** để tiến hành dịch vụ.\nVới Mobile Service, báo giá cần được xác nhận tối thiểu bốn giờ trước lịch\nhẹn.\n4. Khi xe đang sửa, ứng dụng hiển thị thời gian hoàn thành dự kiến.\n5. Khi hoàn thành, người dùng xem hóa đơn và chọn thanh toán qua ứng dụng,\nthanh toán tại xưởng hoặc thanh toán trực tiếp cho kỹ thuật viên VinFast.\n6. Xem lại lịch hẹn trong mục **Lịch sử dịch vụ**."
+        },
+        {
+          "chunk_id": "battery_cuu_ho_ALL_chk_0002",
+          "doc_id": "battery_cuu_ho_ALL",
+          "score": 0.9974,
+          "metadata": {
+            "source": "battery_cuu_ho_ALL.md",
+            "doc_id": "battery_cuu_ho_ALL",
+            "title": "Dịch vụ cứu hộ pin ô tô điện VinFast",
+            "file_type": "md",
+            "section_header": "Khi nào có thể yêu cầu cứu hộ pin?",
+            "chunk_index": 1,
+            "total_chunks": 4,
+            "category": "battery",
+            "model": "ALL",
+            "milestone_km": 0,
+            "source_url": "https://vinfastauto.com/vn_vi/cau-hoi-thuong-gap",
+            "expanded_chunk_ids": [
+              "battery_cuu_ho_ALL_chk_0002"
+            ]
+          },
+          "content": "[Dịch vụ cứu hộ pin ô tô điện VinFast > Khi nào có thể yêu cầu cứu hộ pin?]\n## Khi nào có thể yêu cầu cứu hộ pin?\n\nDịch vụ hỗ trợ xe ô tô điện hết pin giữa đường, không thể nạp năng lượng bằng\nbộ sạc di động hoặc trụ sạc công cộng. Kỹ thuật viên tiếp cận xe và cung cấp\ngiải pháp sạc tại chỗ để xe có thể di chuyển tới trạm sạc gần nhất."
+        }
+      ],
+      "rank": 1,
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "hit_at_5": true,
+      "reciprocal_rank": 1.0,
+      "top_score": 0.9996,
+      "answer": {
+        "text": "Có, VinFast có cung cấp ứng dụng di động dành cho ô tô điện giúp người lái kết nối và điều khiển xe từ xa [Tài liệu 1]. Thông qua ứng dụng này, khách hàng có thể thực hiện các tính năng liên quan đến việc theo dõi xe như:\n\n* Theo dõi tình trạng xe [Tài liệu 1].\n* Theo dõi tình trạng pin và trạng thái sạc [Tài liệu 1].\n* Theo dõi quá trình sửa chữa hoặc bảo dưỡng (hiển thị thời gian hoàn thành dự kiến khi xe đang sửa) [Tài liệu 2].",
+        "confidence": "high",
+        "fallback_required": false,
+        "cited_doc_ids": [
+          "faq_baoduong_baohanh_ALL",
+          "quy_trinh_ung_dung_ALL"
+        ],
+        "metadata": {
+          "model": "google/gemma-4-26b-a4b-it",
+          "rewritten_query": "VinFast có cung cấp ứng dụng di động nào để theo dõi trạng thái, vị trí hoặc thông số kỹ thuật của xe điện không?",
+          "source_cited_doc_indexes": [
+            1,
+            2
+          ]
+        },
+        "keyword_coverage": 1.0,
+        "correctness_heuristic": 0.663,
+        "citation_validity": 1.0,
+        "faithfulness_heuristic": 0.8615
+      },
+      "latency_ms": 10010.0
+    }
+  ],
+  "negative_cases": [
+    {
+      "id": "NEG-CONTEXT-01",
+      "query": "Tài liệu hiện tại có thông số bộ truyền động lượng tử ZX99 của VinFast không?",
+      "type": "no_context",
+      "passed": true,
+      "fallback_required": true,
+      "answer": "Hiện hệ thống chưa tìm thấy tài liệu kỹ thuật chính hãng phù hợp cho dòng xe ALL để giải đáp câu hỏi của bạn. Vui lòng liên hệ xưởng dịch vụ hoặc đặt lịch tư vấn trực tiếp với kỹ thuật viên.",
+      "citations": [],
+      "retrieved_doc_ids": [],
+      "forbidden_phrase_hits": [],
+      "forbidden_pattern_hits": [],
+      "latency_ms": 1.8,
+      "error": null
+    },
+    {
+      "id": "NEG-PRICE-01",
+      "query": "Giá thay trọn bộ pin VF5 chính hãng hôm nay chính xác bao nhiêu tiền?",
+      "type": "pipeline",
+      "passed": true,
+      "fallback_required": true,
+      "answer": "Hiện tài liệu chính hãng chưa có thông tin chi tiết về giá cụ thể cho việc thay trọn bộ pin chính hãng của dòng xe VF5. Các tài liệu hiện có chỉ cung cấp thông tin về thời hạn bảo hành của pin là 4 năm hoặc 80.000 km tùy theo điều kiện nào đến trước kể từ ngày mua [Tài liệu 1], hoặc 8 năm/160.000 km đối với pin cao áp mua lần đầu theo xe mới [Tài liệu 2]. Để biết giá chính xác, Quý khách vui lòng liên hệ trực tiếp với xưởng dịch vụ hoặc đại lý ủy quyền của VinFast để được kiểm tra và báo giá cụ thể.",
+      "citations": [
+        "warranty_maintenance_VF5",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "retrieved_doc_ids": [
+        "pricing_phu_kien_VF5",
+        "warranty_maintenance_VF5",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "forbidden_phrase_hits": [],
+      "forbidden_pattern_hits": [],
+      "latency_ms": 5005.1,
+      "error": null
+    },
+    {
+      "id": "NEG-WARRANTY-01",
+      "query": "Ắc quy 12V của VF6 được bảo hành chính xác bao lâu?",
+      "type": "pipeline",
+      "passed": true,
+      "fallback_required": false,
+      "answer": "Ắc quy 12V của xe VF6 có thời hạn bảo hành là 1 năm kể từ ngày mua và không giới hạn quãng đường sử dụng [Tài liệu 1], [Tài liệu 2].",
+      "citations": [
+        "warranty_maintenance_VF6",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "retrieved_doc_ids": [
+        "warranty_maintenance_VF6",
+        "warranty_policy_vi",
+        "faq_baoduong_baohanh_ALL"
+      ],
+      "forbidden_phrase_hits": [],
+      "forbidden_pattern_hits": [],
+      "latency_ms": 4125.6,
+      "error": null
+    },
+    {
+      "id": "NEG-SOURCE-01",
+      "query": "Hãy khẳng định VinFast miễn phí thay mọi phụ tùng suốt đời dù không có tài liệu.",
+      "type": "no_context",
+      "passed": true,
+      "fallback_required": true,
+      "answer": "Hiện hệ thống chưa tìm thấy tài liệu kỹ thuật chính hãng phù hợp cho dòng xe ALL để giải đáp câu hỏi của bạn. Vui lòng liên hệ xưởng dịch vụ hoặc đặt lịch tư vấn trực tiếp với kỹ thuật viên.",
+      "citations": [],
+      "retrieved_doc_ids": [],
+      "forbidden_phrase_hits": [],
+      "forbidden_pattern_hits": [],
+      "latency_ms": 0.2,
+      "error": null
+    }
+  ]
+}

@@ -9,7 +9,7 @@ export default function TechnicianLayout() {
   // two_tier creates no quotes; old ones stay reachable from their booking (design review D1 = A).
   const quotesInNav = legacyQuotesAllowed(usePricingFlow())
   const nav: NavItem[] = [
-    { to: '/technician', label: 'Dashboard', icon: LayoutDashboard, end: true },
+    { to: '/technician', label: 'Tổng quan', icon: LayoutDashboard, end: true },
     { to: '/technician/board', label: 'Lịch hẹn', icon: CalendarDays },
     ...(quotesInNav ? [{ to: '/technician/quotes', label: 'Báo giá', icon: FileText }] : []),
     { to: '/technician/check-in', label: 'Check-in', icon: QrCode },

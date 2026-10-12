@@ -1,7 +1,10 @@
 import { Bell, Bot, Calculator, CalendarPlus, Car, ClipboardList, FileText, LayoutDashboard, Ticket } from 'lucide-react'
+import DemoAccountBanner from '@/features/auth/components/DemoAccountBanner'
 import { useAuth } from '@/features/auth/context/AuthContext'
 import { useUnseenQuotes } from '@/features/quotes/hooks'
 import { legacyQuotesAllowed, usePricingFlow } from '@/features/booking-lines/flow'
+import CurrentVehicleChip from '@/features/vehicles/currentVehicle/CurrentVehicleChip'
+import { SUPPORT_PATH } from '@/features/support/logic'
 import AppLayout, { type NavItem } from './AppLayout'
 
 /** Owner app shell (guarded by RequireActiveUser). */
@@ -29,6 +32,9 @@ export default function OwnerLayout() {
       roleLabel="Chủ xe"
       avatarUrl={user?.avatarUrl}
       notificationsPath="/notifications"
+      supportPath={SUPPORT_PATH}
+      headerExtra={<CurrentVehicleChip />}
+      notice={user?.isDemo ? <DemoAccountBanner resetsAt={user.demoResetsAt} /> : undefined}
       onLogout={logout}
     />
   )

@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 from sqlmodel import Session
 
 from ..db import engine, get_session, init_db
+from ..demo_account import ensure_demo_owner
 from ..service import ENTITIES, DataAdminService, DataImportError
 
 
@@ -105,4 +106,11 @@ def delete_record(entity: str, key: str, session: Session = Depends(get_session)
 @router.post("/reset", summary="Drop all data and reload the startup data (MOCK_SEED_DUMP or built-in seed)")
 def reset_data():
     init_db(reset=True)
+    return {"status": "reset"}
+
+
+@router.post("/demo-owner/reset", summary="Recreate EV Care's demo owner and its 3 vehicles (dates relative to today)")
+def reset_demo_owner(session: Session = Depends(get_session)):
+    if not ensure_demo_owner(session, reset=True):
+        raise HTTPException(409, "Demo owner disabled (MOCK_DEMO_OWNER_EMAIL) or its base data is missing")
     return {"status": "reset"}

@@ -54,6 +54,10 @@ class Booking(SQLModel, table=True):
         CheckConstraint("estimated_cost IS NULL OR estimated_cost >= 0", name="ck_booking_estimated_cost"),
         CheckConstraint("actual_cost IS NULL OR actual_cost >= 0", name="ck_booking_actual_cost"),
         CheckConstraint("odo_milestone IS NULL OR odo_milestone > 0", name="ck_booking_odo_milestone"),
+        CheckConstraint(
+            "maintenance_package_code IS NULL OR maintenance_package_code IN ('ESSENTIAL', 'BALANCED', 'COMPREHENSIVE')",
+            name="ck_booking_maintenance_package_code",
+        ),
         CheckConstraint("reschedule_count >= 0", name="ck_booking_reschedule_count"),
     )
 
@@ -82,6 +86,8 @@ class Booking(SQLModel, table=True):
     )
     # Maintenance milestone of the appointment (us-053 BR-1202); NULL when unknown.
     odo_milestone: int | None = Field(default=None, sa_column=Column(Integer, nullable=True))
+    # Backend-validated optimizer package selected on the chat proposal.
+    maintenance_package_code: str | None = Field(default=None, sa_column=Column(String(20), nullable=True))
     # Number of owner reschedules so far (us-053 BR-1207).
     reschedule_count: int = Field(default=0, sa_column=Column(SmallInteger, nullable=False, server_default="0"))
     # Chat message that confirmed this booking, when created from chat (AC-F4-06,

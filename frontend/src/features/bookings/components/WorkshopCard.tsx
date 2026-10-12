@@ -31,7 +31,7 @@ export default function WorkshopCard({
     <button
       type="button"
       onClick={() => onSelect(workshop)}
-      className="w-full text-left bg-card border border-border rounded-2xl p-4 hover:bg-card-hover hover:border-emerald/40 hover:-translate-y-0.5 hover:elevation-md transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald/40 elevation-sm"
+      className="w-full text-left bg-card border border-border rounded-2xl p-4 hover:bg-card-hover hover:border-emerald/40 hover:-translate-y-0.5 hover:elevation-md transition-all duration-200 elevation-sm"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">

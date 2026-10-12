@@ -98,6 +98,16 @@ def test_my_bookings_paginates_and_finds_by_code(world):
     assert png.startswith(b"\x89PNG")
 
 
+def test_my_bookings_rows_name_their_vehicle(world):
+    """FINDING-009: Home filters upcoming bookings by the selected vehicle."""
+    session, user, vehicle, _, workshop = world
+    add_booking(session, user, vehicle, workshop, d=TODAY + timedelta(days=1))
+    row = _tickets(session).list_for_user(user).items[0]
+    assert row.vehicle.user_vehicle_id == vehicle.id
+    assert row.vehicle.model_name == "VF6"
+    assert row.vehicle.plate_masked == "30A-***.45"
+
+
 def test_mask_plate():
     assert mask_plate("30A-123.45") == "30A-***.45"
 

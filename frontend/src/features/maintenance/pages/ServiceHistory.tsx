@@ -1,14 +1,17 @@
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useMemo, useState, type KeyboardEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, ClipboardList, ExternalLink, Search } from 'lucide-react'
 import { isApiError } from '@/shared/api/client'
+import { useMediaQuery, XL_QUERY } from '@/shared/hooks/useMediaQuery'
+import Button from '@/shared/ui/Button'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
 import { cn } from '@/shared/ui/cn'
 import { EmptyState, ErrorState } from '@/shared/ui/States'
+import { page } from '@/shared/ui/page'
 import { formatDate, formatKm } from '@/shared/utils/format'
 import { formatVnd } from '@/features/estimate/utils'
 import VehicleGate from '@/features/vehicles/components/VehicleGate'
-import { useServiceRecords } from '@/features/vehicles/hooks/useVehicleQueries'
+import { useMaintenanceStatus, useServiceRecords } from '@/features/vehicles/hooks/useVehicleQueries'
 import type { VehicleSummary } from '@/features/vehicles/types'
 import {
   matchesServiceRecord,
@@ -17,6 +20,8 @@ import {
   serviceRecordTitle,
   type ServiceRecordFilter,
 } from '../utils'
+import HistorySummary from '../components/HistorySummary'
+import ServiceRecordDetail from '../components/ServiceRecordDetail'
 
 const FILTERS: { value: ServiceRecordFilter; label: string }[] = [
   { value: 'ALL', label: 'Tất cả' },
@@ -26,19 +31,24 @@ const FILTERS: { value: ServiceRecordFilter; label: string }[] = [
 
 const PER_PAGE = 10
 // Below `sm` only date, item and cost stay as columns: km moves under the date,
-// workshop and the booking link under the item.
+// workshop and the booking link under the item. From xl, source and booking link move to the detail rail.
 const COLUMNS = [
-  { label: 'Ngày', wide: false },
-  { label: 'Số km', wide: true },
-  { label: 'Hạng mục', wide: false },
-  { label: 'Xưởng dịch vụ', wide: true },
-  { label: 'Nguồn', wide: true },
-  { label: 'Chi phí', wide: false },
-  { label: '', wide: true },
+  { label: 'Ngày', wide: false, railed: false },
+  { label: 'Số km', wide: true, railed: false },
+  { label: 'Hạng mục', wide: false, railed: false },
+  { label: 'Xưởng dịch vụ', wide: true, railed: false },
+  { label: 'Nguồn', wide: true, railed: true },
+  { label: 'Chi phí', wide: false, railed: false },
+  { label: '', wide: true, railed: true },
 ]
 
 function HistoryTable({ vehicle }: { vehicle: VehicleSummary }) {
+  const navigate = useNavigate()
   const records = useServiceRecords(vehicle.userVehicleId)
+  const status = useMaintenanceStatus(vehicle.userVehicleId)
+  // xl: table in 2/3, the chosen record in full on the right (DESIGN.md 2026-10-11).
+  const wide = useMediaQuery(XL_QUERY)
+  const [chosen, setChosen] = useState<string | null>(null)
   const [filter, setFilter] = useState<ServiceRecordFilter>('ALL')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
@@ -49,6 +59,7 @@ function HistoryTable({ vehicle }: { vehicle: VehicleSummary }) {
   )
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
   const rows = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+  const selected = wide ? (rows.find(record => record.recordId === chosen) ?? rows[0] ?? null) : null
 
   if (records.error && !records.data) {
     return (
@@ -67,12 +78,16 @@ function HistoryTable({ vehicle }: { vehicle: VehicleSummary }) {
         icon={<ClipboardList className="w-5 h-5" />}
         title="Chưa có lịch sử dịch vụ"
         description="Các lần bảo dưỡng từ hãng và lịch hẹn hoàn thành trên EV Care sẽ hiện ở đây."
+        action={<Button onClick={() => navigate('/booking')}>Đặt lịch bảo dưỡng</Button>}
       />
     )
   }
 
   return (
     <>
+      <HistorySummary records={records.data.items} status={status.data} />
+      <div className="xl:grid xl:grid-cols-3 xl:gap-6 xl:items-start">
+        <div className="xl:col-span-2 min-w-0">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-5">
         <div className="flex gap-1.5 flex-wrap">
           {FILTERS.map(item => (
@@ -100,7 +115,7 @@ function HistoryTable({ vehicle }: { vehicle: VehicleSummary }) {
               setPage(1)
             }}
             placeholder="Tìm hạng mục, xưởng, mã lịch hẹn..."
-            className="pl-9 pr-4 py-2 rounded-xl text-sm text-foreground bg-card focus:outline-none focus:ring-1 focus:ring-emerald/40 transition-all w-64"
+            className="pl-9 pr-4 py-2 rounded-xl text-sm text-foreground bg-card focus-field transition-all w-64"
             style={{ border: '1px solid var(--color-border)' }}
           />
         </div>
@@ -111,10 +126,14 @@ function HistoryTable({ vehicle }: { vehicle: VehicleSummary }) {
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--color-border)' }}>
-                {COLUMNS.map(({ label, wide }, index) => (
+                {COLUMNS.map(({ label, wide: hiddenOnPhone, railed }, index) => (
                   <th
                     key={index}
-                    className={cn('px-3 sm:px-5 py-3.5 text-left text-xs font-medium text-muted whitespace-nowrap', wide && 'hidden sm:table-cell')}
+                    className={cn(
+                      'px-3 sm:px-5 py-3.5 text-left text-xs font-medium text-muted whitespace-nowrap',
+                      hiddenOnPhone && 'hidden sm:table-cell',
+                      railed && 'xl:hidden',
+                    )}
                   >
                     {label}
                   </th>
@@ -131,11 +150,29 @@ function HistoryTable({ vehicle }: { vehicle: VehicleSummary }) {
               ) : (
                 rows.map((record, index) => {
                   const cost = serviceRecordCost(record)
+                  const isSelected = record.recordId === selected?.recordId
                   return (
                     <tr
                       key={record.recordId}
-                      className="hover:bg-card/60 transition-colors"
+                      className={cn(
+                        'hover:bg-card/60 transition-colors',
+                        wide && 'cursor-pointer hover:bg-card-hover focus-visible:bg-card-hover',
+                        isSelected && 'bg-emerald-dim hover:bg-emerald-dim shadow-[inset_3px_0_0_var(--color-emerald)]',
+                      )}
                       style={index < rows.length - 1 ? { borderBottom: '1px solid var(--color-border)' } : undefined}
+                      {...(wide
+                        ? {
+                            tabIndex: 0,
+                            'aria-selected': isSelected,
+                            onClick: () => setChosen(record.recordId),
+                            onKeyDown: (event: KeyboardEvent) => {
+                              if (event.key === 'Enter' || event.key === ' ') {
+                                event.preventDefault()
+                                setChosen(record.recordId)
+                              }
+                            },
+                          }
+                        : {})}
                     >
                       <td className="px-3 sm:px-5 py-3.5 text-foreground text-xs whitespace-nowrap">
                         {formatDate(record.serviceDate)}
@@ -159,11 +196,11 @@ function HistoryTable({ vehicle }: { vehicle: VehicleSummary }) {
                         )}
                       </td>
                       <td className="hidden sm:table-cell px-5 py-3.5 text-muted text-xs whitespace-nowrap">{record.workshop?.name ?? '—'}</td>
-                      <td className="hidden sm:table-cell px-5 py-3.5 text-muted text-xs whitespace-nowrap">{serviceRecordSource(record)}</td>
+                      <td className="hidden sm:table-cell xl:hidden px-5 py-3.5 text-muted text-xs whitespace-nowrap">{serviceRecordSource(record)}</td>
                       <td className="px-3 sm:px-5 py-3.5 text-foreground font-mono text-xs whitespace-nowrap">
                         {cost !== null ? formatVnd(cost) : '—'}
                       </td>
-                      <td className="hidden sm:table-cell px-5 py-3.5">
+                      <td className="hidden sm:table-cell xl:hidden px-5 py-3.5">
                         {record.bookingId && (
                           <Link
                             to={`/bookings/${encodeURIComponent(record.bookingId)}`}
@@ -220,6 +257,9 @@ function HistoryTable({ vehicle }: { vehicle: VehicleSummary }) {
           </div>
         </div>
       </div>
+        </div>
+        {selected && <ServiceRecordDetail record={selected} className="xl:sticky xl:top-6 xl:mt-[60px]" />}
+      </div>
     </>
   )
 }
@@ -227,7 +267,7 @@ function HistoryTable({ vehicle }: { vehicle: VehicleSummary }) {
 /** Service history (API-VEH-005): manufacturer records + EV Care visits, read-only (BR-003). */
 export default function ServiceHistory() {
   return (
-    <div className="p-4 sm:p-6 xl:p-8">
+    <div className={page()}>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">Lịch sử dịch vụ</h1>
         <p className="text-muted text-sm mt-1">Các lần bảo dưỡng và sửa chữa của xe, đồng bộ từ hãng và từ EV Care</p>

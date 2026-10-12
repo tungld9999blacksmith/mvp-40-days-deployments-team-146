@@ -20,6 +20,7 @@ from datetime import UTC, datetime
 from sqlmodel import Session, select
 
 from src.common.core.identity.vehicle_user import VehicleUser
+from src.modules.demo_account.identity import DEMO_UID
 
 from . import errors
 from .domain import AuthEvent, AuthEventResult, AuthEventType
@@ -87,12 +88,14 @@ class AuthService:
                     )
                 )
             # Enqueue durably, then commit together so we only answer 204 once
-            # the task is accepted (see spec §6.3 outbox-equivalent).
-            self._revoker.enqueue_revoke(
-                uid=uid,
-                user_id=user.user_id if user is not None else 0,
-                trace_id=trace_id,
-            )
+            # the task is accepted (see spec §6.3 outbox-equivalent). The shared demo
+            # account is never revoked: that would sign out every visitor at once.
+            if uid != DEMO_UID:
+                self._revoker.enqueue_revoke(
+                    uid=uid,
+                    user_id=user.user_id if user is not None else 0,
+                    trace_id=trace_id,
+                )
             self._db.commit()
         except RevokeEnqueueError as exc:
             self._db.rollback()

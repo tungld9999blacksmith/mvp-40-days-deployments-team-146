@@ -24,11 +24,7 @@ from .service import OnboardingService
 
 
 def get_oem_gateway() -> HttpOemVehicleGateway:
-    settings = get_settings()
-    return HttpOemVehicleGateway(
-        settings.oem_api_base_url,
-        timeout_seconds=settings.oem_api_timeout_seconds,
-    )
+    return HttpOemVehicleGateway.from_settings(get_settings())
 
 
 def get_onboarding_service(

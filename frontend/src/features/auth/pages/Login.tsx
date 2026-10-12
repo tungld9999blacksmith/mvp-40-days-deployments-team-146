@@ -2,7 +2,8 @@ const STANDALONE_DEMO_MODE = false
 import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Notice } from '@/shared/ui/States'
-import { isAuthConfigured } from '@/shared/config/env'
+import { DEMO_LOGIN_ENABLED, isAuthConfigured } from '@/shared/config/env'
+import Button from '@/shared/ui/Button'
 import { useOnlineStatus } from '@/shared/hooks/useOnlineStatus'
 import { useAuth } from '../context/AuthContext'
 import { resolveOnboardingRoute } from '../navigation'
@@ -31,7 +32,9 @@ export default function Login() {
     loginError,
     bootError,
     isSigningIn,
+    signInMethod,
     signIn,
+    signInDemo,
     retryBootstrap,
     clearLoginError,
     consumeReturnTo,
@@ -87,9 +90,32 @@ export default function Login() {
             <div className="space-y-4">
               <GoogleSignInButton
                 onClick={() => void signIn()}
-                loading={isSigningIn}
-                disabled={!isAuthConfigured || !online}
+                loading={isSigningIn && signInMethod !== 'demo'}
+                disabled={!isAuthConfigured || !online || isSigningIn}
               />
+              {DEMO_LOGIN_ENABLED && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 text-xs text-muted" aria-hidden>
+                    <span className="h-px flex-1 bg-border" />
+                    hoặc
+                    <span className="h-px flex-1 bg-border" />
+                  </div>
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    fullWidth
+                    onClick={() => void signInDemo()}
+                    loading={isSigningIn && signInMethod === 'demo'}
+                    loadingText="Đang mở tài khoản dùng thử…"
+                    disabled={!isAuthConfigured || !online || isSigningIn}
+                  >
+                    Dùng thử ngay
+                  </Button>
+                  <p className="text-xs text-muted text-center">
+                    Không cần tài khoản: vào tài khoản mẫu có sẵn VF3, VF8 và VF Wild. Tài khoản dùng chung, dữ liệu tự đặt lại sau 2 ngày.
+                  </p>
+                </div>
+              )}
               {!online && <p className="text-xs text-warning text-center">Không có kết nối mạng.</p>}
               {inline && (
                 <div role="alert" className="text-center">

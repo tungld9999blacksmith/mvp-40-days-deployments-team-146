@@ -22,7 +22,8 @@ from sqlmodel import Session, select
 
 from src.common.core.crm.follow_up import FollowUp, FollowUpStatus
 from src.common.core.identity.vehicle_user import VehicleUser
-from src.common.core.maintenance.booking import Booking, BookingStatus
+from src.common.core.maintenance.booking import Booking, BookingStatus, PricingFlow
+from src.common.core.maintenance.booking_line import BookingLine, LineKind
 from src.common.core.maintenance.booking_status_event import (
     BookingActorType,
     BookingReschedule,
@@ -149,11 +150,7 @@ class BookingTicketService:
             time_slot=booking.time_slot,
             appointment_at=appt.astimezone(UTC),
             workshop=self._workshop_out(workshop, booking.workshop_id, with_contact=True),
-            vehicle=schemas.TicketVehicleOut(
-                user_vehicle_id=booking.user_vehicle_id,
-                model_name=vehicle.model_name if vehicle else None,
-                plate_masked=mask_plate(vehicle.license_plate if vehicle else None),
-            ),
+            vehicle=self._vehicle_out(booking.user_vehicle_id, vehicle),
             estimated_cost=booking.estimated_cost,
             qr_url=qr_url(booking.id) if confirmed else None,
             qr_payload=self._qr_payload(booking) if confirmed else None,
@@ -162,6 +159,7 @@ class BookingTicketService:
             reschedule_mode="F6B" if self._config.reschedule_enabled else "GUIDE",
             reschedule_blocked_reason=block,
             odo_milestone=booking.odo_milestone,
+            maintenance_package_code=booking.maintenance_package_code,
             items=self._items(booking, vehicle, quote),
             cost=self._cost(booking, quote),
             documents_to_bring=list(self._config.documents_to_bring),
@@ -202,6 +200,14 @@ class BookingTicketService:
             phone=workshop.hotline if workshop and with_contact else None,
         )
 
+    @staticmethod
+    def _vehicle_out(user_vehicle_id: UUID, vehicle: UserVehicle | None) -> schemas.TicketVehicleOut:
+        return schemas.TicketVehicleOut(
+            user_vehicle_id=user_vehicle_id,
+            model_name=vehicle.model_name if vehicle else None,
+            plate_masked=mask_plate(vehicle.license_plate if vehicle else None),
+        )
+
     def _attached_quote(self, booking_id: UUID) -> Quote | None:
         return self._db.exec(
             select(Quote).where(Quote.booking_id == booking_id, Quote.status == QuoteStatus.APPROVED)
@@ -214,6 +220,17 @@ class BookingTicketService:
                 select(QuoteItem).where(QuoteItem.quote_id == quote.id).order_by(QuoteItem.item_name)
             ).all()
             return [schemas.TicketItemOut(item_name=r.item_name, covered=r.is_covered_by_warranty) for r in rows]
+        if booking.pricing_flow == PricingFlow.TWO_TIER:
+            lines = self._db.exec(
+                select(BookingLine)
+                .where(BookingLine.booking_id == booking.id, BookingLine.kind == LineKind.PACKAGE)
+                .order_by(BookingLine.created_at, BookingLine.id)
+            ).all()
+            if lines:
+                return [
+                    schemas.TicketItemOut(item_name=line.item_name, covered=line.is_covered_by_warranty)
+                    for line in lines
+                ]
         if booking.odo_milestone is None or vehicle is None or not vehicle.external_model_id:
             return []
         rules = self._db.exec(
@@ -307,6 +324,16 @@ class BookingTicketService:
             if page
             else {}
         )
+        vehicles = (
+            {
+                v.id: v
+                for v in self._db.exec(
+                    select(UserVehicle).where(UserVehicle.id.in_({b.user_vehicle_id for b in page}))
+                ).all()
+            }
+            if page
+            else {}
+        )
         items = []
         for b in page:
             actions, _ = self._actions(b, now)
@@ -319,6 +346,7 @@ class BookingTicketService:
                     booking_date=b.booking_date,
                     time_slot=b.time_slot,
                     workshop=self._workshop_out(workshops.get(b.workshop_id), b.workshop_id, with_contact=False),
+                    vehicle=self._vehicle_out(b.user_vehicle_id, vehicles.get(b.user_vehicle_id)),
                     cost=self._cost(b, self._attached_quote(b.id)),
                     allowed_actions=actions,
                 )

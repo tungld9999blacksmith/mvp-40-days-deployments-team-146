@@ -1,14 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { LogOut } from 'lucide-react'
 import Stepper from '@/shared/ui/Stepper'
 import { Notice } from '@/shared/ui/States'
 import { formatDate } from '@/shared/utils/format'
 import SplashScreen from '@/features/auth/components/SplashScreen'
-import LogoutConfirmDialog from '@/features/auth/components/LogoutConfirmDialog'
+import StandaloneHeader from '@/features/auth/components/StandaloneHeader'
 import { useWorkshopAuth } from '../context/WorkshopAuthContext'
 import { WorkshopOnboardingProvider, useWorkshopOnboarding } from './WorkshopOnboardingContext'
-import Logo from '@/shared/ui/Logo'
 
 const STEPS = ['Thông tin chủ xưởng', 'Vận hành xưởng', 'Xác thực']
 
@@ -22,7 +20,6 @@ function Shell() {
   const { owner, onboarding, logout } = useWorkshopAuth()
   const { snapshot, loadSnapshot } = useWorkshopOnboarding()
   const location = useLocation()
-  const [logoutOpen, setLogoutOpen] = useState(false)
 
   useEffect(() => {
     if (!snapshot) void loadSnapshot()
@@ -34,21 +31,17 @@ function Shell() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="h-16 bg-surface border-b border-border">
-        <div className="max-w-3xl mx-auto h-full px-4 sm:px-6 flex items-center gap-3">
-          <Logo className="h-8 text-foreground" />
-          <span className="text-xs font-semibold text-emerald">Workshop Portal</span>
-          <span className="ml-auto hidden md:inline text-sm text-muted truncate max-w-[220px]">{owner?.email}</span>
-          <button
-            type="button"
-            onClick={() => setLogoutOpen(true)}
-            className="ml-auto md:ml-2 flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-muted hover:text-error hover:bg-error/10 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            Đăng xuất
-          </button>
-        </div>
-      </header>
+      <StandaloneHeader
+        width="max-w-3xl"
+        label={<span className="text-xs font-semibold text-emerald">Workshop Portal</span>}
+        email={owner?.email}
+        onLogout={logout}
+        logoutDialog={{
+          title: 'Đăng xuất khỏi Workshop Portal?',
+          description: 'Bạn sẽ cần đăng nhập lại bằng Google để tiếp tục.',
+          note: 'Nếu Gmail này cũng dùng ứng dụng EV Care dành cho chủ xe, bạn có thể phải đăng nhập lại ứng dụng đó.',
+        }}
+      />
 
       <main className={`${operationsPage ? 'max-w-3xl' : 'max-w-xl'} mx-auto px-4 sm:px-6 py-8 sm:py-10`}>
         <div className="mb-8">
@@ -59,15 +52,6 @@ function Shell() {
         )}
         <Outlet />
       </main>
-
-      <LogoutConfirmDialog
-        open={logoutOpen}
-        onClose={() => setLogoutOpen(false)}
-        onConfirm={logout}
-        title="Đăng xuất khỏi Workshop Portal?"
-        description="Bạn sẽ cần đăng nhập lại bằng Google để tiếp tục."
-        note="Nếu Gmail này cũng dùng ứng dụng EV Care dành cho chủ xe, bạn có thể phải đăng nhập lại ứng dụng đó."
-      />
     </div>
   )
 }

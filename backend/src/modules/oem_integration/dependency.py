@@ -42,4 +42,6 @@ def get_webhook_service(
         event_store,
         secret=settings.oem_webhook_secret,
         tolerance_seconds=settings.oem_webhook_tolerance_seconds,
+        oem_public_key=settings.oem_public_key,
+        auth_mode=settings.oem_auth_mode,
     )

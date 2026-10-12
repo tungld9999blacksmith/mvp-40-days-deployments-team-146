@@ -28,6 +28,7 @@ from starlette.concurrency import run_in_threadpool
 
 from src.common.core.identity.vehicle_user import OnboardingStatus, UserStatus, VehicleUser
 from src.common.core.vehicle import OemSyncTrigger
+from src.modules.demo_account.identity import is_demo_claims
 from src.modules.oem_integration.ports import SyncScheduler
 
 from . import errors, schemas
@@ -69,6 +70,56 @@ def _mask_national_id(value: str | None) -> str | None:
     return value[:3] + "*" * (len(value) - 5) + value[-2:]
 
 
+def _assert_not_demo(user: VehicleUser) -> None:
+    """The shared demo account keeps its profile and vehicles (modules/demo_account)."""
+    if user.is_demo:
+        raise errors.OnboardingError("The demo account cannot be changed.", code="DEMO_READ_ONLY")
+
+
+def apply_verified_vehicle(db: Session, vehicle: UserVehicle, result: OwnershipVerifyResponse) -> None:
+    """Copy the manufacturer snapshot onto a verified vehicle and replace its warranties.
+
+    Shared by the onboarding verification and ``scripts/seed_multi_vehicle_owner.py``; the
+    caller owns the transaction and any attempt / account state.
+    """
+    spec = result.vehicle
+    assert spec is not None
+    vehicle.verification_status = VehicleVerificationStatus.VERIFIED
+    vehicle.verification_failure_reason = None
+    vehicle.external_vehicle_id = spec.external_vehicle_id
+    vehicle.external_owner_id = spec.external_owner_id
+    vehicle.external_model_id = spec.external_model_id
+    vehicle.model_name = spec.model_name
+    vehicle.trim = spec.trim
+    vehicle.color = spec.color
+    vehicle.manufacture_date = spec.manufacture_date
+    vehicle.production_year = spec.production_year
+    vehicle.battery_capacity_kwh = spec.battery_capacity_kwh
+    vehicle.motor_power_kw = spec.motor_power_kw
+    vehicle.verified_at = _now()
+    vehicle.oem_synced_at = _now()
+    db.add(vehicle)
+
+    # Replace-all warranties for this vehicle.
+    for old in db.exec(select(VehicleWarranty).where(VehicleWarranty.user_vehicle_id == vehicle.id)).all():
+        db.delete(old)
+    for w in result.warranties:
+        db.add(
+            VehicleWarranty(
+                user_vehicle_id=vehicle.id,
+                external_warranty_id=w.external_warranty_id,
+                external_policy_id=w.external_policy_id,
+                component=WarrantyComponent(w.component),
+                start_date=w.start_date,
+                end_date=w.end_date,
+                km_limit=w.km_limit,
+                duration_months=w.duration_months,
+                terms_description=w.terms_description,
+                oem_status=WarrantyStatus(w.status),
+            )
+        )
+
+
 class OnboardingService:
     def __init__(
         self,
@@ -99,7 +150,9 @@ class OnboardingService:
     # ==================================================================
     async def sign_in(self, claims: dict) -> tuple[schemas.SignInData, bool]:
         provider = (claims.get("firebase") or {}).get("sign_in_provider")
-        if provider and provider != "google.com":
+        demo = is_demo_claims(claims)
+        # Google only, except the shared demo account's custom token (modules/demo_account).
+        if provider and provider != "google.com" and not demo:
             raise errors.OnboardingError(
                 "Only Google sign-in is supported.",
                 code="UNSUPPORTED_SIGN_IN_PROVIDER",
@@ -112,6 +165,9 @@ class OnboardingService:
             raise errors.OnboardingError("A verified Google email is required.", code="EMAIL_NOT_VERIFIED")
 
         user = self.find_user_by_firebase_uid(uid)
+        if demo and user is None:
+            # Seeded by POST /auth/demo-session; never onboard the demo uid from scratch.
+            raise errors.OnboardingError("The demo account is not ready yet.", code="DEMO_ACCOUNT_UNAVAILABLE")
 
         # Purge an expired, unfinished onboarding so the user can start fresh.
         if user is not None and self._is_expired(user):
@@ -152,10 +208,16 @@ class OnboardingService:
             self._db.commit()
             self._db.refresh(user)
 
+        summary = self._user_summary(user)
+        if user.is_demo:
+            from src.config import get_settings
+            from src.modules.demo_account.service import demo_resets_at
+
+            summary.demo_resets_at = demo_resets_at(self._db, get_settings().demo_reset_interval_hours)
         return (
             schemas.SignInData(
                 is_new_user=is_new_user,
-                user=self._user_summary(user),
+                user=summary,
                 onboarding=self._onboarding_state(user),
             ),
             is_new_user,
@@ -186,6 +248,7 @@ class OnboardingService:
     # API-003 — save profile + location + consent
     # ==================================================================
     def update_profile(self, user: VehicleUser, req: schemas.ProfileUpdateRequest) -> schemas.ProfileUpdateData:
+        _assert_not_demo(user)
         self._assert_editable(user)
 
         if not req.personal_data_consent.granted:
@@ -267,6 +330,7 @@ class OnboardingService:
     ) -> tuple[schemas.VerificationData, int]:
         from .ports import OemTimeoutError
 
+        _assert_not_demo(user)
         # --- format validation (needed to compute the idempotency hash) --
         vin = normalize_vin(req.vin)
         if len(vin) != 17 or any(ch not in _VIN_ALLOWED for ch in vin):
@@ -382,40 +446,7 @@ class OnboardingService:
     ) -> None:
         spec = result.vehicle
         assert spec is not None
-        vehicle.verification_status = VehicleVerificationStatus.VERIFIED
-        vehicle.verification_failure_reason = None
-        vehicle.external_vehicle_id = spec.external_vehicle_id
-        vehicle.external_owner_id = spec.external_owner_id
-        vehicle.external_model_id = spec.external_model_id
-        vehicle.model_name = spec.model_name
-        vehicle.trim = spec.trim
-        vehicle.color = spec.color
-        vehicle.manufacture_date = spec.manufacture_date
-        vehicle.production_year = spec.production_year
-        vehicle.battery_capacity_kwh = spec.battery_capacity_kwh
-        vehicle.motor_power_kw = spec.motor_power_kw
-        vehicle.verified_at = _now()
-        vehicle.oem_synced_at = _now()
-        self._db.add(vehicle)
-
-        # Replace-all warranties for this vehicle.
-        for old in self._get_warranties(vehicle.id):
-            self._db.delete(old)
-        for w in result.warranties:
-            self._db.add(
-                VehicleWarranty(
-                    user_vehicle_id=vehicle.id,
-                    external_warranty_id=w.external_warranty_id,
-                    external_policy_id=w.external_policy_id,
-                    component=WarrantyComponent(w.component),
-                    start_date=w.start_date,
-                    end_date=w.end_date,
-                    km_limit=w.km_limit,
-                    duration_months=w.duration_months,
-                    terms_description=w.terms_description,
-                    oem_status=WarrantyStatus(w.status),
-                )
-            )
+        apply_verified_vehicle(self._db, vehicle, result)
 
         attempt.status = VerificationAttemptStatus.SUCCESS
         attempt.failure_reason = None
@@ -699,6 +730,7 @@ class OnboardingService:
             full_name=user.full_name,
             account_status=user.status.name,
             roles=list(_DEFAULT_ROLES),
+            is_demo=user.is_demo,
         )
 
     @staticmethod

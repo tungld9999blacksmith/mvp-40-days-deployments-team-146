@@ -25,9 +25,27 @@ def clean_stage_cache(monkeypatch):
 
 
 def configured(**overrides):
-    return Settings(_env_file=None, llm_provider="openrouter", openrouter_api_key="test-key", openrouter_model="shared-model",
-                    openrouter_agent_model="agent-model", openrouter_rewrite_model="rewrite-model", openrouter_rag_model="rag-model",
-                    openrouter_write_model="write-model", **overrides)
+    values = {
+        "llm_provider": "openrouter",
+        "llm_orchestrator_provider": "",
+        "llm_orchestrator_model": "",
+        "llm_rewrite_provider": "",
+        "llm_rewrite_model": "",
+        "llm_rag_provider": "",
+        "llm_rag_model": "",
+        "llm_booking_provider": "",
+        "llm_booking_model": "",
+        "llm_booking_check_enabled": False,
+        "llm_fallback_provider": "",
+        "openrouter_api_key": "test-key",
+        "openrouter_model": "shared-model",
+        "openrouter_agent_model": "agent-model",
+        "openrouter_rewrite_model": "rewrite-model",
+        "openrouter_rag_model": "rag-model",
+        "openrouter_write_model": "write-model",
+    }
+    values.update(overrides)
+    return Settings(_env_file=None, **values)
 
 
 def test_role_models_are_loaded_from_env_file(tmp_path, monkeypatch):
@@ -71,8 +89,12 @@ def test_default_agent_rewriter_and_generator_use_their_own_models(monkeypatch):
 
 
 def test_same_model_can_share_a_client_without_collapsing_distinct_models(monkeypatch):
-    settings = Settings(_env_file=None, llm_provider="openrouter", openrouter_api_key="test-key", openrouter_model="shared",
-                        openrouter_agent_model="same", openrouter_rewrite_model="same", openrouter_rag_model="different")
+    settings = configured(
+        openrouter_model="shared",
+        openrouter_agent_model="same",
+        openrouter_rewrite_model="same",
+        openrouter_rag_model="different",
+    )
     monkeypatch.setattr(dependency, "get_settings", lambda: settings)
     assert dependency.get_llm_provider_for_stage("agent") is dependency.get_llm_provider_for_stage("rewrite")
     assert dependency.get_llm_provider_for_stage("rag") is not dependency.get_llm_provider_for_stage("agent")
@@ -80,7 +102,10 @@ def test_same_model_can_share_a_client_without_collapsing_distinct_models(monkey
 
 
 def test_non_openrouter_provider_preserves_existing_selection(monkeypatch):
-    settings = Settings(_env_file=None, llm_provider="gemini", openrouter_rag_model="ignored-openrouter-model")
+    settings = configured(
+        llm_provider="gemini",
+        openrouter_rag_model="ignored-openrouter-model",
+    )
     calls = []
     monkeypatch.setattr(dependency, "get_settings", lambda: settings)
     def create(settings, provider):

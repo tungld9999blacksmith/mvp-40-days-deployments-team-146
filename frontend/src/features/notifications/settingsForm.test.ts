@@ -13,6 +13,33 @@ const saved: NotificationSettings = {
 }
 
 describe('notification settings form (US-021 FE)', () => {
+  it('saves selected times without granting personalization or enabling a channel', () => {
+    const settings = { ...saved, sendScheduleAvailable: true }
+    const form = { ...toForm(settings), preferredSendTimeEnabled: true, preferredSendTime: '19:00', quietHoursEnabled: true }
+    expect(buildSettingsPatch(settings, form)).toEqual({ preferredSendTime: '19:00', quietHours: { start: '22:00', end: '07:00' } })
+    expect(validateSettings(form)).toEqual({})
+  })
+  it('clears selected times explicitly and preserves omitted preferences', () => {
+    const settings = { ...saved, sendScheduleAvailable: true, preferredSendTime: '19:00', quietHours: { start: '22:00', end: '07:00' } }
+    expect(isDirty(settings, toForm(settings))).toBe(false)
+    expect(buildSettingsPatch(settings, { ...toForm(settings), preferredSendTimeEnabled: false, quietHoursEnabled: false })).toEqual({ preferredSendTime: null, quietHours: null })
+    expect(buildSettingsPatch(settings, { ...toForm(settings), timezone: 'Asia/Tokyo' })).toEqual({ timezone: 'Asia/Tokyo' })
+  })
+  it('rejects malformed times, all-day silence and unknown timezone', () => {
+    const form = { ...toForm(saved), preferredSendTimeEnabled: true, preferredSendTime: '25:00', quietHoursEnabled: true, quietHoursStart: '07:00', quietHoursEnd: '07:00', timezone: 'Mars/Zone' }
+    expect(Object.keys(validateSettings(form)).sort()).toEqual(['preferredSendTime', 'quietHours', 'timezone'])
+  })
+  it('does not send scheduling fields to a backend without P2 support', () => {
+    expect(buildSettingsPatch(saved, { ...toForm(saved), preferredSendTimeEnabled: true, quietHoursEnabled: true })).toEqual({})
+  })
+  it('requires the current policy version when opting in, and preserves channel choices', () => {
+    const settings = { ...saved, personalizationPolicyVersion: 'driving-usage-2026-10-v1' }
+    const form = { ...toForm(settings), personalizedRemindersEnabled: true }
+    expect(buildSettingsPatch(settings, form)).toEqual({ personalizedRemindersEnabled: true, personalizationPolicyVersion: 'driving-usage-2026-10-v1' })
+    const enabled = { ...settings, personalizedRemindersEnabled: true }
+    expect(buildSettingsPatch(enabled, { ...toForm(enabled), remindersEnabled: false })).toEqual({ remindersEnabled: false })
+    expect(buildSettingsPatch(enabled, { ...toForm(enabled), personalizedRemindersEnabled: false })).toEqual({ personalizedRemindersEnabled: false })
+  })
   it('sends only the changed fields (AC-FE-502)', () => {
     const form = { ...toForm(saved), reminderLeadDays: '5' }
     expect(buildSettingsPatch(saved, form)).toEqual({ reminderLeadDays: 5 })

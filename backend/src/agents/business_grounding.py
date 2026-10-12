@@ -10,7 +10,9 @@ from typing import Any
 
 from langchain_core.messages import ToolMessage
 
-BUSINESS_TOOLS = frozenset({"get_due_maintenance", "estimate_service_cost"})
+BUSINESS_TOOLS = frozenset({
+    "get_due_maintenance", "get_service_history", "estimate_service_cost", "recommend_maintenance_packages"
+})
 
 
 def _number(value: Any) -> Decimal:
@@ -157,6 +159,57 @@ def _estimate(data: dict[str, Any], *, compare_prices: bool = False) -> str:
     return "\n".join(lines)
 
 
+def _packages(data: dict[str, Any]) -> str:
+    if data.get("status") != "READY" or not isinstance(data.get("packages"), list):
+        return "Chưa đủ dữ liệu đã xác minh để tạo gói bảo dưỡng."
+    lines = ["Ba gói bảo dưỡng do bộ tối ưu backend tạo:"]
+    explanations = {
+        "ESSENTIAL": "ưu tiên các hạng mục REQUIRED tối thiểu",
+        "BALANCED": "gồm REQUIRED và các hạng mục RECOMMENDED",
+        "COMPREHENSIVE": "gồm toàn bộ REQUIRED, RECOMMENDED và OPTIONAL của mốc",
+    }
+    for package in data["packages"]:
+        if not isinstance(package, dict):
+            raise ValueError("Invalid package")
+        items = package.get("items")
+        if not isinstance(items, list):
+            raise ValueError("Invalid package items")
+        names = ", ".join(str(item["item_name"]) for item in items)
+        total = _format(_number(package.get("estimated_total")))
+        duration = _format(_number(package.get("estimated_duration_minutes")))
+        explanation = explanations.get(str(package.get("package_code")), "theo dữ liệu optimizer")
+        lines.append(
+            f"- {package['name']} ({package['package_code']}): {explanation}; "
+            f"{names or 'không có hạng mục'}; {total} VND; khoảng {duration} phút."
+        )
+        if package.get("constraint_status") == "EXCEEDS_REQUIRED_MINIMUM":
+            lines.append("  Ngân sách/thời gian thấp hơn mức tối thiểu có hạng mục REQUIRED; hệ thống không tự bỏ hạng mục an toàn.")
+    recommended = data.get("recommended_package_code")
+    if recommended:
+        lines.append(f"Gói phù hợp theo ràng buộc đã nhập: {recommended}.")
+    if data.get("has_reference_price") is True:
+        lines.append("Dự toán có giá tham khảo; xưởng có thể báo giá khác sau khi kiểm tra xe.")
+    lines.append(str(data.get("disclaimer") or "Xưởng cần kiểm tra xe và xác nhận giá cuối cùng."))
+    return "\n".join(lines)
+
+
+def _history(data: dict[str, Any]) -> str:
+    if data.get("status") != "READY" or not isinstance(data.get("records"), list):
+        raise ValueError("Invalid service history")
+    records = data["records"]
+    if not records:
+        return "Hệ thống chưa có bản ghi lịch sử bảo dưỡng cho xe đang chọn."
+    lines = [f"Lịch sử bảo dưỡng gần đây ({len(records)} bản ghi):"]
+    for record in records:
+        if not isinstance(record, dict) or not record.get("service_date"):
+            raise ValueError("Invalid service record")
+        details = str(record.get("items_done") or "không có mô tả hạng mục")
+        odo = record.get("odo_km")
+        suffix = f", ODO {_format(_number(odo))} km" if odo is not None else ""
+        lines.append(f"- {_date(record['service_date'])}{suffix}: {details}.")
+    return "\n".join(lines)
+
+
 def business_answer(messages: list[Any], *, question: str = "") -> str | None:
     """Only replace terminal answers for pure business reads in this turn.
 
@@ -168,7 +221,12 @@ def business_answer(messages: list[Any], *, question: str = "") -> str | None:
     if not names or names - BUSINESS_TOOLS:
         return None
     sections = []
-    for name, renderer in (("get_due_maintenance", _maintenance), ("estimate_service_cost", _estimate)):
+    for name, renderer in (
+        ("get_due_maintenance", _maintenance),
+        ("get_service_history", _history),
+        ("estimate_service_cost", _estimate),
+        ("recommend_maintenance_packages", _packages),
+    ):
         latest = next((message for message in reversed(results) if message.name == name), None)
         if latest is None:
             continue

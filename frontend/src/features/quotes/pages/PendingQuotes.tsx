@@ -105,7 +105,7 @@ export default function PendingQuotes() {
                     tabIndex={0}
                     onClick={() => open(item)}
                     onKeyDown={event => event.key === 'Enter' && open(item)}
-                    className="border-b border-border last:border-0 cursor-pointer hover:bg-card-hover focus:bg-card-hover focus:outline-none"
+                    className="border-b border-border last:border-0 cursor-pointer hover:bg-card-hover focus-visible:bg-card-hover"
                   >
                     <td className="px-5 py-3.5">
                       <span className="font-medium text-foreground">{item.customer.fullName}</span>

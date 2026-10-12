@@ -10,7 +10,8 @@ price is not negative and the item belongs to the model's maintenance schedule.
 from __future__ import annotations
 
 import logging
-from collections.abc import Callable
+import re
+from collections.abc import Callable, Mapping
 from datetime import UTC, date, datetime
 from decimal import ROUND_HALF_UP, Decimal
 from uuid import UUID
@@ -25,6 +26,7 @@ from src.common.core.workshop.service_price import ServicePrice
 from src.modules.user_vehicle.domain import today_vn
 
 from . import errors, schemas
+from .catalog import FALLBACK_NAMES
 
 logger = logging.getLogger(__name__)
 
@@ -40,25 +42,44 @@ def overlaps(a_from: date | None, a_to: date | None, b_from: date | None, b_to: 
     return (a_from or date.min) <= (b_to or date.max) and (b_from or date.min) <= (a_to or date.max)
 
 
+def picker_order(models: list[str], names: Mapping[str, str]) -> list[str]:
+    """Named models by name with numbers compared as numbers (VF2 … VF9 Plus, VF Wild Plus), then bare codes."""
+
+    def key(model_id: str) -> tuple[bool, list[str | int]]:
+        parts = re.split(r"(\d+)", names.get(model_id, model_id))
+        return model_id not in names, [int(p) if i % 2 else p for i, p in enumerate(parts)]
+
+    return sorted(models, key=key)
+
+
 def scaled(reference: Decimal, percent: Decimal) -> Decimal:
     value = reference * (Decimal(100) + percent) / Decimal(100)
     return max((value / ROUND_TO).quantize(Decimal(1), rounding=ROUND_HALF_UP) * ROUND_TO, Decimal(0))
 
 
 class WorkshopPricingService:
-    def __init__(self, session: Session, *, clock: Callable[[], datetime] = _utc_now) -> None:
+    def __init__(
+        self,
+        session: Session,
+        *,
+        clock: Callable[[], datetime] = _utc_now,
+        catalog_names: Mapping[str, str] | None = None,
+    ) -> None:
         self._db = session
         self._clock = clock
+        # "VF6 Eco" per model id from the manufacturer catalog; empty when it was unreachable.
+        self._catalog_names = dict(catalog_names or {})
 
     # ── reads ───────────────────────────────────────────────────────────
     def models(self) -> list[str]:
         return list(self._db.exec(select(MaintenanceRule.model_id).distinct().order_by(MaintenanceRule.model_id)).all())
 
     def model_names(self) -> dict[str, str]:
-        """Display name per model id ("VF8 Plus") from the manufacturer snapshot of verified vehicles.
+        """Display name per model id ("VF8 Plus"): the manufacturer catalog, else the snapshot of verified
+        vehicles, else the static ``FALLBACK_NAMES``.
 
-        The schedule only knows opaque codes (MDL-01). A model no owner has linked yet has no
-        name here and the UI falls back to its code.
+        The schedule only knows opaque codes (MDL-01). A model that is in none of them has
+        no name here and the UI falls back to its code.
         """
         model_id = func.coalesce(UserVehicle.external_model_id, UserVehicle.declared_model_id)
         rows = self._db.exec(
@@ -70,7 +91,7 @@ class WorkshopPricingService:
         names: dict[str, str] = {}
         for code, name, trim in rows:
             names.setdefault(code, " ".join(part for part in (name, trim) if part))
-        return names
+        return FALLBACK_NAMES | names | self._catalog_names
 
     def _catalog(self, model_id: str) -> dict[str, tuple[str, Decimal]]:
         """item_code → (name, reference price) of the model's schedule."""
@@ -129,8 +150,8 @@ class WorkshopPricingService:
                     prices=[self._row_out(r) for r in rows],
                 )
             )
-        models = self.models()
         names = self.model_names()
+        models = picker_order(self.models(), names)
         return schemas.PriceListOut(
             model_id=model_id,
             items=items,

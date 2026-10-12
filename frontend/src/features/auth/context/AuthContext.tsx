@@ -11,6 +11,7 @@ import {
   getFirebaseAuth,
   getIdToken,
   isSignInCancelled,
+  signInWithDemoToken,
   signInWithGoogle,
 } from '../firebase'
 import { clearPortal, getPortal, setPortal } from '../portal'
@@ -39,8 +40,12 @@ interface AuthContextValue {
   /** Restoring the session failed for a transient reason (network, 5xx); Splash offers retry. */
   bootError: ApiError | null
   isSigningIn: boolean
+  /** Which button started the sign-in in progress. */
+  signInMethod: 'google' | 'demo' | null
   isLoggingOut: boolean
   signIn: () => Promise<void>
+  /** "Dùng thử ngay": sign in to the shared demo account. */
+  signInDemo: () => Promise<void>
   retryBootstrap: () => void
   logout: () => Promise<boolean>
   setOnboarding: (onboarding: OnboardingState) => void
@@ -51,7 +56,7 @@ interface AuthContextValue {
   consumeReturnTo: () => string | null
 }
 
-const AuthContext = createContext<AuthContextValue | null>(null)
+export const AuthContext = createContext<AuthContextValue | null>(null)
 
 const SESSION_CHECK_INTERVAL_MS = 15 * 60 * 1000
 
@@ -74,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loginError, setLoginError] = useState<LoginError | null>(null)
   const [bootError, setBootError] = useState<ApiError | null>(null)
   const [isSigningIn, setIsSigningIn] = useState(false)
+  const [signInMethod, setSignInMethod] = useState<'google' | 'demo' | null>(null)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const inflight = useRef<{ uid: string; promise: Promise<void> } | null>(null)
@@ -210,6 +216,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoginError(null)
     setSessionNotice(null)
     setIsSigningIn(true)
+    setSignInMethod('google')
     manualSignIn.current = true
     setPortal('owner')
     track('login_google_clicked')
@@ -223,6 +230,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (isSignInCancelled(error)) return
       setLoginError(toLoginError(error))
       track('login_failed', { errorCode: toLoginError(error).code })
+    }
+  }, [syncAccount])
+
+  const signInDemo = useCallback(async () => {
+    setLoginError(null)
+    setSessionNotice(null)
+    setIsSigningIn(true)
+    setSignInMethod('demo')
+    manualSignIn.current = true
+    setPortal('owner')
+    track('login_demo_clicked')
+    try {
+      const firebaseUser = await signInWithDemoToken(await authApi.startDemoSession())
+      await syncAccount(firebaseUser.uid)
+    } catch (error) {
+      manualSignIn.current = false
+      setIsSigningIn(false)
+      setLoginError(toLoginError(error))
+      track('login_failed', { errorCode: toLoginError(error).code, method: 'demo' })
     }
   }, [syncAccount])
 
@@ -267,8 +293,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loginError,
       bootError,
       isSigningIn,
+      signInMethod,
       isLoggingOut,
       signIn,
+      signInDemo,
       retryBootstrap,
       logout,
       setOnboarding: setOnboardingState,
@@ -291,8 +319,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loginError,
       bootError,
       isSigningIn,
+      signInMethod,
       isLoggingOut,
       signIn,
+      signInDemo,
       retryBootstrap,
       logout,
       expireSession,

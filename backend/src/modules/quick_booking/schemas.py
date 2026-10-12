@@ -43,6 +43,7 @@ class ProposalBookingOut(BaseModel):
     bookingDate: date
     timeSlot: time
     ownerCancelableUntil: str | None = None
+    maintenancePackageCode: str | None = None
 
 
 class ConfirmData(BaseModel):

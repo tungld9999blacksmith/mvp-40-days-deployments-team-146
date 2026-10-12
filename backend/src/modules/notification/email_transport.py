@@ -9,6 +9,10 @@ import httpx
 
 from .channels import DeliveryResult, NotificationMessage
 
+# The only mail this transport sends, with the idempotency-key prefix of each kind:
+# maintenance reminders to owners, and the overdue-reply alert to workshop owners.
+EMAIL_KINDS = {"MAINTENANCE_REMINDER": "maintenance", "WORKSHOP_REPLY_OVERDUE": "workshop-reply-overdue"}
+
 
 def address_hash(address: str) -> str:
     return hashlib.sha256(address.strip().casefold().encode()).hexdigest()
@@ -19,7 +23,8 @@ class ResendEmailTransport:
         self.api_key, self.client_factory = api_key, client_factory
 
     async def send(self, recipient: str, message: NotificationMessage) -> DeliveryResult:
-        if message.kind != "MAINTENANCE_REMINDER" or not message.delivery_id:
+        prefix = EMAIL_KINDS.get(message.kind)
+        if prefix is None or not message.delivery_id:
             return DeliveryResult.failed("EMAIL_MAINTENANCE_ONLY")
         try:
             async with self.client_factory(timeout=10) as client:
@@ -27,7 +32,7 @@ class ResendEmailTransport:
                     "https://api.resend.com/emails",
                     headers={
                         "Authorization": f"Bearer {self.api_key}",
-                        "Idempotency-Key": f"maintenance/{message.delivery_id}",
+                        "Idempotency-Key": f"{prefix}/{message.delivery_id}",
                     },
                     json={
                         "from": message.sender,

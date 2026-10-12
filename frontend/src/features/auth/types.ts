@@ -25,6 +25,9 @@ export interface SignInUser {
   fullName: string | null
   accountStatus: string
   roles: string[]
+  /** Shared demo account ("Dùng thử ngay"): read-only, reset at `demoResetsAt`. */
+  isDemo?: boolean
+  demoResetsAt?: string | null
 }
 
 export interface SignInData {

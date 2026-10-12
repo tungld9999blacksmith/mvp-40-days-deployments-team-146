@@ -26,6 +26,8 @@ from src.modules.user_vehicle.domain import today_vn
 from .channels import DeliveryResult, NotificationChannelAdapter, NotificationMessage
 from .email_transport import ResendEmailTransport, address_hash
 from .preferences import load_preferences
+from .scheduled_delivery import TERMINAL_CODES, cancel_delivery
+from .send_schedule import active, eligible_at, next_allowed_at
 
 BLOCKING_STATES = {"bounced", "complained", "suppressed"}
 STATE_RANK = {
@@ -92,6 +94,9 @@ class MaintenanceEmailAdapter(NotificationChannelAdapter):
     def _eligible(self, user: VehicleUser, vehicle: UserVehicle, reminder: Reminder, now: datetime) -> str | None:
         if user.status != UserStatus.ACTIVE or user.onboarding_status != OnboardingStatus.ACTIVE:
             return "USER_NOT_ACTIVE"
+        if user.is_demo:
+            # The shared demo account never mails anyone (modules/demo_account).
+            return "DEMO_ACCOUNT"
         if (
             vehicle.user_id != user.user_id
             or vehicle.link_status != VehicleLinkStatus.ACTIVE
@@ -107,17 +112,32 @@ class MaintenanceEmailAdapter(NotificationChannelAdapter):
             return "EMAIL_SUPPRESSED"
         if reminder.is_resolved or has_milestone_booking(self.db, vehicle.id, reminder.target_odo_milestone, now):
             return "REMINDER_CLOSED"
+        from src.modules.trip_planning.service import trip_trigger
         from src.modules.user_vehicle.dependency import get_due_config
         from src.modules.user_vehicle.service import UserVehicleService
+        from src.modules.vehicle_usage.service import VehicleUsageService
 
-        from .domain import decide_level
+        from .policy_service import decide_reminder
 
         result = UserVehicleService(self.db, _NoopScheduler(), config=get_due_config(), clock=lambda: now).calculate(
             vehicle, now=now
         )
         if result.next_milestone is None or result.next_milestone.odo_milestone_km != reminder.target_odo_milestone:
             return "MILESTONE_CHANGED"
-        current_level = decide_level(result, lead_days=prefs.lead_days, due_soon_km=self.cfg.due_soon_km)
+        if (reminder.details or {}).get("personalization") and (
+            not prefs.personalized_reminders_enabled or self.cfg.personalized_reminders_mode_for(user.user_id) != "on"
+        ):
+            return "PERSONALIZATION_REVOKED"
+        forecast = VehicleUsageService(self.db, self.cfg).forecast(vehicle, result, now)
+        current_level = decide_reminder(
+            result,
+            lead_days=prefs.lead_days,
+            due_soon_km=self.cfg.due_soon_km,
+            today=today_vn(now),
+            forecast=forecast,
+            predictive_enabled=self.cfg.personalized_reminders_mode_for(user.user_id) == "on",
+            trip=trip_trigger(self.db, vehicle, result, now),
+        ).level
         if current_level != reminder.reminder_level:
             return "STATUS_CHANGED"
         return None
@@ -137,6 +157,8 @@ class MaintenanceEmailAdapter(NotificationChannelAdapter):
         user = self.db.get(VehicleUser, user_id)
         if not delivery or delivery.channel != ReminderChannel.EMAIL or not reminder or not vehicle or not user:
             return self._defer("INVALID_DELIVERY")
+        if delivery.error_code in TERMINAL_CODES:
+            return self._defer(delivery.error_code)
         now = self.clock()
         # Serialize all maintenance email claims for the same vehicle.
         if self.db.get(EmailVehicleGate, vehicle.id) is None:
@@ -153,19 +175,49 @@ class MaintenanceEmailAdapter(NotificationChannelAdapter):
         self.db.refresh(reminder)
         self.db.refresh(user)
         self.db.refresh(vehicle)
+        if delivery.error_code in TERMINAL_CODES:
+            return self._defer(delivery.error_code)
         outbox = self.db.get(EmailOutbox, delivery_id)
         if delivery.status == DeliveryStatus.SENT:
             self.db.commit()
             return DeliveryResult.sent(outbox.provider_message_id if outbox else None)
         reason = self._eligible(user, vehicle, reminder, now)
         if reason:
+            cancel_delivery(
+                self.db,
+                delivery,
+                "PERSONALIZATION_REVOKED" if reason == "PERSONALIZATION_REVOKED" else "SCHEDULE_CANCELLED",
+            )
             return self._defer(reason)
+        prefs = load_preferences(self.db, user_id, default_lead_days=self.cfg.reminder_default_lead_days)
+        if delivery.schedule_expires_at and as_utc(now) >= as_utc(delivery.schedule_expires_at):
+            cancel_delivery(self.db, delivery, "DELIVERY_EXPIRED")
+            return self._defer("DELIVERY_EXPIRED")
+        if delivery.next_eligible_send_at and as_utc(now) < as_utc(delivery.next_eligible_send_at):
+            return self._defer("SEND_TIME_NOT_REACHED")
+        allowed = eligible_at(now, prefs, delivery.next_eligible_send_at)
+        if allowed > as_utc(now):
+            delivery.next_eligible_send_at = allowed
+            self.db.add(delivery)
+            return self._defer("QUIET_HOURS")
         if outbox:
+            # Resend's key retention is 24h. Ambiguous outcomes/crashes must not
+            # be retried outside a conservative 23h window, even when the owner
+            # schedule gives a longer logical retry deadline.
+            if outbox.uncertain_attempt_at and as_utc(now) >= as_utc(outbox.uncertain_attempt_at) + timedelta(hours=23):
+                outbox.delivery_state = "needs_reconciliation"
+                outbox.next_attempt_at = None
+                delivery.next_eligible_send_at = None
+                self.db.add(outbox)
+                self.db.add(delivery)
+                return self._defer("EMAIL_RECONCILE_REQUIRED")
             if outbox.mode != self.cfg.email_mode:
                 return self._defer("EMAIL_MODE_CHANGED")
             if outbox.recipient_hash != address_hash(user.email):
                 return self._defer("EMAIL_RECIPIENT_CHANGED")
             if outbox.delivery_state in BLOCKING_STATES | {"failed", "needs_reconciliation", "cancelled"}:
+                delivery.next_eligible_send_at = None
+                self.db.add(delivery)
                 return self._defer("EMAIL_TERMINAL")
             if outbox.lease_until and as_utc(outbox.lease_until) > now:
                 return self._defer("EMAIL_CLAIMED")
@@ -176,6 +228,8 @@ class MaintenanceEmailAdapter(NotificationChannelAdapter):
             ):
                 outbox.delivery_state = "needs_reconciliation"
                 self.db.add(outbox)
+                delivery.next_eligible_send_at = None
+                self.db.add(delivery)
                 return self._defer("EMAIL_RECONCILE_REQUIRED")
             if not outbox.payload or not outbox.recipient:
                 return self._defer("EMAIL_PAYLOAD_EXPIRED")
@@ -190,6 +244,10 @@ class MaintenanceEmailAdapter(NotificationChannelAdapter):
             ).all()
             for peer in peers:
                 if peer.accepted_at and as_utc(peer.accepted_at) > now - timedelta(days=7):
+                    delivery.next_eligible_send_at = next_allowed_at(
+                        as_utc(peer.accepted_at) + timedelta(days=7), prefs
+                    )
+                    self.db.add(delivery)
                     return self._defer("EMAIL_COOLDOWN")
                 if peer.delivery_state == "needs_reconciliation" or (
                     peer.first_attempt_at
@@ -206,13 +264,20 @@ class MaintenanceEmailAdapter(NotificationChannelAdapter):
                 payload=asdict(message),
                 created_at=now,
                 first_attempt_at=now,
-                retry_until=now + timedelta(hours=23),
+                retry_until=min(
+                    now + timedelta(hours=72 if active(prefs) else 23), as_utc(delivery.schedule_expires_at)
+                )
+                if delivery.schedule_expires_at
+                else now + timedelta(hours=72 if active(prefs) else 23),
             )
         token = str(uuid4())
+        previous_uncertainty = outbox.uncertain_attempt_at
+        outbox.uncertain_attempt_at = outbox.uncertain_attempt_at or now
         outbox.claim_token, outbox.lease_until = token, now + timedelta(seconds=60)
         outbox.next_attempt_at = None
         delivery.attempts += 1
         delivery.last_attempt_at = now
+        delivery.next_eligible_send_at = outbox.lease_until
         frozen_recipient = outbox.recipient
         frozen_message = NotificationMessage(**outbox.payload)
         self.db.add(outbox)
@@ -233,7 +298,9 @@ class MaintenanceEmailAdapter(NotificationChannelAdapter):
         if outbox.claim_token != token:
             return self._defer("EMAIL_CLAIM_LOST")
         outbox.claim_token, outbox.lease_until = None, None
+        delivery.next_eligible_send_at = None
         if outcome.status == DeliveryStatus.SENT:
+            outbox.uncertain_attempt_at = None
             outbox.provider_message_id = outcome.provider_message_id
             outbox.accepted_at = outbox.accepted_at or self.clock()
             if STATE_RANK.get(outbox.delivery_state, 0) < STATE_RANK["accepted"]:
@@ -246,11 +313,30 @@ class MaintenanceEmailAdapter(NotificationChannelAdapter):
             if outbox.accepted_at:
                 delivery.status, delivery.sent_at = DeliveryStatus.SENT, outbox.accepted_at
                 delivery.error_code = None
-            else:
+            elif delivery.error_code not in TERMINAL_CODES:
+                if outcome.error_code == "RATE_LIMITED":
+                    outbox.uncertain_attempt_at = previous_uncertainty
                 delivery.status, delivery.error_code = outcome.status, outcome.error_code
                 if outcome.retryable:
                     if delivery.attempts < self.cfg.reminder_max_attempts:
-                        outbox.next_attempt_at = self.clock() + timedelta(minutes=5 * delivery.attempts)
+                        current_prefs = load_preferences(
+                            self.db, user_id, default_lead_days=self.cfg.reminder_default_lead_days
+                        )
+                        outbox.next_attempt_at = next_allowed_at(
+                            self.clock() + timedelta(minutes=5 * delivery.attempts), current_prefs
+                        )
+                        if outbox.retry_until and as_utc(outbox.next_attempt_at) >= as_utc(outbox.retry_until):
+                            outbox.delivery_state = "needs_reconciliation"
+                            outbox.next_attempt_at = None
+                        if (
+                            outbox.next_attempt_at
+                            and outbox.uncertain_attempt_at
+                            and as_utc(outbox.next_attempt_at)
+                            >= as_utc(outbox.uncertain_attempt_at) + timedelta(hours=23)
+                        ):
+                            outbox.delivery_state = "needs_reconciliation"
+                            outbox.next_attempt_at = None
+                        delivery.next_eligible_send_at = outbox.next_attempt_at
                     else:
                         outbox.delivery_state = "needs_reconciliation"
                 else:
@@ -363,10 +449,13 @@ class MaintenanceEmailAdapter(NotificationChannelAdapter):
         return True
 
     def purge_payloads(self) -> int:
+        from .personalization import purge_derived_data
+
         since = self.clock() - timedelta(days=self.cfg.email_payload_retention_days)
         result = self.db.execute(
             update(EmailOutbox).where(EmailOutbox.created_at < since).values(recipient=None, payload=None)
         )
+        purge_derived_data(self.db, self.clock())
         self.db.commit()
         return result.rowcount
 

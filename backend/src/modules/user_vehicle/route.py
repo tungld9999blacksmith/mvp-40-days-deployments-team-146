@@ -9,9 +9,13 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from sqlmodel import Session
 
 from src.common.core.identity.vehicle_user import VehicleUser
 from src.common.core.vehicle import UserVehicle
+from src.infrastructure.supabase.db import get_session
+from src.modules.trip_planning.schemas import TripPlanEnvelope, TripPlanIn
+from src.modules.trip_planning.service import TripPlanningService
 
 from . import schemas
 from .dependency import (
@@ -22,6 +26,38 @@ from .dependency import (
 from .service import UserVehicleService
 
 router = APIRouter(prefix="/user-vehicles", tags=["user-vehicles"])
+
+
+def get_trip_service(
+    session: Annotated[Session, Depends(get_session)],
+    vehicles: Annotated[UserVehicleService, Depends(get_user_vehicle_service)],
+) -> TripPlanningService:
+    return TripPlanningService(session, vehicles)
+
+
+@router.get("/{userVehicleId}/trip-plan", response_model=TripPlanEnvelope)
+def get_trip_plan(
+    vehicle: Annotated[UserVehicle, Depends(get_owned_active_vehicle)],
+    service: Annotated[TripPlanningService, Depends(get_trip_service)],
+):
+    return service.get(vehicle)
+
+
+@router.put("/{userVehicleId}/trip-plan", response_model=TripPlanEnvelope)
+def put_trip_plan(
+    payload: TripPlanIn,
+    vehicle: Annotated[UserVehicle, Depends(get_owned_active_vehicle)],
+    service: Annotated[TripPlanningService, Depends(get_trip_service)],
+):
+    return service.put(vehicle, payload)
+
+
+@router.delete("/{userVehicleId}/trip-plan", response_model=TripPlanEnvelope)
+def delete_trip_plan(
+    vehicle: Annotated[UserVehicle, Depends(get_owned_active_vehicle)],
+    service: Annotated[TripPlanningService, Depends(get_trip_service)],
+):
+    return service.delete(vehicle)
 
 
 @router.get(

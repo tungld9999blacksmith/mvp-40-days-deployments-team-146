@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { wrapIndex } from '@/shared/ui/Carousel'
-import { homeSlideKinds } from './homeSlides'
+import { QUICK_BOOKING_ENTRY_PATH } from '@/features/assistant/quickBooking/entry'
+import { homeSlideKinds, maintenanceSlideAction } from './homeSlides'
 
 const milestone = { odoMilestoneKm: 24000, monthMilestone: 24 } as never
 
@@ -26,6 +27,16 @@ describe('homeSlideKinds', () => {
       'assistant',
     ])
     expect(homeSlideKinds({ status: null, hasUpcomingBooking: true })).toEqual(['assistant'])
+  })
+})
+
+describe('maintenanceSlideAction', () => {
+  it('offers quick booking while the vehicle has no open booking', () => {
+    expect(maintenanceSlideAction(null)).toEqual({ kind: 'book', to: QUICK_BOOKING_ENTRY_PATH, label: 'Đặt lịch bảo dưỡng nhanh' })
+  })
+
+  it('leads to the open booking instead, since BR-013 rejects a second one', () => {
+    expect(maintenanceSlideAction('bk 1')).toEqual({ kind: 'view', to: '/bookings/bk%201?src=APP', label: 'Xem lịch hẹn' })
   })
 })
 

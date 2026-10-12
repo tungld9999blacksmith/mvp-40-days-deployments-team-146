@@ -55,7 +55,7 @@ const MoneyInput = forwardRef<
         onBlur={() => setFocused(false)}
         onChange={event => onChange(nextMoneyDigits(value, event.target.value))}
         className={cn(
-          'w-32 bg-card border rounded-lg px-3 py-1.5 text-sm text-right font-mono text-foreground placeholder:text-muted/70 focus:outline-none focus:border-emerald/60 focus:ring-4 focus:ring-emerald/15 disabled:opacity-60',
+          'w-32 bg-card border rounded-lg px-3 py-1.5 text-sm text-right font-mono text-foreground placeholder:text-muted/70 focus-field disabled:opacity-60',
           invalid ? 'border-error' : 'border-border',
           className,
         )}

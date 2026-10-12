@@ -58,7 +58,7 @@ export default function NumberStepper({
             aria-invalid={invalid || undefined}
             onChange={e => onChange(e.target.value.replace(/[^\d]/g, ''))}
             className={cn(
-              'w-20 text-center bg-card border rounded-xl px-3 py-2.5 text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-emerald/40 disabled:opacity-60',
+              'w-20 text-center bg-card border rounded-xl px-3 py-2.5 text-sm font-mono text-foreground focus-field disabled:opacity-60',
               invalid ? 'border-error' : 'border-border',
             )}
           />

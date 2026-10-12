@@ -189,6 +189,8 @@ def guarded_calls(response: Any, messages: list[Any], tools: list[Any]) -> Any:
                       "Bạn hãy chọn rõ khung giờ muốn đặt trong danh sách đã tra. Tôi chưa tạo thẻ đề xuất hoặc đặt lịch từ câu xác nhận này.")
             return response.model_copy(update={"content": answer, "tool_calls": [], "response_metadata": {**response.response_metadata, "rejected_acknowledgement_response": str(response.content), "rejected_tool_calls": calls}})
     if not calls:
+        from .business_grounding import business_answer
+
         # A booking code that get_booking_lines just returned is a fact about an existing
         # booking, not a claim that one was made in this turn.
         claim_text = str(response.content)
@@ -203,6 +205,33 @@ def guarded_calls(response: Any, messages: list[Any], tools: list[Any]) -> Any:
                     "booking_answer_grounded_in_tool_results": True,
                 }})
             return AIMessage(content='Tôi chưa có kết quả xác nhận đặt lịch. Nếu đã có thẻ đề xuất, bạn hãy bấm "Xác nhận đặt lịch" và chờ hệ thống trả kết quả.', response_metadata={**response.response_metadata, "rejected_success_claim": str(response.content)})
+        premature_tiers = bool(
+            re.search(
+                r"\b(?:REQUIRED|RECOMMENDED|OPTIONAL)\b|(?:bắt buộc|khuyến nghị|tùy chọn)\s*:",
+                str(response.content),
+                re.I,
+            )
+        )
+        if (
+            premature_tiers
+            and latest_result(current_turn, "get_due_maintenance") is not None
+            and latest_result(current_turn, "recommend_maintenance_packages") is None
+        ):
+            verified = [
+                message
+                for message in current_turn
+                if isinstance(message, ToolMessage) and message.name == "get_due_maintenance"
+            ]
+            grounded_due = business_answer(verified, question=last_user)
+            if grounded_due:
+                return response.model_copy(update={
+                    "content": grounded_due,
+                    "response_metadata": {
+                        **response.response_metadata,
+                        "premature_package_tiers_rejected": True,
+                        "original_business_answer": str(response.content),
+                    },
+                })
         read = latest_result(current_turn, "get_reminder_settings")
         data = read.get("data", {}) if read else {}
         verified_read = (
@@ -232,8 +261,6 @@ def guarded_calls(response: Any, messages: list[Any], tools: list[Any]) -> Any:
                 **response.response_metadata, "rag_answer_grounded_in_empty_evidence": True,
                 "original_rag_answer": str(response.content),
             }})
-        from .business_grounding import business_answer
-
         requested_day = explicit_date(last_user, now)
         if requested_day is None and not mentions_day(last_user) and slot_request(last_user) and explicit_workshop_id(last_user):
             requested_day = inherited_read_selection(history, now)
@@ -287,6 +314,19 @@ def guarded_calls(response: Any, messages: list[Any], tools: list[Any]) -> Any:
         if call["name"] == "propose_booking" and re.fullmatch(r"\d{2}:\d{2}:00", str(args.get("time_slot", ""))):
             args["time_slot"] = args["time_slot"][:5]
             normalized.append("time_slot")
+        if call["name"] == "propose_booking" and args.get("maintenance_package_code"):
+            recommendation = latest_result(messages, "recommend_maintenance_packages") or {}
+            offered = {
+                package.get("package_code")
+                for package in recommendation.get("packages", [])
+                if isinstance(package, dict)
+            }
+            code = str(args["maintenance_package_code"]).upper()
+            token = recommendation.get("recommendation_token")
+            if code in offered and isinstance(token, str) and args.get("maintenance_package_token") != token:
+                args["maintenance_package_code"] = code
+                args["maintenance_package_token"] = token
+                normalized.append("maintenance_package_token_from_verified_result")
         call["args"] = args
     response = response.model_copy(update={"tool_calls": calls, "response_metadata": {**response.response_metadata, "requested_tool_calls": original, "normalized_fields": normalized}})
     for call in calls:
@@ -335,10 +375,15 @@ def guarded_calls(response: Any, messages: list[Any], tools: list[Any]) -> Any:
             return AIMessage(content="Bạn hãy chọn rõ xưởng, ngày và giờ muốn đặt trước khi tôi tạo thẻ đề xuất. Chưa có lịch hẹn hoặc chỗ nào được đặt.", response_metadata={**response.response_metadata, "rejected_tool_calls": original})
     maintenance = latest_result(messages, "get_due_maintenance")
     booking_intent = "get_available_slots" in names and bool(re.search(r"\b(?:đặt|dat|booking)\b", last_user))
-    if (names & {"estimate_service_cost", "propose_booking"} or booking_intent) and maintenance is None:
+    if (names & {"estimate_service_cost", "recommend_maintenance_packages", "propose_booking"} or booking_intent) and maintenance is None:
         replacement = [{"name": "get_due_maintenance", "args": {}, "id": f"prerequisite-{uuid4().hex}", "type": "tool_call"}]
-        replacement.extend(call for call in calls if call["name"] not in {"get_due_maintenance", "estimate_service_cost", "propose_booking"})
+        replacement.extend(call for call in calls if call["name"] not in {"get_due_maintenance", "estimate_service_cost", "recommend_maintenance_packages", "propose_booking"})
         return response.model_copy(update={"tool_calls": replacement})
+    if "recommend_maintenance_packages" in names and latest_result(messages, "get_service_history") is None:
+        return response.model_copy(update={"tool_calls": [{
+            "name": "get_service_history", "args": {"limit": 5},
+            "id": f"package-history-{uuid4().hex}", "type": "tool_call",
+        }]})
     for call in calls:
         if call["name"] != "propose_booking":
             continue
@@ -405,6 +450,11 @@ def tool_failure(messages: list[Any]) -> str | None:
         if message.name == "estimate_service_cost":
             return "Hệ thống chưa tra được dự toán chi phí. Tôi chưa có giá đã xác minh để báo cho bạn; vui lòng thử lại sau."
         if message.name == "propose_booking":
+            if value.get("error_code") in {"PACKAGE_TOKEN_REQUIRED", "MAINTENANCE_PACKAGE_CHANGED"}:
+                return (
+                    "Dữ liệu xe hoặc giá của gói bảo dưỡng đã thay đổi. Tôi chưa tạo thẻ đề xuất; "
+                    "hãy xem lại các gói vừa được backend cập nhật rồi chọn lại gói."
+                )
             if value.get("error_code") == "SLOT_FULL":
                 return "Khung giờ vừa hết chỗ. Chưa có lịch hẹn nào được tạo; bạn hãy chọn một khung giờ khác."
             if value.get("error_code") == "OPEN_BOOKING_EXISTS":

@@ -192,7 +192,7 @@ Sau khi điền key và chạy `setup_hooks` (Bước 1), hook của Claude Code
 
 ## 3. Sample queries (câu hỏi mẫu)
 
-Dùng các câu dưới đây để kiểm tra trợ lý AI có gọi đúng công cụ và trả lời đúng ý không. Agent ([backend/src/agents](backend/src/agents)) có 8 công cụ: `get_due_maintenance`, `estimate_service_cost`, `find_workshops`, `get_available_slots`, `propose_booking`, `search_ev_knowledge`, `get_maintenance_schedule_rag`, `get_warranty_policy_rag`. Quy tắc gọi tool nằm ở [prompts.py](backend/src/agents/prompts.py).
+Dùng các câu dưới đây để kiểm tra trợ lý AI có gọi đúng công cụ và trả lời đúng ý không. Danh sách production tools được dựng tập trung tại [dependency.py](backend/src/agents/tools/dependency.py), gồm các tool mốc bảo dưỡng, lịch sử, tối ưu gói, dự toán, xưởng/slot, booking proposal, báo giá/phiếu dịch vụ, nhắc lịch và RAG. Quy tắc gọi tool nằm ở [prompts.py](backend/src/agents/prompts.py).
 
 **Chuẩn bị:** đăng nhập app chủ xe, xác thực một xe (dùng Gmail trong `MOCK_DEV_OWNER_EMAILS`, xem [DEV_GUIDE.md §4](DEV_GUIDE.md)), rồi mở **Trợ lý AI**. Bật `LANGCHAIN_TRACING_V2=true` để xem tool nào được gọi trên LangSmith.
 
@@ -210,6 +210,13 @@ Dùng các câu dưới đây để kiểm tra trợ lý AI có gọi đúng cô
 |---|---|
 | Bảo dưỡng lần tới hết khoảng bao nhiêu tiền? | Gọi `get_due_maintenance` → `estimate_service_cost`; tách hạng mục được bảo hành (giá 0) và tổng phải trả. Không tự bịa giá |
 | Ở xưởng VinFast Long Biên thì giá có khác không? | Gọi `find_workshops` lấy `workshop_id` rồi dự toán lại; ghi chú nếu là giá tham khảo |
+
+### 3.2a Gợi ý gói bảo dưỡng tối ưu
+
+| Câu hỏi | Kết quả mong đợi |
+|---|---|
+| Gợi ý cho tôi gói bảo dưỡng tối ưu trong ngân sách 1 triệu | Gọi `get_due_maintenance` → `get_service_history` → `recommend_maintenance_packages`; optimizer gọi `CostEstimationService` một lần rồi trình bày ba gói, không tự thêm giá/hạng mục |
+| Tôi chọn gói Cân bằng và muốn đặt lịch | Giữ mã `BALANCED` cùng `recommendation_token`, tìm xưởng/slot, rồi tạo proposal. Token đổi thì yêu cầu khách xem lại gói mới; lịch vẫn chỉ được tạo sau khi chủ xe bấm xác nhận |
 
 ### 3.3 Tìm xưởng và đặt lịch
 

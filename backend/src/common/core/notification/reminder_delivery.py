@@ -40,6 +40,7 @@ class ReminderDelivery(SQLModel, table=True):
         UniqueConstraint("reminder_id", "channel", name="ux_reminder_delivery_reminder_channel"),
         CheckConstraint("attempts >= 0", name="ck_reminder_delivery_attempts"),
         CheckConstraint("status <> 'sent' OR sent_at IS NOT NULL", name="ck_reminder_delivery_sent_at"),
+        Index("ix_reminder_delivery_due", "next_eligible_send_at"),
         Index(
             "ix_reminder_delivery_retry",
             "status",
@@ -78,6 +79,10 @@ class ReminderDelivery(SQLModel, table=True):
     last_attempt_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
     sent_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
     error_code: str | None = Field(default=None, sa_column=Column(String(64), nullable=True))
+    next_eligible_send_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
+    schedule_expires_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
+    claim_token: str | None = Field(default=None, sa_column=Column(String(36)))
+    lease_until: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
     created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))
     updated_at: datetime = Field(
         sa_column=Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)

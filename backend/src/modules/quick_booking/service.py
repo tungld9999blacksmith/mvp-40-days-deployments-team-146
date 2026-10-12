@@ -21,6 +21,7 @@ import time as _time
 from collections.abc import AsyncIterator, Callable
 from contextlib import AbstractAsyncContextManager, asynccontextmanager
 from datetime import UTC, date, datetime, time, timedelta
+from decimal import Decimal
 from typing import NoReturn, Protocol
 from uuid import UUID
 
@@ -585,7 +586,24 @@ class QuickBookingService:
         now = self._clock()
         if appointment_at(proposal.booking_date, proposal.time_slot) <= now:
             await self._slot_full(user, conversation, vehicle, proposal, [])
+        selected_package = proposal.options.get("primary", {}).get("maintenancePackage")
+        if isinstance(selected_package, dict):
+            refreshed = self._package_for_option(
+                vehicle,
+                proposal.odo_milestone,
+                self._month_of(vehicle, proposal.odo_milestone),
+                str(proposal.workshop_id),
+                selected_package,
+            )
+            if refreshed is None or _package_signature(refreshed) != _package_signature(selected_package):
+                raise errors.QuickBookingError(
+                    "Maintenance schedule or workshop pricing changed. Review the package before confirming.",
+                    code="MAINTENANCE_PACKAGE_CHANGED",
+                    details={"maintenancePackage": refreshed},
+                )
         try:
+            package_code = selected_package.get("packageCode") if isinstance(selected_package, dict) else None
+            item_codes = selected_package.get("itemCodes") if isinstance(selected_package, dict) else None
             # Capacity is re-checked inside the vehicle + slot locks (BR-1510); no full-day scan.
             booking = await self._bookings.create_for_slot(
                 user,
@@ -596,6 +614,8 @@ class QuickBookingService:
                 source="CHAT",
                 odo_milestone=proposal.odo_milestone,
                 source_message_id=proposal.message_id,
+                maintenance_package_code=package_code,
+                selected_item_codes=set(item_codes) if isinstance(item_codes, list) else None,
             )
         except booking_errors.SlotFullError as exc:
             await self._slot_full(user, conversation, vehicle, proposal, exc.alternatives)
@@ -671,6 +691,7 @@ class QuickBookingService:
                     if booking.status.value == "pending" and booking.hold_expires_at
                     else None
                 ),
+                maintenancePackageCode=booking.maintenance_package_code,
             ),
             message=self._result_message(proposal, booking.id),
             replayed=replayed,
@@ -758,6 +779,23 @@ class QuickBookingService:
             )
             option["estimate"] = known.get("estimate") if known else None
             take(option)
+
+        selected_package = proposal.options.get("primary", {}).get("maintenancePackage")
+        if isinstance(selected_package, dict):
+            months = self._month_of(vehicle, proposal.odo_milestone)
+            with_package: list[dict] = []
+            for option in candidates:
+                refreshed = self._package_for_option(
+                    vehicle,
+                    proposal.odo_milestone,
+                    months,
+                    option["workshopId"],
+                    selected_package,
+                )
+                if refreshed is not None:
+                    option["maintenancePackage"] = refreshed
+                    with_package.append(option)
+            candidates = with_package
 
         if not candidates:
             self._close(proposal, BookingProposalStatus.SUPERSEDED, SupersededReason.SLOT_FULL.value)
@@ -908,6 +946,7 @@ class QuickBookingService:
         d: date,
         t: time,
         odo_milestone: int | None,
+        maintenance_package: dict | None = None,
     ) -> tuple[BookingProposal, dict]:
         """A proposal (never a booking) for a slot the owner picked in free chat (BR-1514).
 
@@ -931,10 +970,68 @@ class QuickBookingService:
         matches = next_milestone is not None and odo_milestone == next_milestone.odo_milestone_km
         workshop = self._db.get(Workshop, workshop_id)
         option = _option(1, workshop, None, workshop.id == user.preferred_workshop_id, d, t)
-        if matches:
-            option["estimate"] = self._estimate(
-                vehicle, next_milestone.odo_milestone_km, next_milestone.month_milestone, option["workshopId"]
+        options = [option]
+        other_workshops = self._db.exec(
+            select(Workshop)
+            .where(
+                Workshop.status == WorkshopStatus.ACTIVE,
+                Workshop.region == workshop.region,
+                Workshop.id != workshop.id,
             )
+            .order_by(Workshop.name, Workshop.id)
+        ).all()
+        for other in other_workshops:
+            if len(options) >= 1 + self._config.max_alternatives:
+                break
+            try:
+                other_availability = await self._bookings.check_availability(
+                    user, other.id, d, t, with_alternatives=False
+                )
+            except booking_errors.BookingError:
+                continue
+            if other_availability.requested is not None and other_availability.requested.available:
+                options.append(
+                    _option(len(options) + 1, other, None, other.id == user.preferred_workshop_id, d, t)
+                )
+        for slot in availability.slots:
+            if len(options) >= 1 + self._config.max_alternatives:
+                break
+            if slot.available and slot.time_slot != t:
+                options.append(
+                    _option(
+                        len(options) + 1,
+                        workshop,
+                        None,
+                        workshop.id == user.preferred_workshop_id,
+                        d,
+                        slot.time_slot,
+                    )
+                )
+        if maintenance_package is not None:
+            # Persist the backend-validated selection with the proposal. The
+            # booking itself is still created only by API-QB-02 confirmation.
+            selected_card = _package_card(maintenance_package)
+            option["maintenancePackage"] = selected_card
+        if matches:
+            for candidate in options:
+                candidate["estimate"] = self._estimate(
+                    vehicle,
+                    next_milestone.odo_milestone_km,
+                    next_milestone.month_milestone,
+                    candidate["workshopId"],
+                )
+                if maintenance_package is not None and candidate is not option:
+                    candidate_package = self._package_for_option(
+                        vehicle,
+                        next_milestone.odo_milestone_km,
+                        next_milestone.month_milestone,
+                        candidate["workshopId"],
+                        selected_card,
+                    )
+                    if candidate_package is not None:
+                        candidate["maintenancePackage"] = candidate_package
+            if maintenance_package is not None:
+                options = [candidate for candidate in options if candidate.get("maintenancePackage") is not None]
             reason = reason_text(
                 status.due_status,
                 next_milestone.odo_milestone_km,
@@ -951,7 +1048,7 @@ class QuickBookingService:
             vehicle,
             source=ProposalSource.CHAT_AGENT,
             odo_milestone=odo_milestone,
-            options=[option],
+            options=options,
             basis=LocationBasis.NONE,
             reason=SupersededReason.NEW_PROPOSAL,
         )
@@ -964,6 +1061,50 @@ class QuickBookingService:
             location_label=None,
         )
         return proposal, card
+
+    def _package_for_option(
+        self,
+        vehicle: UserVehicle,
+        odo_milestone: int | None,
+        month_milestone: int | None,
+        workshop_id: str,
+        selected: dict,
+    ) -> dict | None:
+        """Keep the selected scope while refreshing prices for another workshop."""
+        if odo_milestone is None or month_milestone is None:
+            return None
+        workshop = self._db.get(Workshop, UUID(workshop_id))
+        if workshop is None:
+            return None
+        estimate = self._estimates.estimate(vehicle, (odo_milestone, month_milestone), workshop)
+        if estimate.status != "READY":
+            return None
+        selected_codes = set(selected.get("itemCodes") or [])
+        priced_by_code = {item.item_code: item for item in estimate.items}
+        if not selected_codes or not selected_codes.issubset(priced_by_code):
+            return None
+        old_by_code = {item["itemCode"]: item for item in selected.get("items", [])}
+        items = []
+        for code in selected.get("itemCodes", []):
+            priced = priced_by_code[code]
+            old = old_by_code.get(code, {})
+            items.append(
+                {
+                    **old,
+                    "itemCode": code,
+                    "itemName": priced.item_name,
+                    "price": str(priced.price),
+                    "covered": priced.covered,
+                    "priceSource": priced.price_source,
+                }
+            )
+        total = sum((item.price for item in estimate.items if item.item_code in selected_codes), start=0)
+        return {
+            **selected,
+            "items": items,
+            "estimatedTotal": str(total),
+            "pricingUpdatedForWorkshop": True,
+        }
 
 
 # ── helpers ──────────────────────────────────────────────────────────────
@@ -987,6 +1128,51 @@ def _option(
         "timeSlot": _hhmm(t),
         "estimate": None,
     }
+
+
+def _package_card(package: dict) -> dict:
+    """Stable public snapshot stored in proposal JSON and consumed by the UI."""
+    return {
+        "packageCode": package["package_code"],
+        "name": package["name"],
+        "items": [
+            {
+                "itemCode": item["item_code"],
+                "itemName": item["item_name"],
+                "tier": item["tier"],
+                "price": item["price"],
+                "covered": item["covered"],
+                "priceSource": item["price_source"],
+                "durationMinutes": item["duration_minutes"],
+                "seenInServiceHistory": item["seen_in_service_history"],
+            }
+            for item in package["items"]
+        ],
+        "itemCodes": list(package["item_codes"]),
+        "omittedItemCodes": list(package["omitted_item_codes"]),
+        "estimatedTotal": package["estimated_total"],
+        "estimatedDurationMinutes": package["estimated_duration_minutes"],
+        "constraintStatus": package["constraint_status"],
+    }
+
+
+def _package_signature(package: dict) -> tuple:
+    """Facts the owner approved; presentation-only flags are excluded."""
+    items = tuple(
+        (
+            item.get("itemCode"),
+            Decimal(str(item.get("price", "0"))),
+            bool(item.get("covered")),
+            item.get("priceSource"),
+        )
+        for item in package.get("items", [])
+    )
+    return (
+        package.get("packageCode"),
+        tuple(package.get("itemCodes", [])),
+        Decimal(str(package.get("estimatedTotal", "0"))),
+        items,
+    )
 
 
 def _milestone_out(status: MaintenanceStatusOut) -> dict | None:
@@ -1019,6 +1205,7 @@ def _booking_out(booking: BookingOut) -> schemas.ProposalBookingOut:
         bookingDate=booking.booking_date,
         timeSlot=booking.time_slot,
         ownerCancelableUntil=booking.owner_cancelable_until.isoformat() if booking.owner_cancelable_until else None,
+        maintenancePackageCode=booking.maintenance_package_code,
     )
 
 

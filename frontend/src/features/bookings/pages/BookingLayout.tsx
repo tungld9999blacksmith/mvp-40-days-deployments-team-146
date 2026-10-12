@@ -2,20 +2,15 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { Car, Wrench } from 'lucide-react'
 import Stepper from '@/shared/ui/Stepper'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
+import { page } from '@/shared/ui/page'
 import { formatKm, formatLicensePlate } from '@/shared/utils/format'
 import VehicleGate from '@/features/vehicles/components/VehicleGate'
-import { useMaintenanceStatus } from '@/features/vehicles/hooks/useVehicleQueries'
+import BookingSummaryRail from '../components/BookingSummaryRail'
 import { BookingWizardProvider, useBookingWizard } from '../context/BookingWizardContext'
+import { useBookingMilestone } from '../hooks/useBookingMilestone'
 
 const STEPS = ['Xưởng', 'Ngày & giờ', 'Xác nhận']
 const STEP_BY_PATH: Record<string, number> = { workshops: 0, slots: 1, confirm: 2 }
-
-/** Milestone shown in the header: the one in the query, else the next milestone of the vehicle. */
-export function useBookingMilestone(): number | null {
-  const { vehicle, params } = useBookingWizard()
-  const status = useMaintenanceStatus(vehicle.userVehicleId)
-  return params.odoMilestone ?? status.data?.nextMilestone?.odoMilestoneKm ?? null
-}
 
 function BookingHeader() {
   const { vehicle, params } = useBookingWizard()
@@ -55,7 +50,7 @@ function BookingHeader() {
 /** `/booking/*` — resolves the owner's vehicle, then hosts the wizard steps (US-029 FE §3). */
 export default function BookingLayout() {
   return (
-    <div className="p-4 sm:p-6 xl:p-8">
+    <div className={page()}>
       <VehicleGate
         loading={
           <div className="space-y-4 max-w-3xl">
@@ -67,7 +62,13 @@ export default function BookingLayout() {
         {vehicle => (
           <BookingWizardProvider vehicle={vehicle}>
             <BookingHeader />
-            <Outlet />
+            {/* xl: steps in 2/3, the summary rail in 1/3 (DESIGN.md 2026-10-11). Below xl the confirm card carries the summary. */}
+            <div className="xl:grid xl:grid-cols-3 xl:gap-6 xl:items-start">
+              <div className="xl:col-span-2 min-w-0">
+                <Outlet />
+              </div>
+              <BookingSummaryRail className="hidden xl:block xl:sticky xl:top-6" />
+            </div>
           </BookingWizardProvider>
         )}
       </VehicleGate>

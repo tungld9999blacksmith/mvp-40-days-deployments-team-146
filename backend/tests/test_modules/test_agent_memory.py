@@ -331,6 +331,22 @@ def test_budget_keeps_current_tool_group_and_rejects_oversized_turn():
         )
 
 
+def test_default_budget_fits_real_prompt_and_tools_with_room_for_the_conversation():
+    """The real system prompt and tool schemas alone once exceeded the 12000 default."""
+    from src.agents.prompts import format_system_prompt
+    from src.agents.tools import CUSTOMER_AGENT_TOOLS
+
+    config = Settings(_env_file=None, agent_memory_context_mode="on")
+    result = build_memory_context(
+        [HumanMessage(content="Xe tôi đến hạn bảo dưỡng chưa?")],
+        format_system_prompt(None),
+        config,
+        tools=CUSTOMER_AGENT_TOOLS,
+    )
+    # History, tool results and recalled memory must still fit in the same turn.
+    assert result.budget - result.estimated_tokens >= 4000
+
+
 @pytest.mark.parametrize(
     "tool_result,expected", [(None, "chưa lưu"), ('{"status":"ERROR"}', "chưa lưu"), ('{"status":"ok"}', "đã ghi nhớ")]
 )

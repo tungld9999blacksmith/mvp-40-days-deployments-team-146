@@ -2,12 +2,13 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from .common.client_ip import remember_client_ip
 from .config import get_settings
 from .infrastructure.fastapi.middlewares import (
     REQUEST_ID_HEADER,
@@ -15,6 +16,13 @@ from .infrastructure.fastapi.middlewares import (
     CorrelationIdMiddleware,
 )
 from .infrastructure.logging import configure_logging
+from .infrastructure.observability import (
+    BACKEND_SERVICE,
+    configure_langsmith,
+    instrument_fastapi,
+    setup_telemetry,
+    shutdown_telemetry,
+)
 from .infrastructure.redis import get_redis_toolkit
 from .modules.agent_memory.route import router as agent_memory_router
 from .modules.auth.errors import AuthError
@@ -35,6 +43,9 @@ from .modules.conversation.ws import ws_router as conversation_ws_router
 from .modules.cost_estimate import CostEstimateError
 from .modules.cost_estimate import status_for as cost_estimate_status_for
 from .modules.cost_estimate.route import router as cost_estimate_router
+from .modules.demo_account import DemoAccountError
+from .modules.demo_account import status_for as demo_account_status_for
+from .modules.demo_account.route import router as demo_account_router
 from .modules.examples.route import vehicle_router
 from .modules.follow_up import FollowUpError
 from .modules.follow_up import status_for as follow_up_status_for
@@ -123,6 +134,8 @@ async def lifespan(app: FastAPI):
         print("Shutting down...")
         await close_place_search_provider()
         await redis_toolkit.close()
+        # Last: flush spans / logs emitted during shutdown too.
+        shutdown_telemetry()
 
 
 app = FastAPI(
@@ -135,6 +148,9 @@ app = FastAPI(
 app.include_router(agent_memory_router, prefix="/api/v1")
 
 settings = get_settings()
+configure_langsmith(settings)
+# OpenTelemetry (OTEL_ENABLED); None when off. Before logging, which ships logs over OTLP.
+telemetry = setup_telemetry(BACKEND_SERVICE, settings)
 # Route application (logging.getLogger(__name__)), uvicorn and structlog loggers
 # through one structlog pipeline; request context comes from structlog.contextvars.
 configure_logging(
@@ -145,9 +161,16 @@ configure_logging(
     log_dir=settings.log_dir,
     max_bytes=settings.log_file_max_bytes,
     backup_count=settings.log_file_backup_count,
+    otel_logger_provider=telemetry.logger_provider if telemetry else None,
 )
 # httpx (used by the Qdrant client) logs every request at INFO.
 logging.getLogger("httpx").setLevel(logging.WARNING)
+if telemetry is not None:
+    logging.getLogger(__name__).info(
+        "OpenTelemetry enabled: exporting to %s (%s)",
+        settings.otel_exporter_otlp_endpoint,
+        settings.otel_deployment_environment,
+    )
 
 
 def cors_allow_origins(cors_origins: str, frontend_url: str) -> list[str]:
@@ -172,6 +195,8 @@ app.add_middleware(
 # add_middleware wraps outermost last: CorrelationId -> AuditLog -> CORS -> app.
 app.add_middleware(AuditLogMiddleware)
 app.add_middleware(CorrelationIdMiddleware)
+# OTel server middleware goes around all of the above (no-op when telemetry is off).
+instrument_fastapi(app, telemetry)
 
 app.include_router(vehicle_router, prefix="/api/v1")
 app.include_router(oauth_router, prefix="/api/v1/oauth", tags=["oauth"])
@@ -187,8 +212,10 @@ app.include_router(booking_router, prefix="/api/v1")
 app.include_router(oem_integration_router, prefix="/api/v1")
 app.include_router(notification_router, prefix="/api/v1")
 app.include_router(notification_feed_router, prefix="/api/v1")
-app.include_router(conversation_router, prefix="/api/v1")
-app.include_router(quick_booking_router, prefix="/api/v1")
+# The client IP keys the demo account's chat limits (modules/demo_account).
+app.include_router(conversation_router, prefix="/api/v1", dependencies=[Depends(remember_client_ip)])
+app.include_router(quick_booking_router, prefix="/api/v1", dependencies=[Depends(remember_client_ip)])
+app.include_router(demo_account_router, prefix="/api/v1")
 app.include_router(conversation_workshop_router, prefix="/api/v1")
 app.include_router(conversation_ws_router, prefix="/api/v1")
 app.include_router(workshop_board_router, prefix="/api/v1")
@@ -321,6 +348,16 @@ async def quote_error_handler(request: Request, exc: QuoteError) -> JSONResponse
 async def follow_up_error_handler(request: Request, exc: FollowUpError) -> JSONResponse:
     """Post-service follow-up errors (us-041)."""
     return _domain_error_response(request, exc, follow_up_status_for)
+
+
+@app.exception_handler(DemoAccountError)
+async def demo_account_error_handler(request: Request, exc: DemoAccountError) -> JSONResponse:
+    """Demo account errors ("Dùng thử ngay"); DEMO_RATE_LIMITED carries Retry-After."""
+    response = _domain_error_response(request, exc, demo_account_status_for)
+    retry_after = getattr(exc, "retry_after_seconds", None)
+    if retry_after is not None:
+        response.headers["Retry-After"] = str(retry_after)
+    return response
 
 
 @app.exception_handler(QuickBookingError)

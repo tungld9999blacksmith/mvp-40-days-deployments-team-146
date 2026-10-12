@@ -71,13 +71,6 @@ async def test_orchestrator_uses_injected_graph_loader_and_trusted_identity():
     assert caller["ctx"].source_message_id == message_id
     assert caller["ctx"].operation_key == "request-1"
 
-    runner.calls.clear()
-    await anext(orchestrator.confirm_booking_turn(conversation_id, 42, True, vehicle_id))
-    assert runner.calls[0][0].resume == {"confirmed": True}
-    assert runner.calls[0][1]["configurable"]["thread_id"] == str(conversation_id)
-    loader.assert_awaited_once()
-
-
 @pytest.mark.asyncio
 async def test_stream_failure_never_reexecutes_the_graph():
     runner = EventGraph([], error=RuntimeError("Stream interrupted after side effect"))

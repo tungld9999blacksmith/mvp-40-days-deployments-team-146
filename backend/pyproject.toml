@@ -66,6 +66,18 @@ dependencies = [
     "structlog>=26.1.0",
     # Booking ticket QR image (us-053 API-BT-02)
     "segno>=1.6.0",
+    # Observability (OTel). Pinned to one release line: SDK 1.45.0 <-> instrumentation 0.66b0
+    # (chromadb / google-api-core already pull in this SDK). Bump them together.
+    "opentelemetry-api==1.45.0",
+    "opentelemetry-sdk==1.45.0",
+    "opentelemetry-exporter-otlp-proto-http==1.45.0",
+    "opentelemetry-instrumentation-fastapi==0.66b0",
+    "opentelemetry-instrumentation-sqlalchemy==0.66b0",
+    "opentelemetry-instrumentation-redis==0.66b0",
+    "opentelemetry-instrumentation-httpx==0.66b0",
+    "opentelemetry-instrumentation-celery==0.66b0",
+    "opentelemetry-instrumentation-requests==0.66b0",
+    "opentelemetry-instrumentation-logging==0.66b0",
 ]
 
 [dependency-groups]

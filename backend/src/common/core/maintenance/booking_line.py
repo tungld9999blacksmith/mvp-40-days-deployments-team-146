@@ -117,6 +117,8 @@ class BookingLine(SQLModel, table=True):
     # When the owner was last asked to decide (proposed, edited, price raised, disputed);
     # the workshop calls the owner once OWNER_REPLY_SLA has passed without an answer.
     asked_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
+    # When the workshop owner was emailed that the owner has not answered; one alert per ``asked_at``.
+    workshop_alerted_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))
     version: int = Field(default=1, sa_column=Column(Integer, nullable=False, server_default="1"))
 
     created_at: datetime = Field(sa_column=Column(DateTime(timezone=True), server_default=func.now(), nullable=False))

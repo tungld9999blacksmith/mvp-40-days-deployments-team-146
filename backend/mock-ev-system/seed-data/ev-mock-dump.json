@@ -56,6 +56,46 @@
         "model_id": "MDL-07",
         "battery_capacity_kwh": 123.0,
         "production_year": 2023
+      },
+      {
+        "model_name": "VF Wild",
+        "trim": "Plus",
+        "motor_power_kw": 300.0,
+        "model_id": "MDL-08",
+        "battery_capacity_kwh": 100.0,
+        "production_year": 2026
+      },
+      {
+        "model_name": "VF3",
+        "trim": "Eco",
+        "motor_power_kw": 30.0,
+        "model_id": "MDL-09",
+        "battery_capacity_kwh": 18.64,
+        "production_year": 2024
+      },
+      {
+        "model_name": "VF2",
+        "trim": "Eco",
+        "motor_power_kw": 40.0,
+        "model_id": "MDL-10",
+        "battery_capacity_kwh": 25.0,
+        "production_year": 2026
+      },
+      {
+        "model_name": "VF7",
+        "trim": "Plus",
+        "motor_power_kw": 260.0,
+        "model_id": "MDL-11",
+        "battery_capacity_kwh": 75.3,
+        "production_year": 2024
+      },
+      {
+        "model_name": "VF9",
+        "trim": "Eco",
+        "motor_power_kw": 300.0,
+        "model_id": "MDL-12",
+        "battery_capacity_kwh": 123.0,
+        "production_year": 2023
       }
     ],
     "owners": [
@@ -1515,6 +1555,166 @@
         "component": "electronics",
         "policy_id": "WP-028",
         "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-08",
+        "duration_months": 96,
+        "terms_description": "Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.",
+        "component": "battery",
+        "policy_id": "WP-029",
+        "km_limit": 160000
+      },
+      {
+        "model_id": "MDL-08",
+        "duration_months": 60,
+        "terms_description": "Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.",
+        "component": "motor",
+        "policy_id": "WP-030",
+        "km_limit": 120000
+      },
+      {
+        "model_id": "MDL-08",
+        "duration_months": 36,
+        "terms_description": "Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.",
+        "component": "chassis",
+        "policy_id": "WP-031",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-08",
+        "duration_months": 36,
+        "terms_description": "Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.",
+        "component": "electronics",
+        "policy_id": "WP-032",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-09",
+        "duration_months": 96,
+        "terms_description": "Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.",
+        "component": "battery",
+        "policy_id": "WP-033",
+        "km_limit": 160000
+      },
+      {
+        "model_id": "MDL-09",
+        "duration_months": 60,
+        "terms_description": "Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.",
+        "component": "motor",
+        "policy_id": "WP-034",
+        "km_limit": 120000
+      },
+      {
+        "model_id": "MDL-09",
+        "duration_months": 36,
+        "terms_description": "Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.",
+        "component": "chassis",
+        "policy_id": "WP-035",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-09",
+        "duration_months": 36,
+        "terms_description": "Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.",
+        "component": "electronics",
+        "policy_id": "WP-036",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-10",
+        "duration_months": 96,
+        "terms_description": "Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.",
+        "component": "battery",
+        "policy_id": "WP-037",
+        "km_limit": 160000
+      },
+      {
+        "model_id": "MDL-10",
+        "duration_months": 60,
+        "terms_description": "Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.",
+        "component": "motor",
+        "policy_id": "WP-038",
+        "km_limit": 120000
+      },
+      {
+        "model_id": "MDL-10",
+        "duration_months": 36,
+        "terms_description": "Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.",
+        "component": "chassis",
+        "policy_id": "WP-039",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-10",
+        "duration_months": 36,
+        "terms_description": "Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.",
+        "component": "electronics",
+        "policy_id": "WP-040",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-11",
+        "duration_months": 96,
+        "terms_description": "Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.",
+        "component": "battery",
+        "policy_id": "WP-041",
+        "km_limit": 160000
+      },
+      {
+        "model_id": "MDL-11",
+        "duration_months": 60,
+        "terms_description": "Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.",
+        "component": "motor",
+        "policy_id": "WP-042",
+        "km_limit": 120000
+      },
+      {
+        "model_id": "MDL-11",
+        "duration_months": 36,
+        "terms_description": "Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.",
+        "component": "chassis",
+        "policy_id": "WP-043",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-11",
+        "duration_months": 36,
+        "terms_description": "Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.",
+        "component": "electronics",
+        "policy_id": "WP-044",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-12",
+        "duration_months": 96,
+        "terms_description": "Pin lithium-ion: bảo hành 8 năm hoặc 160.000km (tùy điều kiện nào đến trước). Không áp dụng nếu pin bị hư do va đập, ngập nước, hoặc tự ý can thiệp.",
+        "component": "battery",
+        "policy_id": "WP-045",
+        "km_limit": 160000
+      },
+      {
+        "model_id": "MDL-12",
+        "duration_months": 60,
+        "terms_description": "Động cơ điện: bảo hành 5 năm hoặc 120.000km. Không bao gồm hao mòn tự nhiên của bạc đạn.",
+        "component": "motor",
+        "policy_id": "WP-046",
+        "km_limit": 120000
+      },
+      {
+        "model_id": "MDL-12",
+        "duration_months": 36,
+        "terms_description": "Khung gầm: bảo hành 3 năm hoặc 100.000km. Không áp dụng cho hư hỏng do tai nạn.",
+        "component": "chassis",
+        "policy_id": "WP-047",
+        "km_limit": 100000
+      },
+      {
+        "model_id": "MDL-12",
+        "duration_months": 36,
+        "terms_description": "Hệ thống điện tử (màn hình, ADAS, ECU): bảo hành 3 năm hoặc 100.000km.",
+        "component": "electronics",
+        "policy_id": "WP-048",
+        "km_limit": 100000
       }
     ],
     "warranties": [
@@ -2853,6 +3053,181 @@
         "milestone_km": 75000,
         "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
         "schedule_id": "MS-035",
+        "milestone_months": 60
+      },
+      {
+        "model_id": "MDL-08",
+        "milestone_km": 15000,
+        "description": "Bảo dưỡng định kỳ 15.000km / 12 tháng",
+        "schedule_id": "MS-036",
+        "milestone_months": 12
+      },
+      {
+        "model_id": "MDL-08",
+        "milestone_km": 30000,
+        "description": "Bảo dưỡng định kỳ 30.000km / 24 tháng",
+        "schedule_id": "MS-037",
+        "milestone_months": 24
+      },
+      {
+        "model_id": "MDL-08",
+        "milestone_km": 45000,
+        "description": "Bảo dưỡng lớn 45.000km / 36 tháng",
+        "schedule_id": "MS-038",
+        "milestone_months": 36
+      },
+      {
+        "model_id": "MDL-08",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 48 tháng",
+        "schedule_id": "MS-039",
+        "milestone_months": 48
+      },
+      {
+        "model_id": "MDL-08",
+        "milestone_km": 75000,
+        "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
+        "schedule_id": "MS-040",
+        "milestone_months": 60
+      },
+      {
+        "model_id": "MDL-09",
+        "milestone_km": 15000,
+        "description": "Bảo dưỡng định kỳ 15.000km / 12 tháng",
+        "schedule_id": "MS-041",
+        "milestone_months": 12
+      },
+      {
+        "model_id": "MDL-09",
+        "milestone_km": 30000,
+        "description": "Bảo dưỡng định kỳ 30.000km / 24 tháng",
+        "schedule_id": "MS-042",
+        "milestone_months": 24
+      },
+      {
+        "model_id": "MDL-09",
+        "milestone_km": 45000,
+        "description": "Bảo dưỡng lớn 45.000km / 36 tháng",
+        "schedule_id": "MS-043",
+        "milestone_months": 36
+      },
+      {
+        "model_id": "MDL-09",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 48 tháng",
+        "schedule_id": "MS-044",
+        "milestone_months": 48
+      },
+      {
+        "model_id": "MDL-09",
+        "milestone_km": 75000,
+        "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
+        "schedule_id": "MS-045",
+        "milestone_months": 60
+      },
+      {
+        "model_id": "MDL-10",
+        "milestone_km": 15000,
+        "description": "Bảo dưỡng định kỳ 15.000km / 12 tháng",
+        "schedule_id": "MS-046",
+        "milestone_months": 12
+      },
+      {
+        "model_id": "MDL-10",
+        "milestone_km": 30000,
+        "description": "Bảo dưỡng định kỳ 30.000km / 24 tháng",
+        "schedule_id": "MS-047",
+        "milestone_months": 24
+      },
+      {
+        "model_id": "MDL-10",
+        "milestone_km": 45000,
+        "description": "Bảo dưỡng lớn 45.000km / 36 tháng",
+        "schedule_id": "MS-048",
+        "milestone_months": 36
+      },
+      {
+        "model_id": "MDL-10",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 48 tháng",
+        "schedule_id": "MS-049",
+        "milestone_months": 48
+      },
+      {
+        "model_id": "MDL-10",
+        "milestone_km": 75000,
+        "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
+        "schedule_id": "MS-050",
+        "milestone_months": 60
+      },
+      {
+        "model_id": "MDL-11",
+        "milestone_km": 15000,
+        "description": "Bảo dưỡng định kỳ 15.000km / 12 tháng",
+        "schedule_id": "MS-051",
+        "milestone_months": 12
+      },
+      {
+        "model_id": "MDL-11",
+        "milestone_km": 30000,
+        "description": "Bảo dưỡng định kỳ 30.000km / 24 tháng",
+        "schedule_id": "MS-052",
+        "milestone_months": 24
+      },
+      {
+        "model_id": "MDL-11",
+        "milestone_km": 45000,
+        "description": "Bảo dưỡng lớn 45.000km / 36 tháng",
+        "schedule_id": "MS-053",
+        "milestone_months": 36
+      },
+      {
+        "model_id": "MDL-11",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 48 tháng",
+        "schedule_id": "MS-054",
+        "milestone_months": 48
+      },
+      {
+        "model_id": "MDL-11",
+        "milestone_km": 75000,
+        "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
+        "schedule_id": "MS-055",
+        "milestone_months": 60
+      },
+      {
+        "model_id": "MDL-12",
+        "milestone_km": 15000,
+        "description": "Bảo dưỡng định kỳ 15.000km / 12 tháng",
+        "schedule_id": "MS-056",
+        "milestone_months": 12
+      },
+      {
+        "model_id": "MDL-12",
+        "milestone_km": 30000,
+        "description": "Bảo dưỡng định kỳ 30.000km / 24 tháng",
+        "schedule_id": "MS-057",
+        "milestone_months": 24
+      },
+      {
+        "model_id": "MDL-12",
+        "milestone_km": 45000,
+        "description": "Bảo dưỡng lớn 45.000km / 36 tháng",
+        "schedule_id": "MS-058",
+        "milestone_months": 36
+      },
+      {
+        "model_id": "MDL-12",
+        "milestone_km": 60000,
+        "description": "Bảo dưỡng lớn 60.000km / 48 tháng",
+        "schedule_id": "MS-059",
+        "milestone_months": 48
+      },
+      {
+        "model_id": "MDL-12",
+        "milestone_km": 75000,
+        "description": "Bảo dưỡng toàn diện 75.000km / 60 tháng",
+        "schedule_id": "MS-060",
         "milestone_months": 60
       }
     ],

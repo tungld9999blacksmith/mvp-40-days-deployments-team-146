@@ -55,6 +55,8 @@ export interface BookingSummaryCardProps {
   onEdit: () => void
   onCancel: () => void
   onRecheck: () => void
+  /** The booking wizard's rail shows workshop, time, vehicle and items from xl up: hide them here there. */
+  detailsInRail?: boolean
 }
 
 /** Workshop name with its address underneath, right-aligned inside an InfoRow. */
@@ -92,14 +94,16 @@ export default function BookingSummaryCard(props: BookingSummaryCardProps) {
   const twoTier = props.pricingFlow === 'two_tier'
   const left = useSecondsLeft(tokenExpiresAt)
   const expired = left <= 0
+  const railed = props.detailsInRail ? 'xl:hidden' : undefined
 
   return (
     <Card className="space-y-5">
       <div>
         <CardHeader title="Thẻ tóm tắt" icon={<CalendarClock className="w-4 h-4 text-muted" />} />
-        <InfoRow label="Xưởng" value={<WorkshopValue name={workshop.name} address={workshop.address} />} />
-        <InfoRow label="Thời gian" value={`${slotLabel(timeSlot)} · ${formatLongDay(date)}`} />
+        <InfoRow label="Xưởng" value={<WorkshopValue name={workshop.name} address={workshop.address} />} className={railed} />
+        <InfoRow label="Thời gian" value={`${slotLabel(timeSlot)} · ${formatLongDay(date)}`} className={railed} />
         <InfoRow
+          className={railed}
           label="Xe"
           value={
             <span className="inline-flex items-center gap-1.5">
@@ -108,7 +112,7 @@ export default function BookingSummaryCard(props: BookingSummaryCardProps) {
             </span>
           }
         />
-        {odoMilestone !== null && <InfoRow label="Mốc bảo dưỡng" value={formatKm(odoMilestone)} />}
+        {odoMilestone !== null && <InfoRow label="Mốc bảo dưỡng" value={formatKm(odoMilestone)} className={railed} />}
         {!twoTier && (
         <InfoRow
           label="Báo giá"
@@ -147,7 +151,7 @@ export default function BookingSummaryCard(props: BookingSummaryCardProps) {
       </div>
 
       {items.length > 0 && (
-        <div>
+        <div className={railed}>
           <p className="text-[13px] font-semibold text-muted mb-2 flex items-center gap-1.5">
             <Wrench className="w-3.5 h-3.5" />
             Hạng mục của mốc

@@ -635,6 +635,7 @@ class BookingService:
                     odo_milestone=_milestone_from_ref(payload.milestone_ref),
                     quote_id=payload.quote_id,
                     receipt=receipt,
+                    source_reminder_id=payload.source_reminder_id,
                 )
                 # The DB receipt remains authoritative even when Redis cleanup
                 # or the HTTP response fails after commit.
@@ -677,6 +678,9 @@ class BookingService:
         source_message_id: UUID | None = None,
         quote_id: UUID | None = None,
         receipt: BookingRequest | None = None,
+        source_reminder_id: UUID | None = None,
+        maintenance_package_code: str | None = None,
+        selected_item_codes: set[str] | None = None,
     ) -> schemas.BookingOut:
         """Book a slot the caller already validated (card token, or a chat proposal — us-061 BR-1510).
 
@@ -692,6 +696,21 @@ class BookingService:
         quote = (
             await self._read_in_threadpool(self._validate_quote, quote_id, vehicle, workshop_id) if quote_id else None
         )
+        if source_reminder_id:
+            from src.modules.notification.booking_attribution import eligible_reminder
+
+            origin = await self._read_in_threadpool(
+                eligible_reminder,
+                self._session,
+                user.user_id,
+                vehicle.id,
+                odo_milestone,
+                now_vn(),
+                source_reminder_id,
+                within_window=False,
+            )
+            if origin is None:
+                raise errors.BookingError("Reminder context is unavailable.", code="INVALID_REMINDER_CONTEXT")
         return await self._create_for_vehicle(
             user,
             vehicle,
@@ -703,6 +722,9 @@ class BookingService:
             source_message_id=source_message_id,
             quote=quote,
             receipt=receipt,
+            source_reminder_id=source_reminder_id,
+            maintenance_package_code=maintenance_package_code,
+            selected_item_codes=selected_item_codes,
         )
 
     def _validated_slot(self, user, user_vehicle_id, workshop_id, d, t):
@@ -749,6 +771,9 @@ class BookingService:
         source_message_id: UUID | None = None,
         quote: Quote | None = None,
         receipt: BookingRequest | None = None,
+        source_reminder_id: UUID | None = None,
+        maintenance_package_code: str | None = None,
+        selected_item_codes: set[str] | None = None,
     ) -> schemas.BookingOut:
         """BR-013 + BR-001: vehicle lock, then slot lock (fixed order, no deadlock).
 
@@ -774,6 +799,9 @@ class BookingService:
                             source_message_id=source_message_id,
                             quote=quote,
                             receipt=receipt,
+                            source_reminder_id=source_reminder_id,
+                            maintenance_package_code=maintenance_package_code,
+                            selected_item_codes=selected_item_codes,
                         )
                 except LockAcquireError as exc:
                     raise errors.SlotFullError(
@@ -808,6 +836,9 @@ class BookingService:
         source_message_id: UUID | None = None,
         quote: Quote | None = None,
         receipt: BookingRequest | None = None,
+        source_reminder_id: UUID | None = None,
+        maintenance_package_code: str | None = None,
+        selected_item_codes: set[str] | None = None,
     ) -> schemas.BookingOut:
         _, available = self._capacity(workshop, d, t)
         if not available:
@@ -815,6 +846,9 @@ class BookingService:
 
         now = now_vn()
         two_tier = self._config.pricing_flow == PricingFlow.TWO_TIER
+        package_selected = maintenance_package_code is not None or selected_item_codes is not None
+        if package_selected and (maintenance_package_code is None or not selected_item_codes):
+            raise errors.MaintenancePackageChangedError()
         if odo_milestone is None and quote is not None:
             odo_milestone = quote.odo_milestone
         booking = Booking(
@@ -830,7 +864,12 @@ class BookingService:
             odo_milestone=odo_milestone,
             source_message_id=source_message_id,
             # Fixed at creation (D7): turning QUOTE_FLOW off later never changes this booking.
-            pricing_flow=PricingFlow.TWO_TIER if quote is None and two_tier else PricingFlow.LEGACY,
+            # A selected optimized package must snapshot its exact scope into
+            # booking lines even while the global rollout remains in LEGACY.
+            pricing_flow=(
+                PricingFlow.TWO_TIER if quote is None and (two_tier or package_selected) else PricingFlow.LEGACY
+            ),
+            maintenance_package_code=maintenance_package_code,
         )
         self._session.add(booking)
         machine = BookingStateMachine(self._session)
@@ -840,9 +879,17 @@ class BookingService:
                 receipt.booking_id = booking.id
                 self._session.add(receipt)
             machine.record_created(booking, Actor.vehicle_owner(user.user_id), source)
+            from src.modules.notification.booking_attribution import stage_booking_origin
+
+            stage_booking_origin(self._session, booking, now, source_reminder_id)
+            from src.modules.notification.scheduled_delivery import cancel_for_booking
+
+            cancel_for_booking(self._session, booking, now)
             if booking.pricing_flow == PricingFlow.TWO_TIER:
                 # Tier 1 in the same transaction: a failing estimate rolls the booking back.
-                BookingLineService(self._session).snapshot_package(booking, vehicle, workshop)
+                BookingLineService(self._session).snapshot_package(
+                    booking, vehicle, workshop, selected_item_codes=selected_item_codes
+                )
             if workshop.booking_confirmation_mode == BookingConfirmationMode.AUTO:
                 machine.transition(
                     booking,
@@ -879,6 +926,7 @@ class BookingService:
             qr_url=qr_url(booking.id) if confirmed else None,
             estimated_cost=booking.estimated_cost,
             quote_id=self._session.exec(select(Quote.id).where(Quote.booking_id == booking.id)).first(),
+            maintenance_package_code=booking.maintenance_package_code,
         )
 
     # ── API-BK-04 cancel hold (BR-010) ──────────────────────────────────

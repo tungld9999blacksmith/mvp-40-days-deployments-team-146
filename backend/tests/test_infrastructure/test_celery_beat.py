@@ -29,3 +29,10 @@ def reload_beat(monkeypatch):
 )
 def test_oem_sync_beat_follows_the_sync_mode(reload_beat, app_env, mode, scheduled):
     assert ("oem-sync-all-vehicles" in reload_beat(app_env, mode)) is scheduled
+
+
+def test_dispatcher_is_15_minute_queue_tick_while_evaluator_stays_daily(reload_beat):
+    schedule = reload_beat("development", "oem")
+    assert schedule["maintenance-delivery-dispatch"] == {"task": "reminder.dispatch_due", "schedule": 900.0}
+    assert schedule["maintenance-reminders"]["task"] == "reminder.send_all"
+    assert schedule["maintenance-email-retries"]["schedule"] == 60.0

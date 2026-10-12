@@ -32,7 +32,7 @@ function captions(context) {
       if (!el) {
         el = document.createElement('div')
         el.id = '__demo_caption'
-        el.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:2147483647;pointer-events:none;max-width:84%;display:flex;gap:12px;align-items:center;padding:12px 20px;border-radius:14px;background:rgba(17,24,32,.92);color:#EEF2F5;font:600 18px/1.4 "Be Vietnam Pro",system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.25)'
+        el.style.cssText = 'position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:2147483647;pointer-events:none;max-width:84%;display:flex;gap:12px;align-items:center;padding:12px 20px;border-radius:14px;background:rgba(17,24,32,.92);color:#EEF2F5;font:600 18px/1.4 "Inter",system-ui,sans-serif;box-shadow:0 8px 28px rgba(0,0,0,.25)'
         document.documentElement.appendChild(el)
       }
       const { step, text } = JSON.parse(raw)
@@ -56,8 +56,8 @@ async function caption(page, step, text) {
 async function card(page, title, lines, ms) {
   await page.evaluate(() => { try { localStorage.removeItem('__demoCaption') } catch { /* about:blank */ } })
   await page.setContent(`<!doctype html><html><head><meta charset="utf-8">
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>body{margin:0;height:100vh;display:grid;place-items:center;background:#111820;color:#EEF2F5;font-family:"Be Vietnam Pro",system-ui,sans-serif}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
+    <style>body{margin:0;height:100vh;display:grid;place-items:center;background:#111820;color:#EEF2F5;font-family:"Inter",system-ui,sans-serif}
     main{max-width:900px;padding:0 48px}.bolt{color:#19C37D;font-weight:800;letter-spacing:.08em;font-size:15px;text-transform:uppercase}
     h1{font-size:46px;font-weight:800;letter-spacing:-.025em;margin:14px 0 22px;line-height:1.15}
     li{font-size:21px;color:#C9D1D9;margin:10px 0;line-height:1.45}ul{padding-left:24px;margin:0}</style></head>

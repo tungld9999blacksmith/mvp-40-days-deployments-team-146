@@ -1,5 +1,6 @@
 import { NETWORK_ERROR, TIMEOUT_ERROR } from '@/shared/api/client'
 import type { LoginError, SessionNotice } from './context/AuthContext'
+import { demoLoginErrorMessage } from './demoAccount'
 
 /** Login errors rendered as the blocking panel SCR-103 / SCR-303 (US-005 FE §4.6). */
 const BLOCKING: Record<string, { title: string; message: string }> = {
@@ -39,6 +40,7 @@ export function inlineLoginMessage(error: LoginError | null): string | null {
   if (error.code === NETWORK_ERROR || error.code === TIMEOUT_ERROR || error.code === 'auth/network-request-failed') {
     return 'Không có kết nối mạng. Vui lòng thử lại.'
   }
+  if (error.code.startsWith('DEMO_')) return demoLoginErrorMessage(error.code)
   if (error.code.startsWith('auth/') || error.code === 'SIGN_IN_FAILED') {
     return 'Đăng nhập Google không thành công. Vui lòng thử lại.'
   }

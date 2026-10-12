@@ -6,6 +6,7 @@ import Button from '@/shared/ui/Button'
 import { Card } from '@/shared/ui/Card'
 import Spinner from '@/shared/ui/Spinner'
 import { EmptyState, ErrorState } from '@/shared/ui/States'
+import { page } from '@/shared/ui/page'
 import { getPortal } from '@/features/auth/portal'
 import { resolveBookingCode } from '../api'
 
@@ -39,7 +40,7 @@ export default function BookingByCode() {
   }, [bookingCode, attempt, navigate])
 
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-xl mx-auto">
+    <div className={page('ticket')}>
       <Card>
         {error && isApiError(error, 'BOOKING_NOT_FOUND') ? (
           <EmptyState

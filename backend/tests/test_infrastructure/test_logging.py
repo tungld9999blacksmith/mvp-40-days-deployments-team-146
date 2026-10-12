@@ -205,3 +205,17 @@ def test_parse_file_formats():
     assert parse_file_formats(" log , CSV,log ") == ("log", "csv")
     with pytest.raises(ValueError):
         parse_file_formats("xml")
+
+
+def test_unwritable_log_dir_keeps_stdout_and_warns_once(tmp_path, monkeypatch):
+    """Railway: the `/app/logs` volume belongs to root and the app runs as uid 1000."""
+    import src.infrastructure.logging.config as config
+
+    monkeypatch.setattr(config.os, "access", lambda path, mode: False)
+    buf = io.StringIO()
+    configure_logging(stream=buf, file_formats="log", log_dir=tmp_path)
+    get_logger("x").info("hello")
+    lines = [json.loads(line) for line in buf.getvalue().splitlines()]
+    assert [line["event"] for line in lines] == ["logging.file_export_disabled", "hello"]
+    assert lines[0]["log_dir"] == str(tmp_path)
+    assert list(tmp_path.iterdir()) == []

@@ -10,6 +10,7 @@ import Skeleton, { SkeletonCard } from '@/shared/ui/Skeleton'
 import Spinner from '@/shared/ui/Spinner'
 import { EmptyState, ErrorState, Notice } from '@/shared/ui/States'
 import { useToast } from '@/shared/ui/Toast'
+import { page } from '@/shared/ui/page'
 import { formatKm, formatLicensePlate, formatRelativeDay } from '@/shared/utils/format'
 import { track } from '@/shared/utils/track'
 import VehicleGate from '@/features/vehicles/components/VehicleGate'
@@ -319,7 +320,7 @@ function EstimateView({ vehicle }: { vehicle: VehicleSummary }) {
 /** SCR-1001 — Dự toán chi phí bảo dưỡng (`/estimate?odoMilestone=&workshopId=`). */
 export default function Estimate() {
   return (
-    <div className="p-4 sm:p-6 xl:p-8">
+    <div className={page()}>
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">Chi phí bảo dưỡng</h1>
         <p className="text-muted mt-1">Xem hạng mục và chi phí ước tính của một mốc tại xưởng bạn chọn.</p>

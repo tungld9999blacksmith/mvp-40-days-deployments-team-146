@@ -2,6 +2,7 @@
 
 from sqlmodel import Session, select
 
+from src import config as app_config
 from src.common.core.maintenance import Reminder
 from src.common.core.notification import ReminderDelivery
 from src.common.core.notification.email import EmailOutbox
@@ -10,6 +11,7 @@ from src.modules.user_vehicle.errors import VehicleNotFoundError
 
 from .email_service import has_milestone_booking
 from .errors import NotificationError
+from .preferences import load_preferences
 
 
 class ReminderContextService:
@@ -40,21 +42,32 @@ class ReminderContextService:
                     "attempts": row.attempts,
                     "errorCode": row.error_code,
                     "sentAt": row.sent_at.isoformat() if row.sent_at else None,
+                    "nextEligibleSendAt": row.next_eligible_send_at.isoformat() if row.next_eligible_send_at else None,
                     "mode": outbox.mode if outbox else None,
                 }
             )
         # Historical rows have no snapshot. Do not present today's numbers as old facts.
-        details = reminder.details or {
-            "reason": "TIME",
-            "dueDate": "",
-            "monthMilestone": None,
-            "remainingKm": None,
-            "remainingDays": None,
-            "odometerKm": None,
-            "odometerRecordedAt": None,
-            "odometerStale": False,
-            "items": [],
-        }
+        details = (
+            dict(reminder.details)
+            if reminder.details
+            else {
+                "reason": "TIME",
+                "dueDate": "",
+                "monthMilestone": None,
+                "remainingKm": None,
+                "remainingDays": None,
+                "odometerKm": None,
+                "odometerRecordedAt": None,
+                "odometerStale": False,
+                "items": [],
+            }
+        )
+        prefs = load_preferences(
+            self.db, user.user_id, default_lead_days=app_config.get_settings().reminder_default_lead_days
+        )
+        if not prefs.personalized_reminders_enabled or app_config.get_settings().personalized_reminders_mode == "off":
+            details.pop("personalization", None)
+            details.pop("triggerReasons", None)
         return {
             "reminderId": str(reminder.id),
             "userVehicleId": str(vehicle.id),

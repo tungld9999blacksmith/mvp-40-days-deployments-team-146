@@ -6,7 +6,9 @@ import { useCachedQuery } from '@/shared/hooks/useCachedQuery'
 import { Card } from '@/shared/ui/Card'
 import { ErrorState, Notice } from '@/shared/ui/States'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
+import { page } from '@/shared/ui/page'
 import { formatDate, formatKm } from '@/shared/utils/format'
+import UsageForecastCard from '@/features/vehicles/components/UsageForecastCard'
 
 const REASONS = { KM: 'Theo số km', TIME: 'Theo thời gian', BOTH: 'Theo số km và thời gian' }
 const DELIVERY_TEXT: Record<string, string> = {
@@ -37,13 +39,18 @@ export default function ReminderDetail() {
   const actions = reminderActions(context)
   const current = context.currentStatus.nextMilestone
   return (
-    <div className="p-4 sm:p-6 xl:p-8 max-w-3xl space-y-5">
+    <div className={`${page('reading')} space-y-5`}>
       <Link to="/notifications" className="text-sm text-emerald">← Thông báo</Link>
       <h1 className="text-2xl font-bold text-foreground">Lời nhắc bảo dưỡng</h1>
       {context.snapshotAvailable === false && <Notice>Lời nhắc cũ chưa lưu dữ liệu tại thời điểm tạo. Tình trạng hiện tại được hiển thị bên dưới.</Notice>}
       {context.resolved && <Notice>{RESOLUTION_TEXT[context.resolutionReason ?? ''] ?? 'Lời nhắc đã đóng.'}</Notice>}
       <Card className="p-6 space-y-3">
         <h2 className="font-semibold">Dữ liệu dùng cho lời nhắc</h2>
+        {details.triggerReasons?.includes('PREDICTED_KM_WINDOW') && <p className="text-sm text-emerald">Nhắc sớm theo mức sử dụng xe và số ngày nhắc trước đã chọn.</p>}
+        {details.personalizationDeleted && <Notice>Dữ liệu dự báo của lời nhắc này đã được xoá.</Notice>}
+        <UsageForecastCard forecast={details.personalization} historical />
+        {details.trip && <p className="text-sm text-muted">Nhắc trước chuyến đi bạn khai báo ngày {formatDate(details.trip.departureDate)}, tổng khoảng {formatKm(details.trip.distanceKm)}. Quãng đường dự kiến chưa phải ODO đã ghi nhận.</p>}
+        {details.tripDeleted && <Notice>Dữ liệu chuyến đi của lời nhắc này đã được xoá.</Notice>}
         <p>Mốc {formatKm(context.odoMilestoneKm)}{details.monthMilestone !== null ? ` / ${details.monthMilestone} tháng` : ''}{context.snapshotAvailable !== false ? ` · ${REASONS[details.reason]}` : ''}</p>
         {context.snapshotAvailable !== false && <p className="text-sm text-muted">Hạn theo thời gian: {formatDate(details.dueDate)}.</p>}
         <p className="text-sm text-muted">
@@ -58,13 +65,14 @@ export default function ReminderDetail() {
         <h2 className="font-semibold">Trạng thái gửi lời nhắc</h2>
         {context.deliveries.map(delivery => <p key={delivery.id} className="text-sm text-muted">
           {delivery.mode === 'mock' || delivery.deliveryState === 'mock' ? 'Thư mô phỏng' : delivery.mode === 'resend_test' ? 'Email thử thật [DEMO]' : delivery.channel ?? 'Email'}: {(delivery.mode === 'mock' || delivery.deliveryState === 'mock') && delivery.status === 'SENT' ? 'Đã mô phỏng' : DELIVERY_TEXT[delivery.deliveryState ?? ''] ?? (delivery.status === 'SENT' ? 'Đã tiếp nhận' : 'Chưa hoàn tất')} · {delivery.attempts} lần thử
+          {delivery.nextEligibleSendAt && delivery.status !== 'SENT' && <span className="block">Có thể gửi từ: {new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date(delivery.nextEligibleSendAt))} (giờ Việt Nam)</span>}
         </p>)}
       </Card>}
       <Card className="p-6 space-y-3">
         <h2 className="font-semibold">Tình trạng hiện tại</h2>
         <p className="text-sm text-muted">{current ? `Mốc tiếp theo: ${formatKm(current.odoMilestoneKm)} · hạn ${formatDate(current.dueDate)}.` : 'Chưa đủ dữ liệu để xác định mốc hiện tại.'}</p>
         <div className="flex flex-wrap gap-3">
-          {actions.booking && <Link to={actions.booking} className="rounded-xl bg-emerald text-white px-4 py-2 text-sm font-semibold">Đặt lịch theo mốc hiện tại</Link>}
+          {actions.booking && <Link to={actions.booking} className="rounded-xl bg-brand text-on-brand px-4 py-2 text-sm font-semibold">Đặt lịch theo mốc hiện tại</Link>}
           {!actions.booking && (context.hasCurrentBooking || context.resolutionReason === 'HAS_BOOKING') && <Link to="/bookings" className="text-emerald text-sm py-2">Xem lịch hẹn</Link>}
           <Link to={actions.chat} className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-emerald">Hỏi trợ lý</Link>
         </div>

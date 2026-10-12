@@ -117,7 +117,14 @@ class BookingLineService:
         self._clock = clock
 
     # ── Tier 1: package lines at booking time (no commit) ───────────────
-    def snapshot_package(self, booking: Booking, vehicle: UserVehicle, workshop: Workshop) -> list[BookingLine]:
+    def snapshot_package(
+        self,
+        booking: Booking,
+        vehicle: UserVehicle,
+        workshop: Workshop,
+        *,
+        selected_item_codes: set[str] | None = None,
+    ) -> list[BookingLine]:
         """Copy the milestone estimate into PACKAGE lines, priced as of the booking date."""
         if booking.odo_milestone is None or not vehicle.external_model_id:
             return []
@@ -146,6 +153,13 @@ class BookingLineService:
         estimate = estimator.estimate(vehicle, (booking.odo_milestone, rule.month_milestone), workshop)
         if estimate.status != EstimateStatus.READY.value:
             return []
+        if selected_item_codes is not None:
+            available_codes = {item.item_code for item in estimate.items}
+            if not selected_item_codes or not selected_item_codes.issubset(available_codes):
+                from src.modules.booking.errors import MaintenancePackageChangedError
+
+                raise MaintenancePackageChangedError()
+            estimate.items = [item for item in estimate.items if item.item_code in selected_item_codes]
         price_rows = estimator.effective_price_rows(
             workshop.id, vehicle.external_model_id, [i.item_code for i in estimate.items], booking.booking_date
         )
@@ -177,7 +191,7 @@ class BookingLineService:
             )
             self._db.add(line)
             lines.append(line)
-        booking.estimated_cost = estimate.chargeable_total
+        booking.estimated_cost = sum((item.price for item in estimate.items), Decimal(0))
         self._db.add(booking)
         self._db.flush()
         return lines

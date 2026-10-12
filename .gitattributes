@@ -1,0 +1,2 @@
+# Prompt texts are hashed byte for byte (versions.lock.json): keep LF on every checkout.
+backend/src/infrastructure/prompts/texts/* text eol=lf

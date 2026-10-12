@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom'
 import { Bot, CalendarClock, ChevronRight, ClipboardList, Sparkles } from 'lucide-react'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
 import { cn } from '@/shared/ui/cn'
+import { page } from '@/shared/ui/page'
 import { isApiError } from '@/shared/api/client'
 import { track } from '@/shared/utils/track'
+import { formatWeekdayDate } from '@/shared/utils/format'
 import { useAuth } from '@/features/auth/context/AuthContext'
 import MaintenanceStatusCard from '@/features/vehicles/components/MaintenanceStatusCard'
 import { VehicleSummaryCard } from '@/features/vehicles/components/VehicleCards'
@@ -22,16 +24,9 @@ const QUICK_ACTIONS = [
   { icon: ClipboardList, label: 'Lịch sử dịch vụ', sub: 'Các lần bảo dưỡng', to: '/history' },
 ]
 
-const TODAY_LABEL = new Intl.DateTimeFormat('vi-VN', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-  timeZone: 'Asia/Ho_Chi_Minh',
-})
-
 const SUGGESTED_QUESTIONS = [
   'Mốc bảo dưỡng tới của xe tôi cần làm gì?',
-  'Hạng mục nào được bảo hành miễn phí?',
+  'Gợi ý gói bảo dưỡng tối ưu cho xe của tôi',
   'Chính sách bảo hành pin thế nào?',
 ]
 
@@ -101,9 +96,9 @@ export default function Dashboard() {
   const { displayName } = useAuth()
 
   return (
-    <div className="p-4 sm:p-6 xl:p-8">
+    <div className={page()}>
       <div className="mb-8">
-        <p className="text-xs font-medium text-muted first-letter:uppercase">{TODAY_LABEL.format(new Date())}</p>
+        <p className="text-xs font-medium text-muted first-letter:uppercase">{formatWeekdayDate(new Date())}</p>
         <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
           Xin chào{displayName ? ', ' : ''}
           {displayName && <span>{displayName}</span>}

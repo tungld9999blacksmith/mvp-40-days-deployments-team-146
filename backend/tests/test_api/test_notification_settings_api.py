@@ -26,6 +26,115 @@ URL = "/api/v1/notification-settings"
 AUTH = {"Authorization": "Bearer x"}
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "method,payload",
+    [
+        ("PUT", {"remindersEnabled": False}),
+        ("PUT", {"personalizedRemindersEnabled": False}),
+        ("PUT", {"preferredSendTime": "19:00"}),
+        ("DELETE", None),
+    ],
+)
+async def test_shared_demo_cannot_change_personalization_or_schedule(api, owner, method, payload):
+    owner.is_demo = True
+    api.session.add(owner)
+    api.session.commit()
+    url = URL + "/personalization-data" if method == "DELETE" else URL
+    response = await api.client.request(method, url, json=payload, headers=AUTH)
+
+    assert response.status_code == 403
+    assert response.json()["error"]["code"] == "DEMO_READ_ONLY"
+    assert api.session.exec(select(UserNotificationSetting)).all() == []
+    assert api.session.exec(select(UserNotificationChannel)).all() == []
+
+
+@pytest.mark.asyncio
+async def test_owner_schedule_roundtrip_partial_patch_and_explicit_clear(api, owner):
+    initial = (await api.client.get(URL, headers=AUTH)).json()["data"]
+    assert initial["sendScheduleAvailable"] and initial["preferredSendTime"] is None
+    response = await api.client.put(
+        URL,
+        json={
+            "preferredSendTime": "19:00",
+            "quietHours": {"start": "22:00", "end": "07:00"},
+            "timezone": "Asia/Ho_Chi_Minh",
+        },
+        headers=AUTH,
+    )
+    assert response.status_code == 200
+    assert response.json()["data"]["quietHours"] == {"start": "22:00", "end": "07:00"}
+    changed = await api.client.put(URL, json={"reminderLeadDays": 5}, headers=AUTH)
+    assert changed.json()["data"]["preferredSendTime"] == "19:00"
+    cleared = await api.client.put(URL, json={"preferredSendTime": None, "quietHours": None}, headers=AUTH)
+    assert cleared.status_code == 200 and cleared.json()["data"]["quietHours"] is None
+    assert not cleared.json()["data"]["personalizedRemindersEnabled"]
+
+
+@pytest.mark.asyncio
+async def test_invalid_schedule_rejects_entire_update(api, owner):
+    response = await api.client.put(URL, json={"remindersEnabled": False, "preferredSendTime": "25:00"}, headers=AUTH)
+    assert response.status_code == 422
+    assert api.session.get(UserNotificationSetting, owner.user_id) is None
+
+
+@pytest.mark.asyncio
+async def test_schedule_is_owner_scoped(api, owner):
+    await api.client.put(URL, json={"preferredSendTime": "19:00"}, headers=AUTH)
+    other = add_owner(api.session, uid="p2-other", email="p2-other@example.com")
+    api.sign_in_as(other.firebase_uid)
+    assert (await api.client.get(URL, headers=AUTH)).json()["data"]["preferredSendTime"] is None
+
+
+@pytest.mark.asyncio
+async def test_personalization_requires_policy_and_preserves_other_settings(api, owner):
+    from src.modules.vehicle_usage.service import PERSONALIZATION_POLICY_VERSION
+
+    invalid = await api.client.put(URL, json={"personalizedRemindersEnabled": True}, headers=AUTH)
+    assert invalid.status_code == 400
+    assert api.session.get(UserNotificationSetting, owner.user_id) is None
+    response = await api.client.put(
+        URL,
+        json={
+            "personalizedRemindersEnabled": True,
+            "personalizationPolicyVersion": PERSONALIZATION_POLICY_VERSION,
+        },
+        headers=AUTH,
+    )
+    assert response.status_code == 200
+    assert response.json()["data"]["personalizedRemindersEnabled"] is True
+    assert response.json()["data"]["reminderLeadDays"] == 2
+    disabled = await api.client.put(URL, json={"remindersEnabled": False}, headers=AUTH)
+    assert disabled.json()["data"]["personalizedRemindersEnabled"] is True
+
+
+@pytest.mark.asyncio
+async def test_delete_personalization_is_owner_scoped_and_requires_active_owner(api, owner):
+    from src.modules.vehicle_usage.service import PERSONALIZATION_POLICY_VERSION
+
+    other = add_owner(api.session, uid="other-owner", email="other@example.com")
+    await api.client.put(
+        URL,
+        json={
+            "personalizedRemindersEnabled": True,
+            "personalizationPolicyVersion": PERSONALIZATION_POLICY_VERSION,
+        },
+        headers=AUTH,
+    )
+    api.sign_in_as(other.firebase_uid)
+    result = await api.client.delete(URL + "/personalization-data", headers=AUTH)
+    assert result.status_code == 200
+    assert api.session.get(UserNotificationSetting, owner.user_id).personalized_reminders_enabled
+    assert not api.session.get(UserNotificationSetting, other.user_id).personalized_reminders_enabled
+    api.sign_in_as("unregistered-owner")
+    assert (await api.client.delete(URL + "/personalization-data", headers=AUTH)).status_code == 404
+    other.onboarding_status = OnboardingStatus.ONBOARDING_IN_PROGRESS
+    api.session.add(other)
+    api.session.commit()
+    api.sign_in_as(other.firebase_uid)
+    assert (await api.client.delete(URL + "/personalization-data", headers=AUTH)).status_code == 403
+
+
 class _FakeAdapter(NotificationChannelAdapter):
     def __init__(self, channel: ReminderChannel) -> None:
         self.channel = channel
@@ -107,7 +216,12 @@ async def test_defaults_when_never_configured_ac509(api: _Api, owner):
             "available": False,
             "status": "COMING_SOON",
         }
-    assert _channel(data, "EMAIL") == {"channel": "EMAIL", "enabled": False, "available": True, "status": "NOT_CONNECTED"}
+    assert _channel(data, "EMAIL") == {
+        "channel": "EMAIL",
+        "enabled": False,
+        "available": True,
+        "status": "NOT_CONNECTED",
+    }
     assert data["emailTransport"] == "mock"
 
 

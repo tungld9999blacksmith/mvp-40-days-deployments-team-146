@@ -60,6 +60,14 @@ def update_notification_settings(
 feed_router = APIRouter(prefix="/notifications", tags=["notifications"])
 
 
+@router.delete("/personalization-data", response_model=schemas.NotificationSettingsEnvelope)
+def delete_personalization_data(
+    user: Annotated[VehicleUser, Depends(require_active_vehicle_owner)],
+    service: Annotated[NotificationSettingsService, Depends(get_notification_settings_service)],
+) -> schemas.NotificationSettingsEnvelope:
+    return schemas.NotificationSettingsEnvelope(data=service.delete_personalization_data(user))
+
+
 @feed_router.get(
     "",
     response_model=schemas.NotificationFeedEnvelope,

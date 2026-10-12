@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import AbstractContextManager
 from typing import Any
@@ -10,17 +9,16 @@ from uuid import UUID
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, RemoveMessage
 from langchain_core.runnables import RunnableConfig
-from langgraph.types import Command
 from sqlmodel import Session
 from starlette.concurrency import run_in_threadpool
 
+from ..infrastructure.observability import agent_callbacks, current_trace_ids, step
+from ..infrastructure.prompts import prompt_version
 from .context import AgentCtx
 from .conversation_guards import apply_output_guard, inspect_input
 from .graph import extract_text_from_content
 from .state import AgentState
-
-# Tắt tracing tự động nếu chưa cấu hình dự án LangSmith
-os.environ["LANGCHAIN_TRACING_V2"] = "false"
+from .telemetry import TurnRecorder, record_input_guard
 
 logger = logging.getLogger(__name__)
 
@@ -164,8 +162,19 @@ def _run_config(ctx: AgentCtx) -> RunnableConfig:
 
     Chủ xe và xe của phiên chat: tool đọc từ đây (``tools/_services.caller``), không nhận
     từ tham số do LLM sinh ra. ``thread_id`` là khóa checkpoint của LangGraph (HITL).
+    ``metadata`` travels with the run to LangSmith: ``otel_trace_id`` links the run
+    to the request's trace in Grafana.
     """
+    metadata: dict[str, str] = {}
+    if ctx.conversation_id:
+        metadata["conversation_id"] = str(ctx.conversation_id)
+    trace_ids = current_trace_ids()
+    if trace_ids:
+        metadata["otel_trace_id"] = trace_ids[0]
     return {
+        "metadata": metadata,
+        # Grafana-side spans of the model calls (LangSmith traces them natively).
+        "callbacks": agent_callbacks(),
         "configurable": {
             "ctx": ctx,
             "thread_id": str(ctx.conversation_id),
@@ -173,7 +182,7 @@ def _run_config(ctx: AgentCtx) -> RunnableConfig:
             "user_vehicle_id": str(ctx.vehicle_id) if ctx.vehicle_id else None,
             "conversation_id": str(ctx.conversation_id) if ctx.conversation_id else None,
             "source_message_id": str(ctx.source_message_id) if ctx.source_message_id else None,
-        }
+        },
     }
 
 
@@ -206,12 +215,68 @@ class AgentOrchestrator:
     ) -> AsyncIterator[dict[str, Any]]:
         """Thực thi một lượt hội thoại của Agent EV Care theo luồng ReAct.
 
+        The whole turn is one ``agent.turn``: the root LangSmith run (input guard,
+        LangGraph, tools, RAG nest under it) and one Grafana span with the outcome.
+
         Yields:
             - {"type": "tool_start", "tool": name, "input": args}: Bắt đầu gọi tool
             - {"type": "tool_end", "tool": name, "output": output}: Kết thúc gọi tool
             - {"type": "token", "delta": text}: Từng phần của câu trả lời stream về
             - {"type": "completed", "message_data": {...}}: Hoàn tất toàn bộ lượt
         """
+        recorder = TurnRecorder()
+        with step(
+            "agent.turn",
+            attributes={"agent.name": "customer", "conversation.id": str(conversation_id)},
+            inputs={"message": message},
+            # thread_id groups the turns of one conversation in LangSmith "Threads".
+            metadata={
+                "thread_id": str(conversation_id),
+                "conversation_id": str(conversation_id),
+                "source_message_id": str(source_message_id) if source_message_id else None,
+                # Names the system prompt version of the run, filterable in LangSmith.
+                "prompt_version": f"ev_care_base@v{prompt_version('ev_care_base')}",
+            },
+            tags=["agent", "chat"],
+        ) as current:
+            try:
+                async for event in self._run_turn(
+                    recorder,
+                    conversation_id=conversation_id,
+                    user_id=user_id,
+                    vehicle_id=vehicle_id,
+                    message=message,
+                    vehicle_context=vehicle_context,
+                    history_messages=history_messages,
+                    source_message_id=source_message_id,
+                    operation_key=operation_key,
+                    memory_summary=memory_summary,
+                    memory_preferences=memory_preferences,
+                ):
+                    if event.get("type") == "completed":
+                        recorder.completed(event["message_data"])
+                    yield event
+            except (asyncio.CancelledError, GeneratorExit):
+                recorder.cancelled()
+                raise
+            finally:
+                recorder.finish(current)
+
+    async def _run_turn(
+        self,
+        recorder: TurnRecorder,
+        *,
+        conversation_id: str | UUID,
+        user_id: int | str,
+        vehicle_id: str | UUID | None,
+        message: str,
+        vehicle_context: dict[str, Any] | None,
+        history_messages: list[BaseMessage] | None,
+        source_message_id: str | UUID | None,
+        operation_key: str | None,
+        memory_summary: dict[str, Any] | None,
+        memory_preferences: list[dict[str, Any]] | None,
+    ) -> AsyncIterator[dict[str, Any]]:
         # 1. Nạp trước ngữ cảnh xe (Pre-loaded Context)
         resolved_context = dict(vehicle_context or {})
         if not resolved_context and vehicle_id:
@@ -232,7 +297,9 @@ class AgentOrchestrator:
 
         # Input guard: log injection attempts / pasted PII for observability.
         if message:
-            input_report = inspect_input(message)
+            with step("agent.guard.input", attributes={"guard.stage": "input"}, inputs={"message": message}) as guard:
+                input_report = inspect_input(message)
+                record_input_guard(guard, input_report)
             if input_report.has_injection:
                 logger.warning("Input guard: possible prompt-injection in user turn.")
             if input_report.has_pii:
@@ -276,6 +343,7 @@ class AgentOrchestrator:
                 # A. Sự kiện Bắt đầu gọi Tool
                 if event_type == "on_tool_start":
                     tool_name = event.get("name", "")
+                    recorder.tool_started(tool_name)
                     if tool_name in {"get_due_maintenance", "estimate_service_cost", "find_workshops", "get_available_slots", "propose_booking", "search_ev_knowledge", "get_maintenance_schedule_rag", "get_warranty_policy_rag", "remember_preference", "forget_preference"}:
                         # Model tokens have not yet passed the terminal fact guard.
                         if not defer_business_tokens:
@@ -329,6 +397,7 @@ class AgentOrchestrator:
                 await _discard_thread(saver, conversation_id)
             raise
         except Exception as exc:
+            recorder.failed(exc)
             # Never run the turn again. Clear incomplete tool state; next turn
             # reconstructs committed user/assistant history with stable IDs.
             if saver is not None:
@@ -406,94 +475,6 @@ class AgentOrchestrator:
             await _checkpoint_call(self._graph.aupdate_state(config,
                 {"messages": remove, "memory_summary": summary_result["summary"]}, as_node="agent"))
 
-    async def confirm_booking_turn(
-        self,
-        conversation_id: str | UUID,
-        user_id: int | str,
-        confirmed: bool,
-        vehicle_id: str | UUID | None = None,
-        source_message_id: str | UUID | None = None,
-        operation_key: str | None = None,
-    ) -> AsyncIterator[dict[str, Any]]:
-        """Resume graph sau khi user xác nhận hoặc hủy đặt lịch (HITL).
-
-        Gọi hàm này khi frontend nhận được event 'hitl_required' và user đã bấm
-        "Xác nhận" hoặc "Hủy". Graph sẽ được resume từ checkpoint, tiếp tục
-        thực thi create_booking_draft (nếu confirmed=True) hoặc hủy (confirmed=False).
-
-        Yields cùng format event như run_agent_turn:
-            - {"type": "token", "delta": text}
-            - {"type": "tool_start", ...}, {"type": "tool_end", ...}
-            - {"type": "completed", "message_data": {...}}
-        """
-        agent_ctx = AgentCtx(
-            user_id=user_id,
-            vehicle_id=vehicle_id or "",
-            conversation_id=conversation_id,
-            source_message_id=source_message_id,
-            operation_key=operation_key,
-        )
-        run_config = _run_config(agent_ctx)
-
-        # Resume graph với quyết định của user
-        resume_command = Command(resume={"confirmed": confirmed})
-
-        accumulated_text = ""
-        citations: list[dict[str, Any]] = []
-
-        try:
-            async for event in self._graph.astream_events(resume_command, config=run_config, version="v2"):
-                event_type = event.get("event")
-
-                if event_type == "on_tool_start":
-                    yield {
-                        "type": "tool_start",
-                        "tool": event.get("name", ""),
-                        "input": event.get("data", {}).get("input", {}),
-                    }
-                elif event_type == "on_tool_end":
-                    yield {
-                        "type": "tool_end",
-                        "tool": event.get("name", ""),
-                        "output": event.get("data", {}).get("output", {}),
-                    }
-                elif event_type == "on_chat_model_stream":
-                    chunk = event.get("data", {}).get("chunk")
-                    if chunk and hasattr(chunk, "content"):
-                        delta = extract_text_from_content(chunk.content)
-                        if delta:
-                            accumulated_text += delta
-                            yield {"type": "token", "delta": delta}
-                elif event_type == "on_chain_end":
-                    output = event.get("data", {}).get("output")
-                    if isinstance(output, dict) and output.get("citations"):
-                        citations = output["citations"]
-
-        except Exception as exc:
-            logger.error("Lỗi khi resume HITL confirm_booking_turn: %s", exc, exc_info=True)
-            if not accumulated_text:
-                fallback_msg = (
-                    "Hệ thống gặp sự cố khi xử lý xác nhận. Vui lòng thử lại hoặc liên hệ hotline 1900 23 23 89."
-                )
-                accumulated_text = fallback_msg
-                yield {"type": "token", "delta": fallback_msg}
-
-        yield {
-            "type": "completed",
-            "message_data": _guarded_message_data(
-                accumulated_text,
-                citations,
-                {
-                    "conversation_id": str(conversation_id),
-                    "user_id": str(user_id),
-                    "vehicle_id": str(vehicle_id) if vehicle_id else None,
-                    "role": "assistant",
-                    "hitl_resolved": True,
-                    "confirmed": confirmed,
-                },
-            ),
-        }
-
 
 async def run_agent_turn(
     conversation_id: str | UUID,
@@ -521,23 +502,4 @@ async def run_agent_turn(
         yield event
 
 
-async def confirm_booking_turn(
-    conversation_id: str | UUID,
-    user_id: int | str,
-    confirmed: bool,
-    vehicle_id: str | UUID | None = None,
-    source_message_id: str | UUID | None = None,
-    operation_key: str | None = None,
-) -> AsyncIterator[dict[str, Any]]:
-    """Resume using the same graph instance as the original turn."""
-    from .dependency import get_agent_orchestrator
-
-    async for event in get_agent_orchestrator().confirm_booking_turn(
-        conversation_id=conversation_id,
-        user_id=user_id,
-        confirmed=confirmed,
-        vehicle_id=vehicle_id,
-        source_message_id=source_message_id,
-        operation_key=operation_key,
-    ):
-        yield event
+__all__ = ["AgentOrchestrator", "fetch_vehicle_context", "run_agent_turn"]
