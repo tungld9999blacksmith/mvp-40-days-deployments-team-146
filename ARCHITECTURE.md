@@ -1,5 +1,5 @@
 # EV Care Architecture
 
-Tài liệu kiến trúc chính nằm tại [docs/architecture/README.md](docs/architecture/README.md).
+Tài liệu kiến trúc chính: [docs/architecture.md](docs/architecture.md) (tổng thể) và [docs/architecture-deep-dive.md](docs/architecture-deep-dive.md) (bảo mật, phi chức năng, vòng đời trạng thái, độ tin cậy, khoảng trống).
 
-Tài liệu mô tả cấu trúc frontend/backend, luồng chat hiện tại, phần nghiệp vụ chưa triển khai và bảng chuyển đường dẫn từ template cũ.
+Tài liệu từng công nghệ (OEM M2M, outbox, observability, Celery, LLM routing, prompt, PII): [docs/technology/README.md](docs/technology/README.md).

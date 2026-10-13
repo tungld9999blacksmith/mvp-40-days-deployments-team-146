@@ -225,6 +225,7 @@ class AgentOrchestrator:
             - {"type": "completed", "message_data": {...}}: Hoàn tất toàn bộ lượt
         """
         recorder = TurnRecorder()
+        recorder.bind()
         with step(
             "agent.turn",
             attributes={"agent.name": "customer", "conversation.id": str(conversation_id)},

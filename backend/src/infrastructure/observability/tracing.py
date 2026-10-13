@@ -15,14 +15,15 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Iterator, Mapping, Sequence
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from typing import Any
 
 import langsmith
 from opentelemetry import trace
-from opentelemetry.trace import Span, Status, StatusCode
+from opentelemetry.trace import INVALID_SPAN, Span, Status, StatusCode
 
 from .context import current_trace_ids
+from .switch import agent_telemetry_enabled
 
 logger = logging.getLogger(__name__)
 
@@ -105,9 +106,15 @@ def step(
 
     ``langsmith_run=False`` for work LangChain already reports to LangSmith (tool
     calls): only the Grafana span is created. An exception marks both as failed
-    and propagates.
+    and propagates. With ``OTEL_AGENT_ENABLED`` off the Grafana span is skipped and the
+    LangSmith run is unaffected.
     """
-    with get_tracer().start_as_current_span(name, attributes=_clean(attributes)) as span:
+    grafana_span = (
+        get_tracer().start_as_current_span(name, attributes=_clean(attributes))
+        if agent_telemetry_enabled()
+        else nullcontext(INVALID_SPAN)
+    )
+    with grafana_span as span:
         if not langsmith_run:
             yield Step(span, None)
             return

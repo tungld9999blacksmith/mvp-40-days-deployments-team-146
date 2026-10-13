@@ -22,6 +22,22 @@ Read DESIGN.md before visual or UI work: it defines the fonts, colors, spacing, 
 aesthetic direction. Ask the user before departing from it. When reviewing or QA-ing
 UI, flag code that doesn't match DESIGN.md.
 
+## Background work (outbox)
+
+When a request does work whose result the response does not need (notifications,
+emails, external API calls, LLM enrichment, cleanup, sync), or that would slow a
+response that must be fast, move it to a background job via the transactional
+outbox (`backend/src/infrastructure/outbox`, guide: `backend/guide/outbox.md`):
+
+- Define an `OutboxEvent` (ids + minimal data, no PII) and an idempotent `OutboxHandler`;
+  register it and list its module in `OUTBOX_HANDLER_MODULES` (`celery/tasks/outbox_tasks.py`).
+- Call `publish(session, event, ...)` in the same transaction as the business change;
+  never commit it in a separate session.
+- Use `PermanentError` for unrecoverable failures, `RetryableError` for transient ones.
+- Keep inline: work that must finish inside the transaction (capacity/lock checks,
+  validation) or whose result the response returns.
+- Live UI updates use Redis pub/sub (non-durable), not the outbox.
+
 ## Testing
 
 - Backend: `cd backend && APP_ENV=test OPENAI_API_KEY=test-key uv run --frozen pytest tests/` (use `uv`: the root `.venv` python lacks tzdata). Values in the root `.env` leak into Settings-based tests (e.g. `LLM_*_MODEL`); blank them when a routing test fails only locally.

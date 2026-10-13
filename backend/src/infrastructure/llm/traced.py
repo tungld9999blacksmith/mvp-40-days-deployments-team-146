@@ -2,15 +2,17 @@
 
 LangSmith gets an ``llm`` run with the messages, the answer and the token usage
 (cost is computed by LangSmith from model pricing). Grafana gets a thin
-``chat <model>`` span: provider, model, status — no text, no tokens.
+``chat <model>`` span (provider, model, status, token counts — no text) and the
+latency / token / cost metrics shared with the LangChain calls.
 """
 
 from __future__ import annotations
 
+import time
 from collections.abc import AsyncIterator
 from typing import Any
 
-from src.infrastructure.observability import step
+from src.infrastructure.observability import record_llm_call, step
 
 from .base import ChatMessage, GenerationConfig, LLMProvider, LLMResponse
 
@@ -28,8 +30,23 @@ def _usage(response: LLMResponse) -> dict[str, int]:
     }
 
 
-def _finish(current: Any, response: LLMResponse) -> LLMResponse:
-    current.set(**{"gen_ai.response.model": response.model, "gen_ai.response.finish_reason": response.stop_reason})
+def _finish(current: Any, response: LLMResponse, started: float, model: str) -> LLMResponse:
+    usage = response.usage
+    current.set(
+        **{
+            "gen_ai.response.model": response.model,
+            "gen_ai.response.finish_reason": response.stop_reason,
+            "gen_ai.usage.input_tokens": usage.input_tokens,
+            "gen_ai.usage.output_tokens": usage.output_tokens,
+        }
+    )
+    record_llm_call(
+        model=model,
+        node="direct",
+        duration_s=time.monotonic() - started,
+        input_tokens=usage.input_tokens,
+        output_tokens=usage.output_tokens,
+    )
     current.outputs(
         {"choices": [{"message": {"role": "assistant", "content": response.text}}]},
         usage=_usage(response),
@@ -83,12 +100,14 @@ class TracedLLMProvider(LLMProvider):
         )
 
     async def generate_text(self, prompt: str, config: GenerationConfig | None = None) -> LLMResponse:
+        started = time.monotonic()
         with self._step([ChatMessage(role="user", content=prompt)], config, stream=False) as current:
-            return _finish(current, await self._inner.generate_text(prompt, config))
+            return _finish(current, await self._inner.generate_text(prompt, config), started, _model_of(self._inner))
 
     async def chat(self, messages: list[ChatMessage], config: GenerationConfig | None = None) -> LLMResponse:
+        started = time.monotonic()
         with self._step(messages, config, stream=False) as current:
-            return _finish(current, await self._inner.chat(messages, config))
+            return _finish(current, await self._inner.chat(messages, config), started, _model_of(self._inner))
 
     async def chat_stream(
         self, messages: list[ChatMessage], config: GenerationConfig | None = None

@@ -5,12 +5,16 @@ import { useUnseenQuotes } from '@/features/quotes/hooks'
 import { legacyQuotesAllowed, usePricingFlow } from '@/features/booking-lines/flow'
 import CurrentVehicleChip from '@/features/vehicles/currentVehicle/CurrentVehicleChip'
 import { SUPPORT_PATH } from '@/features/support/logic'
+import { useNotificationFeed } from '@/features/notifications/hooks/useNotificationFeed'
+import { attentionEntries } from '@/features/notifications/feed'
 import AppLayout, { type NavItem } from './AppLayout'
 
 /** Owner app shell (guarded by RequireActiveUser). */
 export default function OwnerLayout() {
   const { displayName, user, logout } = useAuth()
   const unseenQuotes = useUnseenQuotes().data?.items.length ?? 0
+  const notifications = useNotificationFeed('owner', true)
+  const notificationCount = attentionEntries(notifications.data ?? []).length
   // two_tier creates no quotes; old ones stay reachable from their booking (design review D1 = A).
   const quotesInNav = legacyQuotesAllowed(usePricingFlow())
   const nav: NavItem[] = [
@@ -23,7 +27,7 @@ export default function OwnerLayout() {
     ...(quotesInNav ? [{ to: '/quotes', label: 'Báo giá', icon: FileText, badge: unseenQuotes }] : []),
     { to: '/ai', label: 'AI Trợ lý', icon: Bot },
     { to: '/history', label: 'Lịch sử dịch vụ', icon: ClipboardList },
-    { to: '/notifications', label: 'Thông báo', icon: Bell },
+    { to: '/notifications', label: 'Thông báo', icon: Bell, badge: notificationCount, badgeLabel: `${notificationCount} việc cần xử lý` },
   ]
   return (
     <AppLayout

@@ -5,7 +5,8 @@
 - ``current_trace_ids`` — W3C ids of the active span (log / LangSmith correlation).
 - ``configure_langsmith`` — copy LangSmith settings into ``os.environ`` (+ PII anonymizer).
 - ``step`` — one unit of agent work: thin OTel span (Grafana) + full LangSmith run.
-- ``get_agent_metrics`` — Grafana-side agent metrics (tools, guardrails, RAG).
+- ``get_agent_metrics`` — Grafana-side agent metrics (tools, guardrails, RAG, LLM latency / tokens / cost).
+- ``record_llm_call`` / ``TurnUsage`` — per-call and per-turn LLM accounting (``llm_usage``).
 - ``agent_callbacks`` / ``instrument_tools`` — LangChain LLM and tool calls on the Grafana side.
 
 Setup & usage: docs/observability/OBSERVABILITY_SETUP.md, OBSERVABILITY_USAGE.md.
@@ -14,6 +15,7 @@ Setup & usage: docs/observability/OBSERVABILITY_SETUP.md, OBSERVABILITY_USAGE.md
 from .agent_hooks import agent_callbacks, instrument_tools
 from .context import current_trace_ids
 from .langsmith import configure_langsmith, jobs_project
+from .llm_usage import TurnUsage, bind_turn_usage, record_llm_call
 from .metrics import AgentMetrics, get_agent_metrics
 from .telemetry import (
     BACKEND_SERVICE,
@@ -35,7 +37,9 @@ __all__ = [
     "Telemetry",
     "build_telemetry",
     "Step",
+    "TurnUsage",
     "agent_callbacks",
+    "bind_turn_usage",
     "configure_langsmith",
     "current_trace_ids",
     "get_agent_metrics",
@@ -44,6 +48,7 @@ __all__ = [
     "instrument_tools",
     "is_enabled",
     "jobs_project",
+    "record_llm_call",
     "setup_telemetry",
     "shutdown_telemetry",
     "step",

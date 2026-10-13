@@ -60,7 +60,7 @@ Cách dùng hằng ngày (tìm trace, viết truy vấn, dashboard, alert): xem 
 | Tín hiệu | Nguồn | Thu thập bằng | Lưu ở |
 |---|---|---|---|
 | Traces | HTTP request, DB, Redis, HTTP ra ngoài, Celery task, bước agent chính | OTel auto-instrumentation + span thủ công | Grafana Tempo |
-| Metrics | Latency/lỗi theo route, DB, Celery; agent: tool, guardrail, RAG (token / chi phí / độ trễ LLM chỉ ở LangSmith) | OTel instrumentation + OTel Meter | Grafana Prometheus |
+| Metrics | Latency/lỗi theo route, DB, Celery; agent: tool, guardrail, RAG, độ trễ / token / chi phí LLM ([AGENT_COST_LATENCY.md](AGENT_COST_LATENCY.md)) | OTel instrumentation + OTel Meter | Grafana Prometheus |
 | Logs | structlog / stdlib (đã che PII) | OTel `LoggingHandler` → OTLP; stdout vẫn giữ cho Railway | Grafana Loki |
 | LLM / agent traces | Mỗi lượt chat = 1 trace: guard, LangGraph, LLM (prompt, token, chi phí), tool, RAG | LangSmith SDK + `step()` ([Bước 7b](#bước-7b--telemetry-của-ai-agent-grafana--langsmith)) | LangSmith |
 
@@ -97,7 +97,7 @@ Cách dùng hằng ngày (tìm trace, viết truy vấn, dashboard, alert): xem 
 | 7 | Bật/tắt | `OTEL_SDK_DISABLED=true` mặc định ở test; app chạy bình thường khi collector chết | Test không phụ thuộc hạ tầng |
 | 8 | Mạng Railway | Collector không có domain public; app gửi `http://otel-collector.railway.internal:4318`; collector nghe `[::]` | Private network Railway dùng IPv6 |
 | 9 | Grafana Cloud thay vì tự host | Free tier, $0 | Railway free tier không chứa nổi 5 service LGTM (3 service, 0,5 GB RAM mỗi service) |
-| 10 | Chia vai agent | **LangSmith**: trace đầy đủ nội dung + token, chi phí, độ trễ LLM, tỉ lệ lỗi agent. **Grafana**: span mỏng (không nội dung), metric tool / guardrail / RAG, log, alert Discord | LangSmith không gửi alert Discord có nội dung; Grafana không được chứa prompt (PII) |
+| 10 | Chia vai agent | **LangSmith** (luôn bật): trace đầy đủ nội dung + token, chi phí, độ trễ LLM, tỉ lệ lỗi agent. **Grafana** (bật bằng `OTEL_AGENT_ENABLED`, mặc định tắt): span mỏng (không nội dung), metric tool / guardrail / RAG, độ trễ / token / chi phí (chỉ con số), log, alert Discord | LangSmith không gửi alert Discord có nội dung; Grafana không được chứa prompt (PII) |
 | 11 | Quota LangSmith | Run của Celery worker sang project `<project>-jobs` | Project chat chỉ đếm lượt chat thật |
 | 12 | PII trên LangSmith | `LANGCHAIN_REDACT_PII=true` ở staging, `false` ở local | Staging có dữ liệu thật; local cần thấy nguyên văn để debug |
 
@@ -203,6 +203,7 @@ Secret gốc của người setup để trong `personal/<tên>/` (đã gitignore
 | Biến | Local (`.env`) | Compose `dev` | Railway (`.railway.env`) |
 |---|---|---|---|
 | `OTEL_ENABLED` | `false` (mặc định) — `true` khi chạy collector | theo `.env` | `false` cho tới khi deploy collector, rồi `true` |
+| `OTEL_AGENT_ENABLED` | `false` (mặc định) — bật span / metric / log của AI agent trên Grafana (cần `OTEL_ENABLED=true`); không ảnh hưởng LangSmith | theo `.env` | `true` ở `backend` và `worker` khi muốn xem độ trễ / chi phí agent |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318` | `http://otel-collector:4318` (compose đè) | `http://otel-collector.railway.internal:4318` |
 | `OTEL_DEPLOYMENT_ENVIRONMENT` | `dev` | `dev` | `staging` |
 | `OTEL_METRIC_EXPORT_INTERVAL_MS` | `60000` (mặc định) | | |
@@ -446,7 +447,7 @@ POST /api/v1/conversations/{id}/messages   (auto)
 |---|---|
 | [observability/tracing.py](../../backend/src/infrastructure/observability/tracing.py) | `step(name, run_type, attributes, inputs, metadata, langsmith_run)` — span OTel + run LangSmith, tự liên kết hai chiều. `use_tracer_provider()` cho test |
 | [observability/metrics.py](../../backend/src/infrastructure/observability/metrics.py) | Metric agent cho Grafana (`get_agent_metrics()`); `use_meter_provider()` cho test |
-| [observability/agent_hooks.py](../../backend/src/infrastructure/observability/agent_hooks.py) | `agent_callbacks()` — callback LangChain tạo span `chat <model>` (không token); `instrument_tools()` — bọc thân tool: span `execute_tool <name>` + metric |
+| [observability/agent_hooks.py](../../backend/src/infrastructure/observability/agent_hooks.py) | `agent_callbacks()` — callback LangChain tạo span `chat <model>` (model, node, số token) + metric độ trễ / token / chi phí ([llm_usage.py](../../backend/src/infrastructure/observability/llm_usage.py), giá ở [model_prices.json](../../backend/src/infrastructure/observability/model_prices.json)); chỉ chạy khi `OTEL_AGENT_ENABLED=true`; `instrument_tools()` — bọc thân tool: span `execute_tool <name>` + metric |
 | [observability/langsmith.py](../../backend/src/infrastructure/observability/langsmith.py) | Client LangSmith dùng chung (+ anonymizer khi `LANGCHAIN_REDACT_PII`); `jobs_project()` |
 | [llm/traced.py](../../backend/src/infrastructure/llm/traced.py) | `TracedLLMProvider` — LLM gọi ngoài LangChain (RAG rewrite / generate, review booking, follow-up): run `llm` có token trên LangSmith, span mỏng trên Grafana. Gắn trong [llm/dependency.py](../../backend/src/infrastructure/llm/dependency.py) |
 | [agents/telemetry.py](../../backend/src/agents/telemetry.py) | `TurnRecorder` (outcome, tool, log tổng kết), ghi nhận guard input / tool-call |
@@ -465,8 +466,9 @@ POST /api/v1/conversations/{id}/messages   (auto)
 | `evcare.agent.guardrail.decisions` | Counter | `guard.stage` (`input` / `tool_calls`), `guard.decision` (`pass` / `flag` / `modify`), `guard.reason` (`injection` / `pii` / `tool_call_rewrite` / `none`) | Guardrail chặn / sửa bao nhiêu |
 | `evcare.rag.queries` | Counter | `rag.outcome` (`answered` / `fallback` / `empty` / `out_of_scope` / `error`), `rag.cache` (`hit` / `miss`) | Tỉ lệ RAG không tìm thấy tài liệu |
 | `evcare.rag.stage.duration` | Histogram (s) | `rag.stage` (`retrieve` / `rerank`) | Độ trễ phần không phải LLM của RAG |
+| `evcare.agent.turn.duration`, `evcare.agent.turn.cost.usd`, `evcare.llm.call.duration`, `evcare.llm.tokens`, `evcare.llm.cost.usd`, `evcare.llm.unpriced.calls`, `evcare.agent.tool.duration` | Histogram / Counter | model, node, tool, outcome | Độ trễ, token, chi phí — xem [AGENT_COST_LATENCY.md](AGENT_COST_LATENCY.md) |
 
-Trên Prometheus, dấu `.` thành `_` và counter có hậu tố `_total`, vd `evcare_agent_tool_calls_total`. Token, chi phí, độ trễ LLM và tỉ lệ lỗi agent **không** có trên Grafana (quyết định #10) — xem LangSmith *Monitor*.
+Trên Prometheus, dấu `.` thành `_` và counter có hậu tố `_total`, vd `evcare_agent_tool_calls_total`. Toàn bộ phần Grafana của agent (span, metric, dòng log tổng kết lượt chat) chỉ chạy khi `OTEL_AGENT_ENABLED=true` (mặc định `false`); LangSmith không phụ thuộc biến này. Token và chi phí trên Grafana chỉ là con số — nội dung prompt vẫn chỉ ở LangSmith *Monitor*.
 
 ### 7b.4. LangSmith — xem gì, cấu hình gì
 

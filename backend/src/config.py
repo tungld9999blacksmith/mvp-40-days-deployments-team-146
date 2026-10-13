@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     # Observability — OpenTelemetry -> OTel Collector (docs/observability/OBSERVABILITY_SETUP.md).
     # Off by default: local dev turns it on only while the collector runs.
     otel_enabled: bool = False
+    # Grafana side of the AI agent (spans, metrics, turn log line). LangSmith is unaffected.
+    otel_agent_enabled: bool = False
     # Collector OTLP/HTTP base URL; /v1/traces, /v1/metrics, /v1/logs are appended.
     otel_exporter_otlp_endpoint: str = "http://localhost:4318"
     otel_deployment_environment: str = "dev"

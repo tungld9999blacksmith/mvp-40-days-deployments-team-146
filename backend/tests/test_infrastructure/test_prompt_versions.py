@@ -1,35 +1,60 @@
-"""Versioned prompt texts: lock consistency, version bumps, and the Prompt Hub manifest round trip."""
+"""Versioned prompts: the code is the source of truth; lock consistency, version bumps, Hub manifest round trip."""
 
 from __future__ import annotations
 
 import json
 
-from src.infrastructure.prompts import load_prompt, prompt_version
+from src.infrastructure.prompts import prompt_version
 from src.infrastructure.prompts.hub import build_template, hub_repo_name, manifest_of, text_from_manifest
 from src.infrastructure.prompts.registry import (
     LOCK_PATH,
+    PROMPT_SOURCES,
     TEXTS_DIR,
+    drifted_prompts,
+    export_texts,
     prompt_names,
     read_lock,
     refresh_lock,
+    source_text,
     stale_prompts,
 )
 
 
 def test_every_prompt_file_is_locked_and_unchanged() -> None:
-    # Fails when a text was edited without `python scripts/prompt_sync.py lock`.
+    # Fails when a prompt was edited without `python scripts/prompt_sync.py lock`.
+    assert drifted_prompts() == []
     assert stale_prompts() == []
-    assert sorted(read_lock()) == prompt_names()
+    assert sorted(read_lock()) == prompt_names() == sorted(PROMPT_SOURCES)
 
 
-def test_modules_load_the_versioned_texts() -> None:
+def test_code_constants_are_the_source_of_truth() -> None:
     from src.agents.conversation_guards.input_guard import INJECTION_SYSTEM_NOTE
     from src.agents.prompts import EV_CARE_BASE_PROMPT
     from src.agents.tool_review import REVIEW_PROMPT
 
-    assert EV_CARE_BASE_PROMPT == load_prompt("ev_care_base")
-    assert REVIEW_PROMPT == load_prompt("tool_review")
-    assert INJECTION_SYSTEM_NOTE == load_prompt("injection_note")
+    assert EV_CARE_BASE_PROMPT == source_text("ev_care_base")
+    assert REVIEW_PROMPT == source_text("tool_review")
+    assert INJECTION_SYSTEM_NOTE == source_text("injection_note")
+    for name in PROMPT_SOURCES:
+        assert source_text(name).strip(), name
+
+
+def test_export_writes_the_texts_from_the_code(tmp_path) -> None:
+    changed = export_texts(tmp_path)
+
+    assert changed == sorted(PROMPT_SOURCES)
+    assert drifted_prompts(tmp_path) == []
+    assert export_texts(tmp_path) == []  # second run: nothing to rewrite
+
+
+def test_edited_copy_is_reported_as_drift(tmp_path) -> None:
+    export_texts(tmp_path)
+    (tmp_path / "tool_review.txt").write_bytes(b"edited by hand")
+    (tmp_path / "orphan.txt").write_bytes(b"no code behind it")
+
+    assert drifted_prompts(tmp_path) == ["orphan", "tool_review"]
+    assert sorted(export_texts(tmp_path)) == ["orphan", "tool_review"]
+    assert drifted_prompts(tmp_path) == []
 
 
 def test_prompt_version_reads_the_lock() -> None:

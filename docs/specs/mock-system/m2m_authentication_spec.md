@@ -162,14 +162,14 @@ sequenceDiagram
 
     OEM->>OEM: Tạo body, tính body_sha256
     OEM->>OEM: Ký webhook token bằng MOCK_PRIVATE_KEY<br/>(typ=JWT, iss=mock-ev-system, aud=ev-care-backend, exp=+180s, body_sha256)
-    OEM->>App: POST /api/v1/integrations/oem/webhooks<br/>Authorization: Bearer <token><br/>X-OEM-Event-Id, X-OEM-Timestamp<br/>X-OEM-Signature: sha256=<hmac> (khi có MOCK_WEBHOOK_SECRET)
-    App->>App: Verify bằng OEM_PUBLIC_KEY (chữ ký, typ, iss, aud, exp; leeway 60s)
+    OEM->>App: POST /api/v1/integrations/oem/webhooks<br/>Authorization: Bearer webhook_token<br/>X-OEM-Event-Id, X-OEM-Timestamp<br/>X-OEM-Signature: sha256=hmac_hex (khi có MOCK_WEBHOOK_SECRET)
+    App->>App: Verify bằng OEM_PUBLIC_KEY (chữ ký, typ, iss, aud, exp, leeway 60s)
     App->>App: So body_sha256 với SHA-256 của raw body
     alt Hợp lệ
         App->>App: Dedupe event-id, debounce Redis, enqueue Celery sync
         App-->>OEM: 202 Accepted
     else Không hợp lệ
-        App-->>OEM: 401 {"error": {"code": "WEBHOOK_SIGNATURE_INVALID"}}
+        App-->>OEM: 401 WEBHOOK_SIGNATURE_INVALID
     end
 ```
 

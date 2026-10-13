@@ -11,7 +11,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..infrastructure.observability import Step, get_agent_metrics
+from ..infrastructure.observability import Step, TurnUsage, bind_turn_usage, get_agent_metrics
+from ..infrastructure.observability.switch import agent_telemetry_enabled
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,11 @@ class TurnRecorder:
     outcome: str = "answered"
     error_type: str | None = None
     message_data: dict[str, Any] | None = None
+    usage: TurnUsage = field(default_factory=TurnUsage)
+
+    def bind(self) -> None:
+        """Collect the LLM calls made from here on into ``usage``."""
+        bind_turn_usage(self.usage)
 
     def tool_started(self, name: str) -> None:
         self.tools.append(name)
@@ -43,15 +49,29 @@ class TurnRecorder:
             self.outcome = "fallback"
 
     def finish(self, current: Step) -> None:
-        duration_ms = round((time.monotonic() - self.started) * 1000)
+        bind_turn_usage(None)
+        elapsed = time.monotonic() - self.started
+        duration_ms = round(elapsed * 1000)
+        usage = self.usage
         current.set(
             **{
                 "agent.outcome": self.outcome,
                 "agent.tool_calls": len(self.tools),
                 "agent.tools": sorted(set(self.tools)),
+                "agent.duration_ms": duration_ms,
                 "error.type": self.error_type,
+                "llm.calls": usage.llm_calls,
+                "llm.duration_ms": round(usage.llm_seconds * 1000),
+                "llm.tokens.input": usage.input_tokens,
+                "llm.tokens.output": usage.output_tokens,
+                "llm.cost_usd": round(usage.cost_usd, 8),
+                "llm.unpriced_calls": usage.unpriced_calls,
             }
         )
+        metrics = get_agent_metrics()
+        metrics.turn_duration.record(elapsed, {"agent.outcome": self.outcome})
+        if usage.llm_calls:
+            metrics.turn_cost.record(usage.cost_usd, {"agent.outcome": self.outcome})
         current.metadata(outcome=self.outcome, tools=self.tools)
         data = self.message_data or {}
         current.outputs(
@@ -64,6 +84,8 @@ class TurnRecorder:
         )
         if self.outcome == "error":
             current.fail(self.error_type or "agent error")
+        if not agent_telemetry_enabled():
+            return
         # Loki: one summary line per turn, joined to the trace by trace_id. No content.
         logger.info(
             "Agent turn finished: %s",
@@ -73,6 +95,10 @@ class TurnRecorder:
                 "agent_tool_calls": len(self.tools),
                 "agent_tools": ",".join(self.tools),
                 "duration_ms": duration_ms,
+                "llm_calls": usage.llm_calls,
+                "llm_input_tokens": usage.input_tokens,
+                "llm_output_tokens": usage.output_tokens,
+                "llm_cost_usd": round(usage.cost_usd, 8),
             },
         )
 

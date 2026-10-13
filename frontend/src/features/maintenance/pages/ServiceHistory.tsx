@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, ClipboardList, ExternalLink, Search } from '
 import { isApiError } from '@/shared/api/client'
 import { useMediaQuery, XL_QUERY } from '@/shared/hooks/useMediaQuery'
 import Button from '@/shared/ui/Button'
+import CopilotLine from '@/shared/ui/CopilotLine'
 import { SkeletonCard } from '@/shared/ui/Skeleton'
 import { cn } from '@/shared/ui/cn'
 import { EmptyState, ErrorState } from '@/shared/ui/States'
@@ -20,6 +21,7 @@ import {
   serviceRecordTitle,
   type ServiceRecordFilter,
 } from '../utils'
+import { historyCopilot } from '../copilot'
 import HistorySummary from '../components/HistorySummary'
 import ServiceRecordDetail from '../components/ServiceRecordDetail'
 
@@ -60,6 +62,7 @@ function HistoryTable({ vehicle }: { vehicle: VehicleSummary }) {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
   const rows = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
   const selected = wide ? (rows.find(record => record.recordId === chosen) ?? rows[0] ?? null) : null
+  const copilot = historyCopilot(status.data)
 
   if (records.error && !records.data) {
     return (
@@ -86,6 +89,13 @@ function HistoryTable({ vehicle }: { vehicle: VehicleSummary }) {
   return (
     <>
       <HistorySummary records={records.data.items} status={status.data} />
+      {copilot && (
+        <CopilotLine action={copilot.action} className="mb-5">
+          {copilot.lead}
+          <span className="font-semibold text-banner-foreground">{copilot.figures}</span>
+          {copilot.tail}
+        </CopilotLine>
+      )}
       <div className="xl:grid xl:grid-cols-3 xl:gap-6 xl:items-start">
         <div className="xl:col-span-2 min-w-0">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-5">

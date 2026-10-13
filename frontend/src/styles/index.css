@@ -1,16 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Saira:wdth,wght@75..125,300..800&display=swap');
 @import 'tailwindcss';
 
-/* Design tokens — DESIGN.md ("Showroom sáng" + cockpit banner). Light is the default theme; dark overrides below. */
+/* Design tokens — DESIGN.md ("Màn hình thứ hai của xe, có trợ lý"). Light is the default theme; dark overrides below. */
 @theme {
-  --color-background: #F5F6F7;
+  --color-background: #EEF1F4;
   --color-surface: #FFFFFF;
   --color-card: #FFFFFF;
-  --color-card-hover: #F2F4F5;
+  --color-card-hover: #F4F6F8;
   /* Action green: links, icons, solid fills. White text on it (5.38:1). */
   --color-emerald: #007A52;
   --color-emerald-bright: #00643F;
-  --color-emerald-dim: #E6F4EE;
+  --color-emerald-dim: #E3F3EC;
   /* Primary fill (buttons, badges). Pair with text-on-brand. */
   --color-brand: #007A52;
   /* Kept for older references; equals the brand fill now that the cyan gradient is retired. */
@@ -18,60 +18,61 @@
   --color-on-brand: #FFFFFF;
   /* The bolt in the EV CARE logo. */
   --color-logo-bolt: #00A86B;
-  --color-foreground: #111820;
-  --color-muted: #5B6670;
-  --color-border: #E3E6E9;
+  --color-foreground: #0E151C;
+  --color-muted: #56616C;
+  --color-border: #DCE1E6;
   --color-warning: #B45309;
-  --color-warning-dim: #FDF1E3;
+  --color-warning-dim: #FCEFDF;
   --color-error: #DC2626;
   --color-error-dim: #FEE2E2;
-  /* Sidebar: white in light, near-black in dark. */
+  /* Sidebar follows the app theme, including the mobile drawer. */
   --color-sidebar: #FFFFFF;
-  --color-sidebar-foreground: #111820;
-  --color-sidebar-muted: #5B6670;
-  --color-sidebar-border: #E3E6E9;
-  --color-sidebar-hover: #F2F4F5;
-  --color-sidebar-active: #E6F4EE;
+  --color-sidebar-foreground: #0E151C;
+  --color-sidebar-muted: #56616C;
+  --color-sidebar-border: #DCE1E6;
+  --color-sidebar-hover: #F4F6F8;
+  --color-sidebar-active: #E3F3EC;
   --color-sidebar-active-foreground: #007A52;
-  /* Cockpit banner (Home carousel, login brand panel): ink in both themes. */
-  --color-banner: #111820;
+  /* Ink panels (Home cluster, vehicle hero, copilot line, login brand panel): ink in both themes. */
+  --color-banner: #0B1218;
   --color-banner-foreground: #EEF2F5;
   --color-banner-muted: #94A0AC;
-  --color-banner-border: #2A3642;
+  --color-banner-border: #24313C;
+  /* One step up on ink: gauge tracks, the voice bar, the robot disc. */
+  --color-banner-raised: #16212B;
   --color-banner-accent: #19C37D;
   --color-banner-on-accent: #0A0E13;
+  /* Tell-tale lamps on ink: amber needs you, red overdue or safety, off nothing to report. */
+  --color-banner-alert: #FBBF24;
+  --color-banner-danger: #F87171;
+  --color-lamp-off: #2E3A44;
+  /* The assistant's voice, on ink only (9.3:1 on banner). Never for actions or on light surfaces. */
+  --color-assistant-signal: #22C7DD;
 
   /* Licence plates stay white with ink in both themes (no dark override). */
   --color-plate: #FFFFFF;
-  --color-plate-ink: #111820;
+  --color-plate-ink: #0E151C;
 
-  /* One family everywhere (Tesla-style). Inter's opsz axis gives display cuts at large sizes. */
+  /* Inter for everything you read (Tesla-style; opsz gives display cuts at large sizes). */
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   /* Data: km, prices, timestamps, VIN, codes. Tabular figures keep digits aligned. */
   --font-mono: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono--font-feature-settings: 'tnum';
-  /* Licence plates and large instrument-style figures. */
-  --font-plate: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /* Instrument voice: Saira wide for page titles and names. Falls back to Inter (no wdth axis, so it is ignored). */
+  --font-display: 'Saira', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display--font-variation-settings: 'wdth' 112;
+  /* Saira condensed with tabular figures: gauges, readouts, ODO, licence plates. */
+  --font-plate: 'Saira', 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-plate--font-feature-settings: 'tnum';
+  --font-plate--font-variation-settings: 'wdth' 80;
 
-  /* Corners: controls 10px (rounded-xl), cards 14px (rounded-2xl), dialogs 20px (rounded-3xl). */
-  --radius-xl: 0.625rem;
-  --radius-2xl: 0.875rem;
-  --radius-3xl: 1.25rem;
+  /* Corners: controls 8px (rounded-xl), cards 12px (rounded-2xl), dialogs and the Home cluster 18px (rounded-3xl). */
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.75rem;
+  --radius-3xl: 1.125rem;
 
   --animate-fade-in: fade-in 0.3s ease-out both;
   --animate-pop-in: pop-in 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  /* Carousel dot: fills over one autoplay interval (set --carousel-interval on the carousel). */
-  --animate-carousel-fill: carousel-fill var(--carousel-interval, 6s) linear forwards;
-
-  @keyframes carousel-fill {
-    from {
-      width: 0;
-    }
-    to {
-      width: 100%;
-    }
-  }
 
   @keyframes fade-in {
     from {
@@ -103,10 +104,10 @@
 /* Dark theme: same tokens, toggled by data-theme on <html> (see useTheme). */
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --color-background: #0B0F14;
-  --color-surface: #0F151B;
-  --color-card: #131A21;
-  --color-card-hover: #19222B;
+  --color-background: #0A0F14;
+  --color-surface: #0F161D;
+  --color-card: #111921;
+  --color-card-hover: #17212B;
   --color-emerald: #3AD493;
   --color-emerald-bright: #6EE7B7;
   --color-emerald-dim: #10291F;
@@ -116,22 +117,19 @@
   --color-logo-bolt: #19C37D;
   --color-foreground: #EEF2F5;
   --color-muted: #8B97A4;
-  --color-border: #222C36;
+  --color-border: #233039;
   --color-warning: #F59E0B;
-  --color-warning-dim: #2A1E0A;
+  --color-warning-dim: #2A1D0A;
   --color-error: #F87171;
   --color-error-dim: #2B1414;
-  --color-sidebar: #0F151B;
+  --color-sidebar: #070B0F;
   --color-sidebar-foreground: #EEF2F5;
-  --color-sidebar-muted: #8B97A4;
-  --color-sidebar-border: #1C252E;
-  --color-sidebar-hover: #19222B;
-  --color-sidebar-active: #10291F;
-  --color-sidebar-active-foreground: #3AD493;
-  --color-banner: #10161D;
-  --color-banner-foreground: #E8EDF2;
-  --color-banner-muted: #8B97A4;
-  --color-banner-border: #2A3642;
+  --color-sidebar-muted: #94A0AC;
+  --color-sidebar-border: #24313C;
+  --color-sidebar-hover: #16212B;
+  --color-sidebar-active: #16212B;
+  --color-sidebar-active-foreground: #19C37D;
+  --color-banner: #0F171F;
   --app-elevation-sm: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 28px -18px rgb(0 0 0 / 0.8);
   --app-elevation-md: 0 2px 6px rgb(0 0 0 / 0.4), 0 24px 48px -20px rgb(0 0 0 / 0.85);
 }
@@ -180,6 +178,12 @@
 @layer base {
   :where(a, button, summary, [tabindex]):focus-visible {
     @apply focus-ring;
+  }
+
+  /* Page titles speak in the instrument voice (Saira wide); weight and size stay with the page's classes. */
+  h1 {
+    font-family: var(--font-display);
+    font-variation-settings: 'wdth' 112;
   }
 
   /* Tailwind v4 preflight resets buttons to cursor: default; clickable cards need the pointer. */

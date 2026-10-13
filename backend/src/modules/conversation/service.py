@@ -44,7 +44,6 @@ from src.config import Settings
 from src.infrastructure.llm.base import ChatMessage as LlmMessage
 from src.infrastructure.llm.base import LLMProvider, Role
 from src.infrastructure.messaging import AppendResult, ConversationNotFoundError, MessageDto, MessageService
-from src.infrastructure.prompts import load_prompt
 from src.infrastructure.redis import RedisToolkit
 from src.infrastructure.vectorstore import CONVERSATION_MESSAGES, VectorStore
 from src.modules.booking_line.cards import CARD_BOOKING_LINES, enrich_line_cards
@@ -60,7 +59,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-_SYSTEM_PROMPT = load_prompt("customer_chat")
+_SYSTEM_PROMPT = """Bạn là trợ lý chăm sóc xe điện của EV Care. Trả lời bằng tiếng Việt, ngắn gọn. Chỉ khẳng định thông tin kỹ thuật/bảo hành khi có trong tài liệu chính hãng được cung cấp; nếu không có nguồn, hãy nói rõ chưa có dữ liệu chính hãng và gợi ý liên hệ xưởng."""
 _HISTORY_TURNS = 20
 _RETRIEVE_K = 5
 

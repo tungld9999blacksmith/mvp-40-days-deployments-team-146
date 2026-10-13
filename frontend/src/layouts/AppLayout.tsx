@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentType, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ComponentType, type ReactNode } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Bell, LifeBuoy, LogOut, Menu, WifiOff, X } from 'lucide-react'
 import LogoutConfirmDialog from '@/features/auth/components/LogoutConfirmDialog'
@@ -8,6 +8,18 @@ import { ICON_BUTTON } from '@/shared/ui/iconButton'
 import Logo from '@/shared/ui/Logo'
 import SupportLink from '@/shared/ui/SupportLink'
 import ThemeToggle from '@/shared/ui/ThemeToggle'
+import { isTopOverlay, pushOverlay, trapTab } from '@/shared/ui/overlayStack'
+
+const SIDEBAR_STORAGE_KEY = 'evcare.sidebar.hidden'
+const MENU_BUTTON = 'shrink-0 w-10 h-10 pointer-coarse:w-11 pointer-coarse:h-11 rounded-xl flex items-center justify-center text-muted hover:text-foreground hover:bg-card-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-surface'
+
+function readSidebarHidden(): boolean {
+  try {
+    return localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
 
 export interface NavItem {
   to: string
@@ -18,6 +30,7 @@ export interface NavItem {
   disabled?: boolean
   /** Count shown as a pill (e.g. new quote results, unread notifications); hidden when 0. */
   badge?: number
+  badgeLabel?: string
 }
 
 interface AppLayoutProps {
@@ -57,7 +70,7 @@ function Sidebar({ nav, supportPath, brandSuffix, onLogoutClick, onNavigate }: {
         {/* At h-9 the wordmark plus the suffix badge overflow the 240px sidebar. */}
         <Logo className={cn('text-sidebar-foreground', brandSuffix ? 'h-7' : 'h-9')} />
         {brandSuffix && (
-          <span className="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold text-emerald bg-emerald/10 ring-1 ring-inset ring-emerald/20">
+          <span className="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold text-emerald bg-emerald-dim ring-1 ring-inset ring-emerald/25">
             {brandSuffix}
           </span>
         )}
@@ -65,7 +78,7 @@ function Sidebar({ nav, supportPath, brandSuffix, onLogoutClick, onNavigate }: {
 
       <p className="px-6 pt-4 pb-2 text-xs font-semibold text-sidebar-muted">Menu</p>
       <nav className="flex-1 px-3 pb-4 space-y-1 overflow-y-auto" aria-label="Điều hướng chính">
-        {nav.map(({ to, label, icon: Icon, end, disabled, badge }) =>
+        {nav.map(({ to, label, icon: Icon, end, disabled, badge, badgeLabel }) =>
           disabled ? (
             <span
               key={to}
@@ -86,7 +99,7 @@ function Sidebar({ nav, supportPath, brandSuffix, onLogoutClick, onNavigate }: {
                 cn(
                   'relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
                   isActive
-                    ? 'bg-sidebar-active text-sidebar-foreground font-semibold [&>svg]:text-sidebar-active-foreground'
+                    ? 'bg-sidebar-active text-sidebar-foreground font-semibold ring-1 ring-inset ring-sidebar-border [&>svg]:text-sidebar-active-foreground'
                     : 'text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-hover',
                 )
               }
@@ -94,7 +107,7 @@ function Sidebar({ nav, supportPath, brandSuffix, onLogoutClick, onNavigate }: {
               <Icon className="w-4 h-4 flex-shrink-0" />
               {label}
               {badge ? (
-                <span className="ml-auto min-w-5 h-5 px-1.5 rounded-full bg-brand text-on-brand text-[11px] font-bold flex items-center justify-center" aria-label={`${badge} mới`}>
+                <span className="ml-auto min-w-5 h-5 px-1.5 rounded-full bg-brand text-on-brand text-[11px] font-bold flex items-center justify-center" aria-label={badgeLabel ?? `${badge} mới`}>
                   {badge > 99 ? '99+' : badge}
                 </span>
               ) : null}
@@ -112,7 +125,7 @@ function Sidebar({ nav, supportPath, brandSuffix, onLogoutClick, onNavigate }: {
               cn(
                 'flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium w-full transition-colors',
                 isActive
-                  ? 'bg-sidebar-active text-sidebar-foreground font-semibold [&>svg]:text-sidebar-active-foreground'
+                  ? 'bg-sidebar-active text-sidebar-foreground font-semibold ring-1 ring-inset ring-sidebar-border [&>svg]:text-sidebar-active-foreground'
                   : 'text-sidebar-muted hover:text-sidebar-foreground hover:bg-sidebar-hover',
               )
             }
@@ -136,7 +149,7 @@ function Sidebar({ nav, supportPath, brandSuffix, onLogoutClick, onNavigate }: {
   )
 }
 
-/** App shell: fixed sidebar (desktop), drawer (mobile), topbar, offline banner, logout confirm. */
+/** App shell: collapsible sidebar (desktop), drawer (mobile), topbar, offline banner, logout confirm. */
 export default function AppLayout({
   nav,
   userName,
@@ -155,10 +168,55 @@ export default function AppLayout({
   const navigate = useNavigate()
   const location = useLocation()
   const online = useOnlineStatus()
+  const sidebarId = useId()
+  const drawerId = useId()
+  const drawerRef = useRef<HTMLDivElement>(null)
+  const drawerCloseRef = useRef<HTMLButtonElement>(null)
+  const [sidebarHidden, setSidebarHidden] = useState(readSidebarHidden)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [logoutOpen, setLogoutOpen] = useState(false)
 
   useEffect(() => setDrawerOpen(false), [location.pathname])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIDEBAR_STORAGE_KEY, String(sidebarHidden))
+    } catch {
+      // If storage is blocked, keep the choice for this mounted layout.
+    }
+  }, [sidebarHidden])
+
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 64rem)')
+    const closeOnDesktop = () => {
+      if (desktop.matches) setDrawerOpen(false)
+    }
+    desktop.addEventListener('change', closeOnDesktop)
+    return () => desktop.removeEventListener('change', closeOnDesktop)
+  }, [])
+
+  useEffect(() => {
+    if (!drawerOpen) return
+    const previous = document.activeElement as HTMLElement | null
+    drawerCloseRef.current?.focus()
+    const id = Symbol('sidebar-drawer')
+    const pop = pushOverlay(id)
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!isTopOverlay(id)) return
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        setDrawerOpen(false)
+        return
+      }
+      trapTab(event, drawerRef.current)
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('keydown', onKeyDown)
+      pop()
+      if (!window.matchMedia('(min-width: 64rem)').matches) previous?.focus()
+    }
+  }, [drawerOpen])
 
   // Longest matching entry: `/technician/board/…` is "Lịch hẹn", not the `/technician` dashboard.
   const routes: NavItem[] = supportPath ? [...nav, { to: supportPath, label: 'Hỗ trợ', icon: LifeBuoy }] : nav
@@ -173,42 +231,91 @@ export default function AppLayout({
 
   return (
     <div className="flex h-screen bg-background bg-app-backdrop overflow-hidden">
-      <aside className="hidden lg:block w-60 flex-shrink-0 border-r border-sidebar-border">
-        <Sidebar nav={nav} supportPath={supportPath} brandSuffix={brandSuffix} onLogoutClick={openLogout} />
+      <aside
+        id={sidebarId}
+        aria-label="Menu desktop"
+        aria-hidden={sidebarHidden}
+        inert={sidebarHidden}
+        className={cn(
+          'hidden lg:block h-full flex-shrink-0 overflow-hidden transition-[width] duration-250 ease-in-out motion-reduce:transition-none',
+          sidebarHidden ? 'w-0' : 'w-60',
+        )}
+      >
+        <div className={cn(
+          'h-full w-60 border-r border-sidebar-border transition-[transform,opacity] duration-250 ease-in-out motion-reduce:transition-none',
+          sidebarHidden ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100',
+        )}>
+          <Sidebar nav={nav} supportPath={supportPath} brandSuffix={brandSuffix} onLogoutClick={openLogout} />
+        </div>
       </aside>
 
-      {drawerOpen && (
-        <div className="lg:hidden fixed inset-0 z-40">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in" aria-hidden onClick={() => setDrawerOpen(false)} />
-          <div className="absolute inset-y-0 left-0 w-64 border-r border-sidebar-border bg-sidebar elevation-md">
-            <Sidebar
-              nav={nav}
-              supportPath={supportPath}
-              brandSuffix={brandSuffix}
-              onLogoutClick={openLogout}
-              onNavigate={() => setDrawerOpen(false)}
-            />
-            <button
-              type="button"
-              onClick={() => setDrawerOpen(false)}
-              aria-label="Đóng menu"
-              className="absolute top-4 -right-12 w-9 h-9 rounded-full bg-surface border border-border flex items-center justify-center text-muted"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
+      <div
+        aria-hidden={!drawerOpen}
+        inert={!drawerOpen}
+        className={cn(
+          'lg:hidden fixed inset-0 z-40 transition-[visibility] duration-0 motion-reduce:delay-0',
+          drawerOpen ? 'visible' : 'invisible delay-250 pointer-events-none',
+        )}
+      >
+        <div
+          className={cn('absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-250 motion-reduce:transition-none', drawerOpen ? 'opacity-100' : 'opacity-0')}
+          aria-hidden
+          onClick={() => setDrawerOpen(false)}
+        />
+        <div
+          id={drawerId}
+          ref={drawerRef}
+          role="dialog"
+          aria-modal={drawerOpen ? true : undefined}
+          aria-label="Menu điều hướng"
+          tabIndex={-1}
+          className={cn(
+            'absolute inset-y-0 left-0 w-64 max-w-[calc(100%-4rem)] border-r border-sidebar-border bg-sidebar elevation-md transition-transform duration-250 ease-in-out motion-reduce:transition-none focus:outline-none',
+            drawerOpen ? 'translate-x-0' : '-translate-x-full',
+          )}
+        >
+          <Sidebar
+            nav={nav}
+            supportPath={supportPath}
+            brandSuffix={brandSuffix}
+            onLogoutClick={openLogout}
+            onNavigate={() => setDrawerOpen(false)}
+          />
+          <button
+            ref={drawerCloseRef}
+            type="button"
+            onClick={() => setDrawerOpen(false)}
+            aria-label="Đóng menu"
+            className={cn(MENU_BUTTON, 'absolute top-3 -right-12 bg-surface border border-border elevation-sm')}
+          >
+            <X className="w-5 h-5" aria-hidden />
+          </button>
         </div>
-      )}
+      </div>
 
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <header className="h-16 bg-surface/60 backdrop-blur-xl border-b border-border flex items-center px-4 sm:px-6 gap-3 flex-shrink-0">
+      <div inert={drawerOpen} className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <header className="h-16 bg-surface/80 backdrop-blur-md border-b border-border flex items-center px-4 sm:px-6 gap-3 flex-shrink-0">
+          <button
+            type="button"
+            onClick={() => setSidebarHidden(hidden => !hidden)}
+            aria-label={sidebarHidden ? 'Hiện menu' : 'Ẩn menu'}
+            title={sidebarHidden ? 'Hiện menu' : 'Ẩn menu'}
+            aria-expanded={!sidebarHidden}
+            aria-controls={sidebarId}
+            className={cn(MENU_BUTTON, 'hidden lg:flex')}
+          >
+            <Menu className="w-5 h-5" aria-hidden />
+          </button>
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
             aria-label="Mở menu"
-            className={cn(ICON_BUTTON, 'lg:hidden')}
+            title="Mở menu"
+            aria-expanded={drawerOpen}
+            aria-controls={drawerId}
+            className={cn(MENU_BUTTON, 'lg:hidden')}
           >
-            <Menu className="w-4 h-4" />
+            <Menu className="w-5 h-5" aria-hidden />
           </button>
           <Logo className="hidden sm:block lg:hidden h-6 text-foreground" />
           {/* Phones: up to two lines, so the vehicle chip never squeezes the page name to "Lị…". */}

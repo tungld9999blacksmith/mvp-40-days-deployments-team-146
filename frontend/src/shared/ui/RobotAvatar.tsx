@@ -4,12 +4,14 @@ export type RobotMood = 'idle' | 'thinking' | 'happy' | 'wave'
 
 // Mascot colours are fixed like PlateTile: the white head reads on both themes.
 const INK = '#111820'
-const EYE = '#19C37D'
+const GREEN_EYE = '#19C37D'
+// On ink the assistant speaks in its own cyan (DESIGN.md `assistant-signal`).
+const INK_EYE = '#22C7DD'
 const EAR = '#007A52'
 const CHEEK = '#FF9EAE'
 const THINKING_LIGHT = '#FBBF24'
 
-function Face({ mood }: { mood: RobotMood }) {
+function Face({ mood, EYE }: { mood: RobotMood; EYE: string }) {
   if (mood === 'thinking') {
     return (
       <>
@@ -41,8 +43,15 @@ function Face({ mood }: { mood: RobotMood }) {
   )
 }
 
-/** The assistant's robot mascot, drawn on a 64-unit grid. Decorative unless `label` is given. */
-export function RobotMascot({ mood = 'idle', size = 32, label, className }: { mood?: RobotMood; size?: number; label?: string; className?: string }) {
+/** The assistant's robot mascot, drawn on a 64-unit grid. Decorative unless `label` is given. `onInk`: cyan eyes for ink panels. */
+export function RobotMascot({ mood = 'idle', size = 32, label, onInk = false, className }: {
+  mood?: RobotMood
+  size?: number
+  label?: string
+  onInk?: boolean
+  className?: string
+}) {
+  const EYE = onInk ? INK_EYE : GREEN_EYE
   return (
     <svg
       width={size}
@@ -66,7 +75,7 @@ export function RobotMascot({ mood = 'idle', size = 32, label, className }: { mo
       )}
       <rect x="9" y="13" width="46" height="43" rx="17" fill="#FFFFFF" stroke={INK} strokeWidth="2.6" />
       <rect x="15" y="20.5" width="34" height="25" rx="11" fill={INK} />
-      <Face mood={mood} />
+      <Face mood={mood} EYE={EYE} />
       <ellipse cx="17.5" cy="50" rx="3.4" ry="2.2" fill={CHEEK} />
       <ellipse cx="46.5" cy="50" rx="3.4" ry="2.2" fill={CHEEK} />
     </svg>

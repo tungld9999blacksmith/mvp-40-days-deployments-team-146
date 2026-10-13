@@ -1,7 +1,7 @@
 # EV Care — Kiến trúc hệ thống
 
-> Cập nhật: 2026-10-10. Tài liệu mô tả kiến trúc **đang chạy trong code** (`backend/src`, `frontend/src`, các file compose), đối chiếu với `docs/specs` (sprint 1–4, `ai-agent`, `platform`), `docs/designs` và đánh dấu rõ phần chưa nối/đang dự kiến.
-> Tài liệu cũ `docs/architecture/README.md` và `docs/architecture_diagram.md` mô tả cấu trúc `backend/app` trước tái cấu trúc — đã lỗi thời, dùng tài liệu này làm chuẩn.
+> Cập nhật: 2026-10-12 (thêm observability OTel/Grafana/LangSmith, transactional outbox, xác thực M2M v2.0 với OEM, prompt có phiên bản, agent memory). Tài liệu mô tả kiến trúc **đang chạy trong code** (`backend/src`, `frontend/src`, các file compose), đối chiếu với `docs/specs` (sprint 1–4, `ai-agent`, `platform`), `docs/designs` và đánh dấu rõ phần chưa nối/đang dự kiến.
+> `docs/architecture/README.md` và `docs/architecture_diagram.md` nay chỉ còn là trang chuyển hướng về tài liệu này. Tài liệu kỹ thuật riêng từng công nghệ: [technology/README.md](technology/README.md).
 > Chi tiết bảo mật, yêu cầu phi chức năng, vòng đời trạng thái, xử lý lỗi và lộ trình: [architecture-deep-dive.md](architecture-deep-dive.md).
 > Lịch sử phạm vi: ngày 02/10/2026 bỏ báo giá, phiếu hỗ trợ (`support_ticket`) và Discord (`user_discord_link`). Ngày 07/10/2026 **khôi phục** báo giá có xưởng duyệt (`quote`, us-049). Ngày 09–10/10/2026 thêm **báo giá hai tầng** gắn vào lịch hẹn (`booking_line`, [designs/bao-gia-hai-tang.md](designs/bao-gia-hai-tang.md)) chạy sau cờ `QUOTE_FLOW` (mặc định `legacy`, bật `two_tier` thì luồng báo giá cũ bị ẩn). Phiếu hỗ trợ và Discord vẫn ngoài phạm vi.
 
@@ -31,17 +31,19 @@ flowchart LR
     LLM[[LLM providers<br/>OpenAI / OpenRouter / Gemini / Anthropic / Grok / DeepSeek]]
     Places[[Amazon Location Places v2<br/>dữ liệu GrabMaps]]
     Notify[[Kênh ngoài<br/>Resend email · eSMS SMS]]
+    Obs[[Observability<br/>Grafana Cloud · LangSmith]]
 
     Owner --> FE
     WsOwner --> FE
     FE -- REST / SSE / WebSocket --> BE
     FE -- đăng nhập --> Firebase
     BE -- verify ID token --> Firebase
-    BE -- xác minh sở hữu, kéo ODO + lịch sử dịch vụ --> OEM
-    OEM -- webhook có ký HMAC --> BE
+    BE -- access token OAuth2 + API: xác minh sở hữu, kéo ODO + lịch sử --> OEM
+    OEM -- webhook JWT gắn body (hoặc HMAC cũ) --> BE
     BE -- chat / embedding --> LLM
     BE -- gợi ý địa điểm, reverse geocode --> Places
     BE -- nhắc lịch, thông báo --> Notify
+    BE -- trace, metric, log qua OTel Collector; LLM run --> Obs
 ```
 
 ## 3. Sơ đồ container
@@ -57,6 +59,13 @@ flowchart TB
         Agent["LangGraph agent<br/>src/agents<br/>guardrail + tool gọi service"]
         Worker["Celery worker<br/>src/celery_tasks.py"]
         Beat["Celery beat<br/>lịch định kỳ"]
+        Outbox["Outbox dispatcher<br/>outbox.dispatch, chạy trong worker"]
+    end
+
+    subgraph Obs["Observability"]
+        Col["OTel Collector"]
+        Graf["Grafana Cloud<br/>Tempo · Prometheus · Loki"]
+        LS["LangSmith<br/>trace LLM đầy đủ"]
     end
 
     subgraph Data["Lưu trữ"]
@@ -91,6 +100,13 @@ flowchart TB
 
     Beat -- enqueue --> Redis
     Redis -- tasks --> Worker
+    Worker --> Outbox
+    Outbox -- claim SKIP LOCKED --> PG
+
+    API -- OTLP --> Col
+    Worker -- OTLP --> Col
+    Col --> Graf
+    Agent -- run LLM --> LS
     Worker --> PG
     Worker --> OEM
     Worker --> LLM
@@ -106,12 +122,13 @@ flowchart TB
 | Frontend | React 19, Vite 8, Tailwind 4, TypeScript | Cổng chủ xe (dashboard, xe, lịch sử, dự toán + so sánh, đặt lịch 3 bước, vé booking + QR, thẻ quyết định dòng giá, đổi lịch, hỏi thăm, thông báo, trợ lý AI) và cổng chủ xưởng `/technician` (dashboard, board, check-in, **Bảng giá** `/technician/price-list`, báo giá legacy, sức chứa, cài đặt đặt lịch, thông báo). Gọi API thật qua `shared/api/client.ts` (Firebase ID token, envelope lỗi chuẩn). Mục "Báo giá" trên menu xưởng chỉ hiện khi luồng giá là `legacy` (`GET /pricing-flow`). Mock trong trình duyệt (`src/mocks`, `VITE_API_MOCKS`) **mặc định tắt**; chế độ demo (`DEMO_MODE`) mock toàn bộ để chạy không cần backend. |
 | Backend API | FastAPI, SQLModel, Pydantic Settings | Cổng HTTP duy nhất; đăng ký router các module, chuẩn hóa lỗi, CORS; lifespan khởi động Redis toolkit, mở checkpointer Postgres của agent và làm nóng pipeline RAG ở nền. |
 | LangGraph agent | LangGraph, LangChain | Orchestrator ReAct duy nhất cho trợ lý AI, được `ChatService` gọi qua `AgentOrchestrator`; có các lớp guardrail tất định quanh LLM. Chi tiết ở mục 5.2. |
-| Celery worker + beat | Celery, broker/backend Redis (DB 0/1) | Đồng bộ OEM, nhắc bảo dưỡng và nhắc lịch hẹn, hỏi thăm sau dịch vụ, retry xác minh xưởng, dọn dữ liệu hết hạn, dọn ảnh phát sinh chưa gắn dòng giá, index embedding tin nhắn, hủy lịch không được xác nhận. |
+| Celery worker + beat | Celery, broker/backend Redis (DB 0/1) | Đồng bộ OEM, nhắc bảo dưỡng và nhắc lịch hẹn, hỏi thăm sau dịch vụ, retry xác minh xưởng, dọn dữ liệu hết hạn, dọn ảnh phát sinh chưa gắn dòng giá, index embedding tin nhắn, hủy lịch không được xác nhận, bảo trì agent memory, **dispatch transactional outbox**. Danh sách đầy đủ ở mục 6; hướng dẫn riêng: [technology/celery-background-jobs.md](technology/celery-background-jobs.md). |
+| OTel Collector | `otel/opentelemetry-collector-contrib`, cấu hình `infrastructure/observability/otel-collector/config.yaml` | Nhận OTLP (4317 gRPC / 4318 HTTP) từ backend và worker, giới hạn RAM, lọc/che, batch rồi xuất sang Grafana Cloud. Là nơi **duy nhất** giữ token Grafana. Chạy ở compose (profile `observability`) và là một service riêng trên Railway. Mục 5.11. |
 | PostgreSQL | Supabase Postgres, Alembic migrations, pgvector | Nguồn dữ liệu chuẩn (source of truth) cho mọi entity; pgvector lưu embedding tin nhắn/semantic search; lưu checkpoint LangGraph (một thread mỗi hội thoại). Không cấu hình DB thì rơi về SQLite `data/app.db` (khi đó checkpoint chỉ nằm trong bộ nhớ). |
 | Redis | Redis 7 | Cache, distributed lock, rate limit (sliding window), pub/sub realtime, chỉ mục GEO tọa độ xưởng, bloom filter, queue; broker Celery. |
 | Supabase Storage | bucket `documents`, `booking-line-photos` (private) | Lưu file tài liệu và ảnh hạng mục phát sinh; chỉ cấp signed URL (`infrastructure/storage`). |
 | Qdrant | Qdrant Cloud, collection `ev_care_knowledge_base` | Kho tri thức tài liệu kỹ thuật cho tool RAG của agent. `VECTOR_STORE` mặc định trong `config.py` là `qdrant` (có thể đổi `pgvector`/`chroma`). |
-| mock-ev-system | FastAPI riêng (`backend/mock-ev-system`) | Giả lập hệ thống hãng: tra cứu xe, xác minh sở hữu/quản lý xưởng, usage (ODO), lịch sử bảo dưỡng, bảo hành; tự bắn webhook. Dùng chung schema với backend qua gói `backend/shared/ev-contracts`. Seed dùng chung ở `backend/mock-ev-system/seed-data/`. |
+| mock-ev-system | FastAPI riêng (`backend/mock-ev-system`) | Giả lập hệ thống hãng: tra cứu xe, xác minh sở hữu/quản lý xưởng, usage (ODO), lịch sử bảo dưỡng, bảo hành; tự bắn webhook. Dùng chung schema và mã xác thực M2M với backend qua gói `backend/shared/ev-contracts`; cấp access token ở `POST /oauth/token` (mục 5.12). Seed dùng chung ở `backend/mock-ev-system/seed-data/`. |
 
 ## 4. Kiến trúc bên trong backend
 
@@ -169,8 +186,13 @@ Quy tắc phụ thuộc:
 | `workshop_owner_onboarding` | Chủ xưởng đăng ký xưởng, xác minh quyền quản lý với OEM; timeout thì retry nền (60s→720s) qua `scheduler.py` + Celery. | `/workshop-owner/onboarding/*` |
 | `workshop_owner_auth` | Đăng xuất, kiểm tra phiên, audit sự kiện đăng nhập của chủ xưởng (lưu 60 ngày). | `/workshop-owner/oauth/logout`, `/workshop-owner/oauth/session` |
 | `authorization` | Mô hình phân quyền (role/permission). | — |
+| `agent_memory` | Bộ nhớ của trợ lý AI: summary theo hội thoại, sở thích xuyên hội thoại, cài đặt bật/tắt; chủ xe xem, sửa, xóa. Có job dọn và job retention (mục 5.13). | `/agent-memory`, `/agent-memory/settings`, `/agent-memory/workshops`, `/agent-memory/{id}` |
+| `vehicle_usage` | Thói quen chạy xe: dự báo km/ngày từ ODO do OEM đồng bộ, backtest; nền cho nhắc theo mức sử dụng ([DRIVING_HABIT_RESULTS_AND_USAGE.md](DRIVING_HABIT_RESULTS_AND_USAGE.md)). | — (service dùng bởi `notification`, `trip_planning`) |
+| `trip_planning` | Chuẩn bị trước chuyến đi: so quãng đường chuyến đi cộng dự báo với mốc bảo dưỡng kế tiếp, trả `TripAdvice`; không đổi trạng thái đến hạn đã quan sát. Agent đọc qua tool `get_planned_trip`. | — |
+| `maintenance_package` | Gợi ý gói bảo dưỡng tối ưu theo mốc, ngân sách và lịch sử dịch vụ ([deployments/OPTIMAL-MAINTENANCE-PACKAGES.md](deployments/OPTIMAL-MAINTENANCE-PACKAGES.md)); agent dùng qua `get_service_history` và các tool gói. | — |
+| `demo_account` | Tài khoản demo dùng chung ("Dùng thử ngay"): đăng nhập demo, reset dữ liệu định kỳ (`demo_account.reset_if_due`, chỉ khi `DEMO_LOGIN_ENABLED`). | `POST /auth/demo-session` |
 | `user_vehicle` | Hồ sơ xe, trạng thái đến hạn bảo dưỡng (theo km và ngày: 500 km / 14 ngày trước hạn; sau bảng định mức tăng theo chu kỳ **15.000 km / 12 tháng** — chu kỳ VinFast từ 01/01/2026). | `/user-vehicles/*` |
-| `oem_integration` | Nhận webhook từ hãng (xác thực chữ ký + chống replay), đồng bộ ODO và lịch sử dịch vụ. **ODO chỉ đến từ OEM, không nhập tay.** | `/integrations/oem/webhooks` |
+| `oem_integration` | Nhận webhook từ hãng (JWT gắn `body_sha256` hoặc HMAC + timestamp, theo `OEM_AUTH_MODE`; chống replay), đồng bộ ODO và lịch sử dịch vụ. **ODO chỉ đến từ OEM, không nhập tay.** | `/integrations/oem/webhooks` |
 | `cost_estimate` | Dự toán chi phí theo mốc bảo dưỡng: ghép lịch bảo dưỡng theo model × `service_price` của xưởng (giá có hiệu lực theo ngày), thiếu giá thì dùng giá tham khảo; mọi con số gắn nhãn **"Chi phí ước tính"**. Do service tất định tính, LLM không tự cộng số. Booking two_tier dùng kết quả này để chụp dòng giá gói. | `/user-vehicles/{id}/maintenance-milestones`, `/cost-estimate`, `/cost-estimate/compare` |
 | `workshop_pricing` | **Bảng giá của xưởng** (D14): xem giá của xưởng cạnh giá tham khảo theo model, sao chép giá tham khảo, đặt giá hàng loạt, thêm/sửa giá với khoảng hiệu lực không chồng lấn. | `/workshop-owner/price-list`, `/copy-reference`, `/set`, `/{priceId}` |
 | `notification` | Cài đặt nhắc lịch theo người dùng (số ngày báo trước, kênh); feed thông báo trong app (nhắc bảo dưỡng, nhắc lịch hẹn, hỏi thăm, quyết định dòng giá). Kênh ngoài qua `NotificationService` + adapter: **Email (Resend)** cho nhắc bảo dưỡng, **SMS (eSMS.vn)** cho mọi loại tin; kênh chỉ bật khi đủ khóa cấu hình. Zalo/Telegram chưa có adapter. | `/notification-settings`, `/notifications` |
@@ -210,7 +232,10 @@ Quy tắc phụ thuộc:
 | `embedding` | Interface embedding đa provider: OpenAI, OpenRouter, Gemini, HuggingFace, local (sentence-transformers). Kích thước vector cấu hình qua `EMBEDDING_DIMENSIONS`. |
 | `vectorstore` | Interface `VectorStore` với backend `qdrant`, `pgvector`, `chroma`; `knowledge_store` cho tài liệu chính hãng, `record_policy` quyết định bản ghi nào được embed. |
 | `messaging` | `MessageService` — **nơi ghi duy nhất** vào `chat_message`: commit DB → publish Redis pub/sub → (tùy chọn) enqueue index embedding. |
-| `oem` | Adapter httpx tới hệ thống hãng; lỗi mạng/5xx quy về `OemTimeoutError` để service xử lý như trạng thái "pending". |
+| `oem` | `gateway.py`: adapter httpx tới hệ thống hãng; lỗi mạng/5xx quy về `OemTimeoutError` để service xử lý như trạng thái "pending". `auth.py`: `OemAccessTokenProvider` đổi client assertion lấy access token do OEM cấp, cache Redis dùng chung API/worker (mục 5.12). |
+| `outbox` | Transactional outbox: `publish()` ghi `outbox_event` cùng transaction, `OutboxDispatcher` claim bằng `SKIP LOCKED` + lease, retry backoff, dead-letter, purge (mục 5.10). |
+| `observability` | `telemetry` (SDK OTel), `tracing`, `metrics`, `langsmith` (cấu hình + anonymizer PII), `agent_hooks` (callback LLM, bọc tool), `context`, `log_handler` (log sang OTLP). Kèm `llm/traced.py` và `agents/telemetry.py` (mục 5.11). |
+| `prompts` | Prompt của agent có phiên bản: hằng số trong code là nguồn gốc, `texts/*.txt` + `versions.lock.json` sinh tự động, đồng bộ LangSmith Prompt Hub bằng `scripts/prompt_sync.py` (mục 5.13). |
 | `location` | Adapter `aws_places.py` (Amazon Location Places v2, region `ap-southeast-1` có dữ liệu GrabMaps) và `fake.py` cho dev/test; chọn qua `LOCATION_PROVIDER` (mặc định `fake`). |
 | `storage`, `supabase` | Interface lưu file + Supabase Storage (signed upload/download URL). |
 | `firebase`, `firestore` | Khởi tạo Firebase Admin để verify ID token. |
@@ -328,13 +353,13 @@ flowchart LR
     Beat[Celery beat<br/>mỗi 120 phút] --> T1[oem.sync_all_vehicles]
     T1 --> T2[oem.sync_vehicle<br/>retry có backoff]
     T2 --> GW[OEM gateway] --> OEM[(OEM)]
-    OEM -- webhook HMAC + timestamp --> WH[POST /integrations/oem/webhooks]
+    OEM -- webhook JWT body_sha256 hoặc HMAC --> WH[POST /integrations/oem/webhooks]
     T2 --> DB[(ODO, service record,<br/>vehicle_oem_sync)]
     WH --> DB
     DB --> Due[user_vehicle: tính trạng thái đến hạn]
 ```
 
-Hai đường cập nhật: **pull** định kỳ và **push** qua webhook. Lỗi liên tiếp ≥ 3 lần thì cảnh báo. ODO quá 30 ngày được đánh dấu cũ.
+Mọi lệnh gọi pull mang access token do OEM cấp (mục 5.12). Hai đường cập nhật: **pull** định kỳ và **push** qua webhook. Lỗi liên tiếp ≥ 3 lần thì cảnh báo. ODO quá 30 ngày được đánh dấu cũ.
 
 ### 5.4 Nhắc bảo dưỡng và nhắc lịch hẹn (FEAT-NOTI-001, FEAT-NOTI-002)
 
@@ -423,6 +448,80 @@ sequenceDiagram
 
 Spec: [specs/platform/location-search.api.md](specs/platform/location-search.api.md). Chủ xe hoặc chủ xưởng đã xác thực gọi `/locations/suggest` (gợi ý theo từ khóa, giới hạn `LOCATION_SUGGEST_RATE_PER_MINUTE`), `/locations/places/{placeId}` (tọa độ + địa chỉ) và `/locations/reverse` (bán kính `LOCATION_REVERSE_RADIUS_METERS`). Lỗi kiểm tra request dùng envelope chuẩn với HTTP 422; vượt rate limit trả `Retry-After`. Công cụ `tools/workshop_crawl` dùng Amazon Location / Google Places để thu thập vị trí xưởng thật (dữ liệu mẫu Hà Nội), không chạy trong backend.
 
+### 5.10 Transactional outbox (`infrastructure/outbox`)
+
+Dùng khi một thay đổi nghiệp vụ cần kéo theo việc phụ (thông báo, gọi dịch vụ ngoài) mà việc phụ không được mất khi worker hoặc Redis lỗi và request không phải chờ nó.
+
+```mermaid
+flowchart LR
+    Svc["Service nghiệp vụ"] -- "publish(session, event)" --> Tx[("Transaction: dữ liệu + outbox_event")]
+    Tx -- commit --> Wake["wakeup outbox.dispatch"]
+    Beat["Celery beat mỗi 10s"] --> Disp
+    Wake --> Disp["OutboxDispatcher"]
+    Disp -- "claim SKIP LOCKED + lease" --> Tx
+    Disp --> H["OutboxHandler theo event_type"]
+    H -- ok --> S["succeeded"]
+    H -- lỗi --> R["pending + backoff luỹ thừa, jitter"]
+    H -- "hết lượt / PermanentError" --> D["dead"]
+```
+
+- Bảo đảm **at-least-once**, nên handler phải idempotent (`ctx.event_id` làm khóa chống trùng). Event có `schema_version` + `upcast` để đọc dòng cũ; mỗi `event_type` có đúng một handler.
+- `last_error` chỉ lưu tên lớp lỗi (tránh PII/credential). Span `outbox.handle` mang `outbox.producer_trace_id` để nối về request đã publish.
+- Bảng `outbox_event` (migration `12b82210986d`) bật RLS; `outbox.purge` lúc 03:30 xóa event `succeeded` quá `OUTBOX_RETENTION_DAYS`, event `dead` được giữ để điều tra.
+- **Hiện trạng:** hạ tầng, test và hướng dẫn đã xong nhưng `OUTBOX_HANDLER_MODULES` (`celery/tasks/outbox_tasks.py`) còn rỗng, tức **chưa có luồng nghiệp vụ nào publish event**. Bước tiếp theo là chuyển các việc "gửi thông báo sau commit" sang outbox. Hướng dẫn: [backend/guide/outbox.md](../backend/guide/outbox.md).
+
+### 5.11 Observability (OpenTelemetry, Grafana Cloud, LangSmith)
+
+```mermaid
+flowchart LR
+    API["backend API<br/>OTel SDK"] -- "OTLP :4318" --> Col
+    W["worker Celery<br/>OTel SDK, traceparent qua message"] -- OTLP --> Col
+    Col["OTel Collector<br/>memory_limiter, lọc/che, batch"] -- "OTLP/HTTPS + Basic auth" --> GC["Grafana Cloud<br/>Tempo · Prometheus · Loki"]
+    API -- "run LLM trực tiếp" --> LS["LangSmith APAC"]
+    W -- "run LLM" --> LS
+```
+
+| Tín hiệu | Nơi lưu | Ghi chú |
+| --- | --- | --- |
+| Trace HTTP/DB/Redis/Celery và span mỏng của agent | Grafana Tempo | Không chứa nội dung prompt; sampling 100%, bỏ `/health` |
+| Metric route/DB/Celery và metric agent (tool, guardrail, RAG) | Grafana Prometheus | Label chỉ `http.route` (template), method, status; không `user_id`, URL thô |
+| Log (đã che PII) | Grafana Loki | Gửi bằng OTLP `LoggingHandler`, stdout vẫn giữ cho Railway; có `trace_id` |
+| Trace LLM/agent đầy đủ, token, chi phí | LangSmith | `LANGCHAIN_REDACT_PII=true` ở staging; run của worker sang project `<project>-jobs` |
+
+- **Phân vai:** LangSmith giữ nội dung và token/chi phí; Grafana chỉ giữ thứ không chứa PII và dùng cho alert. `trace_id` OTel nằm trong metadata LangSmith và ngược lại để nhảy qua lại.
+- **Tắt an toàn:** `OTEL_ENABLED=false` (mặc định) hoặc collector chết thì app vẫn chạy; test đặt `OTEL_SDK_DISABLED=true`.
+- Tài liệu: [OBSERVABILITY_SETUP.md](observability/OBSERVABILITY_SETUP.md), [OBSERVABILITY_USAGE.md](observability/OBSERVABILITY_USAGE.md), [GRAFANA_GUIDE.md](observability/GRAFANA_GUIDE.md), [GRAFANA_ALERTING.md](observability/GRAFANA_ALERTING.md); tóm tắt tại [technology/observability.md](technology/observability.md).
+- Còn thiếu: metric nghiệp vụ (booking, onboarding, OEM, thông báo), instrument `mock-ev-system`, dashboard/alert chính thức, bật `OTEL_ENABLED=true` trên Railway sau khi deploy collector.
+
+### 5.12 Xác thực M2M backend ↔ OEM (SPEC-SEC-OEM-M2M-001 v2.0)
+
+```mermaid
+sequenceDiagram
+    participant BE as EV Care (gateway)
+    participant R as Redis
+    participant OEM as OEM / mock-ev-system
+    BE->>R: đọc access token đã cache
+    alt chưa có
+        BE->>OEM: POST /oauth/token, client assertion ký bằng EVCARE_PRIVATE_KEY
+        OEM->>OEM: verify bằng EVCARE_PUBLIC_KEY, chặn jti dùng lại
+        OEM-->>BE: access token ký bằng MOCK_PRIVATE_KEY
+        BE->>BE: verify bằng OEM_PUBLIC_KEY, cache expires_in trừ margin
+    end
+    BE->>OEM: gọi API nghiệp vụ, Authorization Bearer access token
+    OEM-->>BE: webhook, JWT ký bằng MOCK_PRIVATE_KEY, claim body_sha256
+```
+
+- Mỗi bên giữ private key của mình, chỉ trao đổi public key (Ed25519 mặc định, hỗ trợ RS256). Mỗi loại token có `typ`/`aud` riêng nên không dùng thay nhau; leeway 60s.
+- Webhook JWT gắn `body_sha256` nên token bị bắt không dùng lại được với body khác (lỗ hổng của v1.0 đã vá). `OEM_AUTH_MODE`: `hmac` (chỉ HMAC), `jwt` (chỉ JWT), `both` (mặc định, JWT trước, lùi về HMAC để chuyển đổi êm).
+- Khi chưa cấu hình khóa, hai bên chạy như trước (không xác thực) để dev/test không vướng.
+- Chi tiết: [technology/oem-m2m-auth.md](technology/oem-m2m-auth.md) và đặc tả [specs/mock-system/m2m_authentication_spec.md](specs/mock-system/m2m_authentication_spec.md).
+
+### 5.13 Prompt có phiên bản và bộ nhớ của agent
+
+- **Prompt:** hằng số chuỗi trong code là nguồn gốc; `texts/<tên>.txt` và `versions.lock.json` (version + sha256) sinh bằng `scripts/prompt_sync.py lock`, test `test_prompt_versions.py` đỏ nếu sửa prompt mà quên `lock`. `push`/`pull` đồng bộ với LangSmith Prompt Hub (`pull` chỉ in diff). `.gitattributes` giữ LF để hash ổn định. Xem [technology/prompt-management.md](technology/prompt-management.md).
+- **Memory:** checkpoint LangGraph theo thread (Postgres), `conversation_summary` và sở thích xuyên hội thoại (`agent_user_memory`); `AGENT_MEMORY_CONTEXT_MODE` (`off`/`shadow`/`on`) quyết định việc nhồi ngữ cảnh. Giữ `off`/`shadow` cho tới khi chế độ `on` hết chặn nhầm tool result do graph tự chèn; `AGENT_MEMORY_INPUT_TOKEN_BUDGET=20000` vì system prompt và schema tool đã chiếm ~12k token. Vận hành: [backend/guide/agent-memory.md](../backend/guide/agent-memory.md).
+- **Tool bổ sung của agent** (ngoài bảng ở 5.2): `get_service_history`, `recommend_maintenance_packages`, `get_planned_trip`, `forget_preference` (xóa sở thích theo khóa).
+
 ## 6. Tác vụ nền (Celery)
 
 | Task / lịch | Tần suất | Mục đích |
@@ -438,6 +537,15 @@ Spec: [specs/platform/location-search.api.md](specs/platform/location-search.api
 | `workshop.reconcile_verifications` | mỗi 300s | Enqueue lại các xác minh xưởng bị mất retry |
 | `workshop.purge_expired_onboarding` | 02:00 hằng ngày | Xóa hồ sơ đăng ký xưởng dở dang quá hạn |
 | `workshop_auth.purge_events` | 02:30 hằng ngày | Xóa audit đăng nhập > 60 ngày |
+| `outbox.dispatch` | mỗi `OUTBOX_DISPATCH_INTERVAL_SECONDS` (10s) và được đánh thức sau commit | Xử lý event outbox đến hạn |
+| `outbox.purge` | 03:30 hằng ngày | Xóa event `succeeded` quá hạn giữ |
+| `reminder.dispatch_due` | mỗi 900s | Gửi các `ReminderDelivery` đến hạn |
+| `reminder.retry_emails` | mỗi 60s | Thử lại email nhắc lỗi tạm thời |
+| `reminder.purge_email_payloads` | 03:15 hằng ngày | Xóa payload email quá hạn giữ |
+| `booking_line.alert_overdue_replies` | mỗi 60s | Email xưởng khi một dòng giá chờ chủ xe trả lời quá 10 phút |
+| `agent_memory.cleanup` | mỗi 60s | Dọn memory của hội thoại đã xóa (trigger Postgres ghi `agent_memory_cleanup`) |
+| `agent_memory.retention` | 03:45 hằng ngày | Xóa sở thích quá `AGENT_MEMORY_PREFERENCE_RETENTION_DAYS` (khi `AGENT_MEMORY_RETENTION_ENABLED`) |
+| `demo_account.reset_if_due` | hằng giờ (phút 10), chỉ khi `DEMO_LOGIN_ENABLED` | Reset dữ liệu tài khoản demo |
 | `embedding.index_message` | theo sự kiện | Embed tin nhắn (khi bật semantic index) |
 | `reminder.remind_vehicle`, `oem.sync_vehicle`, `workshop.retry_verification` | theo sự kiện | Tác vụ con do job tổng hợp enqueue |
 | `auth.revoke_session`, `workshop_auth.revoke_session` | theo sự kiện | Thu hồi phiên Firebase khi đăng xuất |
@@ -452,9 +560,10 @@ Spec: [specs/platform/location-search.api.md](specs/platform/location-search.api
 | Staging | Backend + worker trên Railway chạy nhánh `develop`; smoke test theo `TODOS.md`. Bật báo giá hai tầng theo runbook trong `TODOS.md` (`QUOTE_FLOW=two_tier`). |
 | Frontend | Vite dev server ở local. Deploy lên Vercel, `/api/*` chuyển tiếp sang backend Railway: xem [deployments/VERCEL_FRONTEND_DEPLOYMENT.MD](deployments/VERCEL_FRONTEND_DEPLOYMENT.MD). Chế độ demo chạy hoàn toàn bằng mock trong trình duyệt. |
 | Image backend | `dockerfiles/Dockerfile`, compose gốc `docker-compose.yml` expose :8000, healthcheck `/health`. |
-| Dịch vụ managed | Supabase (Postgres + Storage), Qdrant Cloud, Firebase Auth, LLM API, Amazon Location Places, Resend, eSMS. |
+| Observability | Service `otel-collector` riêng (compose profile `observability`; Railway: [RAILWAY_BACKEND_DEPLOYMENT.MD](deployments/RAILWAY_BACKEND_DEPLOYMENT.MD) bước 5c). Backend/worker gửi tới `http://otel-collector.railway.internal:4318`. Giữ `OTEL_ENABLED=false` trên staging cho tới khi collector chạy. Worker phải chạy cả beat để outbox được quét định kỳ. |
+| Dịch vụ managed | Supabase (Postgres + Storage), Qdrant Cloud, Firebase Auth, LLM API, Amazon Location Places, Resend, eSMS, Grafana Cloud, LangSmith. |
 
-Cờ cấu hình ảnh hưởng kiến trúc: `QUOTE_FLOW` (`legacy`/`two_tier`), `LOCATION_PROVIDER` (`fake`/`aws`), `LLM_<STAGE>_PROVIDER/MODEL`, `LLM_FALLBACK_PROVIDER`, `LLM_BOOKING_CHECK_ENABLED`, `FOLLOW_UP_LLM_CLASSIFIER_ENABLED`, `CONVERSATION_SEMANTIC_INDEX_ENABLED`, `VECTOR_STORE`, `EMBEDDING_PROVIDER`.
+Cờ cấu hình ảnh hưởng kiến trúc: `QUOTE_FLOW` (`legacy`/`two_tier`), `LOCATION_PROVIDER` (`fake`/`aws`), `LLM_<STAGE>_PROVIDER/MODEL`, `LLM_FALLBACK_PROVIDER`, `LLM_BOOKING_CHECK_ENABLED`, `FOLLOW_UP_LLM_CLASSIFIER_ENABLED`, `CONVERSATION_SEMANTIC_INDEX_ENABLED`, `VECTOR_STORE`, `EMBEDDING_PROVIDER`, `OEM_AUTH_MODE`, `OTEL_ENABLED`, `LANGCHAIN_TRACING_V2`, `LANGCHAIN_REDACT_PII`, `OUTBOX_*`, `AGENT_MEMORY_*`.
 
 Kiểm thử thủ công qua Swagger dùng **Firebase Auth Emulator**; `X-User-Id` chỉ là lối đi cục bộ cho tool/script và bị tắt ở production. CI: `ci.yml` (ruff + pytest backend, typecheck + build frontend) và `agent-evaluation.yml` (eval agent offline trên PR).
 
@@ -475,6 +584,10 @@ Kiểm thử thủ công qua Swagger dùng **Firebase Auth Emulator**; `X-User-I
 | Một nơi ghi duy nhất cho tin nhắn (`MessageService`) | Thứ tự commit → publish → index nhất quán cho mọi kênh. |
 | SSE cho token, WebSocket cho fan-out | Stream một chiều đơn giản; WebSocket phục vụ đa thiết bị. |
 | Redis lock khi đặt lịch | Chống overbooking khi nhiều người đặt cùng slot. |
+| Transactional outbox thay vì gọi Celery trực tiếp sau commit | Event nằm cùng transaction với dữ liệu nên không mất khi Redis/worker lỗi; chấp nhận at-least-once và bắt handler idempotent. |
+| OEM cấp access token (OAuth2 `client_credentials` + `private_key_jwt`), webhook JWT gắn body | Không chia sẻ secret, hai bên cùng chứng minh danh tính, chặn replay và tráo body; `OEM_AUTH_MODE=both` cho phép chuyển đổi êm. |
+| Telemetry qua OTel Collector; LangSmith giữ nội dung, Grafana giữ tín hiệu không PII | Token Grafana ở một chỗ, đổi backend chỉ sửa config; prompt (có PII) không rời sang Grafana. |
+| Prompt nằm trong code, `.txt` và lock sinh tự động | Review prompt như code, test bắt quên tăng version, vẫn dùng được Prompt Hub. |
 | ODO chỉ từ OEM (pull + webhook) | Đảm bảo độ tin cậy của mốc bảo dưỡng. |
 | Feed trong app là kênh chắc chắn, kênh ngoài là adapter cắm thêm | Email/SMS lỗi không làm mất thông báo; thêm kênh không đổi nghiệp vụ. |
 
@@ -483,5 +596,5 @@ Kiểm thử thủ công qua Swagger dùng **Firebase Auth Emulator**; `X-User-I
 Phần này đã được tách sang [architecture-deep-dive.md](architecture-deep-dive.md#5-khoảng-trống-và-hướng-phát-triển), cùng với bảo mật, yêu cầu phi chức năng, vòng đời trạng thái và xử lý lỗi. Các khoảng trống chính:
 
 - **P0 (chặn production):** bỏ hẳn hoặc có test chặn fallback `X-User-Id` ở production; output guard mới chỉ ghi log với lỗi thiếu trích dẫn/nhãn ước tính.
-- **P1:** dọn nhánh `hitl` legacy và cập nhật spec AI-001; thống nhất kho vector (Qdrant ↔ pgvector); đưa eval gọi model thật và `npm test` vào CI; bổ sung tracing/metric; danh sách hạng mục an toàn chính thức từ hãng.
+- **P1:** dọn nhánh `hitl` legacy và cập nhật spec AI-001; thống nhất kho vector (Qdrant ↔ pgvector); đưa eval gọi model thật và `npm test` vào CI; metric nghiệp vụ, dashboard/alert Grafana và instrument `mock-ev-system`; nối luồng nghiệp vụ đầu tiên vào outbox (hiện chưa có handler); danh sách hạng mục an toàn chính thức từ hãng.
 - **Sau MVP:** GCP + microservice, Cloud Functions/Pub/Sub, agent A2A, OEM qua MCP, chat nhiều bên, chat cho khách chưa đăng ký.

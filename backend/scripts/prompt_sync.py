@@ -1,20 +1,24 @@
-"""Versioned prompts: show status, lock versions, push to and pull from LangSmith Prompt Hub.
+"""Versioned prompts: show status, lock versions, push to and diff against LangSmith Prompt Hub.
 
-Each prompt is ``src/infrastructure/prompts/texts/<name>.txt`` and git holds its history.
-``lock`` bumps the version of every changed prompt; ``push`` uploads locked prompts to
-the Hub (one repository per prompt, tagged ``v<version>``); ``pull`` downloads the latest
-Hub commit (or ``--commit``) into the text file.
+Each prompt is a string constant in the Python module that uses it (see ``PROMPT_SOURCES`` in
+``src/infrastructure/prompts/registry.py``); that constant is the source of truth.
+``texts/<name>.txt`` is a generated copy and git holds its history. ``lock`` regenerates the
+copies from the code and bumps the version of every changed prompt; ``push`` uploads locked
+prompts to the Hub (one repository per prompt, tagged ``v<version>``); ``pull`` shows how the
+latest Hub commit (or ``--commit``) differs from the code, so you can copy the change into the
+Python constant by hand.
 
 Run from ``backend/``:
     uv run python scripts/prompt_sync.py status
     uv run python scripts/prompt_sync.py lock
     uv run python scripts/prompt_sync.py push [NAME ...]
-    uv run python scripts/prompt_sync.py pull [NAME ...] [--commit HASH] [--force]
+    uv run python scripts/prompt_sync.py pull [NAME ...] [--commit HASH] [--out DIR]
 """
 
 from __future__ import annotations
 
 import argparse
+import difflib
 import sys
 from pathlib import Path
 
@@ -26,12 +30,14 @@ sys.path.insert(0, str(BACKEND_DIR))
 from src.config import get_settings  # noqa: E402
 from src.infrastructure.prompts.hub import build_template, hub_repo_name, text_from_manifest  # noqa: E402
 from src.infrastructure.prompts.registry import (  # noqa: E402
-    TEXTS_DIR,
+    PROMPT_SOURCES,
+    drifted_prompts,
+    export_texts,
     prompt_names,
     read_lock,
     read_text,
     refresh_lock,
-    sha256_of,
+    source_text,
     stale_prompts,
     write_lock,
 )
@@ -51,7 +57,7 @@ def _client() -> Client:
 
 
 def _selected(names: list[str]) -> list[str]:
-    known = prompt_names()
+    known = sorted(PROMPT_SOURCES)
     unknown = sorted(set(names) - set(known))
     if unknown:
         sys.exit(f"Unknown prompt(s): {', '.join(unknown)}. Known: {', '.join(known)}")
@@ -60,8 +66,8 @@ def _selected(names: list[str]) -> list[str]:
 
 def cmd_status(_: argparse.Namespace) -> None:
     lock = read_lock()
-    stale = set(stale_prompts())
-    for name in prompt_names():
+    stale = set(stale_prompts()) | set(drifted_prompts())
+    for name in sorted(PROMPT_SOURCES):
         entry = lock.get(name, {})
         if name in stale:
             file_state = "CHANGED, run `lock`"
@@ -79,6 +85,8 @@ def cmd_status(_: argparse.Namespace) -> None:
 
 def cmd_lock(_: argparse.Namespace) -> None:
     before = read_lock()
+    for name in export_texts():
+        print(f"{name}: texts/{name}.txt regenerated from the code")
     after = refresh_lock()
     for name, entry in after.items():
         old = before.get(name, {}).get("version")
@@ -91,7 +99,7 @@ def cmd_lock(_: argparse.Namespace) -> None:
 
 
 def cmd_push(args: argparse.Namespace) -> None:
-    stale = stale_prompts()
+    stale = sorted(set(stale_prompts()) | set(drifted_prompts()))
     if stale:
         sys.exit(f"Prompts changed without a lock refresh: {', '.join(stale)}. Run `lock` first.")
     lock = read_lock()
@@ -118,33 +126,32 @@ def cmd_push(args: argparse.Namespace) -> None:
 
 
 def cmd_pull(args: argparse.Namespace) -> None:
+    """Show Hub vs code. The code is the source of truth, so nothing is written back to it."""
     names = _selected(args.names)
     if args.commit and len(names) != 1:
         sys.exit("--commit needs exactly one prompt name")
-    lock = read_lock()
     client = None
     for name in names:
-        local = read_text(name)
-        entry = lock[name]
-        if sha256_of(local) != entry.get("pushed_sha256") and not args.force:
-            sys.exit(
-                f"{name}: the local text is not pushed (or differs from the Hub). "
-                "Push it first, or pass --force to overwrite it with the Hub version."
-            )
         client = client or _client()
         repo = hub_repo_name(name, args.prefix)
         identifier = f"{repo}:{args.commit}" if args.commit else repo
         commit = client.pull_prompt_commit(identifier, skip_cache=True)
-        text = text_from_manifest(commit.manifest)
-        if text != local:
-            (TEXTS_DIR / f"{name}.txt").write_bytes(text.encode("utf-8"))
-            print(f"{name}: updated from commit {commit.commit_hash[:8]}")
-        else:
-            print(f"{name}: already the same as commit {commit.commit_hash[:8]}")
-        lock = refresh_lock()
-        lock[name]["pushed_sha256"] = sha256_of(text)
-        lock[name]["hub_commit"] = commit.commit_hash
-        write_lock(lock)
+        hub_text = text_from_manifest(commit.manifest)
+        local = source_text(name)
+        if hub_text == local:
+            print(f"{name}: the code already matches commit {commit.commit_hash[:8]}")
+            continue
+        module, attr = PROMPT_SOURCES[name]
+        print(f"{name}: commit {commit.commit_hash[:8]} differs from {module}.{attr}")
+        diff = difflib.unified_diff(
+            local.splitlines(), hub_text.splitlines(), "code", f"hub@{commit.commit_hash[:8]}", lineterm=""
+        )
+        print("\n".join(diff))
+        if args.out:
+            args.out.mkdir(parents=True, exist_ok=True)
+            (args.out / f"{name}.txt").write_bytes(hub_text.encode("utf-8"))
+            print(f"{name}: Hub text saved to {args.out / (name + '.txt')}")
+    print("Nothing in the code was changed. Copy what you want into the Python constant, then run `lock`.")
 
 
 def main() -> None:
@@ -158,10 +165,10 @@ def main() -> None:
     push.add_argument("names", nargs="*")
     push.set_defaults(func=cmd_push)
 
-    pull = sub.add_parser("pull", help="download Hub prompts into the text files")
+    pull = sub.add_parser("pull", help="show how the Hub prompts differ from the code")
     pull.add_argument("names", nargs="*")
     pull.add_argument("--commit", help="Hub commit hash (one prompt only); default: latest")
-    pull.add_argument("--force", action="store_true", help="overwrite unpushed local changes")
+    pull.add_argument("--out", type=Path, help="also save the Hub texts into this folder")
     pull.set_defaults(func=cmd_pull)
 
     for command in (push, pull):

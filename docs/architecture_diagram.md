@@ -1,32 +1,14 @@
 # EV Care — Sơ đồ kiến trúc
 
-## Luồng đang hoạt động
+Các sơ đồ hiện hành nằm trong [architecture.md](architecture.md):
 
-```mermaid
-flowchart LR
-    UI[React UI] --> Mock[Dữ liệu mock trong frontend]
-    Client[API client] --> API[FastAPI assistant router]
-    API --> Service[Assistant service]
-    Service --> Graph[LangGraph]
-    Graph --> Nodes[Analyze / Respond mẫu]
-```
+- Sơ đồ ngữ cảnh: mục 2
+- Sơ đồ container (API, agent, Celery, outbox, OTel Collector, Postgres, Redis, Qdrant, OEM): mục 3
+- Phân lớp backend: mục 4.1
+- Luồng chat, agent LangGraph: mục 5.1, 5.2
+- Đồng bộ OEM: mục 5.3
+- Transactional outbox: mục 5.10
+- Observability: mục 5.11
+- Xác thực M2M với OEM: mục 5.12
 
-Các trang UI hiện chưa gọi API. API client trong sơ đồ là bên gọi HTTP độc lập, ví dụ Swagger.
-
-## Hướng phát triển
-
-```mermaid
-flowchart LR
-    UI[React features] --> API[FastAPI routers]
-    API --> Services[Services nghiệp vụ]
-    API --> Assistant[Assistant service]
-    Assistant --> Agent[LangGraph agent]
-    Agent --> Tools[AI tools]
-    Tools --> Services
-    Services --> DB[(Database)]
-    Agent --> Retrieval[Tra cứu tài liệu và nguồn]
-    Retrieval --> Index[(Chỉ mục kiến thức)]
-```
-
-Database, retrieval và các service nghiệp vụ ngoài assistant mới có vị trí tổ chức, chưa được triển khai.
-Xem [tài liệu kiến trúc](architecture/README.md).
+Bản sơ đồ cũ (UI dùng mock, graph `analyze → respond`, "database chưa triển khai") đã lỗi thời và được bỏ.

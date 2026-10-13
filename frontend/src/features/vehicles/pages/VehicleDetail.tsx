@@ -4,7 +4,6 @@ import Skeleton, { SkeletonCard } from '@/shared/ui/Skeleton'
 import { page } from '@/shared/ui/page'
 import { isApiError } from '@/shared/api/client'
 import MaintenanceStatusCard from '../components/MaintenanceStatusCard'
-import TripPlanningCard from '../components/TripPlanningCard'
 import { LastServiceCard, OdometerCard, WarrantyCard } from '../components/VehicleCards'
 import VehicleHero from '../components/VehicleHero'
 import VehicleGate, { VehicleApiError } from '../components/VehicleGate'
@@ -75,7 +74,6 @@ function VehicleDetailContent({ vehicleId }: { vehicleId: string }) {
         </div>
       </div>
 
-      {profile.data && <TripPlanningCard key={vehicleId} vehicleId={vehicleId} />}
       {profile.data ? <WarrantyCard warranties={profile.data.warranties} /> : !profile.error && <SkeletonCard lines={3} />}
     </div>
   )

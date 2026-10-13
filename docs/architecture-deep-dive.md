@@ -1,6 +1,6 @@
 # EV Care — Kiến trúc chi tiết: bảo mật, chất lượng, vòng đời, độ tin cậy và lộ trình
 
-> Cập nhật: 2026-10-10. Tài liệu bổ sung cho [architecture.md](architecture.md) (bức tranh tổng thể). Viết cho người **chưa biết dự án**: kỹ sư mới, người đánh giá kỹ thuật, đối tác tích hợp, người duyệt bảo mật.
+> Cập nhật: 2026-10-12 (xác thực M2M v2.0 với OEM, observability, transactional outbox, PII trên trace). Tài liệu bổ sung cho [architecture.md](architecture.md) (bức tranh tổng thể). Viết cho người **chưa biết dự án**: kỹ sư mới, người đánh giá kỹ thuật, đối tác tích hợp, người duyệt bảo mật.
 > Mọi nội dung đối chiếu với code ở `backend/src`, `frontend/src` và `docs/specs`. Chỗ nào chưa kiểm chứng được thì ghi rõ "chưa kiểm chứng".
 
 ## Mục lục
@@ -42,9 +42,11 @@ Nguyên tắc thiết kế xuyên suốt, giúp đọc hiểu các phần sau:
 | --- | --- | --- | --- |
 | Chủ xe | Giao diện web, API `/api/v1/*` | Firebase ID token (header `Authorization: Bearer`), backend xác minh chữ ký + hạn token, đối chiếu `firebase_uid` với bảng `VehicleUser`; tài khoản phải ở trạng thái `ACTIVE` | Chỉ dữ liệu của chính mình (xe, lịch hẹn, hội thoại, thông báo) |
 | Chủ xưởng | Cổng `/technician`, API `/api/v1/workshop-owner/*` | Firebase ID token **kèm kiểm tra thu hồi phiên** (`check_revoked`); phải là chủ xưởng `ACTIVE` đã qua xác minh với hãng | Chỉ xưởng của mình (lịch hẹn, bảng giá, dòng giá); thao tác ghi yêu cầu xưởng đang hoạt động |
-| Hệ thống hãng (OEM) | `POST /integrations/oem/webhooks` | **Chữ ký HMAC** trên nội dung thô + dấu thời gian trong cửa sổ cho phép (mặc định 300 giây) để chống phát lại; không dùng Firebase | Chỉ đẩy sự kiện ODO / lịch sử dịch vụ |
+| Hệ thống hãng (OEM) → backend | `POST /integrations/oem/webhooks` | Theo `OEM_AUTH_MODE` (`both` mặc định): **JWT bất đối xứng** do OEM ký (`MOCK_PRIVATE_KEY`), backend verify bằng `OEM_PUBLIC_KEY`, kiểm `iss`/`aud`/`typ` và claim `body_sha256` khớp body thô (chặn tráo body); hoặc **HMAC** trên nội dung thô + dấu thời gian (cửa sổ 300 giây). Chế độ `jwt` từ chối HMAC, chế độ `hmac` không nhận JWT. Không dùng Firebase | Chỉ đẩy sự kiện ODO / lịch sử dịch vụ |
+| Backend → hệ thống hãng (OEM) | Mọi lệnh gọi nghiệp vụ của gateway (API và Celery) | **OAuth2 `client_credentials` + `private_key_jwt`**: backend ký client assertion bằng `EVCARE_PRIVATE_KEY`, OEM verify bằng `EVCARE_PUBLIC_KEY`, chặn `jti` dùng lại, cấp access token (`typ=at+jwt`) ký bằng `MOCK_PRIVATE_KEY`; backend verify chữ ký OEM bằng `OEM_PUBLIC_KEY` rồi cache Redis (`expires_in` trừ `OEM_ACCESS_TOKEN_REFRESH_MARGIN_SECONDS`). Chưa cấu hình khóa thì không xác thực (dev/test) | Chỉ các route nghiệp vụ của OEM; `/health`, `/oauth/token`, `/admin/**` ngoài phạm vi |
 | Tác vụ nền (Celery) | Không có cổng HTTP | Chạy nội bộ cùng mã nguồn, cùng DB | Đồng bộ OEM, nhắc lịch, dọn dữ liệu |
 | Trợ lý AI | Gọi từ `ChatService` trong tiến trình backend | Danh tính (`user_id`, `user_vehicle_id`, `conversation_id`) lấy từ phiên chat qua `RunnableConfig`, **không** do LLM sinh ra | Chỉ công cụ đã đăng ký; mỗi công cụ gọi đúng dịch vụ mà API HTTP dùng; tham số được kiểm theo schema trước khi chạy; không công cụ nào tạo booking hay ghi trạng thái dòng giá |
+| Collector và nền tảng quan sát (Grafana Cloud, LangSmith) | Backend/worker gửi OTLP tới OTel Collector (mạng nội bộ); run LLM gửi thẳng LangSmith | Token Grafana chỉ nằm ở collector; LangSmith dùng Service Key trong biến môi trường | Chỉ nhận telemetry; Grafana không nhận nội dung prompt |
 | Nhà cung cấp ngoài (Amazon Location, Resend, eSMS) | Backend gọi ra | Khóa API trong cấu hình | Chỉ nhận dữ liệu tối thiểu: từ khóa/tọa độ tìm kiếm; email đã xác minh hoặc số điện thoại cùng nội dung nhắc theo mẫu |
 | Công cụ cục bộ (Swagger, script) | Header `X-User-Id` | Không xác thực; **bị chặn khi `APP_ENV=production`** | Chỉ dùng phát triển |
 
@@ -67,6 +69,8 @@ WebSocket hội thoại xác thực bằng Firebase ID token trong khung `auth` 
 | --- | --- |
 | Bí mật cấu hình | Khóa API, secret webhook, thông tin DB đọc từ biến môi trường / `.env` qua Pydantic Settings; không ghi vào mã nguồn |
 | Nhật ký | Log có cấu trúc (structlog; mặc định dạng console dễ đọc, `LOG_JSON=true` cho JSON), **che dữ liệu cá nhân** (`LOG_REDACT_PII`), không ghi nội dung request/response; mỗi request có `X-Request-ID` làm mã truy vết |
+| Trace và metric | Trace LLM đầy đủ chỉ lên LangSmith; khi `LANGCHAIN_REDACT_PII=true` (staging) mọi chuỗi vào/ra bị che bằng cùng bộ che PII của log (email, số điện thoại) trước khi rời tiến trình. Grafana chỉ nhận span mỏng và metric có nhãn cố định (không `user_id`, không URL thô). Trace Celery sang project `<project>-jobs` riêng |
+| Khóa M2M với OEM | Private key (`EVCARE_PRIVATE_KEY`, `MOCK_PRIVATE_KEY`) chỉ ở biến môi trường của bên sở hữu; không chia sẻ secret, chỉ trao đổi public key; khóa staging khác khóa local; token không bao giờ được ghi log |
 | Kiểm toán (audit) | Mỗi request HTTP ghi một bản ghi audit (phương thức, đường dẫn, mã trạng thái, thời gian, `user_id`); sự kiện đăng nhập/đăng xuất của chủ xưởng lưu **60 ngày** |
 | Nội dung gửi cho LLM | Không đưa số CCCD/VIN vào prompt khi không cần; tên/lý do hạng mục do xưởng nhập và nhận xét hỏi thăm của chủ xe được bọc như **dữ liệu không tin cậy**, không phải chỉ thị; ảnh phát sinh không bao giờ vào ngữ cảnh LLM; lịch sử chat mặc định lưu **180 ngày** kể từ tin cuối (PQ-09) |
 | Câu trả lời của trợ lý | Output guard luôn che VIN, CCCD, số điện thoại, biển số, email trước khi lưu và gửi về client |
@@ -84,6 +88,7 @@ WebSocket hội thoại xác thực bằng Firebase ID token trong khung `auth` 
 | Input guard và cờ thiếu trích dẫn / thiếu nhãn ước tính của output guard **chỉ ghi log** | Câu trả lời kỹ thuật không nguồn vẫn tới người dùng nếu lọt guardrail và RAG gate | Chặn cứng ở eval CI; cân nhắc chặn tại runtime khi tỷ lệ báo động giả đủ thấp |
 | Danh sách hạng mục an toàn suy ra từ từ khóa (phanh, lốp, lái, đèn) | Bỏ sót hạng mục an toàn → chủ xe từ chối mà không có bước xác nhận thêm | Thay bằng danh mục chính thức của hãng (câu hỏi mở 3 của thiết kế báo giá hai tầng) |
 | Chủ xe không bị kiểm tra thu hồi phiên ở mọi request (chỉ chủ xưởng có) | Phiên bị thu hồi vẫn dùng được tới khi token hết hạn | Cân nhắc `check_revoked` cho API nhạy cảm của chủ xe |
+| `OEM_AUTH_MODE=both` vẫn nhận HMAC cũ; mock chạy không xác thực khi chưa có khóa | Kẻ biết secret HMAC vẫn giả mạo được webhook; môi trường thiếu khóa không được bảo vệ | Chuyển sang `jwt` khi OEM thật dùng JWT gắn body; bắt buộc cấu hình khóa ở staging/production |
 | Chưa có quét phụ thuộc/SAST trong CI | Lỗ hổng thư viện | Thêm bước quét vào GitHub Actions |
 
 ---
@@ -101,9 +106,9 @@ Chỉ tiêu lấy từ PRD §8. Cột "Cơ chế" cho biết hệ thống đáp 
 | Chất lượng AI | Không bịa số liệu, không bỏ bước đọc trước khi đề xuất, trích dẫn nguồn | Guardrail tất định, grounding từ kết quả công cụ, cổng bằng chứng RAG; eval agent offline | Workflow `agent-evaluation.yml` chạy bộ offline trên PR; bản gọi model thật chạy thủ công |
 | Bảo mật | Mọi API xác minh Firebase ID token; phân quyền theo chủ dữ liệu | Mục 1 | Có test auth; xem lỗ hổng 1.4 |
 | Riêng tư | Chỉ lưu dữ liệu cần thiết; xóa chat theo yêu cầu | Xóa hội thoại (`DELETE /conversations/{id}`), job dọn dữ liệu, `chat_retention_days=180` | Chưa kiểm chứng job xóa theo hạn lưu chat |
-| Quan sát | Có mã truy vết cho mỗi phiên chat và tool call; lưu nguồn trích dẫn | `X-Request-ID`/`traceId`, `agent_run_id` và `trace_id` lưu trên tin trợ lý, trích dẫn lưu cùng tin; input/output guard ghi cảnh báo | Một phần: chưa log từng tool call có cấu trúc, chưa có metric/tracing |
-| Chi phí | Ưu tiên free tier; giới hạn tần suất chat; cảnh báo chi tiêu LLM | Rate limit sliding window trên Redis | Chưa có cảnh báo chi tiêu |
-| Khả dụng | Pilot trên staging, không cam kết SLA | Healthcheck `/health`, `/api/v1/health/dependencies` | — |
+| Quan sát | Có mã truy vết cho mỗi phiên chat và tool call; lưu nguồn trích dẫn; theo dõi lỗi, độ trễ, token và chi phí LLM | `X-Request-ID`/`traceId`, `agent_run_id` và `trace_id` lưu trên tin trợ lý, trích dẫn lưu cùng tin; input/output guard ghi cảnh báo; OpenTelemetry (trace/metric/log) qua Collector sang Grafana Cloud; LangSmith giữ trace LLM đầy đủ, token và chi phí; metric tool/guardrail/RAG | Đã chạy thử ở local; **chưa** bật trên Railway (`OTEL_ENABLED=false` tới khi deploy collector); chưa có dashboard/alert chính thức và metric nghiệp vụ |
+| Chi phí | Ưu tiên free tier; giới hạn tần suất chat; cảnh báo chi tiêu LLM | Rate limit sliding window trên Redis; token/chi phí từng lượt xem ở LangSmith; metric Grafana giữ ít series (free tier 10k) | Chưa có cảnh báo chi tiêu |
+| Khả dụng | Pilot trên staging, không cam kết SLA | Healthcheck `/health`, `/api/v1/health/dependencies`; việc phụ quan trọng đi qua transactional outbox (không mất khi worker/Redis lỗi) | — |
 | Ngôn ngữ | Tiếng Việt; km, VNĐ; múi giờ `Asia/Ho_Chi_Minh`, lưu UTC | Cấu hình múi giờ cho lịch Celery (nhắc 08:00 giờ Việt Nam) | Chưa có test múi giờ |
 
 Các tham số điều chỉnh được qua cấu hình (giá trị mặc định):
@@ -129,6 +134,15 @@ Các tham số điều chỉnh được qua cấu hình (giá trị mặc địn
 | `location_provider` / `location_timeout_seconds` | `fake` / 3 | Nhà cung cấp tìm địa điểm / hạn gọi |
 | `follow_up_llm_classifier_enabled` | `false` | Phân loại phản hồi hỏi thăm bằng LLM |
 | `llm_booking_check_enabled` | `false` | Bật bước LLM duyệt lời gọi công cụ nhạy cảm |
+| `oem_auth_mode` | `both` | Cách xác thực webhook OEM: `hmac` / `jwt` / `both` |
+| `oem_access_token_refresh_margin_seconds` | 60 | Làm mới access token OEM sớm hơn hạn bấy nhiêu giây |
+| `outbox_dispatch_interval_seconds` / `outbox_batch_size` | 10 / 50 | Chu kỳ quét outbox / số event mỗi lượt |
+| `outbox_lease_seconds` / `outbox_handler_timeout_seconds` | 120 / 30 | Lease phải lớn hơn timeout handler |
+| `outbox_max_attempts` / `outbox_retention_days` | 10 / 7 | Số lần thử trước khi `dead` / thời gian giữ event `succeeded` |
+| `agent_memory_context_mode` | `off` | `off` / `shadow` / `on`; giữ `off` hoặc `shadow` (xem architecture.md mục 5.13) |
+| `agent_memory_input_token_budget` | 20000 | Ngân sách token đầu vào khi dựng ngữ cảnh memory |
+| `otel_enabled` | `false` | Bật xuất OpenTelemetry sang Collector |
+| `langchain_tracing_v2` / `langchain_redact_pii` | theo môi trường | Bật trace LangSmith / che PII trên trace |
 
 ---
 
@@ -267,7 +281,11 @@ Mọi lỗi trả về cùng một dạng:
 | **Redis** (pub/sub) | Mất kết nối | Bộ lắng nghe tự kết nối lại với backoff tăng dần; tin hỏng bị bỏ và ghi log | Thiết bị khác có thể chậm nhận tin, đồng bộ lại qua REST (dữ liệu vẫn nằm ở PostgreSQL) |
 | **PostgreSQL** | Hai yêu cầu vượt sức chứa | Trigger `booking_capacity_guard` từ chối, dịch thành `SLOT_FULL` | Gợi ý khung giờ khác |
 | **OEM** | Quá 8 giây / lỗi mạng / 5xx | Quy về `OemTimeoutError`: xác minh xe/xưởng ở trạng thái "đang chờ", thử lại nền; đồng bộ ODO thử lại 30 → 120 → 600 giây | "Đang xác minh" thay vì lỗi cứng |
-| **OEM** (webhook) | Sai chữ ký / dấu thời gian lệch | Từ chối, không xử lý | — (phía hãng thấy lỗi) |
+| **OEM** (webhook) | Sai chữ ký, dấu thời gian lệch, JWT sai `iss`/`aud`/`typ` hoặc `body_sha256` không khớp body | Từ chối (`WebhookSignatureInvalid`), không xử lý | — (phía hãng thấy lỗi) |
+| **OEM** (access token) | Không lấy được token / token bị từ chối (401) | Gateway xoá token cache, xin token mới và gọi lại **một lần**; vẫn lỗi thì `OemAuthError`. Một lock Redis để chỉ một tiến trình xin token, tiến trình khác chờ cache; Redis lỗi thì tự xin token không qua cache | Giống OEM lỗi: "đang xác minh", thử lại nền |
+| **Grafana / OTel Collector** | Collector chết hoặc từ chối dữ liệu | App chạy bình thường (exporter không chặn); `memory_limiter` của collector từ chối dữ liệu trước khi hết RAM; stdout vẫn giữ log | Không ảnh hưởng người dùng; mất tạm thời trace/metric |
+| **LangSmith** | Không gửi được trace | Không ảnh hưởng lượt chat; mất trace của lượt đó | Không |
+| **Worker / Redis** (việc phụ qua outbox) | Worker chết giữa chừng, wakeup không tới | Event vẫn nằm trong Postgres; lease hết hạn thì được claim lại; beat 10 giây quét lại; handler chạy lại nên phải idempotent | Việc phụ chậm hơn, không mất |
 | **Đồng bộ OEM** | Lỗi liên tiếp ≥ 3 lần | Cảnh báo; ODO quá 30 ngày được đánh dấu cũ | Hiển thị dữ liệu cũ kèm nhãn |
 | **Firebase** | Không gọi được khi kiểm tra thu hồi phiên | Trả lỗi `AuthProviderUnavailable` (có thể thử lại), khác với token sai (`INVALID_TOKEN`) | Yêu cầu thử lại, không bị đăng xuất oan |
 | **Kênh thông báo** (Resend, eSMS) | Lỗi tạm thời | Thử lại ở lần chạy sau, tối đa 3 lần, giãn cách tăng dần; kênh thiếu cấu hình thì không đăng ký adapter | Vẫn thấy nhắc trong app |
@@ -285,6 +303,8 @@ Mọi lỗi trả về cùng một dạng:
 - **Khóa theo thứ tự cố định** (khóa xe, rồi khóa khung giờ; khi đổi lịch thì khóa hai khung theo thứ tự ổn định) để tránh deadlock.
 - **Dòng giá:** mọi thao tác ghi khóa hàng `booking` (`SELECT … FOR UPDATE`) giống bước COMPLETE; quyết định của chủ xe cập nhật có điều kiện `WHERE line_status='PROPOSED' AND version=:seen`. Dòng PACKAGE được chụp trong **cùng giao dịch** tạo booking và không chạy theo bảng giá thay đổi sau đó.
 - **Chuyển luồng giá an toàn:** `pricing_flow` ghi trên từng booking, nên đổi `QUOTE_FLOW` chỉ ảnh hưởng booking mới.
+- **Transactional outbox:** event được ghi cùng transaction với thay đổi nghiệp vụ nên cùng được lưu hoặc cùng bị hủy; claim bằng `FOR UPDATE SKIP LOCKED` kèm lease và claim token (worker mất lease thì không ghi đè kết quả), xử lý tuần tự, retry backoff luỹ thừa có jitter, `PermanentError`/hết lượt thì `dead`. Nhiều dispatcher chạy song song vẫn an toàn. Bảo đảm at-least-once, handler dùng `event_id` làm khóa chống trùng. Chưa có handler nghiệp vụ nào đăng ký.
+- **Token OEM dùng chung:** access token cache Redis dùng chung giữa API và worker; lock có TTL 10 giây và chỉ xoá khi còn là của mình (compare-and-delete), nên token bị từ chối không xoá nhầm token mới của tiến trình khác.
 - **Tác vụ nền bền vững:** các task chính dùng `acks_late` (chỉ xác nhận sau khi chạy xong) và giới hạn số lần thử lại; job "reconcile" định kỳ 5 phút đưa lại vào hàng các xác minh xưởng bị mất lần thử lại.
 
 ### 4.4 Điểm cần kiểm chứng thêm
@@ -309,7 +329,10 @@ Mức ưu tiên: **P0** = chặn production; **P1** = nên xong trước demo/pi
 | 4 | Hai kho vector song song | Qdrant (RAG của agent) và pgvector (embedding tin nhắn, `document_chunk`); `VECTOR_STORE` mặc định `qdrant` | Chốt một kho tri thức, ghi rõ trong tài liệu và `.env.example` | P1 | ADR-01 |
 | 5 | Eval AI chưa chặn merge với model thật | `agent-evaluation.yml` chạy bộ offline trên PR; eval gọi model thật, full RAG và staging chỉ chạy thủ công (`workflow_dispatch`) | Lịch chạy định kỳ cho eval live, ngưỡng đạt/không đạt | P1 | PRD §10, Q-A07 |
 | 6 | Chưa có kiểm thử giao diện trong CI | Frontend có `vitest` (có test cho `booking-lines`, `notifications`, `MoneyInput`) nhưng `ci.yml` chỉ chạy `typecheck` + `build` | Thêm `npm test` vào CI | P1 | — |
-| 7 | Quan sát chưa đủ sâu | Đã có log có cấu trúc, che dữ liệu cá nhân, audit từng request, `X-Request-ID`, cảnh báo guard; **chưa** có tracing phân tán, metric, log từng tool call | Gắn `agent_run_id` + tên tool + thời gian vào log; đếm token/chi phí LLM theo stage; thêm metric | P1 | PRD §8 |
+| 7 | Quan sát chưa vận hành trên staging | Đã có OTel (trace/metric/log) qua Collector sang Grafana Cloud, LangSmith cho trace LLM, metric tool/guardrail/RAG, tài liệu setup/usage/alerting; **chưa** bật trên Railway, chưa có dashboard/alert chính thức, chưa có metric nghiệp vụ (booking, onboarding, OEM, thông báo), `mock-ev-system` chưa instrument | Deploy collector rồi bật `OTEL_ENABLED=true`; dựng dashboard + alert; thêm metric nghiệp vụ | P1 | PRD §8, [observability](observability/OBSERVABILITY_SETUP.md) |
+| 15 | Outbox chưa có luồng nghiệp vụ | Hạ tầng, migration, test, hướng dẫn đã xong; `OUTBOX_HANDLER_MODULES` rỗng | Chuyển luồng đầu tiên (ví dụ thông báo sau commit) sang outbox; thêm cảnh báo khi có event `dead` | P1 | [outbox.md](../backend/guide/outbox.md) |
+| 16 | Chuyển hẳn sang JWT với OEM | `OEM_AUTH_MODE=both` còn nhận HMAC | Chuyển `jwt` khi OEM thật dùng JWT gắn body; bắt buộc khóa ở mọi môi trường không phải local | P1 | SPEC-SEC-OEM-M2M-001 |
+| 17 | Memory context mode chưa bật hẳn | Chế độ `on` chặn nhầm tool result do graph tự chèn | Sửa rồi mới bật `on`; hiện giữ `off`/`shadow` | P2 | [agent-memory.md](../backend/guide/agent-memory.md) |
 | 8 | Hạng mục an toàn theo từ khóa | `is_safety_item` dựa trên tên (phanh, lốp, lái, đèn) | Dùng danh mục chính thức của hãng | P1 | bao-gia-hai-tang câu hỏi mở 3 |
 | 9 | Tài liệu chính hãng để ingest | Phụ thuộc danh sách PQ-06 | Chốt model hỗ trợ và nguồn; thiếu thì giới hạn model | P1 | PQ-06 |
 | 10 | Hai luồng giá cùng tồn tại | `quote` (legacy) và `booking_line` (two_tier) cùng chạy sau `QUOTE_FLOW`; agent đổi bộ tool theo cờ | Sau pilot two_tier: chốt luồng, gỡ luồng còn lại khỏi UI/agent (dữ liệu cũ giữ chỉ đọc) | P2 | bao-gia-hai-tang D1, D3 |
@@ -317,6 +340,8 @@ Mức ưu tiên: **P0** = chặn production; **P1** = nên xong trước demo/pi
 | 12 | Mốc bảo dưỡng sau bảng định mức | Lịch theo model đã có trong seed; sau bảng tăng theo bước cố định 15.000 km / 12 tháng; chưa có cửa sổ "làm sớm" | PO chốt dung sai làm sớm | P2 | Q-301, Q-302 |
 | 13 | Lệch spec giao diện ↔ API | Vài `TODO(spec)` ở frontend: lý do xác minh thất bại, trường CCCD, regex VIN, ngưỡng km trong cài đặt nhắc | Cập nhật spec cho khớp | P2 | us-001, Q-FE-NOTI-03 |
 | 14 | Mã thừa | `examples` vẫn được đăng ký router; `agents/nodes/example_node.py`, `tools/example_tool.py` còn TODO; `route_intent` trong `graph.py` | Xóa hoặc không đăng ký ở production | P2 | — |
+
+Đã đóng từ 2026-10-11 đến 2026-10-12: webhook OEM không còn bị phát lại với body khác (JWT gắn `body_sha256`), backend không còn tự ký JWT cho từng request mà dùng access token do OEM cấp, hạ tầng outbox, tracing/metric/log OpenTelemetry và trace LLM trên LangSmith, prompt có phiên bản.
 
 Đã đóng từ bản 2026-10-04: WebSocket xác thực Firebase token (Q-621 phần WS), client không còn gửi được `role` (Q-620), checkpoint LangGraph trên Postgres (`TODO(AI-001)`), có công cụ báo giá cho agent, kênh thông báo đầu tiên (email/SMS), tìm xưởng gần bằng Redis GEO + module tìm địa điểm (us-029 Q-401), eval agent offline trong CI.
 
@@ -332,6 +357,9 @@ Mức ưu tiên: **P0** = chặn production; **P1** = nên xong trước demo/pi
 | Redis ngừng hoạt động | Mất khóa, pub/sub, giới hạn tần suất | PostgreSQL vẫn là nguồn chuẩn; quyết định rõ hành vi khi Redis lỗi (mục 4.4) |
 | Chi phí LLM tăng đột biến | Vượt free tier | Rate limit đã có; thêm cảnh báo chi tiêu |
 | OEM chậm hoặc lỗi | Dữ liệu ODO cũ | Thử lại có backoff, đánh dấu dữ liệu cũ |
+| Handler outbox không idempotent | Việc phụ chạy hai lần (gửi trùng thông báo) | Bắt dùng `event_id` làm khóa chống trùng; review khi thêm handler |
+| Lệch khóa M2M giữa backend, worker và mock | Mọi lệnh gọi OEM trả 401 | Deploy đồng thời ba bên; khóa staging khác khóa local |
+| Vượt free tier Grafana (10k series, 50 GB trace) | Mất dữ liệu quan sát | Nhãn metric cố định, sampling bỏ `/health`, theo dõi mức dùng |
 | Nhân bản Celery beat | Nhắc hoặc hỏi thăm gửi trùng | Chỉ chạy một beat; kiểm tra job idempotent |
 | Giới hạn gói miễn phí (Qdrant, Supabase, Firebase, Amazon Location) | Nghẽn băng thông/lưu trữ, phát sinh phí | Theo dõi hạn mức; chuẩn bị đường chuyển sang pgvector; rate limit tìm địa điểm |
 
@@ -422,6 +450,8 @@ Nguyên tắc: không over-engineer cho lộ trình, nhưng giữ các "điểm 
 - [specs/sprint-2/pending-questions.md](specs/sprint-2/pending-questions.md): các câu hỏi hoãn xử lý.
 - [specs/ai-agent/00-ai-agents-proposal.md](specs/ai-agent/00-ai-agents-proposal.md): đề xuất danh mục agent.
 - [specs/ai-agent/ai-eval-testing-strategy.spec.md](specs/ai-agent/ai-eval-testing-strategy.spec.md): chiến lược eval và guardrail của agent; harness ở `eval/README.md`.
+- [technology/README.md](technology/README.md): tài liệu kỹ thuật riêng từng công nghệ (OEM M2M, outbox, observability, Celery, LLM routing, PII, prompt).
+- [observability/OBSERVABILITY_SETUP.md](observability/OBSERVABILITY_SETUP.md): setup OTel Collector, Grafana Cloud, LangSmith.
 - [designs/bao-gia-hai-tang.md](designs/bao-gia-hai-tang.md): thiết kế báo giá hai tầng (quyết định D1–D16).
 - [specs/platform/location-search.api.md](specs/platform/location-search.api.md): API tìm địa điểm.
 - `TODOS.md`: việc còn mở, runbook bật two_tier, trạng thái staging.

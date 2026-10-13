@@ -142,16 +142,16 @@ sequenceDiagram
 
 | Thành phần | Trách nhiệm | Source |
 |---|---|---|
-| Production prompt | Quy định tool sequence và cách LLM giải thích | [prompts.py](../../backend/src/agents/prompts.py) |
-| Code guardrails | Ép prerequisite, sửa token từ kết quả thật, chặn tier/booking claim bịa | [guardrails.py](../../backend/src/agents/guardrails.py) |
-| Business grounding | Render số tiền, thời gian và gói từ tool result, không gọi thêm LLM | [business_grounding.py](../../backend/src/agents/business_grounding.py) |
-| Package tools | Cung cấp `get_service_history` và `recommend_maintenance_packages` | [maintenance_package_tools.py](../../backend/src/agents/tools/maintenance_package_tools.py) |
-| Optimizer | Tạo ba gói deterministic | [service.py](../../backend/src/modules/maintenance_package/service.py) |
-| Booking tools | Nhận package code/token và tạo proposal | [booking_tools.py](../../backend/src/agents/tools/booking_tools.py) |
-| Quick booking | Lưu snapshot proposal, revise, confirm và tạo booking | [quick_booking/service.py](../../backend/src/modules/quick_booking/service.py) |
-| Booking persistence | Lưu package code và tạo booking lines theo item đã chọn | [booking/service.py](../../backend/src/modules/booking/service.py) |
-| Proposal UI | Hiển thị gói, hạng mục, giá, thời gian và nút xác nhận | [BookingProposalCard.tsx](../../frontend/src/features/assistant/components/BookingProposalCard.tsx) |
-| Frontend contracts | Kiểu dữ liệu package và proposal | [types.ts](../../frontend/src/features/assistant/types.ts) |
+| Production prompt | Quy định tool sequence và cách LLM giải thích | [prompts.py](../../../backend/src/agents/prompts.py) |
+| Code guardrails | Ép prerequisite, sửa token từ kết quả thật, chặn tier/booking claim bịa | [guardrails.py](../../../backend/src/agents/guardrails.py) |
+| Business grounding | Render số tiền, thời gian và gói từ tool result, không gọi thêm LLM | [business_grounding.py](../../../backend/src/agents/business_grounding.py) |
+| Package tools | Cung cấp `get_service_history` và `recommend_maintenance_packages` | [maintenance_package_tools.py](../../../backend/src/agents/tools/maintenance_package_tools.py) |
+| Optimizer | Tạo ba gói deterministic | [service.py](../../../backend/src/modules/maintenance_package/service.py) |
+| Booking tools | Nhận package code/token và tạo proposal | [booking_tools.py](../../../backend/src/agents/tools/booking_tools.py) |
+| Quick booking | Lưu snapshot proposal, revise, confirm và tạo booking | [quick_booking/service.py](../../../backend/src/modules/quick_booking/service.py) |
+| Booking persistence | Lưu package code và tạo booking lines theo item đã chọn | [booking/service.py](../../../backend/src/modules/booking/service.py) |
+| Proposal UI | Hiển thị gói, hạng mục, giá, thời gian và nút xác nhận | [BookingProposalCard.tsx](../../../frontend/src/features/assistant/components/BookingProposalCard.tsx) |
+| Frontend contracts | Kiểu dữ liệu package và proposal | [types.ts](../../../frontend/src/features/assistant/types.ts) |
 
 ## 7. Tool sequence và quyền quyết định
 
@@ -369,8 +369,8 @@ Constraint chỉ chấp nhận `ESSENTIAL`, `BALANCED`, `COMPREHENSIVE` hoặc `
 
 Các migration:
 
-- [e1c5a7b9d3f2_booking_maintenance_package.py](../../backend/alembic/versions/e1c5a7b9d3f2_booking_maintenance_package.py)
-- [f2e6c8a1b4d9_merge_package_demo.py](../../backend/alembic/versions/f2e6c8a1b4d9_merge_package_demo.py)
+- [e1c5a7b9d3f2_booking_maintenance_package.py](../../../backend/alembic/versions/e1c5a7b9d3f2_booking_maintenance_package.py)
+- [f2e6c8a1b4d9_merge_package_demo.py](../../../backend/alembic/versions/f2e6c8a1b4d9_merge_package_demo.py)
 
 Khi confirm:
 
@@ -622,29 +622,29 @@ Các metric nên bổ sung:
 
 Backend:
 
-- [Package optimizer](../../backend/src/modules/maintenance_package/service.py)
-- [Agent package tools](../../backend/src/agents/tools/maintenance_package_tools.py)
-- [Booking tools](../../backend/src/agents/tools/booking_tools.py)
-- [Tool composition](../../backend/src/agents/tools/dependency.py)
-- [Agent prompt](../../backend/src/agents/prompts.py)
-- [Guardrails](../../backend/src/agents/guardrails.py)
-- [Business grounding](../../backend/src/agents/business_grounding.py)
-- [Quick booking service](../../backend/src/modules/quick_booking/service.py)
-- [Quick booking routes](../../backend/src/modules/quick_booking/route.py)
-- [Booking service](../../backend/src/modules/booking/service.py)
-- [Booking entity](../../backend/src/common/core/maintenance/booking.py)
-- [Maintenance rule seed](../../backend/scripts/seed_maintenance_rules.py)
+- [Package optimizer](../../../backend/src/modules/maintenance_package/service.py)
+- [Agent package tools](../../../backend/src/agents/tools/maintenance_package_tools.py)
+- [Booking tools](../../../backend/src/agents/tools/booking_tools.py)
+- [Tool composition](../../../backend/src/agents/tools/dependency.py)
+- [Agent prompt](../../../backend/src/agents/prompts.py)
+- [Guardrails](../../../backend/src/agents/guardrails.py)
+- [Business grounding](../../../backend/src/agents/business_grounding.py)
+- [Quick booking service](../../../backend/src/modules/quick_booking/service.py)
+- [Quick booking routes](../../../backend/src/modules/quick_booking/route.py)
+- [Booking service](../../../backend/src/modules/booking/service.py)
+- [Booking entity](../../../backend/src/common/core/maintenance/booking.py)
+- [Maintenance rule seed](../../../backend/scripts/seed_maintenance_rules.py)
 
 Frontend:
 
-- [AI Assistant page](../../frontend/src/features/assistant/pages/AIAssistant.tsx)
-- [Booking proposal card](../../frontend/src/features/assistant/components/BookingProposalCard.tsx)
-- [Assistant types](../../frontend/src/features/assistant/types.ts)
-- [Proposal actions](../../frontend/src/features/assistant/quickBooking/useProposalActions.ts)
+- [AI Assistant page](../../../frontend/src/features/assistant/pages/AIAssistant.tsx)
+- [Booking proposal card](../../../frontend/src/features/assistant/components/BookingProposalCard.tsx)
+- [Assistant types](../../../frontend/src/features/assistant/types.ts)
+- [Proposal actions](../../../frontend/src/features/assistant/quickBooking/useProposalActions.ts)
 
 Tests:
 
-- [Package guardrail tests](../../backend/tests/test_agents/test_maintenance_package_guardrails.py)
-- [Agent tool tests](../../backend/tests/test_agents/test_ev_care_tools.py)
-- [Quick booking tests](../../backend/tests/test_modules/test_quick_booking.py)
-- [Frontend proposal test](../../frontend/src/features/assistant/components/BookingProposalCard.test.tsx)
+- [Package guardrail tests](../../../backend/tests/test_agents/test_maintenance_package_guardrails.py)
+- [Agent tool tests](../../../backend/tests/test_agents/test_ev_care_tools.py)
+- [Quick booking tests](../../../backend/tests/test_modules/test_quick_booking.py)
+- [Frontend proposal test](../../../frontend/src/features/assistant/components/BookingProposalCard.test.tsx)

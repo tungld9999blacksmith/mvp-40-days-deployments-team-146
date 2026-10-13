@@ -1,0 +1,7 @@
+{
+  "_comment": "USD per 1M tokens, keyed by lower-case model id (a provider prefix such as 'google/' is optional). Models missing here are reported without cost (evcare.llm.unpriced.calls). Verify against the provider's price page before relying on the numbers.",
+  "gpt-4o-mini": {"input_per_1m": 0.15, "output_per_1m": 0.60},
+  "google/gemini-3.5-flash-lite": {"input_per_1m": 0.30, "output_per_1m": 2.50},
+  "mistralai/mistral-small-2603": {"input_per_1m": 0.15, "output_per_1m": 0.60},
+  "openai/gpt-4o": {"input_per_1m": 2.50, "output_per_1m": 10.00}
+}

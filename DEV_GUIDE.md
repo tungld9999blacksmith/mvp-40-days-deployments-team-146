@@ -33,7 +33,12 @@
 | Tài liệu | Nội dung |
 |---|---|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Kiến trúc tổng quan |
-| [docs/architecture.md](docs/architecture.md) · [docs/architecture-deep-dive.md](docs/architecture-deep-dive.md) · [docs/architecture/README.md](docs/architecture/README.md) · [docs/architecture_diagram.md](docs/architecture_diagram.md) | Kiến trúc hệ thống, sơ đồ |
+| [docs/architecture.md](docs/architecture.md) · [docs/architecture-deep-dive.md](docs/architecture-deep-dive.md) | Kiến trúc hệ thống, sơ đồ, bảo mật, độ tin cậy (`docs/architecture/README.md` và `docs/architecture_diagram.md` chỉ còn là trang chuyển hướng) |
+| [docs/technology/README.md](docs/technology/README.md) | Mục lục tài liệu từng công nghệ: observability, OEM M2M, outbox, Celery, LLM routing, prompt, PII |
+| [docs/technology/oem-m2m-auth.md](docs/technology/oem-m2m-auth.md) | Xác thực M2M backend ↔ OEM (OAuth2 + private_key_jwt, webhook gắn body) |
+| [docs/technology/celery-background-jobs.md](docs/technology/celery-background-jobs.md) | Celery: nhóm tác vụ, thêm task, enqueue trong request, pool |
+| [docs/technology/llm-routing-and-fallback.md](docs/technology/llm-routing-and-fallback.md) | LLM: định tuyến theo giai đoạn, fallback, trace |
+| [docs/technology/pii-redaction.md](docs/technology/pii-redaction.md) | Che PII ở log, LangSmith, output agent |
 | [docs/product/README.md](docs/product/README.md) · [docs/product/PRD_EV_Care_MVP.md](docs/product/PRD_EV_Care_MVP.md) | Nghiệp vụ, PRD MVP |
 | [docs/specs/INSTRUCTION.MD](docs/specs/INSTRUCTION.MD) | Cách viết / đọc tài liệu đặc tả (FF, API, FE, Entity) |
 | [docs/specs/](docs/specs/) | Đặc tả theo sprint (`sprint-1` … `sprint-4`), entity, AI agent, mock system |
@@ -45,7 +50,7 @@
 |---|---|
 | [backend/guide/api.md](backend/guide/api.md) | Cấu trúc backend & thiết kế API |
 | [backend/guide/alembic.md](backend/guide/alembic.md) | Migration CSDL với Alembic |
-| [backend/src/guide/data-access.md](backend/src/guide/data-access.md) | Repository dùng chung (`SQLModelRepository`): CRUD, filter, phân trang offset / keyset / cursor |
+| [backend/guide/data-access.md](backend/guide/data-access.md) | Repository dùng chung (`SQLModelRepository`): CRUD, filter, phân trang offset / keyset / cursor |
 | [backend/guide/redis.md](backend/guide/redis.md) | Redis toolkit |
 | [backend/guide/outbox.md](backend/guide/outbox.md) | Transactional outbox: publish event cùng transaction, viết handler, retry / dead-letter |
 | [docs/specs/platform/location-search.api.md](docs/specs/platform/location-search.api.md) | API tìm vị trí (proxy Amazon Location + GrabMaps), hiển thị bản đồ MapLibre |
@@ -86,6 +91,7 @@
 | [docs/observability/OBSERVABILITY_SETUP.md](docs/observability/OBSERVABILITY_SETUP.md) | Observability — setup OTel Collector, Grafana Cloud, LangSmith |
 | [docs/observability/OBSERVABILITY_USAGE.md](docs/observability/OBSERVABILITY_USAGE.md) | Observability — dùng Grafana (TraceQL, LogQL, PromQL, dashboard, alert) & LangSmith |
 | [docs/observability/GRAFANA_GUIDE.md](docs/observability/GRAFANA_GUIDE.md) | Grafana — Drilldown, Explore, đọc trace, chọn visualization, dựng dashboard |
+| [docs/observability/AGENT_COST_LATENCY.md](docs/observability/AGENT_COST_LATENCY.md) | Agent — đo độ trễ & chi phí LLM (công thức, bảng giá token), dashboard Grafana, alert Discord, xuất CSV |
 | [docs/observability/GRAFANA_ALERTING.md](docs/observability/GRAFANA_ALERTING.md) | Grafana — alert rule gửi Discord (contact point, template, Query/Expression A-B-C, policy) |
 | [backend/src/infrastructure/prompts/README.md](backend/src/infrastructure/prompts/README.md) | Prompt versioning — sửa prompt, lock version, push/pull LangSmith Prompt Hub |
 | [tools/repo_sync/README.md](tools/repo_sync/README.md) | Đồng bộ code nhánh `develop` sang repo deploy riêng |

@@ -9,6 +9,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import uuid
 from typing import Any
 
 import pytest
@@ -25,7 +26,7 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanE
 from opentelemetry.trace import StatusCode
 
 from src.agents.orchestrator import AgentOrchestrator
-from src.agents.telemetry import record_tool_call_guard, tool_call_signature
+from src.agents.telemetry import TurnRecorder, record_tool_call_guard, tool_call_signature
 from src.agents.tools.result import ToolResult
 from src.config import Settings
 from src.infrastructure.llm.base import ChatMessage, LLMProvider, LLMResponse, LLMUsage
@@ -33,6 +34,7 @@ from src.infrastructure.llm.traced import TracedLLMProvider, traced
 from src.infrastructure.observability import configure_langsmith, instrument_tools, jobs_project, step, tracing
 from src.infrastructure.observability import metrics as agent_metrics
 from src.infrastructure.observability.agent_hooks import OtelLLMCallbackHandler, tool_status
+from src.infrastructure.observability.switch import use_agent_telemetry
 
 EMAIL = "nguyen.van.a@example.com"
 
@@ -83,7 +85,9 @@ def otel():
     meter_provider = MeterProvider(metric_readers=[reader])
     tracing.use_tracer_provider(tracer_provider)
     agent_metrics.use_meter_provider(meter_provider)
+    use_agent_telemetry(True)
     yield spans, reader
+    use_agent_telemetry(None)
     tracing.use_tracer_provider(None)
     agent_metrics.use_meter_provider(None)
 
@@ -219,8 +223,15 @@ def test_run_config_carries_the_grafana_llm_callback():
     from src.agents.context import AgentCtx
     from src.agents.orchestrator import _run_config
 
-    config = _run_config(AgentCtx(user_id=1, vehicle_id="", conversation_id="c-1"))
-    assert any(isinstance(cb, OtelLLMCallbackHandler) for cb in config["callbacks"])
+    ctx = AgentCtx(user_id=1, vehicle_id="", conversation_id="c-1")
+    use_agent_telemetry(True)
+    try:
+        config = _run_config(ctx)
+        assert any(isinstance(cb, OtelLLMCallbackHandler) for cb in config["callbacks"])
+        use_agent_telemetry(False)
+        assert not any(isinstance(cb, OtelLLMCallbackHandler) for cb in _run_config(ctx)["callbacks"])
+    finally:
+        use_agent_telemetry(None)
 
 
 # ── tools ───────────────────────────────────────────────────────────────
@@ -271,6 +282,8 @@ def test_instrumented_tools_emit_spans_and_metrics(otel):
     calls = _points(reader, "evcare.agent.tool.calls")
     assert ({"gen_ai.tool.name": "lookup", "tool.status": "error"}, 1) in calls
     assert ({"gen_ai.tool.name": "explode", "tool.status": "exception"}, 1) in calls
+    durations = _points(reader, "evcare.agent.tool.duration")
+    assert {attrs["gen_ai.tool.name"] for attrs, _ in durations} == {"lookup", "explode"}
 
 
 def test_tool_call_guard_records_modifications(otel):
@@ -321,7 +334,7 @@ class _StubProvider(LLMProvider):
         yield "k"
 
 
-def test_traced_provider_reports_usage_to_langsmith_only(otel, langsmith):
+def test_traced_provider_reports_usage_to_both_backends(otel, langsmith):
     spans, _ = otel
     provider = traced(_StubProvider())
     assert traced(provider) is provider and provider._model == "stub-model"
@@ -332,7 +345,8 @@ def test_traced_provider_reports_usage_to_langsmith_only(otel, langsmith):
     span = _span(spans, "chat stub-model")
     assert span.attributes["gen_ai.system"] == "stub"
     assert span.attributes["gen_ai.response.model"] == "stub-model-v1"
-    assert not any(key.startswith("gen_ai.usage") for key in span.attributes)  # tokens: LangSmith only
+    assert span.attributes["gen_ai.usage.input_tokens"] == 12  # counts only, never text
+    assert span.attributes["gen_ai.usage.output_tokens"] == 3
     assert EMAIL not in _all_span_attribute_text(spans)
 
     run = langsmith.by_name("chat stub-model")
@@ -346,6 +360,112 @@ def test_traced_provider_forwards_attribute_writes():
     provider = TracedLLMProvider(inner)
     provider._client = "swapped"
     assert inner._client == "swapped"
+
+
+def _metric_sum(reader: InMemoryMetricReader, name: str, **labels: str) -> float:
+    return sum(
+        value
+        for attrs, value in _points(reader, name)
+        if all(attrs.get(k) == v for k, v in labels.items())
+    )
+
+
+def test_llm_call_records_latency_tokens_and_cost(otel):
+    from langchain_core.messages import AIMessage
+    from langchain_core.outputs import ChatGeneration, LLMResult
+
+    from src.infrastructure.observability import TurnUsage, bind_turn_usage
+
+    _, reader = otel
+    usage = TurnUsage()
+    bind_turn_usage(usage)
+    handler = OtelLLMCallbackHandler()
+    run_id = uuid.uuid4()
+    handler.on_chat_model_start(
+        {}, [[]], run_id=run_id, metadata={"ls_model_name": "gpt-4o-mini", "langgraph_node": "agent"}
+    )
+    message = AIMessage(content="ok", usage_metadata={"input_tokens": 1000, "output_tokens": 500, "total_tokens": 1500})
+    handler.on_llm_end(LLMResult(generations=[[ChatGeneration(message=message)]]), run_id=run_id)
+    bind_turn_usage(None)
+
+    labels = {"gen_ai.request.model": "gpt-4o-mini", "agent.node": "agent"}
+    assert _metric_sum(reader, "evcare.llm.tokens", **labels, **{"gen_ai.token.type": "input"}) == 1000
+    assert _metric_sum(reader, "evcare.llm.tokens", **labels, **{"gen_ai.token.type": "output"}) == 500
+    expected = (1000 * 0.15 + 500 * 0.60) / 1_000_000
+    assert _metric_sum(reader, "evcare.llm.cost.usd", **labels) == pytest.approx(expected)
+    assert _metric_sum(reader, "evcare.llm.call.duration", **labels) == 1  # one observation
+    assert (usage.llm_calls, usage.input_tokens, usage.output_tokens) == (1, 1000, 500)
+    assert usage.cost_usd == pytest.approx(expected)
+
+
+def test_unpriced_model_counts_tokens_but_not_cost(otel):
+    from src.infrastructure.observability import TurnUsage, bind_turn_usage, record_llm_call
+
+    _, reader = otel
+    usage = TurnUsage()
+    bind_turn_usage(usage)
+    assert record_llm_call(model="mystery-model", node="agent", duration_s=0.2, input_tokens=10, output_tokens=5) is None
+    bind_turn_usage(None)
+
+    assert _metric_sum(reader, "evcare.llm.tokens", **{"gen_ai.request.model": "mystery-model"}) == 15
+    assert _points(reader, "evcare.llm.cost.usd") == []
+    assert _metric_sum(reader, "evcare.llm.unpriced.calls") == 1
+    assert usage.unpriced_calls == 1 and usage.cost_usd == 0
+
+
+def test_price_lookup_ignores_provider_prefix_and_case():
+    from src.infrastructure.observability.pricing import estimate_cost
+
+    assert estimate_cost("OpenAI/GPT-4o-mini", 1_000_000, 0) == pytest.approx(0.15)
+    assert estimate_cost("unknown/model", 10, 10) is None
+
+
+def test_turn_summary_reports_total_latency_tokens_and_cost(otel):
+    from src.infrastructure.observability import record_llm_call
+
+    spans, reader = otel
+    recorder = TurnRecorder()
+    recorder.bind()
+    with step("agent.turn") as current:
+        record_llm_call(model="gpt-4o-mini", node="agent", duration_s=0.5, input_tokens=100, output_tokens=20)
+        record_llm_call(model="gpt-4o-mini", node="direct", duration_s=0.3, input_tokens=50, output_tokens=10)
+        recorder.finish(current)
+
+    attrs = _span(spans, "agent.turn").attributes
+    assert attrs["llm.calls"] == 2
+    assert attrs["llm.tokens.input"] == 150 and attrs["llm.tokens.output"] == 30
+    assert attrs["llm.cost_usd"] == pytest.approx((150 * 0.15 + 30 * 0.60) / 1_000_000)
+    assert attrs["llm.duration_ms"] == 800
+    assert _metric_sum(reader, "evcare.agent.turn.duration", **{"agent.outcome": "answered"}) == 1
+    assert _metric_sum(reader, "evcare.agent.turn.cost.usd") == 1  # one turn observed
+
+
+def test_agent_telemetry_is_off_by_default(langsmith):
+    from src.infrastructure.observability import agent_callbacks, record_llm_call
+
+    assert Settings(_env_file=None).otel_agent_enabled is False
+
+    spans = InMemorySpanExporter()
+    tracer_provider = TracerProvider()
+    tracer_provider.add_span_processor(SimpleSpanProcessor(spans))
+    reader = InMemoryMetricReader()
+    tracing.use_tracer_provider(tracer_provider)
+    agent_metrics.use_meter_provider(MeterProvider(metric_readers=[reader]))
+    use_agent_telemetry(False)
+    try:
+        with step("unit.off") as current:
+            current.set(k="v")
+            current.outputs({"answer": "ok"})
+        record_llm_call(model="gpt-4o-mini", node="agent", duration_s=0.1, input_tokens=5, output_tokens=5)
+        assert agent_callbacks() == []
+    finally:
+        use_agent_telemetry(None)
+        tracing.use_tracer_provider(None)
+        agent_metrics.use_meter_provider(None)
+
+    assert spans.get_finished_spans() == ()
+    assert _points(reader, "evcare.llm.tokens") == []
+    assert langsmith.by_name("unit.off")["outputs"] == {"answer": "ok"}  # LangSmith keeps tracing
 
 
 # ── RAG ─────────────────────────────────────────────────────────────────

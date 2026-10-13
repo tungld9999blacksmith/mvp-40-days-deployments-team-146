@@ -1,27 +1,32 @@
 # Prompt versioning
 
-Prompt của agent và các bước LLM nằm trong `texts/<tên>.txt` (UTF-8), không nằm trong code Python.
-Git giữ lịch sử từng bản; `texts/versions.lock.json` ghi **số version** và **sha256** của từng prompt.
+**Nguồn gốc (source of truth) của mỗi prompt là hằng số chuỗi ngay trong file `.py` dùng nó.**
+`texts/<tên>.txt` (UTF-8) là bản **sinh tự động** từ code để git giữ lịch sử và để đẩy lên LangSmith Prompt Hub;
+đừng sửa tay. `texts/versions.lock.json` ghi **số version** và **sha256** của từng prompt.
 
-| Prompt | Dùng ở |
+| Prompt | Hằng số trong code (nguồn gốc) |
 |---|---|
-| `ev_care_base` | System prompt chính của agent chat (`agents/prompts.py`) |
-| `customer_chat` | Trợ lý chat trong `modules/conversation/service.py` |
-| `rag_generator` / `rag_rewriter` | Pipeline RAG (`agents/tools/RAG/query/`) |
-| `tool_review` | Kiểm tra lời gọi tool trước khi chạy (`agents/tool_review.py`) |
-| `follow_up_classifier` | Phân loại phản hồi sau bảo dưỡng (`modules/follow_up/classifier.py`) |
-| `injection_note` | Ghi chú an toàn khi phát hiện prompt injection |
+| `ev_care_base` | `EV_CARE_BASE_PROMPT` ở `agents/prompts.py` (system prompt chính của agent chat) |
+| `customer_chat` | `_SYSTEM_PROMPT` ở `modules/conversation/service.py` |
+| `rag_generator` | `SYSTEM_PROMPT` ở `agents/tools/RAG/query/generator.py` |
+| `rag_rewriter` | `SYSTEM_PROMPT` ở `agents/tools/RAG/query/rewriter.py` |
+| `tool_review` | `REVIEW_PROMPT` ở `agents/tool_review.py` (kiểm tra lời gọi tool trước khi chạy) |
+| `follow_up_classifier` | `SYSTEM_PROMPT` ở `modules/follow_up/classifier.py` |
+| `injection_note` | `INJECTION_SYSTEM_NOTE` ở `agents/conversation_guards/input_guard.py` |
+
+Bảng ánh xạ này nằm trong `PROMPT_SOURCES` (`registry.py`). Thêm prompt mới = thêm một dòng vào đó.
 
 ## 1. Sửa prompt
 
 ```
-# 1. Sửa file texts/<tên>.txt
-# 2. Tăng version (đọc sha256 mới, version +1 cho prompt đã đổi)
+# 1. Sửa hằng số prompt trong file .py (bảng ở trên)
+# 2. Sinh lại texts/<tên>.txt từ code và tăng version (+1 cho prompt đã đổi)
 cd backend && uv run python scripts/prompt_sync.py lock
-# 3. Chạy test, rồi commit cả .txt và versions.lock.json
+# 3. Chạy test, rồi commit .py, .txt và versions.lock.json
 ```
 
-Test `tests/test_infrastructure/test_prompt_versions.py` sẽ **đỏ** nếu sửa file mà quên bước `lock`.
+Test `tests/test_infrastructure/test_prompt_versions.py` sẽ **đỏ** nếu sửa prompt mà quên bước `lock`,
+hoặc nếu `.txt` bị sửa tay / lệch với code.
 
 ## 2. Push / pull với LangSmith Prompt Hub
 
@@ -33,18 +38,19 @@ cd backend
 uv run python scripts/prompt_sync.py status                 # version, trạng thái lock và Hub
 uv run python scripts/prompt_sync.py push                   # đẩy các prompt chưa đồng bộ, tag v<version>
 uv run python scripts/prompt_sync.py push rag_generator     # đẩy một prompt
-uv run python scripts/prompt_sync.py pull                   # lấy commit mới nhất của Hub vào file
-uv run python scripts/prompt_sync.py pull ev_care_base --commit <hash>   # lấy đúng một commit
+uv run python scripts/prompt_sync.py pull                   # so bản mới nhất của Hub với code
+uv run python scripts/prompt_sync.py pull ev_care_base --commit <hash>   # so đúng một commit
+uv run python scripts/prompt_sync.py pull --out hub_texts   # lưu thêm text của Hub vào thư mục
 ```
 
-- `push` từ chối nếu có file đã sửa mà chưa chạy `lock`.
-- `pull` từ chối ghi đè khi file có thay đổi chưa push; muốn ghi đè thì thêm `--force`.
-- `pull` chỉ ghi file, không tự commit. Xem diff, rồi commit `texts/` và `versions.lock.json`.
-- Dùng khi sửa prompt trên Playground của LangSmith: `pull` về, review, `lock`, commit.
+- `push` từ chối nếu prompt đã sửa mà chưa chạy `lock`.
+- `pull` **chỉ in diff** (code so với Hub), không ghi vào code, `.txt` hay lock, vì nguồn gốc là file `.py`.
+- Dùng khi sửa prompt trên Playground của LangSmith: `pull` để xem khác biệt, chép phần muốn giữ vào hằng số
+  trong `.py`, rồi `lock`, test, commit.
 
 ## 3. Runtime và trace
 
-- Agent đọc prompt từ file trong image; **không gọi Hub khi chạy**, nên Hub lỗi không ảnh hưởng chat.
+- Agent dùng chuỗi prompt ngay trong code; **không gọi Hub và không đọc file `.txt` khi chạy**, nên Hub lỗi không ảnh hưởng chat.
   Đổi prompt trên production = đưa file mới qua git và deploy.
 - Mỗi lượt chat, trace `agent.turn` có metadata `prompt_version`, ví dụ `ev_care_base@v3`.
   Lọc trên LangSmith theo metadata này để biết lượt nào dùng bản nào.
