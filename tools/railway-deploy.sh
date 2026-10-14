@@ -17,6 +17,9 @@
 #   ./tools/railway-deploy.sh smoke            # GET /health + /api/v1/health/dependencies
 #   ./tools/railway-deploy.sh status
 #   ./tools/railway-deploy.sh logs [service]   # default: backend
+#   ./tools/railway-deploy.sh restart [target] # restart latest deployment, no rebuild
+#                                                #   (same targets as deploy; default: app) + smoke
+#   ./tools/railway-deploy.sh vars --restart   # push variables, then restart the services
 #
 # Env: RAILWAY_ENV (default staging), BACKEND_URL (default: backend public
 # domain), SKIP_CHECK=1 (deploy without the variable check).
@@ -178,7 +181,33 @@ sys.exit(0 if d["status"] == "ok" else 1)
   ok "Dependencies OK"
 }
 
+# Restarts the latest deployment of each service (no rebuild).
+restart_services() {
+  local svc
+  for svc in "$@"; do
+    info "Restarting '$svc' ($ENVIRONMENT)..."
+    railway restart --service "$svc" --environment "$ENVIRONMENT" --yes
+    ok "'$svc' restarted."
+  done
+}
+
+run_restart() {
+  local target="${1:-app}" steps
+  case "$target" in
+    app)       steps=("$BACKEND_SERVICE" "$WORKER_SERVICE") ;;
+    backend)   steps=("$BACKEND_SERVICE") ;;
+    worker)    steps=("$WORKER_SERVICE") ;;
+    mock)      steps=("$MOCK_SERVICE") ;;
+    collector) steps=("$COLLECTOR_SERVICE") ;;
+    all)       steps=("$COLLECTOR_SERVICE" "$MOCK_SERVICE" "$BACKEND_SERVICE" "$WORKER_SERVICE") ;;
+    *) err "Unknown target: $target (app | backend | worker | mock | collector | all)"; exit 1 ;;
+  esac
+  restart_services "${steps[@]}"
+  if [[ " ${steps[*]} " == *" $BACKEND_SERVICE "* ]]; then run_smoke; fi
+}
+
 push_vars() {
+  local restart_flag="${1:-}"
   prerequisites
   [[ -f "$ENV_FILE" ]] || { err "$ENV_FILE not found. Copy .railway.example.env and fill it in (step 6.1)."; exit 1; }
 
@@ -237,7 +266,12 @@ PY
   done <<< "$parsed"
   railway variable set --service "$COLLECTOR_SERVICE" --environment "$ENVIRONMENT" --skip-deploys     "OTEL_DEPLOYMENT_ENVIRONMENT=$ENVIRONMENT" >/dev/null
   ok "'$COLLECTOR_SERVICE' done ($((count + 1)) variables)."
-  ok "Variables pushed. Deploy to apply: ./tools/railway-deploy.sh deploy"
+  ok "Variables pushed."
+  if [[ "$restart_flag" == "--restart" ]]; then
+    restart_services "$COLLECTOR_SERVICE" "$BACKEND_SERVICE" "$WORKER_SERVICE"
+  else
+    info "Apply them: ./tools/railway-deploy.sh deploy (or vars --restart)"
+  fi
 }
 
 run_deploy() {
@@ -273,7 +307,8 @@ run_deploy() {
 ACTION="${1:-check}"
 case "$ACTION" in
   check)  run_check ;;
-  vars)   push_vars ;;
+  vars)   push_vars "${2:-}" ;;
+  restart) prerequisites; run_restart "${2:-app}" ;;
   deploy) run_deploy "${2:-app}" ;;
   smoke)  prerequisites; run_smoke ;;
   status)
@@ -286,7 +321,7 @@ case "$ACTION" in
     ;;
   logs)   railway logs --service "${2:-$BACKEND_SERVICE}" --environment "$ENVIRONMENT" ;;
   *)
-    err "Unknown action: $ACTION (check | vars | deploy | smoke | status | logs)"
+    err "Unknown action: $ACTION (check | vars | deploy | smoke | status | logs | restart)"
     exit 1
     ;;
 esac

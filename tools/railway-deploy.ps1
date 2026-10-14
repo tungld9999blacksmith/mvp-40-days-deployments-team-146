@@ -17,9 +17,10 @@
     smoke  : GET /health + /api/v1/health/dependencies on the backend domain
     status : project status + recent deployments
     logs   : tail logs of one service (-Service, default backend)
+    restart: restart the latest deployment of the Target services (no rebuild)
 
 .PARAMETER Target
-    For `deploy`: app (default: backend + worker), backend, worker, mock,
+    For `deploy` and `restart`: app (default: backend + worker), backend, worker, mock,
     collector, all (collector -> mock -> backend -> worker, like CI).
 
 .PARAMETER Environment
@@ -31,6 +32,10 @@
 .PARAMETER SkipCheck
     `deploy` without the variable check.
 
+.PARAMETER Restart
+    With `vars`: restart the services whose variables were pushed (backend,
+    worker, otel-collector) right after, without rebuilding.
+
 .EXAMPLE
     ./tools/railway-deploy.ps1 check
     ./tools/railway-deploy.ps1 vars
@@ -38,12 +43,14 @@
     ./tools/railway-deploy.ps1 deploy all
     ./tools/railway-deploy.ps1 deploy collector
     ./tools/railway-deploy.ps1 smoke
+    ./tools/railway-deploy.ps1 restart worker
+    ./tools/railway-deploy.ps1 vars -Restart
     ./tools/railway-deploy.ps1 logs -Service worker
 #>
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
-    [ValidateSet("check", "vars", "deploy", "smoke", "status", "logs")]
+    [ValidateSet("check", "vars", "deploy", "smoke", "status", "logs", "restart")]
     [string]$Action = "check",
     [Parameter(Position = 1)]
     [ValidateSet("app", "backend", "worker", "mock", "collector", "all")]
@@ -52,7 +59,8 @@ param(
     [string]$Url,
     [ValidateSet("backend", "worker", "mock-ev-system", "otel-collector", "Redis")]
     [string]$Service = "backend",
-    [switch]$SkipCheck
+    [switch]$SkipCheck,
+    [switch]$Restart
 )
 
 $ErrorActionPreference = "Stop"
@@ -135,6 +143,15 @@ function Read-EnvFile([string]$Path) {
         $result[$Matches[1]] = $value
     }
     return $result
+}
+
+# Restarts the latest deployment of each service (no rebuild).
+function Invoke-Restart([string[]]$Services) {
+    foreach ($svc in $Services) {
+        Write-Info "Restarting '$svc' ($Environment)..."
+        Invoke-Railway restart --service $svc --environment $Environment --yes
+        Write-Ok "'$svc' restarted."
+    }
 }
 
 function Test-Prerequisites {
@@ -293,7 +310,12 @@ switch ($Action) {
         }
         Set-ServiceVariable $CollectorService "OTEL_DEPLOYMENT_ENVIRONMENT" $Environment
         Write-Ok "'$CollectorService' done."
-        Write-Ok "Variables pushed. Deploy to apply: ./tools/railway-deploy.ps1 deploy"
+        Write-Ok "Variables pushed."
+        if ($Restart) {
+            Invoke-Restart @($CollectorService, $BackendService, $WorkerService)
+        } else {
+            Write-Info "Apply them: ./tools/railway-deploy.ps1 deploy (or vars -Restart)"
+        }
     }
     "deploy" {
         if ($SkipCheck) { Test-Prerequisites } else { Invoke-Check }
@@ -334,6 +356,19 @@ switch ($Action) {
             Write-Info $svc
             Invoke-Railway deployment list --service $svc --environment $Environment --limit 3
         }
+    }
+    "restart" {
+        Test-Prerequisites
+        $steps = switch ($Target) {
+            "app"       { @($BackendService, $WorkerService) }
+            "backend"   { @($BackendService) }
+            "worker"    { @($WorkerService) }
+            "mock"      { @($MockService) }
+            "collector" { @($CollectorService) }
+            "all"       { @($CollectorService, $MockService, $BackendService, $WorkerService) }
+        }
+        Invoke-Restart $steps
+        if ($steps -contains $BackendService) { Invoke-Smoke }
     }
     "logs" {
         Invoke-Railway logs --service $Service --environment $Environment

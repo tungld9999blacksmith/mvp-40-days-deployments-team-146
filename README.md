@@ -94,7 +94,7 @@ Kiểm tra nhanh từng phần: `curl localhost:8100/health` (mock), `curl local
 |---|---|
 | Demo agent với dữ liệu nghiệp vụ mock, không cần SQL/Redis | Chạy `src.demo.main:app` cùng Firebase Emulator và frontend HTTP; xem [hướng dẫn demo](docs/plans/AGENT_BACKEND_DEMO_PLAN.md) |
 | Chỉ giả lập các nhóm API chưa có ở backend | Đặt `VITE_API_MOCKS=all` (hoặc danh sách nhóm) trong `.env`. Mặc định `off` là gọi backend thật |
-| Đồng bộ ODO từ hãng xe, gửi nhắc bảo dưỡng | Terminal 3, ở `backend/`: `uv run celery -A src.celery_tasks worker -B --loglevel=info --pool=solo` |
+| Đồng bộ ODO từ hãng xe, gửi nhắc bảo dưỡng | Terminal 3, ở `backend/`: `uv run celery -A src.celery_tasks worker --loglevel=info --pool=solo`; lịch định kỳ thì thêm Terminal 4: `uv run celery -A src.celery_tasks beat --loglevel=info` (không dùng `-B` trên Windows) |
 | Tạo xe mock cho Gmail của mình | `MOCK_DEV_OWNER_EMAILS` trong `.env`, xem [DEV_GUIDE.md §2](DEV_GUIDE.md) |
 | Chạy cả backend trong Docker | `./scripts/dev-stack.ps1 up` (cần `.env` trỏ Redis/mock theo tên service, xem [RUN_LOCAL_BACKEND.md](docs/RUN_LOCAL_BACKEND.md)) |
 | macOS / Linux / Git Bash | Dùng `scripts/infra-stack.sh` và `scripts/dev-stack.sh`, cùng tham số |

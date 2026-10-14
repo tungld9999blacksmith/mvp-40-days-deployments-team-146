@@ -84,5 +84,6 @@ tools/repo_sync/.state.json
 infrastructure/backend/railway/.railway.env
 .vercel
 .env*
+*.otel.env
 infrastructure\backend\railway\.railway.env
 .tmp/

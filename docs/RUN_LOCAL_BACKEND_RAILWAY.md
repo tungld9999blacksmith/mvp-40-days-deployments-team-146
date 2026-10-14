@@ -272,6 +272,28 @@ chmod +x scripts/railway-infra.sh
 ./scripts/railway-infra.sh webhook ""
 ```
 
+### Restart service (không build lại)
+
+Dùng `tools/railway-deploy` để restart deployment mới nhất của service trên Railway
+(không rebuild image). Target: `app` (backend + worker, mặc định), `backend`, `worker`,
+`mock`, `collector`, `all`. Nếu target gồm backend, script chạy smoke test sau khi restart.
+
+```powershell
+./tools/railway-deploy.ps1 restart             # backend + worker
+./tools/railway-deploy.ps1 restart worker
+./tools/railway-deploy.ps1 restart mock        # mock-ev-system (dữ liệu mock về lại seed)
+./tools/railway-deploy.ps1 vars -Restart       # đẩy .railway.env lên Railway rồi restart
+```
+
+```bash
+
+ [target]
+./tools/railway-deploy.sh vars --restart
+```
+
+> Restart có thể chưa nạp biến môi trường mới (Railway áp biến lúc deploy). Nếu service vẫn
+> dùng giá trị cũ sau `vars --restart`, chạy `./tools/railway-deploy.ps1 deploy` thay thế.
+
 ---
 
 ## 7. Lưu ý

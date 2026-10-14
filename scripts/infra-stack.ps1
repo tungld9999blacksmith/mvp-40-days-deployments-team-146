@@ -15,14 +15,22 @@
     ps      : liệt kê trạng thái
     clean   : down + xoá luôn volume (mất dữ liệu redis + mock-ev)
 
+.PARAMETER EnvFile
+    Đường dẫn file biến môi trường để docker compose đọc khi thay biến ${...}
+    (vd. GRAFANA_CLOUD_* cho otel-collector). Đường dẫn tương đối tính từ gốc repo.
+    Mặc định: .env. Ví dụ: .otel.env hoặc .local.otel.env (cả hai đã gitignore).
+    Lưu ý: backend chạy bằng terminal KHÔNG đọc file này; xem docs/RUN_LOCAL_BACKEND.md.
+
 .EXAMPLE
     ./scripts/infra-stack.ps1 up
+    ./scripts/infra-stack.ps1 up -EnvFile .otel.env
     cd backend; uv run uvicorn src.main:app --reload --port 8000
 #>
 [CmdletBinding()]
 param(
     [ValidateSet("up", "down", "logs", "ps", "clean")]
-    [string]$Action = "up"
+    [string]$Action = "up",
+    [string]$EnvFile = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -53,7 +61,18 @@ if ($dockerExit -ne 0) {
     exit 1
 }
 
-$Compose = @("docker", "compose", "-f", $ComposeFile)
+$Compose = @("docker", "compose")
+if ($EnvFile) {
+    # Absolute paths pass through; relative ones resolve from the repo root (cwd).
+    $EnvFilePath = if ([System.IO.Path]::IsPathRooted($EnvFile)) { $EnvFile } else { Join-Path $RepoRoot $EnvFile }
+    if (-not (Test-Path $EnvFilePath -PathType Leaf)) {
+        Write-Err "Không tìm thấy file env: $EnvFile (tạo bằng cách copy .env rồi điền giá trị)."
+        exit 1
+    }
+    Write-Info "Dùng file env: $EnvFile"
+    $Compose += @("--env-file", $EnvFilePath)
+}
+$Compose += @("-f", $ComposeFile)
 
 switch ($Action) {
     "up" {
@@ -71,6 +90,9 @@ switch ($Action) {
         Write-Host "  2) cd backend"
         Write-Host "  3) uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 8000"
         Write-Host "     (hoặc, dùng venv/pip: uvicorn src.main:app --reload --port 8000)"
+        Write-Host "  4) Terminal khác, để chạy tác vụ nền (webhook, đồng bộ ODO):"
+        Write-Host "     cd backend; uv run celery -A src.celery_tasks worker --loglevel=info --pool=solo"
+        Write-Host "  5) Bật OpenTelemetry (tuỳ chọn): xem docs/RUN_LOCAL_BACKEND.md mục 6"
     }
     "down" {
         Write-Info "Dừng và xoá container hạ tầng (giữ volume)..."

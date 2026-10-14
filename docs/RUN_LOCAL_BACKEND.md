@@ -130,7 +130,8 @@ docker exec -it p146_redis redis-cli ping
 
   ```powershell
   cd backend
-  uv run celery -A src.celery_tasks worker -B --loglevel=info --pool=solo   # --pool=solo cần trên Windows
+  uv run celery -A src.celery_tasks worker --loglevel=info --pool=solo   # --pool=solo cần trên Windows
+  # Lịch định kỳ: terminal khác, uv run celery -A src.celery_tasks beat --loglevel=info
   ```
 
   Worker lấy broker từ `REDIS_BROKER_URL` / `REDIS_BACKEND_URL`; để trống thì tự ghép từ
@@ -205,6 +206,57 @@ uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 Backend giờ chạy như một tiến trình Python bình thường trên host — đặt
 breakpoint, attach debugger, hot-reload đều hoạt động — trong khi vẫn gọi
 được Redis/mock-ev qua `localhost`.
+
+### Bước 4 — Chạy Celery worker ở terminal riêng
+
+Worker là tiến trình tách biệt với backend. `uvicorn` không khởi động worker, nên phải mở một terminal khác:
+
+```powershell
+cd backend
+uv run celery -A src.celery_tasks worker --loglevel=info --pool=solo   # --pool=solo cần trên Windows
+```
+
+Không có worker thì webhook và tác vụ nền nằm chờ trong Redis, ODO không được cập nhật.
+
+> Không dùng cờ `-B` (chạy beat chung với worker) trên Windows: Celery báo `-B option does not work on Windows`. Lịch định kỳ (đồng bộ OEM, reset tài khoản demo) chạy bằng **beat** ở một terminal riêng:
+>
+> ```powershell
+> cd backend
+> uv run celery -A src.celery_tasks beat --loglevel=info
+> ```
+>
+> Beat chỉ phát lịch, không xử lý tác vụ, nên vẫn cần worker ở terminal trên. Muốn đồng bộ ODO thật thì chạy cả worker lẫn beat.
+
+### Bước 5 — Bật OpenTelemetry và gửi sang Grafana (tuỳ chọn)
+
+Tạo file `.otel.env` ở gốc repo (copy từ `.env`, đã được gitignore bằng mẫu `*.otel.env`). File này cần các biến:
+
+| Biến | Giá trị | Dùng bởi |
+|---|---|---|
+| `GRAFANA_CLOUD_OTLP_ENDPOINT`, `GRAFANA_CLOUD_INSTANCE_ID`, `GRAFANA_CLOUD_API_TOKEN` | Lấy từ Grafana Cloud | otel-collector |
+| `OTEL_ENABLED` | `true` | backend, worker |
+| `OTEL_AGENT_ENABLED` | `true` | backend, worker (span / metric của agent) |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://localhost:4318` | backend, worker |
+| `OTEL_DEPLOYMENT_ENVIRONMENT` | `dev` | backend, worker |
+
+**Hạ tầng và collector** đọc file này qua option `-EnvFile`:
+
+```powershell
+./scripts/infra-stack.ps1 up -EnvFile .otel.env
+```
+
+**Backend và worker chạy bằng terminal** không đọc `.otel.env` tự động (`Settings` chỉ đọc `.env`). Nạp biến vào phiên PowerShell trước khi chạy `uvicorn` hoặc `celery`:
+
+```powershell
+Get-Content ../.otel.env | Where-Object { $_ -match '^\s*[A-Za-z_][A-Za-z0-9_]*\s*=' } | ForEach-Object {
+    $k, $v = $_ -split '=', 2
+    Set-Item -Path "env:$($k.Trim())" -Value $v.Trim()
+}
+```
+
+Lệnh này chạy trong terminal đang đứng ở `backend/`, và chỉ có tác dụng với terminal đó. Biến đọc từ môi trường có độ ưu tiên cao hơn `.env`. Giá trị bọc trong dấu nháy sẽ giữ nguyên dấu nháy. Nếu cần, xoá nháy trước khi nạp.
+
+Kiểm tra: log backend có `OpenTelemetry enabled: exporting to http://localhost:4318 (dev)`. Xem thêm mục 7.3 của `OBSERVABILITY_SETUP.md`.
 
 ### Build lại & thay container `mock-ev-system`
 

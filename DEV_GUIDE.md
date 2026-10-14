@@ -93,6 +93,7 @@
 | [docs/observability/GRAFANA_GUIDE.md](docs/observability/GRAFANA_GUIDE.md) | Grafana — Drilldown, Explore, đọc trace, chọn visualization, dựng dashboard |
 | [docs/observability/AGENT_COST_LATENCY.md](docs/observability/AGENT_COST_LATENCY.md) | Agent — đo độ trễ & chi phí LLM (công thức, bảng giá token), dashboard Grafana, alert Discord, xuất CSV |
 | [docs/observability/GRAFANA_ALERTING.md](docs/observability/GRAFANA_ALERTING.md) | Grafana — alert rule gửi Discord (contact point, template, Query/Expression A-B-C, policy) |
+| [docs/observability/LOCAL_TESTING_GUIDE.md](docs/observability/LOCAL_TESTING_GUIDE.md) | Observability — xem log, trace, metric, chi phí & độ trễ khi chạy local (query, filter, xử lý sự cố) |
 | [backend/src/infrastructure/prompts/README.md](backend/src/infrastructure/prompts/README.md) | Prompt versioning — sửa prompt, lock version, push/pull LangSmith Prompt Hub |
 | [tools/repo_sync/README.md](tools/repo_sync/README.md) | Đồng bộ code nhánh `develop` sang repo deploy riêng |
 
