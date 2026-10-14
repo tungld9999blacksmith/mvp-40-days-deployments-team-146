@@ -1,0 +1,851 @@
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "orgId": 1,
+      "name": "agent",
+      "folder": "EV Care",
+      "interval": "1m",
+      "rules": [
+        {
+          "uid": "evcare-agent-p95-latency",
+          "title": "Agent p95 latency high",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 900,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "refId": "A",
+                "expr": "histogram_quantile(0.95, sum by (le) (rate(evcare_agent_turn_duration_seconds_bucket[10m]))) or vector(0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "grafanacloud-prom"
+                },
+                "hide": false,
+                "editorMode": "code",
+                "legendFormat": "__auto"
+              },
+              "queryType": ""
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "reduce",
+                "expression": "A",
+                "reducer": "last",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "settings": {
+                  "mode": "dropNN"
+                },
+                "hide": false
+              }
+            },
+            {
+              "refId": "C",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "C",
+                "type": "threshold",
+                "expression": "B",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        15
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "hide": false
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "10m",
+          "annotations": {
+            "summary": "p95 một lượt chat là {{ humanizeDuration $values.B.Value }} (> 15s)",
+            "description": "Xem dashboard \"EV Care — Agent: độ trễ & chi phí\"; chậm ở node/tool nào: panel LLM p95 theo node và Tool p95."
+          },
+          "labels": {
+            "severity": "warning",
+            "service": "ev-care-backend"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "discord-evcare"
+          }
+        },
+        {
+          "uid": "evcare-agent-llm-error-rate",
+          "title": "Agent LLM error rate high",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 900,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "refId": "A",
+                "expr": "(sum(rate(evcare_llm_call_duration_seconds_count{llm_status=\"error\"}[10m])) / sum(rate(evcare_llm_call_duration_seconds_count[10m]))) or vector(0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "grafanacloud-prom"
+                },
+                "hide": false,
+                "editorMode": "code",
+                "legendFormat": "__auto"
+              },
+              "queryType": ""
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "reduce",
+                "expression": "A",
+                "reducer": "last",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "settings": {
+                  "mode": "dropNN"
+                },
+                "hide": false
+              }
+            },
+            {
+              "refId": "C",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "C",
+                "type": "threshold",
+                "expression": "B",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0.1
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "hide": false
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "5m",
+          "annotations": {
+            "summary": "{{ humanizePercentage $values.B.Value }} lời gọi LLM lỗi trong 10 phút",
+            "description": "Kiểm tra OpenRouter/nhà cung cấp model và log lỗi: Explore → Loki."
+          },
+          "labels": {
+            "severity": "critical",
+            "service": "ev-care-backend"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "discord-evcare"
+          }
+        },
+        {
+          "uid": "evcare-agent-tool-slow",
+          "title": "Agent tool slow",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 900,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "refId": "A",
+                "expr": "histogram_quantile(0.95, sum by (le) (rate(evcare_agent_tool_duration_seconds_bucket[10m]))) or vector(0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "grafanacloud-prom"
+                },
+                "hide": false,
+                "editorMode": "code",
+                "legendFormat": "__auto"
+              },
+              "queryType": ""
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "reduce",
+                "expression": "A",
+                "reducer": "last",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "settings": {
+                  "mode": "dropNN"
+                },
+                "hide": false
+              }
+            },
+            {
+              "refId": "C",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "C",
+                "type": "threshold",
+                "expression": "B",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        8
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "hide": false
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "10m",
+          "annotations": {
+            "summary": "p95 thời gian chạy tool là {{ humanizeDuration $values.B.Value }} (> 8s)",
+            "description": "Panel Tool p95 theo tool cho biết tool nào chậm."
+          },
+          "labels": {
+            "severity": "warning",
+            "service": "ev-care-backend"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "discord-evcare"
+          }
+        },
+        {
+          "uid": "evcare-llm-cost-hour",
+          "title": "LLM cost per hour high",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 3600,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "refId": "A",
+                "expr": "sum(increase(evcare_llm_cost_usd_total[1h])) or vector(0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "grafanacloud-prom"
+                },
+                "hide": false,
+                "editorMode": "code",
+                "legendFormat": "__auto"
+              },
+              "queryType": ""
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "reduce",
+                "expression": "A",
+                "reducer": "last",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "settings": {
+                  "mode": "dropNN"
+                },
+                "hide": false
+              }
+            },
+            {
+              "refId": "C",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "C",
+                "type": "threshold",
+                "expression": "B",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        1
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "hide": false
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "0s",
+          "annotations": {
+            "summary": "Chi phí LLM {{ printf \"%.2f\" $values.B.Value }} USD trong 1 giờ qua (> 1 USD)",
+            "description": "Tìm lượt chat tốn kém: Explore → Tempo { name = \"agent.turn\" && span.llm.cost_usd > 0.01 }"
+          },
+          "labels": {
+            "severity": "warning",
+            "service": "ev-care-backend"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "discord-evcare"
+          }
+        },
+        {
+          "uid": "evcare-llm-cost-day",
+          "title": "LLM cost per day high",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 86400,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "refId": "A",
+                "expr": "sum(increase(evcare_llm_cost_usd_total[24h])) or vector(0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "grafanacloud-prom"
+                },
+                "hide": false,
+                "editorMode": "code",
+                "legendFormat": "__auto"
+              },
+              "queryType": ""
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "reduce",
+                "expression": "A",
+                "reducer": "last",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "settings": {
+                  "mode": "dropNN"
+                },
+                "hide": false
+              }
+            },
+            {
+              "refId": "C",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "C",
+                "type": "threshold",
+                "expression": "B",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        10
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "hide": false
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "0s",
+          "annotations": {
+            "summary": "Chi phí LLM {{ printf \"%.2f\" $values.B.Value }} USD trong 24 giờ qua (> 10 USD)",
+            "description": "Tìm lượt chat tốn kém: Explore → Tempo { name = \"agent.turn\" && span.llm.cost_usd > 0.01 }"
+          },
+          "labels": {
+            "severity": "critical",
+            "service": "ev-care-backend"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "discord-evcare"
+          }
+        },
+        {
+          "uid": "evcare-agent-cost-per-turn",
+          "title": "Agent cost per turn high",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 3600,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "refId": "A",
+                "expr": "(sum(increase(evcare_agent_turn_cost_usd_sum[1h])) / sum(increase(evcare_agent_turn_cost_usd_count[1h]))) or vector(0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "grafanacloud-prom"
+                },
+                "hide": false,
+                "editorMode": "code",
+                "legendFormat": "__auto"
+              },
+              "queryType": ""
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "reduce",
+                "expression": "A",
+                "reducer": "last",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "settings": {
+                  "mode": "dropNN"
+                },
+                "hide": false
+              }
+            },
+            {
+              "refId": "C",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "C",
+                "type": "threshold",
+                "expression": "B",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0.02
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "hide": false
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "15m",
+          "annotations": {
+            "summary": "Chi phí trung bình một lượt chat là {{ printf \"%.4f\" $values.B.Value }} USD (> 0.02)",
+            "description": "Tìm lượt chat tốn kém: Explore → Tempo { name = \"agent.turn\" && span.llm.cost_usd > 0.01 }"
+          },
+          "labels": {
+            "severity": "warning",
+            "service": "ev-care-backend"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "discord-evcare"
+          }
+        },
+        {
+          "uid": "evcare-llm-unpriced",
+          "title": "LLM model has no price",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 900,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-prom",
+              "model": {
+                "refId": "A",
+                "expr": "sum(increase(evcare_llm_unpriced_calls_total[15m])) or vector(0)",
+                "instant": true,
+                "range": false,
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "grafanacloud-prom"
+                },
+                "hide": false,
+                "editorMode": "code",
+                "legendFormat": "__auto"
+              },
+              "queryType": ""
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "reduce",
+                "expression": "A",
+                "reducer": "last",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "settings": {
+                  "mode": "dropNN"
+                },
+                "hide": false
+              }
+            },
+            {
+              "refId": "C",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "C",
+                "type": "threshold",
+                "expression": "B",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "hide": false
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "0s",
+          "annotations": {
+            "summary": "Có model chưa khai báo giá trong model_prices.json — chi phí đang bị thiếu",
+            "description": "Thêm giá vào backend/src/infrastructure/observability/model_prices.json rồi deploy lại."
+          },
+          "labels": {
+            "severity": "warning",
+            "service": "ev-care-backend"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "discord-evcare"
+          }
+        },
+        {
+          "uid": "evcare-service-started",
+          "title": "Service started (deploy or restart)",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "grafanacloud-logs",
+              "model": {
+                "refId": "A",
+                "queryType": "instant",
+                "editorMode": "code",
+                "expr": "sum by (service_name) (count_over_time({service_name=~\"ev-care-(backend|worker)\"} |= \"Service started\" [5m]))",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "datasource": {
+                  "type": "loki",
+                  "uid": "grafanacloud-logs"
+                },
+                "hide": false
+              },
+              "queryType": ""
+            },
+            {
+              "refId": "B",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "B",
+                "type": "reduce",
+                "expression": "A",
+                "reducer": "last",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "settings": {
+                  "mode": "dropNN"
+                },
+                "hide": false
+              }
+            },
+            {
+              "refId": "C",
+              "datasourceUid": "__expr__",
+              "model": {
+                "refId": "C",
+                "type": "threshold",
+                "expression": "B",
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        0
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "hide": false
+              }
+            }
+          ],
+          "noDataState": "OK",
+          "execErrState": "Error",
+          "for": "0s",
+          "annotations": {
+            "summary": "{{ $labels.service_name }} vừa khởi động (deploy hoặc restart)",
+            "description": "Xem version và môi trường: Explore → Loki {service_name=\"{{ $labels.service_name }}\"} |= \"Service started\". Nếu báo lặp lại nhiều lần trong vài phút, service đang crash-loop."
+          },
+          "labels": {
+            "severity": "info",
+            "service": "ev-care-backend"
+          },
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "discord-evcare"
+          }
+        }
+      ]
+    }
+  ]
+}

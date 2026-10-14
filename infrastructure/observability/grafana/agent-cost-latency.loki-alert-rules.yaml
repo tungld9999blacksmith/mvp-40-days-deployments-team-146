@@ -1,0 +1,14 @@
+# Prometheus-format rule file for a Loki data source (Import: choose the Loki data source).
+# Fires when backend / worker logged "Service started" in the last 5 minutes (deploy or restart).
+groups:
+  - name: deploy
+    interval: 1m
+    rules:
+      - alert: Service started (deploy or restart)
+        expr: sum by (service_name) (count_over_time({service_name=~"ev-care-(backend|worker)"} |= "Service started" [5m])) > 0
+        labels:
+          severity: info
+          service: ev-care-backend
+        annotations:
+          summary: '{{ $labels.service_name }} vừa khởi động (deploy hoặc restart)'
+          description: 'Xem version: Explore → Loki {service_name="{{ $labels.service_name }}"} |= "Service started". Báo lặp lại trong vài phút nghĩa là service đang crash-loop.'

@@ -1,0 +1,669 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: agent
+      folder: EV Care/agent-cost-latency.standard-alert-rules.yaml
+      interval: 1m
+      rules:
+        - uid: 7cf69899-8495-561e-a28e-eaee0311de2b
+          title: Agent p95 latency high
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: grafanacloud-prom
+              model:
+                datasource:
+                    type: prometheus
+                    uid: grafanacloud-prom
+                expr: histogram_quantile(0.95, sum by (le) (rate(evcare_agent_turn_duration_seconds_bucket[10m]))) > 15
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 10m
+          annotations:
+            description: 'Xem dashboard "EV Care — Agent: độ trễ & chi phí"; chậm ở node/tool nào: panel LLM p95 theo node và Tool p95.'
+            summary: p95 một lượt chat là {{ humanizeDuration $value }} (> 15s)
+          labels:
+            __converted_prometheus_rule__: "true"
+            service: ev-care-backend
+            severity: warning
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+        - uid: 832af3b3-8c9e-5053-a700-0f589358055f
+          title: Agent LLM error rate high
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: grafanacloud-prom
+              model:
+                datasource:
+                    type: prometheus
+                    uid: grafanacloud-prom
+                expr: (sum(rate(evcare_llm_call_duration_seconds_count{llm_status="error"}[10m])) / sum(rate(evcare_llm_call_duration_seconds_count[10m]))) > 0.1
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 5m
+          annotations:
+            description: 'Kiểm tra OpenRouter/nhà cung cấp model và log lỗi: Explore → Loki.'
+            summary: '{{ humanizePercentage $value }} lời gọi LLM lỗi trong 10 phút'
+          labels:
+            __converted_prometheus_rule__: "true"
+            service: ev-care-backend
+            severity: critical
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+        - uid: da2cb2f0-4f7e-5d74-a820-711e1b2f463b
+          title: Agent tool slow
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: grafanacloud-prom
+              model:
+                datasource:
+                    type: prometheus
+                    uid: grafanacloud-prom
+                expr: histogram_quantile(0.95, sum by (le) (rate(evcare_agent_tool_duration_seconds_bucket[10m]))) > 8
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 10m
+          annotations:
+            description: Panel Tool p95 theo tool cho biết tool nào chậm.
+            summary: p95 thời gian chạy tool là {{ humanizeDuration $value }} (> 8s)
+          labels:
+            __converted_prometheus_rule__: "true"
+            service: ev-care-backend
+            severity: warning
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+        - uid: 46e8f3cd-0495-560f-8d82-abf4fa0f9828
+          title: LLM cost per hour high
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: grafanacloud-prom
+              model:
+                datasource:
+                    type: prometheus
+                    uid: grafanacloud-prom
+                expr: sum(increase(evcare_llm_cost_usd_total[1h])) > 1
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          annotations:
+            description: 'Tìm lượt chat tốn kém: Explore → Tempo { name = "agent.turn" && span.llm.cost_usd > 0.01 }'
+            summary: Chi phí LLM {{ printf "%.2f" $value }} USD trong 1 giờ qua (> 1 USD)
+          labels:
+            __converted_prometheus_rule__: "true"
+            service: ev-care-backend
+            severity: warning
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+        - uid: 045119f0-2690-5c09-ae6b-ea38bebc8eea
+          title: LLM cost per day high
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: grafanacloud-prom
+              model:
+                datasource:
+                    type: prometheus
+                    uid: grafanacloud-prom
+                expr: sum(increase(evcare_llm_cost_usd_total[24h])) > 10
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          annotations:
+            description: 'Tìm lượt chat tốn kém: Explore → Tempo { name = "agent.turn" && span.llm.cost_usd > 0.01 }'
+            summary: Chi phí LLM {{ printf "%.2f" $value }} USD trong 24 giờ qua (> 10 USD)
+          labels:
+            __converted_prometheus_rule__: "true"
+            service: ev-care-backend
+            severity: critical
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+        - uid: 085cf503-0a54-5b40-861a-afed36e19846
+          title: Agent cost per turn high
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: grafanacloud-prom
+              model:
+                datasource:
+                    type: prometheus
+                    uid: grafanacloud-prom
+                expr: (sum(increase(evcare_agent_turn_cost_usd_sum[1h])) / sum(increase(evcare_agent_turn_cost_usd_count[1h]))) > 0.02
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          for: 15m
+          annotations:
+            description: 'Tìm lượt chat tốn kém: Explore → Tempo { name = "agent.turn" && span.llm.cost_usd > 0.01 }'
+            summary: Chi phí trung bình một lượt chat là {{ printf "%.4f" $value }} USD (> 0.02)
+          labels:
+            __converted_prometheus_rule__: "true"
+            service: ev-care-backend
+            severity: warning
+          isPaused: false
+          missing_series_evals_to_resolve: 1
+        - uid: 945f1b20-adb6-5e61-ac7b-5ab826c1839b
+          title: LLM model has no price
+          condition: threshold
+          data:
+            - refId: query
+              queryType: prometheus
+              relativeTimeRange:
+                from: 660
+                to: 60
+              datasourceUid: grafanacloud-prom
+              model:
+                datasource:
+                    type: prometheus
+                    uid: grafanacloud-prom
+                expr: sum(increase(evcare_llm_unpriced_calls_total[15m])) > 0
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                range: false
+                refId: query
+            - refId: prometheus_math
+              queryType: math
+              datasourceUid: __expr__
+              model:
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: is_number($query) || is_nan($query) || is_inf($query)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: prometheus_math
+                type: math
+            - refId: threshold
+              queryType: threshold
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: gt
+                datasource:
+                    IsPrunable: false
+                    access: ""
+                    apiVersion: ""
+                    basicAuth: false
+                    basicAuthUser: ""
+                    created: "0001-01-01T00:00:00Z"
+                    database: ""
+                    id: -100
+                    isDefault: false
+                    jsonData: {}
+                    name: __expr__
+                    readOnly: false
+                    secureJsonData: {}
+                    type: __expr__
+                    uid: __expr__
+                    updated: "0001-01-01T00:00:00Z"
+                    url: ""
+                    user: ""
+                    withCredentials: false
+                expression: prometheus_math
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: threshold
+                type: threshold
+          noDataState: OK
+          execErrState: OK
+          annotations:
+            description: Thêm giá vào backend/src/infrastructure/observability/model_prices.json rồi deploy lại.
+            summary: Có model chưa khai báo giá trong model_prices.json — chi phí đang bị thiếu
+          labels:
+            __converted_prometheus_rule__: "true"
+            service: ev-care-backend
+            severity: warning
+          isPaused: false
+          missing_series_evals_to_resolve: 1

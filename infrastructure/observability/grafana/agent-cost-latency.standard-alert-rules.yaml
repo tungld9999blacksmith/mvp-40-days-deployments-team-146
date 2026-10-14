@@ -1,0 +1,70 @@
+groups:  
+- name: agent  
+  interval: 1m  
+  rules:  
+  - alert: Agent p95 latency high  
+    expr: histogram_quantile(0.95, sum by (le) (rate(evcare_agent_turn_duration_seconds_bucket[10m]))) > 15  
+    for: 10m  
+    labels:  
+      severity: warning  
+      service: ev-care-backend  
+    annotations:  
+      summary: 'p95 một lượt chat là {{ humanizeDuration $value }} (> 15s)'  
+      description: 'Xem dashboard "EV Care — Agent: độ trễ & chi phí"; chậm ở node/tool nào: panel LLM p95 theo node và Tool p95.'  
+
+  - alert: Agent LLM error rate high  
+    expr: (sum(rate(evcare_llm_call_duration_seconds_count{llm_status="error"}[10m])) / sum(rate(evcare_llm_call_duration_seconds_count[10m]))) > 0.1  
+    for: 5m  
+    labels:  
+      severity: critical  
+      service: ev-care-backend  
+    annotations:  
+      summary: '{{ humanizePercentage $value }} lời gọi LLM lỗi trong 10 phút'  
+      description: 'Kiểm tra OpenRouter/nhà cung cấp model và log lỗi: Explore → Loki.'  
+
+  - alert: Agent tool slow  
+    expr: histogram_quantile(0.95, sum by (le) (rate(evcare_agent_tool_duration_seconds_bucket[10m]))) > 8  
+    for: 10m  
+    labels:  
+      severity: warning  
+      service: ev-care-backend  
+    annotations:  
+      summary: 'p95 thời gian chạy tool là {{ humanizeDuration $value }} (> 8s)'  
+      description: 'Panel Tool p95 theo tool cho biết tool nào chậm.'  
+
+  - alert: LLM cost per hour high  
+    expr: sum(increase(evcare_llm_cost_usd_total[1h])) > 1  
+    labels:  
+      severity: warning  
+      service: ev-care-backend  
+    annotations:  
+      summary: 'Chi phí LLM {{ printf "%.2f" $value }} USD trong 1 giờ qua (> 1 USD)'  
+      description: 'Tìm lượt chat tốn kém: Explore → Tempo { name = "agent.turn" && span.llm.cost_usd > 0.01 }'  
+
+  - alert: LLM cost per day high  
+    expr: sum(increase(evcare_llm_cost_usd_total[24h])) > 10  
+    labels:  
+      severity: critical  
+      service: ev-care-backend  
+    annotations:  
+      summary: 'Chi phí LLM {{ printf "%.2f" $value }} USD trong 24 giờ qua (> 10 USD)'  
+      description: 'Tìm lượt chat tốn kém: Explore → Tempo { name = "agent.turn" && span.llm.cost_usd > 0.01 }'  
+
+  - alert: Agent cost per turn high  
+    expr: (sum(increase(evcare_agent_turn_cost_usd_sum[1h])) / sum(increase(evcare_agent_turn_cost_usd_count[1h]))) > 0.02  
+    for: 15m  
+    labels:  
+      severity: warning  
+      service: ev-care-backend  
+    annotations:  
+      summary: 'Chi phí trung bình một lượt chat là {{ printf "%.4f" $value }} USD (> 0.02)'  
+      description: 'Tìm lượt chat tốn kém: Explore → Tempo { name = "agent.turn" && span.llm.cost_usd > 0.01 }'  
+
+  - alert: LLM model has no price  
+    expr: sum(increase(evcare_llm_unpriced_calls_total[15m])) > 0  
+    labels:  
+      severity: warning  
+      service: ev-care-backend  
+    annotations:  
+      summary: 'Có model chưa khai báo giá trong model_prices.json — chi phí đang bị thiếu'  
+      description: 'Thêm giá vào backend/src/infrastructure/observability/model_prices.json rồi deploy lại.'  

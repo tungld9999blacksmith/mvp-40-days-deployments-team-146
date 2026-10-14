@@ -16,11 +16,13 @@ Tạo alert trên Grafana Cloud cho `ev-care-backend` / `ev-care-worker` và g�
 5. [Bước 4 — Tạo alert rule](#bước-4--tạo-alert-rule)
 6. [Query & Expression: A, B, C là gì](#query--expression-a-b-c-là-gì)
 7. [Bước 5 — Notification policy](#bước-5--notification-policy)
-8. [Bước 6 — Kiểm tra end-to-end](#bước-6--kiểm-tra-end-to-end)
-9. [Bộ rule đề xuất](#bộ-rule-đề-xuất)
-10. [Silence & bảo trì](#silence--bảo-trì)
-11. [Xử lý sự cố](#xử-lý-sự-cố)
-12. [Reference docs & tutorial](#reference-docs--tutorial)
+8. [Vòng đời alert & khi nào gửi lại](#vòng-đời-alert--khi-nào-gửi-lại)
+9. [Rule import từ file Prometheus YAML](#rule-import-từ-file-prometheus-yaml)
+10. [Bước 6 — Kiểm tra end-to-end](#bước-6--kiểm-tra-end-to-end)
+11. [Bộ rule đề xuất](#bộ-rule-đề-xuất)
+12. [Silence & bảo trì](#silence--bảo-trì)
+13. [Xử lý sự cố](#xử-lý-sự-cố)
+14. [Reference docs & tutorial](#reference-docs--tutorial)
 
 ---
 
@@ -187,9 +189,61 @@ A, B, C là **Ref ID** — tên của từng bước. Trường **Input** của 
 
 Muốn tách kênh theo mức độ (vd `critical` → `#evcare-oncall`): thêm **child policy** với matcher `severity = critical` → contact point khác.
 
+## Vòng đời alert & khi nào gửi lại
+
+Một alert đi qua hai tầng, mỗi tầng có cấu hình riêng:
+
+```text
+Mỗi evaluation interval (1m): chạy Query → Condition
+   │ điều kiện đúng liên tục đủ Pending period ──► Pending ──► Firing
+   │ điều kiện hết đúng (+ Keep firing for) ──────► Normal  ──► gửi RESOLVED
+   ▼
+Firing ──► Notification policy: chờ Group wait ──► gửi tin đầu
+          vẫn Firing, không đổi ──► nhắc lại sau Repeat interval
+```
+
+Firing **không** nghĩa là gửi tin mỗi phút: rule chỉ đổi trạng thái, tần suất gửi do policy quyết định.
+
+**1. Notification policy** — *Alerting → Notification policies → policy → Edit → Timing options* (áp cho mọi rule đi qua policy đó):
+
+| Tuỳ chọn | Mặc định | Ý nghĩa | Chỉnh khi |
+|---|---|---|---|
+| **Group wait** | 30s | Chờ sau alert đầu tiên của nhóm rồi mới gửi tin đầu (để gom alert cùng lúc) | Muốn nhận tin sớm hơn: giảm |
+| **Group interval** | 5m | Nhóm đã gửi, có alert mới hoặc đổi trạng thái → đợi tối thiểu chừng này mới gửi cập nhật | Bị dồn tin: tăng |
+| **Repeat interval** | 4h | Alert vẫn Firing và không đổi → nhắc lại sau chừng này | Muốn nhắc nhiều: giảm (vd 1h). Muốn gần như không nhắc: tăng (vd 24h) |
+
+Muốn một rule có nhịp riêng (vd rule "Service started" chỉ báo một lần): tạo **nested policy** riêng cho rule đó (matcher `alertname = ...`) và đặt Timing options riêng, đứng **trên** policy chung.
+
+**2. Rule** — *mở rule → Edit → Evaluation behavior*:
+
+| Tuỳ chọn | Ý nghĩa |
+|---|---|
+| **Evaluation interval** | Bao lâu đánh giá một lần (group `agent`: 1m) |
+| **Pending period** (`for`) | Điều kiện đúng liên tục bao lâu mới Firing — lọc nhiễu thoáng qua |
+| **Keep firing for** | Điều kiện hết đúng vẫn giữ Firing thêm chừng này mới Resolved — chống nhấp nháy báo/hết liên tục |
+
+**3. Tạm chặn / tắt hẳn**
+
+| Công cụ | Tác dụng |
+|---|---|
+| **Silence** | Chặn *thông báo* theo label trong một khoảng thời gian; rule vẫn Firing |
+| **Mute timing** | Khung giờ cố định không gửi (vd ban đêm), gắn vào policy |
+| **Pause evaluation** (trên rule) | Ngừng đánh giá hoàn toàn; không còn trạng thái mới, cũng không có tin RESOLVED |
+
+## Rule import từ file Prometheus YAML
+
+Khi import file định dạng Prometheus (vd [agent-cost-latency.standard-alert-rules.yaml](../../infrastructure/observability/grafana/agent-cost-latency.standard-alert-rules.yaml)), Grafana chuyển mỗi rule thành chuỗi `query → math (is_number) → threshold (> 0)`, gắn nhãn `__converted_prometheus_rule__`. Hệ quả:
+
+- **Điều kiện nằm trong PromQL** (`... > 15`), không nằm ở bước Threshold. Đổi ngưỡng = sửa số trong biểu thức.
+- **Điều kiện sai → truy vấn trả rỗng → `Normal (NoData)`**. Đây là trạng thái bình thường, không phải lỗi. Cũng vì vậy, đổi ngưỡng ở bước Threshold (vd `-1`) không làm rule Firing.
+- **Không có contact point trong rule** (định dạng Prometheus không có trường này). Phải có nested policy khớp label (vd `service = ev-care-backend` → `discord-evcare`), nếu không alert đi vào contact point mặc định và contact point Discord hiện *No delivery attempts*.
+- Import đặt `execErrState: OK` (lỗi truy vấn bị im): đổi sang **Error** trong từng rule.
+- Có thể bị tích sẵn **Pause imported alerting rules** lúc import: bỏ tích, hoặc *Resume evaluation* ở group.
+- **Thử bắn tin:** sửa tạm biểu thức của một rule thành `vector(1)` (luôn có giá trị), lưu, chờ 1–2 phút, rồi **trả lại biểu thức gốc**.
+
 ## Bước 6 — Kiểm tra end-to-end
 
-1. Sửa rule: tạm đặt threshold `IS ABOVE -1` (luôn đúng), pending `0s` → Save.
+1. Sửa rule: tạm đặt threshold `IS ABOVE -1` (luôn đúng), pending `0s` → Save. *(Rule import từ Prometheus YAML: thay bằng biểu thức `vector(1)`, xem mục trên.)*
 2. Chờ 1–2 phút → Discord nhận `🔥 FIRING`.
 3. Trả rule về như cũ → sau 1–2 chu kỳ nhận `✅ RESOLVED`.
 4. Thử lỗi thật: backend chạy `OTEL_ENABLED=true`, gọi liên tục một API trả 500.
@@ -233,6 +287,10 @@ Muốn tách kênh theo mức độ (vd `critical` → `#evcare-oncall`): thêm 
 | Tin hiện `<no value>` | Sai Ref ID trong `$values.X.Value` |
 | Một sự cố ra rất nhiều tin | Query chia theo label (`sum by (...)`) — Group by `alertname` trong policy |
 | Không nhận tin *resolved* | Rule đã bị xoá / tạm dừng trước khi về Normal |
+| Rule luôn `Normal (NoData)` dù đổi ngưỡng | Rule import từ Prometheus YAML: điều kiện nằm trong PromQL, xem [mục import](#rule-import-từ-file-prometheus-yaml) |
+| Contact point ghi *No delivery attempts* | Chưa có nested policy trỏ tới contact point (hoặc rule chưa từng Firing) |
+| Firing mà không thấy tin | Silence / mute timing đang chặn, hoặc policy khác khớp trước (không bật *Continue matching*); dùng *Preview routing* trong rule |
+| Muốn nhắc lại thường xuyên / ít hơn | Chỉnh *Repeat interval* trong policy ([Vòng đời alert](#vòng-đời-alert--khi-nào-gửi-lại)) |
 
 ---
 

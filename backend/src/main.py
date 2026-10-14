@@ -20,6 +20,7 @@ from .infrastructure.observability import (
     BACKEND_SERVICE,
     configure_langsmith,
     instrument_fastapi,
+    log_service_started,
     setup_telemetry,
     shutdown_telemetry,
 )
@@ -108,6 +109,7 @@ from .modules.workshop_pricing.route import router as workshop_pricing_router
 async def lifespan(app: FastAPI):
     settings = get_settings()
     print(f"Starting {settings.app_name} in {settings.app_env} mode")
+    log_service_started(BACKEND_SERVICE, settings)
     if settings.uses_static_odometer():
         logging.getLogger(__name__).warning(
             "OEM_SYNC_MODE resolves to 'static': vehicles get a random demo odometer instead of OEM data"

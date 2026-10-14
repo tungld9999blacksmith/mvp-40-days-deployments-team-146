@@ -16,6 +16,7 @@ Key routing rules:
 - Save progress → invoke /context-save
 - Resume context → invoke /context-restore
 - Author a backlog-ready spec/issue → invoke /spec
+- Sync code / `.railway.env` to the deploy repo ("sync deploy") → invoke /sync-deploy (repo_sync with `--ref develop --no-fetch`; never fetch, push or run `railway` unasked)
 
 ## Design System
 Read DESIGN.md before visual or UI work: it defines the fonts, colors, spacing, and

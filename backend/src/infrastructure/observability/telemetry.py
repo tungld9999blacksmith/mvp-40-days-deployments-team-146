@@ -170,6 +170,22 @@ def setup_telemetry(service_name: str, settings: Settings | None = None) -> Tele
     return telemetry
 
 
+def log_service_started(service_name: str, settings: Settings | None = None) -> None:
+    """One log line per process start (deploy or restart); Grafana alerts on it in Loki.
+
+    Call once logging is configured, so the line reaches the OTLP log handler.
+    """
+    settings = settings or get_settings()
+    logger.info(
+        "Service started",
+        extra={
+            "service": service_name,
+            "service_version": (os.environ.get("RAILWAY_GIT_COMMIT_SHA") or "dev")[:12],
+            "deployment_environment": settings.otel_deployment_environment,
+        },
+    )
+
+
 def get_telemetry() -> Telemetry | None:
     return _telemetry
 

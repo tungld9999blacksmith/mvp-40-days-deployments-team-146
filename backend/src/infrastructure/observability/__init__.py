@@ -25,6 +25,7 @@ from .telemetry import (
     get_telemetry,
     instrument_fastapi,
     is_enabled,
+    log_service_started,
     setup_telemetry,
     shutdown_telemetry,
 )
@@ -48,6 +49,7 @@ __all__ = [
     "instrument_tools",
     "is_enabled",
     "jobs_project",
+    "log_service_started",
     "record_llm_call",
     "setup_telemetry",
     "shutdown_telemetry",

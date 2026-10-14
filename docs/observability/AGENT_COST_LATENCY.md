@@ -147,7 +147,20 @@ Chi tiết cách chọn visualization: [GRAFANA_GUIDE.md](GRAFANA_GUIDE.md).
 
 ## 6. Alert gửi Discord
 
-Dùng lại contact point `discord-evcare` và template `evcare-discord`: làm **Bước 1–3** trong [GRAFANA_ALERTING.md](GRAFANA_ALERTING.md#bước-1--tạo-webhook-discord) nếu chưa có. Tạo rule theo **Bước 4** (cùng bảng điền, đổi Name / Query / ngưỡng).
+Dùng lại contact point `discord-evcare` và template `evcare-discord`: làm **Bước 1–3** trong [GRAFANA_ALERTING.md](GRAFANA_ALERTING.md#bước-1--tạo-webhook-discord) nếu chưa có. Tạo rule theo **Bước 4** (cùng bảng điền, đổi Name / Query / ngưỡng). Tần suất gửi và gửi lại: [Vòng đời alert](GRAFANA_ALERTING.md#vòng-đời-alert--khi-nào-gửi-lại).
+
+### Cách nhanh: import file YAML (định dạng Prometheus)
+
+File [agent-cost-latency.standard-alert-rules.yaml](../../infrastructure/observability/grafana/agent-cost-latency.standard-alert-rules.yaml) chứa 7 rule (group `agent`, interval `1m`, label `service = ev-care-backend`, kèm summary và description).
+
+1. **Alerting** → **Alert rules** → **New** (hoặc menu *More*) → **Import to Grafana-managed rules** → chọn **Prometheus YAML**, datasource Prometheus `grafanacloud-prom`, folder đích `EV Care`.
+2. Dán hoặc tải lên file, bỏ tích **Pause imported alerting rules** (nếu có), rồi **Import**.
+3. **Bắt buộc: tạo notification policy.** Định dạng Prometheus không chứa contact point, nên rule nào cũng đi theo cây policy. Vào **Alerting → Notification policies** → *Default policy* ⋮ → **New nested policy**: label `service` `=` `ev-care-backend`, contact point `discord-evcare`, lưu. Thiếu bước này, Discord sẽ không nhận tin (cột *Last delivery attempt* của contact point ghi "No delivery attempts").
+4. Mở từng rule, đổi **Alert state if execution error** từ `OK` sang **Error** (import đặt `OK`, lỗi truy vấn sẽ bị im), chỉnh ngưỡng nếu cần.
+
+Cách rule hoạt động: điều kiện nằm ngay trong PromQL (`... > 15`). Điều kiện sai hoặc metric chưa có thì truy vấn trả rỗng và rule hiện **Normal (NoData)** — đây là trạng thái bình thường, không phải lỗi. Rule chỉ chuyển Pending/Firing khi truy vấn có giá trị. **Thử bằng cách đổi tạm biểu thức của một rule thành `vector(1)`** (đổi ngưỡng ở bước Threshold không có tác dụng).
+
+### Hoặc tạo tay từng rule
 
 Folder `EV Care`, evaluation group `agent` (interval `1m`), contact point `discord-evcare`, label `service = ev-care-backend`.
 
@@ -160,6 +173,20 @@ Folder `EV Care`, evaluation group `agent` (interval `1m`), contact point `disco
 | **LLM cost per day high** | `sum(increase(evcare_llm_cost_usd_total[24h])) or vector(0)` | > `10` (USD) | 0m | critical |
 | **Agent cost per turn high** | `(sum(increase(evcare_agent_turn_cost_usd_sum[1h])) / sum(increase(evcare_agent_turn_cost_usd_count[1h]))) or vector(0)` | > `0.02` (USD) | 15m | warning |
 | **LLM model has no price** | `sum(increase(evcare_llm_unpriced_calls_total[15m])) or vector(0)` | > `0` | 0m | warning |
+
+### Rule thứ 8: thông báo deploy / restart (Loki)
+
+`backend` và `worker` ghi một dòng log `Service started` (kèm `service`, `service_version` = 12 ký tự đầu của commit Railway, `deployment_environment`) mỗi lần process khởi động ([telemetry.py](../../backend/src/infrastructure/observability/telemetry.py), `log_service_started`). Rule **Service started (deploy or restart)** (severity `info`) báo Discord khi thấy dòng này trong 5 phút. Import file [agent-cost-latency.loki-alert-rules.yaml](../../infrastructure/observability/grafana/agent-cost-latency.loki-alert-rules.yaml) như trên nhưng chọn datasource **Loki** (`grafanacloud-logs`); cần cùng notification policy ở bước 3:
+
+```logql
+sum by (service_name) (count_over_time({service_name=~"ev-care-(backend|worker)"} |= "Service started" [5m]))
+```
+
+- Chỉ báo khi service **lên được**: deploy lỗi hoặc crash trước khi khởi động xong sẽ không có log. Để biết deploy thất bại, dùng thêm webhook của Railway (Project Settings → Webhooks → Discord).
+- Báo lặp lại nhiều lần trong vài phút nghĩa là service đang crash-loop.
+- Worker prefork ghi một dòng cho mỗi tiến trình con nên có thể thấy nhiều dòng cho một lần deploy; rule đã gom theo `service_name`.
+- Xem version đã deploy: Explore → Loki `{service_name="ev-care-backend"} |= "Service started"`, đọc `service_version`.
+- Tên datasource Loki mặc định là `grafanacloud-logs`; chọn đúng datasource khi import.
 
 - Ngưỡng ở trên là điểm khởi đầu — chỉnh theo số thực tế sau vài ngày chạy (xem p95 và chi phí / ngày trên dashboard rồi đặt ngưỡng cao hơn ~30–50%).
 - Mỗi rule: **Reduce (B)** = `A`, **Last**; **Threshold (C)** = `B`, **IS ABOVE**; **No data** = **Normal** (không có lượt chat thì không có số liệu).

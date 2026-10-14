@@ -219,3 +219,23 @@ def test_unwritable_log_dir_keeps_stdout_and_warns_once(tmp_path, monkeypatch):
     assert [line["event"] for line in lines] == ["logging.file_export_disabled", "hello"]
     assert lines[0]["log_dir"] == str(tmp_path)
     assert list(tmp_path.iterdir()) == []
+
+
+def test_service_started_log_carries_version_and_environment(monkeypatch):
+    import io
+    import json
+
+    from src.config import Settings
+    from src.infrastructure.logging import configure_logging
+    from src.infrastructure.observability import log_service_started
+
+    monkeypatch.setenv("RAILWAY_GIT_COMMIT_SHA", "abcdef1234567890")
+    buffer = io.StringIO()
+    configure_logging(level="INFO", stream=buffer)
+    log_service_started("ev-care-backend", Settings(_env_file=None, app_env="test", otel_deployment_environment="staging"))
+
+    record = json.loads(buffer.getvalue().strip().splitlines()[-1])
+    assert record["event"] == "Service started"
+    assert record["service"] == "ev-care-backend"
+    assert record["service_version"] == "abcdef123456"
+    assert record["deployment_environment"] == "staging"

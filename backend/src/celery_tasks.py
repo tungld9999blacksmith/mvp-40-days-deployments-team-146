@@ -8,6 +8,7 @@ from src.infrastructure.observability import (
     WORKER_SERVICE,
     configure_langsmith,
     jobs_project,
+    log_service_started,
     setup_telemetry,
     shutdown_telemetry,
 )
@@ -177,6 +178,7 @@ def _start_worker_telemetry() -> None:
     telemetry = setup_telemetry(WORKER_SERVICE)
     if telemetry is not None:
         configure_worker_logging(telemetry.logger_provider)
+        log_service_started(WORKER_SERVICE)
 
 
 def is_prefork_pool(pool_cls) -> bool:
